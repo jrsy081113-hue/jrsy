@@ -8925,8 +8925,7 @@ ${chatHistorySummary || '无'}
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
                         max_tokens: 400, // 【关键修改：增加 max_tokens 从 150 到 400】
-                        temperature: 0.9,
-                        response_format: { type: 'json_object' }
+                        temperature: 0.9
                     })
                 });
 
