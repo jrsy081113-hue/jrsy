@@ -4196,7 +4196,6 @@
 
         /* 新增：朋友圈删除图标样式 */
         .moments-delete-icon {
-            margin-left: 10px; /* 调整图标与时间之间的距离 */
             cursor: pointer;
             fill: #586b95; /* 使用与名字相同的蓝色 */
             width: 16px;
@@ -4206,6 +4205,13 @@
         .moments-delete-icon:hover {
             fill: #ff3b30; /* 鼠标悬停时变为红色 */
         }
+
+/* 新增：朋友圈时间与删除图标的包裹容器样式 */
+.moments-time-group {
+    display: flex;         /* 让时间与图标在同一行 */
+    align-items: center;   /* 让它们垂直居中对齐 */
+    gap: 5px;              /* 控制时间与图标之间的间距，你可以调整这个值 */
+}
 
     </style>
 </head>
@@ -5150,6 +5156,25 @@ function sanitizeForJSON(str) {
         .replace(/"/g, '\\"')
         .replace(/\n/g, '\\n');
 }
+
+async function requestPersistentStorage() {
+    if (navigator.storage && navigator.storage.persist) {
+        const isPersisted = await navigator.storage.persisted();
+        if (!isPersisted) {
+            const result = await navigator.storage.persist();
+            if (result) {
+                console.log("已请求持久性存储并获得授权");
+            } else {
+                console.warn("请求持久性存储被拒绝");
+            }
+        } else {
+            console.log("已经是持久性存储模式");
+        }
+    }
+}
+// 在你的应用启动时调用
+requestPersistentStorage();
+
 
         // 全局变量
         let currentChatFriendId = null;
@@ -8429,10 +8454,12 @@ commentsHtml += `
                     <div class="moments-content">${moment.content}</div>
                     ${imageHtml}
                     <div class="moments-footer">
-                                        <div class="moments-time">${timeSince(moment.timestamp)}</div>
-                ${moment.authorId === userProfile.id ? `<svg class="moments-delete-icon" viewBox="0 0 24 24" onclick="deleteMoment('${moment.id}')"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>` : ''}
-                        <div class="moments-actions">
-                            <button class="moments-actions-btn" onclick="toggleActionsMenu(event, '${moment.id}')">...</button>
+    <div class="moments-time-group"> 
+        <div class="moments-time">${timeSince(moment.timestamp)}</div>
+        ${moment.authorId === userProfile.id ? `<svg class="moments-delete-icon" viewBox="0 0 24 24" onclick="deleteMoment('${moment.id}')"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>` : ''}
+    </div> 
+    <div class="moments-actions">
+        <button class="moments-actions-btn" onclick="toggleActionsMenu(event, '${moment.id}')">...</button>
                             <div class="moments-actions-menu" id="actions-menu-${moment.id}">
                                 <div class="moments-action" onclick="likeMoment('${moment.id}')">
                                     ${likeIconSvg}
@@ -8727,7 +8754,42 @@ ${commentsContext} // 包含所有历史评论，AI现在可以记住整个楼�
 
             const data = await response.json();
             console.log("[AI回复] AI原始回复数据:", data);
-            let replyContentRaw = data.choices?.[0]?.message?.content;
+                        let replyContentRaw = data.choices?.[0]?.message?.content;
+            console.log("[DEBUG] triggerAiMomentReactions: AI返回的message.content (replyContentRaw) BEFORE PREPROCESSING:", replyContentRaw);
+
+            if (replyContentRaw) {
+                // Step 1: 尝试移除 Markdown 代码块包裹 (```json ... ```)
+                const markdownMatch = replyContentRaw.match(/```json\s*([\s\S]*?)\s*```/);
+                if (markdownMatch && markdownMatch[1]) { // 确保匹配成功且有捕获组
+                    replyContentRaw = markdownMatch[1].trim();
+                    console.log("[DEBUG] PREPROCESS: Markdown块已移除，内容:", replyContentRaw);
+                } else {
+                    // Step 2: 如果没有Markdown包裹，但可能有多余的文字，尝试只提取JSON对象
+                    const jsonObjectMatch = replyContentRaw.match(/\{[\s\S]*\}/); // 寻找第一个 { 到最后一个 }
+                    if (jsonObjectMatch && jsonObjectMatch[0]) {
+                        replyContentRaw = jsonObjectMatch[0].trim(); // 如果找到，就只取匹配到的JSON部分
+                        console.log("[DEBUG] PREPROCESS: 提取到JSON对象，内容:", replyContentRaw);
+                    } else {
+                        console.log("[DEBUG] PREPROCESS: 未能提取出有效的JSON结构。");
+                        // 如果没有找到JSON，那么replyContentRaw将保持原样，后续的 JSON.parse 仍会失败
+                    }
+                }
+            } else {
+                console.log("[DEBUG] PREPROCESS: replyContentRaw 为空。");
+            }
+
+            console.log("[DEBUG] triggerAiMomentReactions: AI返回的message.content (replyContentRaw) AFTER PREPROCESSING:", replyContentRaw);
+
+            // 尝试 JSON 解析 (这里是原本的 try/catch 块)
+            try {
+                const parsedResponse = JSON.parse(replyContentRaw);
+                console.log("[DEBUG] triggerAiMomentReactions: 成功解析AI返回的comment:", parsedResponse.reply);
+                // ... (后续成功处理代码) ...
+            } catch (jsonParseError) {
+                console.error("[DEBUG] triggerAiMomentReactions: JSON解析失败！错误:", jsonParseError, "原始AI返回内容:", replyContentRaw);
+                showAlert(`AI回复评论失败：解析AI返回内容失败。AI返回：${replyContentRaw?.substring(0, 150) || '无内容'}...`);
+                replyContent = `我不知道怎么回复了...（AI返回格式错了）`;
+            }
             let replyContent = '';
 
             if (!replyContentRaw) {
@@ -10026,11 +10088,17 @@ ${chatHistorySummary || '暂无聊天记录。'}
         }
 
         window.onload = async function() {
-            await dbManager.init();
-            await loadData();
-            updateFriendList();
-            updateTime();
-            setActivePage('homeScreen');
+    await dbManager.init(); // 确保 IndexedDB 已初始化
+    
+    // 在这里调用请求持久性存储的函数
+    await requestPersistentStorage(); 
+
+    await loadData();
+    updateFriendList();
+    updateTime();
+    setActivePage('homeScreen');
+    
+    // ... (你 window.onload 中其余的代码)
             
             audioElement = document.getElementById('audioPlayer');
             
