@@ -7339,15 +7339,8 @@ ${timeContext}
                 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: apiPayloadMessages, temperature: apiTemperature, response_format: responseFormat }) });
                 if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
-                                const data = await response.json();
-                let aiResponseContent = data.choices?.[0]?.message?.content; // 临时保存AI的实际响应内容
-                
-                // 【关键修改：如果AI返回内容为空，则将发送的Prompt作为原始AI响应进行显示】
-                if (!aiResponseContent || aiResponseContent.trim() === '') {
-                    rawContentFromAI = `[AI返回内容为空！这是发送给AI的Prompt截取]: ${prompt.substring(0, 500)}...`; // 将Prompt显示出来
-                } else {
-                    rawContentFromAI = aiResponseContent; // 否则使用AI的实际响应
-                }
+                const data = await response.json();
+                const responseContentJSON = data.choices?.[0]?.message?.content;
                 
                 if (!responseContentJSON) {
                     throw new Error("API返回的数据格式无效或内容为空。");
@@ -8275,9 +8268,9 @@ if (responseContent.send_image && responseContent.send_image.description) {
     updateMomentsList();
     triggerAiMomentReactions(newMoment);
     
-    // --- 新增的这行代码，用于关闭弹窗 ---
+    
     closeAddMomentModal(); 
-    // ---------------------------------
+   
 }
 
     // 新增：删除朋友圈的函数
@@ -8665,7 +8658,8 @@ function hideCommentInput() {
         console.log("postComment 函数执行结束。");
     }
 }
-        async function triggerAiCommentReply(momentId, userCommentId, userCommentContent, aiToReplyId) {
+       
+async function triggerAiCommentReply(momentId, userCommentId, userCommentContent, aiToReplyId) {
     const moment = moments.find(m => m.id === momentId);
     const aiFriend = getAuthorById(aiToReplyId); 
     if (!moment || !aiFriend) {
@@ -8714,7 +8708,6 @@ ${commentsContext}
                 body: JSON.stringify({
                     model: settings.modelName,
                     messages: [{ role: 'user', content: prompt }],
-                    // --- 【核心修改】我们删除了这里的 max_tokens 参数 ---
                     temperature: 0.7
                 })
             });
@@ -8726,7 +8719,7 @@ ${commentsContext}
                 rawContentFromAI = JSON.stringify(data);
                 throw new Error(`API 请求失败，状态码: ${response.status}.`);
             }
-
+            
             let extractedText = '';
             if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
                 extractedText = data.choices[0].message.content;
@@ -8741,7 +8734,9 @@ ${commentsContext}
                 rawContentFromAI = extractedText;
             }
             
-            replyContent = extractedText.trim();
+            // --- 【核心修复】在这里增加一个安全检查，防止对null进行操作 ---
+            replyContent = (extractedText || '').trim();
+
             if (!replyContent) {
                 replyContent = "嗯嗯";
             }
@@ -8751,8 +8746,7 @@ ${commentsContext}
             replyContent = `AI出错了，请稍后再试。`;
         }
         
-        let debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
-        const finalCommentContent = `${debugMessage}${replyContent}`;
+        const finalCommentContent = replyContent;
 
         if (!moment.likes.includes(aiFriend.id)) {
             moment.likes.push(aiFriend.id);
@@ -8857,7 +8851,12 @@ ${chatHistorySummary || '无'}
             try {
                 const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
                 
-                const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。你的任务是：**严格按照你的人设，只回复一句简短、口语化的评论文字。**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 任何解释, 或其他多余的文字。例如：如果朋友圈是“今天好开心”，你就直接回复“看你开心我也开心啦～”，而不是 '{"comment": "看你开心我也开心啦～"}'。现在，请直接生成你的评论：`;
+                const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。
+你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。
+你的任务是：**严格按照你的人设，只回复一句简短、口语化的评论文字。**
+**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 任何解释, 或其他多余的文字。
+例如：如果朋友圈是“今天好开心”，你就直接回复“看你开心我也开心啦～”，而不是 '{"comment": "看你开心我也开心啦～"}'。
+现在，请直接生成你的评论：`;
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
@@ -8865,7 +8864,6 @@ ${chatHistorySummary || '无'}
                     body: JSON.stringify({
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
-                        // --- 【核心修改】我们删除了这里的 max_tokens 参数 ---
                         temperature: 0.9
                     })
                 });
@@ -8892,7 +8890,9 @@ ${chatHistorySummary || '无'}
                     rawContentFromAI = extractedText;
                 }
 
-                commentContent = extractedText.trim();
+                // --- 【核心修复】在这里增加一个安全检查，防止对null进行操作 ---
+                commentContent = (extractedText || '').trim();
+
                 if (!commentContent) {
                     commentContent = "嗯嗯!";
                 }
@@ -8902,8 +8902,7 @@ ${chatHistorySummary || '无'}
                 commentContent = `AI自动评论时发生错误。`;
             }
             
-            let debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
-            const finalCommentContent = `${debugMessage}${commentContent}`;
+            const finalCommentContent = commentContent;
 
             if (!moment.likes.includes(friend.id)) {
                 moment.likes.push(friend.id);
