@@ -8681,9 +8681,9 @@ function hideCommentInput() {
     }
 
     setTimeout(async () => {
-        let replyContent = ''; // 在最开始声明并初始化
-        let rawContentFromAI = ''; // 声明这个变量来存储原始AI响应
-        let httpResponseStatus = 0; // 声明这个变量来存储HTTP状态
+        let replyContent = '';
+        let rawContentFromAI = '';
+        let httpResponseStatus = 0;
 
         try {
             const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
@@ -8708,27 +8708,18 @@ function hideCommentInput() {
                 }
             });
             const commentsContext = commentsHistoryForAI.length > 0 ? `以下是之前评论区的所有对话历史（请按时间顺序理解，无需重复已有的评论内容，只需要理解上下文）：\n${commentsHistoryForAI.join('\n')}\n` : '';
-
             const userProfileNameForPrompt = userProfile.name;
 
-            const prompt = `你叫"${aiFriend.name}"，你是一个由人工智能驱动的虚拟角色，你的人设是：${aiFriend.role}。
-你的朋友圈内容是："${sanitizedMomentContent}..."
+            // --- 这是【已替换】的、更简单的Prompt ---
+            const prompt = `你叫"${aiFriend.name}"，你的人设是：${aiFriend.role}。
+在你的朋友圈（内容：“${sanitizedMomentContent}...”）下，好友"${userProfileNameForPrompt}"刚刚评论说：“${sanitizedUserComment}”。
 ${commentsContext}
 
-最新评论（由好友"${userProfileNameForPrompt}"发布）："${sanitizedUserComment}"
+你的任务是：**严格按照人设和上下文，只回复一句针对"${userProfileNameForPrompt}"的评论。**
 
-你的任务是：**作为AI角色"${aiFriend.name}"，必须根据你的人设、朋友圈内容、以及评论区的所有对话历史，构思一句真实、口语化、且明显是对好友"${userProfileNameForPrompt}"的最新评论的回应，并以JSON格式返回。你的回应必须上下文连贯，体现出你已经理解了整个评论楼层。请在回复中自然地称呼"${userProfileNameForPrompt}"的昵称（如果合适），以示亲近。**
+**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "reply":, JSON格式, 或任何解释。
 
-# 规则：
-1.  回复内容必须简短，像真人评论一样，充满感情，不敷衍。
-2.  **回复内容必须清晰地体现出你对"${userProfileNameForPrompt}"的认识和你们之间的好友关系，并且上下文连贯。请在回复中自然地称呼"${userProfileNameForPrompt}"的昵称（如果合适），以示亲近。**
-3.  **你的回复必须是一个JSON对象，包含一个键“reply”，值是你生成的回复文字。不要包含任何其他解释或引号。**
-
-# 范例：
--   如果"${userProfileNameForPrompt}"评论“今天天气真好！”，一个活泼的人设可能会回复：{"reply": "是呀是呀，超适合出去玩，${userProfileNameForPrompt}要不要一起呀？"}
--   如果"${userProfileNameForPrompt}"评论“好无聊啊”，一个温柔的人设可能会回复：{"reply": "摸摸头，${userProfileNameForPrompt}要不要聊聊天呀？"}
-
-现在，请根据你的角色设定和上面的评论内容，生成你的回复：`;
+现在，请直接生成你的回复：`;
 
             const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                 method: 'POST',
@@ -8737,90 +8728,39 @@ ${commentsContext}
                     model: settings.modelName,
                     messages: [{ role: 'user', content: prompt }],
                     max_tokens: 400,
-                    temperature: 0.7,
-                    response_format: { type: 'json_object' }
+                    temperature: 0.7
                 })
             });
 
-            httpResponseStatus = response.status; // 存储HTTP状态
+            httpResponseStatus = response.status;
             if (!response.ok) {
                 const errorText = await response.text();
-                showAlert(`AI回复评论失败：API请求错误 (${response.status})。请检查【API反代地址】是否能访问，【API密钥】是否正确。错误详情：${errorText.substring(0, 300)}...`);
-                throw new Error(`API 请求失败，状态码: ${response.status}`);
+                throw new Error(`API 请求失败，状态码: ${response.status}. 错误: ${errorText}`);
             }
 
-                                            const data = await response.json();
-                let aiResponseContent = data.choices?.[0]?.message?.content; // 临时保存AI的实际响应内容
-                
-                // 【关键修改：如果AI返回内容为空，则将发送的Prompt作为原始AI响应进行显示】
-                if (!aiResponseContent || aiResponseContent.trim() === '') {
-                    rawContentFromAI = `[AI返回内容为空！这是发送给AI的Prompt截取]: ${prompt.substring(0, 500)}...`; // 将Prompt显示出来
-                } else {
-                    rawContentFromAI = aiResponseContent; // 否则使用AI的实际响应
-                }
-                
-                // 【关键修改：如果AI返回内容为空，则将发送的Prompt作为原始AI响应进行显示】
-                if (!aiResponseContent || aiResponseContent.trim() === '') {
-                    rawContentFromAI = `[AI返回内容为空！这是发送给AI的Prompt截取]: ${prompt.substring(0, 500)}...`; // 将Prompt显示出来
-                } else {
-                    rawContentFromAI = aiResponseContent; // 否则使用AI的实际响应
-                }
-
-            try {
-    // --- 新的、更强大的JSON提取逻辑 ---
-    let jsonString = rawContentFromAI; // 默认使用原始返回内容
-
-    // 1. 优先尝试从Markdown代码块中提取
-    const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
-    if (markdownMatch && markdownMatch[1]) {
-        jsonString = markdownMatch[1].trim();
-    } else {
-        // 2. 如果没有Markdown，则在文本中寻找被'{'和'}'包裹的部分
-        const startIndex = rawContentFromAI.indexOf('{');
-        const endIndex = rawContentFromAI.lastIndexOf('}');
-        if (startIndex !== -1 && endIndex > startIndex) {
-            jsonString = rawContentFromAI.substring(startIndex, endIndex + 1);
-        }
-    }
-    // --- 逻辑结束 ---
-    
-    const parsedResponse = JSON.parse(jsonString);
-    replyContent = parsedResponse.reply || ''; 
-
-} catch (jsonParseError) {
-                // 如果解析失败，可能是AI返回的不是严格的JSON，或者格式不对
-                console.error("JSON解析失败！尝试直接使用原始内容。错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
-                replyContent = `AI回复评论失败：JSON解析失败！原始内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`;
-                showAlert(replyContent); // 强制弹出这个错误信息
-            }
+            const data = await response.json();
             
-            // 最终检查
-            if (!replyContent || replyContent.length === 0) { 
-                replyContent = `嗯... 我在想什么呢？（抓头）`; 
+            // --- 这是【已替换】的、更简单的处理逻辑 ---
+            if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+                rawContentFromAI = data.choices[0].message.content;
+            } else {
+                rawContentFromAI = '';
+                console.warn("API返回的数据结构不符合预期或内容为空 (评论回复):", data);
+            }
+
+            replyContent = rawContentFromAI.trim();
+            if (!replyContent) {
+                replyContent = "嗯嗯!";
             }
 
         } catch (error) {
             console.error(`外部捕获到错误:`, error);
-            showAlert(`AI回复评论时发生外部未知错误: ${error.message}`);
-            replyContent = `AI出错了，请稍后再试。`; // 发生更严重错误时的提示
+            replyContent = `AI出错了，请稍后再试。`;
         }
         
-        // 【关键修改：在 AI 的最终评论内容中插入原始 API 响应，以便在朋友圈显示】
-        let debugMessage = '';
-        if (typeof rawContentFromAI === 'string' && rawContentFromAI.length > 0) {
-            // 为了避免过长，截取一部分
-            debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
-        } else if (rawContentFromAI === null || rawContentFromAI === undefined) {
-            debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): CONTENT IS NULL/UNDEFINED] `;
-        } else {
-            debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): UNEXPECTED TYPE] `;
-        }
-        
-        // 将调试信息插入到 AI 的最终评论内容中
-        // 确保 debugMessage 放在前面，这样即使 replyContent 最终是默认的👍，也能看到调试信息
+        let debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
         const finalCommentContent = `${debugMessage}${replyContent}`;
 
-        // AI点赞：只要AI回复了，就点赞
         if (!moment.likes.includes(aiFriend.id)) {
             moment.likes.push(aiFriend.id);
         }
@@ -8828,7 +8768,7 @@ ${commentsContext}
         const newAiComment = {
             id: generateUniqueId(), 
             authorId: aiFriend.id, 
-            content: finalCommentContent, // 使用包含调试信息的最终评论内容
+            content: finalCommentContent,
             timestamp: new Date().toISOString(),
             replyToCommentId: userCommentId, 
             replyToAuthorId: userProfile.id 
@@ -8917,19 +8857,24 @@ ${chatHistorySummary || '无'}
 
     for (const friend of friends.filter(f => !f.isGroup)) {
         setTimeout(async () => {
-            let commentContent = ''; // Declare here, will hold final AI generated text or error/fallback
-            let rawContentFromAI = ''; // Stores the raw content from API, or a debug message if empty
-            let httpResponseStatus = 0; // Stores the HTTP status of the response
+            let commentContent = ''; 
+            let rawContentFromAI = ''; 
+            let httpResponseStatus = 0; 
 
             try {
                 const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
+                
+                // --- 这是【已替换】的、更简单的Prompt ---
                 const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。
-你的好友"${userProfile.name}"刚刚发布了一条朋友圈。
-朋友圈内容是：'${sanitizedMomentContent}'
+你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。
 
-请根据你的人设和朋友圈内容，生成一个简短的评论。
-你的回复必须是JSON对象，包含一个键"comment"，值是你生成的评论文字。
-现在，请生成你的评论：`;
+你的任务是：**严格按照你的人设，只回复一句简短、口语化的评论文字。**
+
+**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 任何解释, 或其他多余的文字。
+
+例如：如果朋友圈是“今天好开心”，你就直接回复“看你开心我也开心啦～”，而不是 '{"comment": "看你开心我也开心啦～"}'。
+
+现在，请直接生成你的评论：`;
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
@@ -8937,80 +8882,43 @@ ${chatHistorySummary || '无'}
                     body: JSON.stringify({
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
-                        max_tokens: 400, // 【关键修改：增加 max_tokens 从 150 到 400】
+                        max_tokens: 400,
                         temperature: 0.9
                     })
                 });
 
-                httpResponseStatus = response.status; // Store HTTP status
+                httpResponseStatus = response.status;
                 if (!response.ok) {
                     const errorText = await response.text();
                     commentContent = `AI自动评论失败 (HTTP ${httpResponseStatus})：${errorText.substring(0, 300)}`;
-                    rawContentFromAI = errorText; // Store raw error response for debug
+                    rawContentFromAI = errorText;
                 } else {
                     const data = await response.json();
-                    let aiActualResponseContent = data.choices?.[0]?.message?.content; // This is the actual content from AI
-
-                    // 【核心逻辑：处理AI返回内容是否为空，并确保commentContent被正确赋值】
-                    if (!aiActualResponseContent || aiActualResponseContent.trim() === '') {
-                        rawContentFromAI = `[AI返回内容为空！AI未生成有效回复。Prompt截取: ${prompt.substring(0, 300)}]`; // 调试信息，表明AI没有生成内容，并包含Prompt
-                        commentContent = `嗯嗯！`; // 设置一个通用、简单的评论作为回退
+                    
+                    // --- 这是【已替换】的、更简单的处理逻辑 ---
+                    // 检查是否存在有效的choices路径
+                    if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+                        rawContentFromAI = data.choices[0].message.content;
                     } else {
-                        // 如果AI返回了内容，才尝试解析它
-                        rawContentFromAI = aiActualResponseContent; // Store actual AI response for debug
-                        try {
-    // --- 新的、更强大的JSON提取逻辑 ---
-    let jsonString = rawContentFromAI; // 默认使用原始返回内容
-
-    // 1. 优先尝试从Markdown代码块中提取
-    const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
-    if (markdownMatch && markdownMatch[1]) {
-        jsonString = markdownMatch[1].trim();
-    } else {
-        // 2. 如果没有Markdown，则在文本中寻找被'{'和'}'包裹的部分
-        const startIndex = rawContentFromAI.indexOf('{');
-        const endIndex = rawContentFromAI.lastIndexOf('}');
-        if (startIndex !== -1 && endIndex > startIndex) {
-            jsonString = rawContentFromAI.substring(startIndex, endIndex + 1);
-        }
-    }
-    // --- 逻辑结束 ---
-
-    const parsedResponse = JSON.parse(jsonString);
-    commentContent = parsedResponse.comment || ''; 
-
-} catch (jsonParseError) {
-                            console.error("AI自动评论 - JSON解析失败！错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
-                            commentContent = `AI自动评论失败：JSON解析错误！原始内容: ${rawContentFromAI.substring(0, 500) || '内容为空'}`; // 详细错误信息
-                        }
+                        // 如果路径不存在，说明AI返回的数据结构有问题或为空
+                        rawContentFromAI = ''; // 明确设置为空字符串
+                        console.warn("API返回的数据结构不符合预期或内容为空:", data);
                     }
-                }
-                
-                // Final fallback for commentContent, in case something unexpected left it empty
-                if (!commentContent || commentContent.length === 0) {
-                    commentContent = `嗯... 我在想什么呢？（抓头）`; // Final catch-all default
+                    
+                    commentContent = rawContentFromAI.trim();
+                    if (!commentContent) {
+                        commentContent = "嗯嗯!"; // 如果AI依然返回空，就使用这个默认评论
+                    }
                 }
 
             } catch (error) {
-                console.error(`[AI自动评论 - 调试] 外部捕获到错误:`, error);
-                commentContent = `AI自动评论时发生外部未知错误: ${error.message}`;
+                console.error(`[AI自动评论 - 调试] 捕获到错误:`, error);
+                commentContent = `AI自动评论时发生错误。`;
             }
             
-            // 【关键修改：在 AI 的最终评论内容中插入原始 API 响应，以便在朋友圈显示】
-            let debugMessage = '';
-            if (typeof rawContentFromAI === 'string' && rawContentFromAI.length > 0) {
-                // 为了避免过长，截取一部分
-                debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
-            } else if (rawContentFromAI === null || rawContentFromAI === undefined) {
-                debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): CONTENT IS NULL/UNDEFINED] `;
-            } else {
-                debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): UNEXPECTED TYPE] `;
-            }
-            
-            // 将调试信息插入到 AI 的最终评论内容中
+            let debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
             const finalCommentContent = `${debugMessage}${commentContent}`;
 
-            // AI主动点赞，只点赞一次
             if (!moment.likes.includes(friend.id)) {
                 moment.likes.push(friend.id);
             }
@@ -9018,7 +8926,7 @@ ${chatHistorySummary || '无'}
             const newAiInitialComment = {
                 id: generateUniqueId(), 
                 authorId: friend.id,
-                content: finalCommentContent, // 使用包含调试信息的最终评论内容
+                content: finalCommentContent,
                 timestamp: new Date().toISOString(),
                 replyToCommentId: null, 
                 replyToAuthorId: null
@@ -9036,7 +8944,7 @@ ${chatHistorySummary || '无'}
                 updateMomentsList();
             }
 
-        }, 2000 + Math.random() * 3000); // AI 自动评论会有 2-5 秒的延迟
+        }, 2000 + Math.random() * 3000);
     }
 }
 
