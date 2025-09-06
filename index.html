@@ -8676,7 +8676,7 @@ function hideCommentInput() {
     const settings = await dbManager.get('apiSettings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
         console.error("API设置未完成，无法触发AI回复朋友圈评论。");
-        showAlert("AI回复评论失败：API设置未完成，请检查设置。请确保【API反代地址】、【API密钥】和【模型名称】已填写并保存。");
+        showAlert("AI回复评论失败：API设置未完成，请检查设置。");
         return;
     }
 
@@ -8707,18 +8707,14 @@ function hideCommentInput() {
                     commentsHistoryForAI.push(commentLine);
                 }
             });
-            const commentsContext = commentsHistoryForAI.length > 0 ? `以下是之前评论区的所有对话历史（请按时间顺序理解，无需重复已有的评论内容，只需要理解上下文）：\n${commentsHistoryForAI.join('\n')}\n` : '';
+            const commentsContext = commentsHistoryForAI.length > 0 ? `以下是之前评论区的所有对话历史：\n${commentsHistoryForAI.join('\n')}\n` : '';
             const userProfileNameForPrompt = userProfile.name;
-
-            // --- 这是【已替换】的、更简单的Prompt ---
+            
             const prompt = `你叫"${aiFriend.name}"，你的人设是：${aiFriend.role}。
 在你的朋友圈（内容：“${sanitizedMomentContent}...”）下，好友"${userProfileNameForPrompt}"刚刚评论说：“${sanitizedUserComment}”。
 ${commentsContext}
-
 你的任务是：**严格按照人设和上下文，只回复一句针对"${userProfileNameForPrompt}"的评论。**
-
 **【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "reply":, JSON格式, 或任何解释。
-
 现在，请直接生成你的回复：`;
 
             const response = await fetch(`${settings.apiUrl}/chat/completions`, {
@@ -8740,17 +8736,25 @@ ${commentsContext}
 
             const data = await response.json();
             
-            // --- 这是【已替换】的、更简单的处理逻辑 ---
+            // --- 这是【万能钥匙】解析逻辑 ---
+            let extractedText = '';
             if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-                rawContentFromAI = data.choices[0].message.content;
+                extractedText = data.choices[0].message.content;
+            } else if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
+                extractedText = data.candidates[0].content.parts[0].text;
             } else {
-                rawContentFromAI = '';
-                console.warn("API返回的数据结构不符合预期或内容为空 (评论回复):", data);
+                console.error("无法识别API返回的JSON结构 (评论回复)", data);
+                rawContentFromAI = JSON.stringify(data);
             }
-
-            replyContent = rawContentFromAI.trim();
+            
+            if (extractedText) {
+                rawContentFromAI = extractedText;
+            }
+            // --- 万能钥匙逻辑结束 ---
+            
+            replyContent = extractedText.trim();
             if (!replyContent) {
-                replyContent = "嗯嗯!";
+                replyContent = "嗯嗯";
             }
 
         } catch (error) {
@@ -8864,16 +8868,11 @@ ${chatHistorySummary || '无'}
             try {
                 const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
                 
-                // --- 这是【已替换】的、更简单的Prompt ---
                 const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。
 你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。
-
 你的任务是：**严格按照你的人设，只回复一句简短、口语化的评论文字。**
-
 **【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 任何解释, 或其他多余的文字。
-
 例如：如果朋友圈是“今天好开心”，你就直接回复“看你开心我也开心啦～”，而不是 '{"comment": "看你开心我也开心啦～"}'。
-
 现在，请直接生成你的评论：`;
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
@@ -8890,25 +8889,33 @@ ${chatHistorySummary || '无'}
                 httpResponseStatus = response.status;
                 if (!response.ok) {
                     const errorText = await response.text();
-                    commentContent = `AI自动评论失败 (HTTP ${httpResponseStatus})：${errorText.substring(0, 300)}`;
-                    rawContentFromAI = errorText;
+                    throw new Error(`API 请求失败，状态码: ${response.status}. 错误: ${errorText}`);
+                }
+
+                const data = await response.json();
+                
+                // --- 这是【万能钥匙】解析逻辑 ---
+                let extractedText = '';
+                if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+                    // 适用于 OpenAI / 兼容 OpenAI 的 API
+                    extractedText = data.choices[0].message.content;
+                } else if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
+                    // 适用于 Google Gemini API
+                    extractedText = data.candidates[0].content.parts[0].text;
                 } else {
-                    const data = await response.json();
-                    
-                    // --- 这是【已替换】的、更简单的处理逻辑 ---
-                    // 检查是否存在有效的choices路径
-                    if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-                        rawContentFromAI = data.choices[0].message.content;
-                    } else {
-                        // 如果路径不存在，说明AI返回的数据结构有问题或为空
-                        rawContentFromAI = ''; // 明确设置为空字符串
-                        console.warn("API返回的数据结构不符合预期或内容为空:", data);
-                    }
-                    
-                    commentContent = rawContentFromAI.trim();
-                    if (!commentContent) {
-                        commentContent = "嗯嗯!"; // 如果AI依然返回空，就使用这个默认评论
-                    }
+                    // 如果两种主要格式都匹配失败，记录错误并准备调试信息
+                    console.error("无法识别API返回的JSON结构，请检查API提供商或代理设置。", data);
+                    rawContentFromAI = JSON.stringify(data); // 将整个未知结构转为字符串用于调试
+                }
+                
+                if (extractedText) {
+                    rawContentFromAI = extractedText;
+                }
+                // --- 万能钥匙逻辑结束 ---
+
+                commentContent = extractedText.trim();
+                if (!commentContent) {
+                    commentContent = "嗯嗯!";
                 }
 
             } catch (error) {
