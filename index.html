@@ -8910,7 +8910,7 @@ ${chatHistorySummary || '无'}
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+                                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
