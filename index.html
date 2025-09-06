@@ -8673,9 +8673,8 @@ function hideCommentInput() {
         return;
     }
 
-    console.log(`[AI回复] 尝试触发AI好友 ${aiFriend.name} 回复朋友圈评论...`);
-
     setTimeout(async () => {
+        let replyContent = ''; // 在最开始声明并初始化
         try {
             const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
@@ -8683,7 +8682,6 @@ function hideCommentInput() {
             let commentsHistoryForAI = [];
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-            console.log("[AI回复] 正在构建评论历史上下文...");
             sortedComments.forEach(c => {
                 const cAuthor = getAuthorById(c.authorId);
                 const cTargetAuthor = c.replyToAuthorId ? getAuthorById(c.replyToAuthorId) : null;
@@ -8700,8 +8698,6 @@ function hideCommentInput() {
                 }
             });
             const commentsContext = commentsHistoryForAI.length > 0 ? `以下是之前评论区的所有对话历史（请按时间顺序理解，无需重复已有的评论内容，只需要理解上下文）：\n${commentsHistoryForAI.join('\n')}\n` : '';
-            console.log("[AI回复] 评论历史上下文构建完成。");
-            console.log("[AI回复] commentsContext:", commentsContext);
 
             const userProfileNameForPrompt = userProfile.name;
 
@@ -8724,8 +8720,6 @@ ${commentsContext}
 
 现在，请根据你的角色设定和上面的评论内容，生成你的回复：`;
 
-            console.log("[AI回复] 发送给AI的Prompt:", prompt);
-
             const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
@@ -8740,108 +8734,64 @@ ${commentsContext}
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error(`[AI回复] API 请求失败，状态码: ${response.status}`, errorText);
                 showAlert(`AI回复评论失败：API请求错误 (${response.status})。可能是API地址、密钥或网络问题。错误详情：${errorText.substring(0, 150)}...`);
                 throw new Error(`API 请求失败，状态码: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log("[AI回复] AI原始回复数据:", data);
-            let replyContentRaw = data.choices?.[0]?.message?.content;
-            console.log("[DEBUG] triggerAiMomentReactions: AI返回的message.content (replyContentRaw) BEFORE PREPROCESSING:", replyContentRaw);
-
-            // 【关键修正1：将 replyContent 声明提前到这里！】
-            let replyContent = ''; 
-
-            if (replyContentRaw) {
-                const markdownMatch = replyContentRaw.match(/```json\s*([\s\S]*?)\s*```/);
-                if (markdownMatch && markdownMatch[1]) {
-                    replyContentRaw = markdownMatch[1].trim();
-                    console.log("[DEBUG] PREPROCESS: Markdown块已移除，内容:", replyContentRaw);
-                } else {
-                    const jsonObjectMatch = replyContentRaw.match(/\{[\s\S]*\}/);
-                    if (jsonObjectMatch && jsonObjectMatch[0]) {
-                        replyContentRaw = jsonObjectMatch[0].trim();
-                        console.log("[DEBUG] PREPROCESS: 提取到JSON对象，内容:", replyContentRaw);
-                    } else {
-                        console.log("[DEBUG] PREPROCESS: 未能提取出有效的JSON结构。");
-                    }
-                }
-            } else {
-                console.log("[DEBUG] PREPROCESS: replyContentRaw 为空。");
-            }
-
-            console.log("[DEBUG] triggerAiMomentReactions: AI返回的message.content (replyContentRaw) AFTER PREPROCESSING:", replyContentRaw);
-
-            // 尝试 JSON 解析
+            let rawContentFromAI = data.choices?.[0]?.message?.content;
+            
             try {
-                const parsedResponse = JSON.parse(replyContentRaw);
-                console.log("[DEBUG] triggerAiMomentReactions: 成功解析AI返回的comment:", parsedResponse.reply);
-                // 【关键修正2：填补省略号部分的代码，将解析结果赋值给 replyContent！】
+                // 尝试移除 Markdown 代码块包裹，如果有的话
+                const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
+                let jsonString = markdownMatch && markdownMatch[1] ? markdownMatch[1].trim() : rawContentFromAI;
+                
+                const parsedResponse = JSON.parse(jsonString);
                 replyContent = parsedResponse.reply || ''; 
+
             } catch (jsonParseError) {
-                console.error("[DEBUG] triggerAiMomentReactions: JSON解析失败！错误:", jsonParseError, "原始AI返回内容:", replyContentRaw);
-                showAlert(`AI回复评论失败：解析AI返回内容失败。AI返回：${replyContentRaw?.substring(0, 150) || '无内容'}...`);
-                replyContent = `我不知道怎么回复了...（AI返回格式错了）`; 
+                // 如果解析失败，可能是AI返回的不是严格的JSON，或者格式不对
+                console.error("JSON解析失败！尝试直接使用原始内容。错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
+                replyContent = `AI返回内容格式不正确，我不知道怎么回复了...`; // 更友好的错误提示
             }
             
-            // 【关键修正3：删除这里重复的解析逻辑块 - 因为上面 try...catch 已经完整处理了！】
-            // 如果你的代码中还有类似下面这样的代码块，请删除它。
-            /*
-            if (!replyContentRaw) {
-                console.error("[AI回复] AI返回内容为空或格式不正确。");
-                showAlert("AI回复评论失败：AI未返回有效JSON内容，请检查Prompt。");
-                replyContent = `AI脑子短路了。（尴尬）`; 
-            } else {
-                try {
-                    const parsedResponse = JSON.parse(replyContentRaw);
-                    replyContent = parsedResponse.reply || '';
-                } catch (jsonParseError) {
-                    console.error("[AI回复] AI Moment Comment Reply JSON parsing failed:", jsonParseError, "Raw AI response:", replyContentRaw);
-                    showAlert(`AI回复评论失败：解析AI返回内容失败。AI返回：${replyContentRaw.substring(0, 150)}...`);
-                    replyContent = `我不知道怎么回复了...（AI返回格式错了）`;
-                }
-            }
-            */
-            
-            // 【关键修正4：保留这个最终检查和默认赋值，确保 replyContent 一定有值】
+            // 最终检查
             if (!replyContent || replyContent.length === 0) { 
                 replyContent = `嗯... 我在想什么呢？（抓头）`; 
             }
 
-            console.log("[AI回复] 最终AI回复内容:", replyContent);
-
-            // AI点赞：只要AI回复了，就点赞
-            if (!moment.likes.includes(aiFriend.id)) {
-                moment.likes.push(aiFriend.id);
-            }
-            
-            // 关键：构建AI的回复评论对象
-            const newAiComment = {
-                id: generateUniqueId(), 
-                authorId: aiFriend.id, 
-                content: replyContent,
-                timestamp: new Date().toISOString(),
-                replyToCommentId: userCommentId, 
-                replyToAuthorId: userProfile.id 
-            };
-
-            const existingAiReplyIndex = moment.comments.findIndex(c => c.authorId === aiFriend.id && c.replyToCommentId === userCommentId);
-            if (existingAiReplyIndex > -1) {
-                moment.comments[existingAiReplyIndex] = newAiComment;
-            } else {
-                moment.comments.push(newAiComment);
-            }
-            
-            await saveData();
-            if (document.getElementById('momentsScreen').classList.contains('active')) {
-                updateMomentsList();
-            }
-
         } catch (error) {
-            console.error(`[AI回复] 为 [${aiFriend.name}] 回复评论时发生未捕获的错误:`, error);
+            console.error(`外部捕获到错误:`, error);
             showAlert(`AI回复评论时发生未知错误: ${error.message}`);
+            replyContent = `AI出错了，请稍后再试。`; // 发生更严重错误时的提示
         }
+        
+        // AI点赞：只要AI回复了，就点赞
+        if (!moment.likes.includes(aiFriend.id)) {
+            moment.likes.push(aiFriend.id);
+        }
+        
+        const newAiComment = {
+            id: generateUniqueId(), 
+            authorId: aiFriend.id, 
+            content: replyContent,
+            timestamp: new Date().toISOString(),
+            replyToCommentId: userCommentId, 
+            replyToAuthorId: userProfile.id 
+        };
+
+        const existingAiReplyIndex = moment.comments.findIndex(c => c.authorId === aiFriend.id && c.replyToCommentId === userCommentId);
+        if (existingAiReplyIndex > -1) {
+            moment.comments[existingAiReplyIndex] = newAiComment;
+        } else {
+            moment.comments.push(newAiComment);
+        }
+        
+        await saveData();
+        if (document.getElementById('momentsScreen').classList.contains('active')) {
+            updateMomentsList();
+        }
+
     }, 800);
 }
         
