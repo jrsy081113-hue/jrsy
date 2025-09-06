@@ -8767,7 +8767,6 @@ ${commentsContext}
                 }
 
             try {
-                try {
     // --- 新的、更强大的JSON提取逻辑 ---
     let jsonString = rawContentFromAI; // 默认使用原始返回内容
 
@@ -8784,13 +8783,11 @@ ${commentsContext}
         }
     }
     // --- 逻辑结束 ---
-
+    
     const parsedResponse = JSON.parse(jsonString);
-    commentContent = parsedResponse.comment || ''; 
+    replyContent = parsedResponse.reply || ''; 
 
 } catch (jsonParseError) {
-
-            } catch (jsonParseError) {
                 // 如果解析失败，可能是AI返回的不是严格的JSON，或者格式不对
                 console.error("JSON解析失败！尝试直接使用原始内容。错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
                 replyContent = `AI回复评论失败：JSON解析失败！原始内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`;
@@ -8962,7 +8959,6 @@ ${chatHistorySummary || '无'}
                         // 如果AI返回了内容，才尝试解析它
                         rawContentFromAI = aiActualResponseContent; // Store actual AI response for debug
                         try {
-                            try {
     // --- 新的、更强大的JSON提取逻辑 ---
     let jsonString = rawContentFromAI; // 默认使用原始返回内容
 
@@ -8979,13 +8975,11 @@ ${chatHistorySummary || '无'}
         }
     }
     // --- 逻辑结束 ---
-    
+
     const parsedResponse = JSON.parse(jsonString);
-    replyContent = parsedResponse.reply || ''; 
+    commentContent = parsedResponse.comment || ''; 
 
 } catch (jsonParseError) {
-
-                        } catch (jsonParseError) {
                             console.error("AI自动评论 - JSON解析失败！错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
                             commentContent = `AI自动评论失败：JSON解析错误！原始内容: ${rawContentFromAI.substring(0, 500) || '内容为空'}`; // 详细错误信息
                         }
