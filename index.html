@@ -8916,6 +8916,7 @@ ${chatHistorySummary || '无'}
 
 请根据你的人设和朋友圈内容，生成一个简短的评论。
 你的回复必须是JSON对象，包含一个键"comment"，值是你生成的评论文字。
+现在，请生成你的评论：`;
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
