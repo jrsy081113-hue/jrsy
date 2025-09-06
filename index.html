@@ -8675,6 +8675,9 @@ function hideCommentInput() {
 
     setTimeout(async () => {
         let replyContent = ''; // 在最开始声明并初始化
+        let rawContentFromAI = ''; // 声明这个变量来存储原始AI响应
+        let httpResponseStatus = 0; // 声明这个变量来存储HTTP状态
+
         try {
             const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
@@ -8732,21 +8735,16 @@ ${commentsContext}
                 })
             });
 
+            httpResponseStatus = response.status; // 存储HTTP状态
             if (!response.ok) {
                 const errorText = await response.text();
-                showAlert(`AI回复评论失败：API请求错误 (${response.status})。请检查【API反代地址】是否能访问，【API密钥】是否正确。错误详情：${errorText.substring(0, 300)}...`); // 增加错误详情长度
+                showAlert(`AI回复评论失败：API请求错误 (${response.status})。请检查【API反代地址】是否能访问，【API密钥】是否正确。错误详情：${errorText.substring(0, 300)}...`);
                 throw new Error(`API 请求失败，状态码: ${response.status}`);
             }
 
             const data = await response.json();
-            let rawContentFromAI = data.choices?.[0]?.message?.content;
-// 紧急调试：将原始AI响应显示在评论输入框
-document.getElementById('momentCommentInput').value = `[DEBUG]原始AI响应：${rawContentFromAI ? rawContentFromAI.substring(0, 800) : '内容为空'}`;
-// 如果你还需要AI最终的回复，可以暂时把这行注释掉：
-// replyContent = `嗯... 我在想什么呢？（抓头）`; // 最终的默认回复
-            
-            showAlert(`[原始AI响应] HTTP状态: ${response.status} | 内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`); // 显示原始AI响应
-            
+            rawContentFromAI = data.choices?.[0]?.message?.content; // 存储原始AI响应
+
             try {
                 // 尝试移除 Markdown 代码块包裹，如果有的话
                 const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
@@ -8759,7 +8757,7 @@ document.getElementById('momentCommentInput').value = `[DEBUG]原始AI响应：$
                 // 如果解析失败，可能是AI返回的不是严格的JSON，或者格式不对
                 console.error("JSON解析失败！尝试直接使用原始内容。错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
                 replyContent = `AI回复评论失败：JSON解析失败！原始内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`;
-showAlert(replyContent); // 强制弹出这个错误信息
+                showAlert(replyContent); // 强制弹出这个错误信息
             }
             
             // 最终检查
@@ -8773,6 +8771,21 @@ showAlert(replyContent); // 强制弹出这个错误信息
             replyContent = `AI出错了，请稍后再试。`; // 发生更严重错误时的提示
         }
         
+        // 【关键修改：在 AI 的最终评论内容中插入原始 API 响应，以便在朋友圈显示】
+        let debugMessage = '';
+        if (typeof rawContentFromAI === 'string' && rawContentFromAI.length > 0) {
+            // 为了避免过长，截取一部分
+            debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
+        } else if (rawContentFromAI === null || rawContentFromAI === undefined) {
+            debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): CONTENT IS NULL/UNDEFINED] `;
+        } else {
+            debugMessage = `[DEBUG API RSP (Status ${httpResponseStatus}): UNEXPECTED TYPE] `;
+        }
+        
+        // 将调试信息插入到 AI 的最终评论内容中
+        // 确保 debugMessage 放在前面，这样即使 replyContent 最终是默认的👍，也能看到调试信息
+        const finalCommentContent = `${debugMessage}${replyContent}`;
+
         // AI点赞：只要AI回复了，就点赞
         if (!moment.likes.includes(aiFriend.id)) {
             moment.likes.push(aiFriend.id);
@@ -8781,7 +8794,7 @@ showAlert(replyContent); // 强制弹出这个错误信息
         const newAiComment = {
             id: generateUniqueId(), 
             authorId: aiFriend.id, 
-            content: replyContent,
+            content: finalCommentContent, // 使用包含调试信息的最终评论内容
             timestamp: new Date().toISOString(),
             replyToCommentId: userCommentId, 
             replyToAuthorId: userProfile.id 
