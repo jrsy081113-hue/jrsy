@@ -8740,6 +8740,10 @@ ${commentsContext}
 
             const data = await response.json();
             let rawContentFromAI = data.choices?.[0]?.message?.content;
+// 紧急调试：将原始AI响应显示在评论输入框
+document.getElementById('momentCommentInput').value = `[DEBUG]原始AI响应：${rawContentFromAI ? rawContentFromAI.substring(0, 800) : '内容为空'}`;
+// 如果你还需要AI最终的回复，可以暂时把这行注释掉：
+// replyContent = `嗯... 我在想什么呢？（抓头）`; // 最终的默认回复
             
             showAlert(`[原始AI响应] HTTP状态: ${response.status} | 内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`); // 显示原始AI响应
             
