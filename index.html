@@ -8658,9 +8658,8 @@ function hideCommentInput() {
         console.log("postComment 函数执行结束。");
     }
 }
-        async function triggerAiCommentReply(momentId, userCommentId, userCommentContent, aiToReplyId) { // aiToReplyId 就是 AI 的 ID
+        async function triggerAiCommentReply(momentId, userCommentId, userCommentContent, aiToReplyId) {
     const moment = moments.find(m => m.id === momentId);
-    // !!! 关键修改：aiFriend 现在直接通过 aiToReplyId 获取，确保身份正确 !!!
     const aiFriend = getAuthorById(aiToReplyId); 
     if (!moment || !aiFriend) {
         console.error("无法找到朋友圈或AI好友信息，无法触发AI回复。");
@@ -8674,7 +8673,6 @@ function hideCommentInput() {
         return;
     }
 
-   
     console.log(`[AI回复] 尝试触发AI好友 ${aiFriend.name} 回复朋友圈评论...`);
 
     setTimeout(async () => {
@@ -8682,7 +8680,6 @@ function hideCommentInput() {
             const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
 
-            // --- 构建评论历史作为AI的上下文，让AI记住楼层 ---
             let commentsHistoryForAI = [];
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
@@ -8692,15 +8689,13 @@ function hideCommentInput() {
                 const cTargetAuthor = c.replyToAuthorId ? getAuthorById(c.replyToAuthorId) : null;
                 
                 let commentLine = '';
-                // 构建每条评论的字符串表示，便于AI理解楼层关系
                 if (c.replyToCommentId && cTargetAuthor) {
                     commentLine = `${cAuthor.name}回复了${cTargetAuthor.name}说：“${c.content}”`;
                 } else {
-                    // 如果是顶层评论，且作者是AI，则显示为 AI 本人的评论
                     commentLine = `${cAuthor.name}说：“${c.content}”`;
                 }
                 
-                if (c.id !== userCommentId) { // 排除用户的最新评论，因为它会在Prompt中单独强调
+                if (c.id !== userCommentId) { 
                     commentsHistoryForAI.push(commentLine);
                 }
             });
@@ -8710,11 +8705,9 @@ function hideCommentInput() {
 
             const userProfileNameForPrompt = userProfile.name;
 
-            // --- Prompt优化：更直接，强调回复目标和关系 ---
-            // 关键：Prompt中明确指出“你叫X，你是AI”，然后强调“回复好友Y”。
             const prompt = `你叫"${aiFriend.name}"，你是一个由人工智能驱动的虚拟角色，你的人设是：${aiFriend.role}。
 你的朋友圈内容是："${sanitizedMomentContent}..."
-${commentsContext} // 包含所有历史评论，AI现在可以记住整个楼层了
+${commentsContext}
 
 最新评论（由好友"${userProfileNameForPrompt}"发布）："${sanitizedUserComment}"
 
@@ -8739,7 +8732,7 @@ ${commentsContext} // 包含所有历史评论，AI现在可以记住整个楼�
                 body: JSON.stringify({
                     model: settings.modelName,
                     messages: [{ role: 'user', content: prompt }],
-                    max_tokens: 400, // 增加令牌限制，以应对复杂的上下文和回复
+                    max_tokens: 400,
                     temperature: 0.7,
                     response_format: { type: 'json_object' }
                 })
@@ -8754,24 +8747,24 @@ ${commentsContext} // 包含所有历史评论，AI现在可以记住整个楼�
 
             const data = await response.json();
             console.log("[AI回复] AI原始回复数据:", data);
-                        let replyContentRaw = data.choices?.[0]?.message?.content;
+            let replyContentRaw = data.choices?.[0]?.message?.content;
             console.log("[DEBUG] triggerAiMomentReactions: AI返回的message.content (replyContentRaw) BEFORE PREPROCESSING:", replyContentRaw);
 
+            // 【关键修正1：将 replyContent 声明提前到这里！】
+            let replyContent = ''; 
+
             if (replyContentRaw) {
-                // Step 1: 尝试移除 Markdown 代码块包裹 (```json ... ```)
                 const markdownMatch = replyContentRaw.match(/```json\s*([\s\S]*?)\s*```/);
-                if (markdownMatch && markdownMatch[1]) { // 确保匹配成功且有捕获组
+                if (markdownMatch && markdownMatch[1]) {
                     replyContentRaw = markdownMatch[1].trim();
                     console.log("[DEBUG] PREPROCESS: Markdown块已移除，内容:", replyContentRaw);
                 } else {
-                    // Step 2: 如果没有Markdown包裹，但可能有多余的文字，尝试只提取JSON对象
-                    const jsonObjectMatch = replyContentRaw.match(/\{[\s\S]*\}/); // 寻找第一个 { 到最后一个 }
+                    const jsonObjectMatch = replyContentRaw.match(/\{[\s\S]*\}/);
                     if (jsonObjectMatch && jsonObjectMatch[0]) {
-                        replyContentRaw = jsonObjectMatch[0].trim(); // 如果找到，就只取匹配到的JSON部分
+                        replyContentRaw = jsonObjectMatch[0].trim();
                         console.log("[DEBUG] PREPROCESS: 提取到JSON对象，内容:", replyContentRaw);
                     } else {
                         console.log("[DEBUG] PREPROCESS: 未能提取出有效的JSON结构。");
-                        // 如果没有找到JSON，那么replyContentRaw将保持原样，后续的 JSON.parse 仍会失败
                     }
                 }
             } else {
@@ -8780,22 +8773,25 @@ ${commentsContext} // 包含所有历史评论，AI现在可以记住整个楼�
 
             console.log("[DEBUG] triggerAiMomentReactions: AI返回的message.content (replyContentRaw) AFTER PREPROCESSING:", replyContentRaw);
 
-            // 尝试 JSON 解析 (这里是原本的 try/catch 块)
+            // 尝试 JSON 解析
             try {
                 const parsedResponse = JSON.parse(replyContentRaw);
                 console.log("[DEBUG] triggerAiMomentReactions: 成功解析AI返回的comment:", parsedResponse.reply);
-                // ... (后续成功处理代码) ...
+                // 【关键修正2：填补省略号部分的代码，将解析结果赋值给 replyContent！】
+                replyContent = parsedResponse.reply || ''; 
             } catch (jsonParseError) {
                 console.error("[DEBUG] triggerAiMomentReactions: JSON解析失败！错误:", jsonParseError, "原始AI返回内容:", replyContentRaw);
                 showAlert(`AI回复评论失败：解析AI返回内容失败。AI返回：${replyContentRaw?.substring(0, 150) || '无内容'}...`);
-                replyContent = `我不知道怎么回复了...（AI返回格式错了）`;
+                replyContent = `我不知道怎么回复了...（AI返回格式错了）`; 
             }
-            let replyContent = '';
-
+            
+            // 【关键修正3：删除这里重复的解析逻辑块 - 因为上面 try...catch 已经完整处理了！】
+            // 如果你的代码中还有类似下面这样的代码块，请删除它。
+            /*
             if (!replyContentRaw) {
                 console.error("[AI回复] AI返回内容为空或格式不正确。");
                 showAlert("AI回复评论失败：AI未返回有效JSON内容，请检查Prompt。");
-                replyContent = `AI脑子短路了。（尴尬）`;
+                replyContent = `AI脑子短路了。（尴尬）`; 
             } else {
                 try {
                     const parsedResponse = JSON.parse(replyContentRaw);
@@ -8806,8 +8802,10 @@ ${commentsContext} // 包含所有历史评论，AI现在可以记住整个楼�
                     replyContent = `我不知道怎么回复了...（AI返回格式错了）`;
                 }
             }
+            */
             
-            if (!replyContent || replyContent.length === 0) {
+            // 【关键修正4：保留这个最终检查和默认赋值，确保 replyContent 一定有值】
+            if (!replyContent || replyContent.length === 0) { 
                 replyContent = `嗯... 我在想什么呢？（抓头）`; 
             }
 
@@ -8820,12 +8818,12 @@ ${commentsContext} // 包含所有历史评论，AI现在可以记住整个楼�
             
             // 关键：构建AI的回复评论对象
             const newAiComment = {
-                id: generateUniqueId(),
-                authorId: aiFriend.id, // AI好友是这条回复的作者
+                id: generateUniqueId(), 
+                authorId: aiFriend.id, 
                 content: replyContent,
                 timestamp: new Date().toISOString(),
-                replyToCommentId: userCommentId, // AI回复的是用户最新的评论
-                replyToAuthorId: userProfile.id // AI回复的是用户本人
+                replyToCommentId: userCommentId, 
+                replyToAuthorId: userProfile.id 
             };
 
             const existingAiReplyIndex = moment.comments.findIndex(c => c.authorId === aiFriend.id && c.replyToCommentId === userCommentId);
