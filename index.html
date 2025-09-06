@@ -8876,10 +8876,18 @@ ${chatHistorySummary || '无'}
         
         async function triggerAiMomentReactions(moment) {
     const settings = await dbManager.get('apiSettings') || {};
-    if (!settings.apiUrl || !settings.apiKey || !settings.modelName) return;
+    if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
+        console.error("API设置未完成，无法触发AI回复朋友圈评论。");
+        // 这里没有 showAlert，因为 AI 自动评论不应该打扰用户
+        return;
+    }
 
     for (const friend of friends.filter(f => !f.isGroup)) {
         setTimeout(async () => {
+            let commentContent = ''; // 在最开始声明并初始化
+            let rawContentFromAI = ''; // 声明这个变量来存储原始AI响应
+            let httpResponseStatus = 0; // 声明这个变量来存储HTTP状态
+
             try {
                 const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
                 const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。
@@ -8898,11 +8906,11 @@ ${chatHistorySummary || '无'}
 -   如果朋友圈是“今天天气真好！”，一个活泼的人设可能会评论：{"comment": "是呀是呀，超适合出去玩！"}
 -   如果朋友圈是“好无聊啊”，一个温柔的人设可能会评论：{"comment": "摸摸头，要不要聊聊天呀？"}
 
-现在，请根据你的角色设定和上面的朋友圈内容，生成你的评论：`;
+现在，请根据你的角色设定和上面的朋友圈内容，生成你的回复：`;
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+                    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
@@ -8912,56 +8920,80 @@ ${chatHistorySummary || '无'}
                     })
                 });
 
-                if (!response.ok) throw new Error(`API 请求失败，状态码: ${response.status}`);
-                
-                const data = await response.json();
-                let commentContentRaw = data.choices?.[0]?.message?.content;
-                let commentContent = '';
-
-                try {
-                    const parsedResponse = JSON.parse(commentContentRaw);
-                    commentContent = parsedResponse.comment || '';
-                } catch (jsonParseError) {
-                    console.error("AI Moment Comment Reply JSON parsing failed:", jsonParseError, "Raw AI response:", commentContentRaw);
-                    commentContent = '👍'; 
-                }
-                
-                if (!commentContent || commentContent.length === 0) {
-                    commentContent = '👍';
-                }
-
-                // AI主动点赞，只点赞一次
-                if (!moment.likes.includes(friend.id)) {
-                    moment.likes.push(friend.id);
-                }
-                
-                // 关键：AI第一次评论朋友圈，replyToCommentId和replyToAuthorId都应为null
-                const newAiInitialComment = {
-                    id: generateUniqueId(), // 给评论一个唯一ID
-                    authorId: friend.id,
-                    content: commentContent,
-                    timestamp: new Date().toISOString(),
-                    replyToCommentId: null, // AI的第一次评论，不回复任何具体评论
-                    replyToAuthorId: null   // AI的第一次评论，不回复任何具体作者
-                };
-
-                // 检查AI是否已经对该朋友圈进行过顶层评论，如果已经有了，则更新
-                const existingAiCommentIndex = moment.comments.findIndex(c => c.authorId === friend.id && c.replyToCommentId === null && c.replyToAuthorId === null);
-                if (existingAiCommentIndex > -1) {
-                    moment.comments[existingAiCommentIndex] = newAiInitialComment;
+                httpResponseStatus = response.status; // 存储HTTP状态
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`[AI自动评论 - 调试] API 请求失败，状态码: ${response.status}`, errorText);
+                    commentContent = `AI自动评论失败 (HTTP ${response.status})。请检查API设置或网络。`;
+                    // 这里不抛出错误，而是赋值，让调试信息能显示出来
                 } else {
-                    moment.comments.push(newAiInitialComment);
+                    const data = await response.json();
+                    rawContentFromAI = data.choices?.[0]?.message?.content; // 存储原始AI响应
+                    
+                    try {
+                        const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
+                        let jsonString = markdownMatch && markdownMatch[1] ? markdownMatch[1].trim() : rawContentFromAI;
+                        
+                        const parsedResponse = JSON.parse(jsonString);
+                        commentContent = parsedResponse.comment || ''; 
+
+                    } catch (jsonParseError) {
+                        console.error("AI自动评论 - JSON解析失败！错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
+                        commentContent = `AI自动评论失败：JSON解析错误！原始内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`;
+                    }
                 }
                 
-                await saveData();
-                if (document.getElementById('momentsScreen').classList.contains('active')) {
-                    updateMomentsList();
+                // 最终检查
+                if (!commentContent || commentContent.length === 0) {
+                    commentContent = `嗯... 我在想什么呢？（抓头）`; // 最终的默认回复
                 }
 
             } catch (error) {
-                console.error(`为 [${friend.name}] 生成朋友圈评论时失败:`, error);
+                console.error(`[AI自动评论 - 调试] 外部捕获到错误:`, error);
+                commentContent = `AI自动评论时发生外部未知错误: ${error.message}`; // 更严重的错误提示
             }
-        }, 2000 + Math.random() * 3000);
+            
+            // 【关键修改：在 AI 的最终评论内容中插入原始 API 响应，以便在朋友圈显示】
+            let debugMessage = '';
+            if (typeof rawContentFromAI === 'string' && rawContentFromAI.length > 0) {
+                // 为了避免过长，截取一部分
+                debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): ${rawContentFromAI.substring(0, 300)}...] `;
+            } else if (rawContentFromAI === null || rawContentFromAI === undefined) {
+                debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): CONTENT IS NULL/UNDEFINED] `;
+            } else {
+                debugMessage = `[DEBUG AUTO-RSP (Status ${httpResponseStatus}): UNEXPECTED TYPE] `;
+            }
+            
+            // 将调试信息插入到 AI 的最终评论内容中
+            const finalCommentContent = `${debugMessage}${commentContent}`;
+
+            // AI主动点赞，只点赞一次
+            if (!moment.likes.includes(friend.id)) {
+                moment.likes.push(friend.id);
+            }
+            
+            const newAiInitialComment = {
+                id: generateUniqueId(), 
+                authorId: friend.id,
+                content: finalCommentContent, // 使用包含调试信息的最终评论内容
+                timestamp: new Date().toISOString(),
+                replyToCommentId: null, 
+                replyToAuthorId: null
+            };
+
+            const existingAiCommentIndex = moment.comments.findIndex(c => c.authorId === friend.id && c.replyToCommentId === null && c.replyToAuthorId === null);
+            if (existingAiCommentIndex > -1) {
+                moment.comments[existingAiCommentIndex] = newAiInitialComment;
+            } else {
+                moment.comments.push(newAiInitialComment);
+            }
+            
+            await saveData();
+            if (document.getElementById('momentsScreen').classList.contains('active')) {
+                updateMomentsList();
+            }
+
+        }, 2000 + Math.random() * 3000); // AI 自动评论会有 2-5 秒的延迟
     }
 }
 
