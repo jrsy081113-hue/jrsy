@@ -8749,8 +8749,15 @@ ${commentsContext}
                 throw new Error(`API 请求失败，状态码: ${response.status}`);
             }
 
-            const data = await response.json();
-            rawContentFromAI = data.choices?.[0]?.message?.content; // 存储原始AI响应
+                            const data = await response.json();
+                let aiResponseContent = data.choices?.[0]?.message?.content; // 临时保存AI的实际响应内容
+                
+                // 【关键修改：如果AI返回内容为空，则将发送的Prompt作为原始AI响应进行显示】
+                if (!aiResponseContent || aiResponseContent.trim() === '') {
+                    rawContentFromAI = `[AI返回内容为空！这是发送给AI的Prompt截取]: ${prompt.substring(0, 500)}...`; // 将Prompt显示出来
+                } else {
+                    rawContentFromAI = aiResponseContent; // 否则使用AI的实际响应
+                }
 
             try {
                 // 尝试移除 Markdown 代码块包裹，如果有的话
