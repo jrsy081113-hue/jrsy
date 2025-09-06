@@ -8669,7 +8669,7 @@ function hideCommentInput() {
     const settings = await dbManager.get('apiSettings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
         console.error("API设置未完成，无法触发AI回复朋友圈评论。");
-        showAlert("AI回复评论失败：API设置未完成，请检查设置。");
+        showAlert("AI回复评论失败：API设置未完成，请检查设置。请确保【API反代地址】、【API密钥】和【模型名称】已填写并保存。");
         return;
     }
 
@@ -8734,12 +8734,14 @@ ${commentsContext}
 
             if (!response.ok) {
                 const errorText = await response.text();
-                showAlert(`AI回复评论失败：API请求错误 (${response.status})。可能是API地址、密钥或网络问题。错误详情：${errorText.substring(0, 150)}...`);
+                showAlert(`AI回复评论失败：API请求错误 (${response.status})。请检查【API反代地址】是否能访问，【API密钥】是否正确。错误详情：${errorText.substring(0, 300)}...`); // 增加错误详情长度
                 throw new Error(`API 请求失败，状态码: ${response.status}`);
             }
 
             const data = await response.json();
             let rawContentFromAI = data.choices?.[0]?.message?.content;
+            
+            showAlert(`[原始AI响应] HTTP状态: ${response.status} | 内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`); // 显示原始AI响应
             
             try {
                 // 尝试移除 Markdown 代码块包裹，如果有的话
@@ -8752,7 +8754,8 @@ ${commentsContext}
             } catch (jsonParseError) {
                 // 如果解析失败，可能是AI返回的不是严格的JSON，或者格式不对
                 console.error("JSON解析失败！尝试直接使用原始内容。错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
-                replyContent = `AI返回内容格式不正确，我不知道怎么回复了...`; // 更友好的错误提示
+                replyContent = `AI回复评论失败：JSON解析失败！原始内容: ${rawContentFromAI ? rawContentFromAI.substring(0, 500) : '内容为空'}`;
+showAlert(replyContent); // 强制弹出这个错误信息
             }
             
             // 最终检查
@@ -8762,7 +8765,7 @@ ${commentsContext}
 
         } catch (error) {
             console.error(`外部捕获到错误:`, error);
-            showAlert(`AI回复评论时发生未知错误: ${error.message}`);
+            showAlert(`AI回复评论时发生外部未知错误: ${error.message}`);
             replyContent = `AI出错了，请稍后再试。`; // 发生更严重错误时的提示
         }
         
