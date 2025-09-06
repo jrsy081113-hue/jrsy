@@ -8676,7 +8676,7 @@ function hideCommentInput() {
     const settings = await dbManager.get('apiSettings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
         console.error("API设置未完成，无法触发AI回复朋友圈评论。");
-        showAlert("AI回复评论失败：API设置未完成，请检查设置。");
+        showAlert("AI回复评论失败：API设置未完成。");
         return;
     }
 
@@ -8688,21 +8688,12 @@ function hideCommentInput() {
         try {
             const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
-
             let commentsHistoryForAI = [];
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-
             sortedComments.forEach(c => {
                 const cAuthor = getAuthorById(c.authorId);
                 const cTargetAuthor = c.replyToAuthorId ? getAuthorById(c.replyToAuthorId) : null;
-                
-                let commentLine = '';
-                if (c.replyToCommentId && cTargetAuthor) {
-                    commentLine = `${cAuthor.name}回复了${cTargetAuthor.name}说：“${c.content}”`;
-                } else {
-                    commentLine = `${cAuthor.name}说：“${c.content}”`;
-                }
-                
+                let commentLine = (c.replyToCommentId && cTargetAuthor) ? `${cAuthor.name}回复了${cTargetAuthor.name}说：“${c.content}”` : `${cAuthor.name}说：“${c.content}”`;
                 if (c.id !== userCommentId) { 
                     commentsHistoryForAI.push(commentLine);
                 }
@@ -8723,20 +8714,19 @@ ${commentsContext}
                 body: JSON.stringify({
                     model: settings.modelName,
                     messages: [{ role: 'user', content: prompt }],
-                    max_tokens: 400,
+                    // --- 【核心修改】我们删除了这里的 max_tokens 参数 ---
                     temperature: 0.7
                 })
             });
 
             httpResponseStatus = response.status;
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`API 请求失败，状态码: ${response.status}. 错误: ${errorText}`);
+                rawContentFromAI = JSON.stringify(data);
+                throw new Error(`API 请求失败，状态码: ${response.status}.`);
             }
 
-            const data = await response.json();
-            
-            // --- 这是【万能钥匙】解析逻辑 ---
             let extractedText = '';
             if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
                 extractedText = data.choices[0].message.content;
@@ -8750,7 +8740,6 @@ ${commentsContext}
             if (extractedText) {
                 rawContentFromAI = extractedText;
             }
-            // --- 万能钥匙逻辑结束 ---
             
             replyContent = extractedText.trim();
             if (!replyContent) {
@@ -8868,12 +8857,7 @@ ${chatHistorySummary || '无'}
             try {
                 const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
                 
-                const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。
-你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。
-你的任务是：**严格按照你的人设，只回复一句简短、口语化的评论文字。**
-**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 任何解释, 或其他多余的文字。
-例如：如果朋友圈是“今天好开心”，你就直接回复“看你开心我也开心啦～”，而不是 '{"comment": "看你开心我也开心啦～"}'。
-现在，请直接生成你的评论：`;
+                const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。你的任务是：**严格按照你的人设，只回复一句简短、口语化的评论文字。**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 任何解释, 或其他多余的文字。例如：如果朋友圈是“今天好开心”，你就直接回复“看你开心我也开心啦～”，而不是 '{"comment": "看你开心我也开心啦～"}'。现在，请直接生成你的评论：`;
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
@@ -8881,37 +8865,32 @@ ${chatHistorySummary || '无'}
                     body: JSON.stringify({
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
-                        max_tokens: 400,
+                        // --- 【核心修改】我们删除了这里的 max_tokens 参数 ---
                         temperature: 0.9
                     })
                 });
 
                 httpResponseStatus = response.status;
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API 请求失败，状态码: ${response.status}. 错误: ${errorText}`);
-                }
-
                 const data = await response.json();
+
+                if (!response.ok) {
+                    rawContentFromAI = JSON.stringify(data);
+                    throw new Error(`API 请求失败，状态码: ${response.status}.`);
+                }
                 
-                // --- 这是【万能钥匙】解析逻辑 ---
                 let extractedText = '';
                 if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-                    // 适用于 OpenAI / 兼容 OpenAI 的 API
                     extractedText = data.choices[0].message.content;
                 } else if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
-                    // 适用于 Google Gemini API
                     extractedText = data.candidates[0].content.parts[0].text;
                 } else {
-                    // 如果两种主要格式都匹配失败，记录错误并准备调试信息
-                    console.error("无法识别API返回的JSON结构，请检查API提供商或代理设置。", data);
-                    rawContentFromAI = JSON.stringify(data); // 将整个未知结构转为字符串用于调试
+                    console.error("无法识别API返回的JSON结构:", data);
+                    rawContentFromAI = JSON.stringify(data);
                 }
                 
                 if (extractedText) {
                     rawContentFromAI = extractedText;
                 }
-                // --- 万能钥匙逻辑结束 ---
 
                 commentContent = extractedText.trim();
                 if (!commentContent) {
