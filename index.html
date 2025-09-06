@@ -8767,12 +8767,28 @@ ${commentsContext}
                 }
 
             try {
-                // 尝试移除 Markdown 代码块包裹，如果有的话
-                const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
-                let jsonString = markdownMatch && markdownMatch[1] ? markdownMatch[1].trim() : rawContentFromAI;
-                
-                const parsedResponse = JSON.parse(jsonString);
-                replyContent = parsedResponse.reply || ''; 
+                try {
+    // --- 新的、更强大的JSON提取逻辑 ---
+    let jsonString = rawContentFromAI; // 默认使用原始返回内容
+
+    // 1. 优先尝试从Markdown代码块中提取
+    const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
+    if (markdownMatch && markdownMatch[1]) {
+        jsonString = markdownMatch[1].trim();
+    } else {
+        // 2. 如果没有Markdown，则在文本中寻找被'{'和'}'包裹的部分
+        const startIndex = rawContentFromAI.indexOf('{');
+        const endIndex = rawContentFromAI.lastIndexOf('}');
+        if (startIndex !== -1 && endIndex > startIndex) {
+            jsonString = rawContentFromAI.substring(startIndex, endIndex + 1);
+        }
+    }
+    // --- 逻辑结束 ---
+
+    const parsedResponse = JSON.parse(jsonString);
+    commentContent = parsedResponse.comment || ''; 
+
+} catch (jsonParseError) {
 
             } catch (jsonParseError) {
                 // 如果解析失败，可能是AI返回的不是严格的JSON，或者格式不对
@@ -8946,11 +8962,28 @@ ${chatHistorySummary || '无'}
                         // 如果AI返回了内容，才尝试解析它
                         rawContentFromAI = aiActualResponseContent; // Store actual AI response for debug
                         try {
-                            const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
-                            let jsonString = markdownMatch && markdownMatch[1] ? markdownMatch[1].trim() : rawContentFromAI;
-                            
-                            const parsedResponse = JSON.parse(jsonString);
-                            commentContent = parsedResponse.comment || ''; 
+                            try {
+    // --- 新的、更强大的JSON提取逻辑 ---
+    let jsonString = rawContentFromAI; // 默认使用原始返回内容
+
+    // 1. 优先尝试从Markdown代码块中提取
+    const markdownMatch = rawContentFromAI.match(/```json\s*([\s\S]*?)\s*```/);
+    if (markdownMatch && markdownMatch[1]) {
+        jsonString = markdownMatch[1].trim();
+    } else {
+        // 2. 如果没有Markdown，则在文本中寻找被'{'和'}'包裹的部分
+        const startIndex = rawContentFromAI.indexOf('{');
+        const endIndex = rawContentFromAI.lastIndexOf('}');
+        if (startIndex !== -1 && endIndex > startIndex) {
+            jsonString = rawContentFromAI.substring(startIndex, endIndex + 1);
+        }
+    }
+    // --- 逻辑结束 ---
+    
+    const parsedResponse = JSON.parse(jsonString);
+    replyContent = parsedResponse.reply || ''; 
+
+} catch (jsonParseError) {
 
                         } catch (jsonParseError) {
                             console.error("AI自动评论 - JSON解析失败！错误:", jsonParseError, "原始AI返回内容:", rawContentFromAI);
