@@ -45,16 +45,17 @@ body {
     overflow: hidden;
 }
 
-        /* --- 步骤 2: 修改 .phone 容器样式 --- */
+        /* --- 步骤 1: 修正 .phone 容器样式 (最终版) --- */
 .phone {
     width: 100vw;
-    height: 100%; /* 【关键修改】将 100dvh 改为 100%，以继承父级稳定高度 */
+    height: 100dvh; /* 使用dvh来精确获取视口高度 */
     background: var(--theme-bg, #f7f7f7);
     position: relative;
-    overflow: hidden; /* 保留这一行，它能有效防止拖拽 */
+    overflow: hidden; 
     touch-action: manipulation; 
     border-radius: var(--phone-radius, 0px);
     transition: all 0.3s ease;
+    box-sizing: border-box; /* 【新增】确保边框和内边距不会撑大容器 */
 }
 
         .screen {
@@ -443,29 +444,33 @@ body {
         }
 
         /* --- MODIFIED: Bottom Dock Styles --- */
-        /* --- 步骤 3: 修正 .bottom-dock 底部导航栏样式 --- */
+        /* --- 步骤 2: 彻底重写 .bottom-dock 样式 (最终决定版) --- */
 .bottom-dock {
     position: absolute;
-    bottom: 20px; /* 【关键修改】不再计算安全区，直接使用固定值定位 */
+    bottom: 20px; /* 让Dock的底部边缘稳定在离屏幕底部20px处 */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 380px;
-    height: 95px; 
-    background: rgba(240, 240, 240, 0.7); 
+    
+    /* 【关键修改】不再使用固定的 height */
+    /* height: 95px;  <-- 删除这一行 */
+
+    background: rgba(240, 240, 240, 0.7);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 40px; 
     
-    /* 【关键修改】使用 padding 来把 *内部内容* 推上去，避开小横条 */
-    padding: 10px 20px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    /* 【关键修改】使用 padding 来定义高度和安全距离 */
+    padding: 15px 20px; /* 定义上下15px，左右20px的内边距 */
+    padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px)); /* 额外再给底部加上安全距离 */
 
     display: flex;
     gap: 15px;
     justify-content: center;
-    align-items: center;
+    align-items: center; /* 现在可以安全地使用居中了 */
     z-index: 50;
+    box-sizing: border-box; /* 【新增】同样加上保险 */
 }
         .wechat-dark-mode .bottom-dock {
             background: rgba(44, 44, 46, 0.7); /* MODIFIED: Frosted glass effect for dark mode */
