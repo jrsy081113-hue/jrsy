@@ -26,7 +26,7 @@ html {
     overflow: hidden;
 }
 
-        /* --- 步骤 1.1: 修改 body 样式 --- */
+        /* --- 步骤一：还原 body 样式 --- */
 body {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     background: #000;
@@ -39,23 +39,24 @@ body {
     user-select: none;
     transition: all 0.3s ease;
     color: var(--text-color, #000);
-
-    /* 【关键修改】让body占满父级(html)的高度，并禁止自身滚动 */
-    height: 100%;
-    overflow: hidden;
+    /* 关键：确保这里没有任何 position, height, width, top, overflow */
 }
 
-        /* --- 步骤 1: 修正 .phone 容器样式 (最终版) --- */
+        /* --- 步骤二：重写 .phone 样式，让它管理安全区 --- */
 .phone {
     width: 100vw;
-    height: 100dvh; /* 使用dvh来精确获取视口高度 */
+    height: 100vh; /* 使用 100vh 来获取整个物理屏幕的高度 */
     background: var(--theme-bg, #f7f7f7);
     position: relative;
-    overflow: hidden; 
-    touch-action: manipulation; 
+    overflow: hidden;
+    touch-action: manipulation;
     border-radius: var(--phone-radius, 0px);
     transition: all 0.3s ease;
-    box-sizing: border-box; /* 【新增】确保边框和内边距不会撑大容器 */
+    
+    /* 【决定性修复】使用 padding 在容器内部创建安全区 */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box; /* 确保 padding 不会撑大容器 */
 }
 
         .screen {
@@ -444,33 +445,29 @@ body {
         }
 
         /* --- MODIFIED: Bottom Dock Styles --- */
-        /* --- 步骤 2: 彻底重写 .bottom-dock 样式 (最终决定版) --- */
+        /* --- 步骤三：简化 .bottom-dock 样式，防止重复计算 --- */
 .bottom-dock {
     position: absolute;
-    bottom: 20px; /* 让Dock的底部边缘稳定在离屏幕底部20px处 */
+    bottom: 20px; /* 【决定性修复】直接定位在父容器“安全区”的底部 */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 380px;
-    
-    /* 【关键修改】不再使用固定的 height */
-    /* height: 95px;  <-- 删除这一行 */
-
+    height: 95px; /* 可以恢复使用固定高度，因为定位问题已解决 */
     background: rgba(240, 240, 240, 0.7);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 40px; 
     
-    /* 【关键修改】使用 padding 来定义高度和安全距离 */
-    padding: 15px 20px; /* 定义上下15px，左右20px的内边距 */
-    padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px)); /* 额外再给底部加上安全距离 */
+    /* 【决定性修复】移除所有对 env() 的计算 */
+    padding: 10px 20px;
 
     display: flex;
     gap: 15px;
     justify-content: center;
-    align-items: center; /* 现在可以安全地使用居中了 */
+    align-items: center;
     z-index: 50;
-    box-sizing: border-box; /* 【新增】同样加上保险 */
+    box-sizing: border-box;
 }
         .wechat-dark-mode .bottom-dock {
             background: rgba(44, 44, 46, 0.7); /* MODIFIED: Frosted glass effect for dark mode */
