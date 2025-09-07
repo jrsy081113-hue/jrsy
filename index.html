@@ -74,18 +74,16 @@ html {
         }
 
         /* --- MODIFIED: Status Bar Styles --- */
-        /* --- 步骤 3.1: 精确重构状态栏 --- */
-.status-bar {
-    height: calc(30px + env(safe-area-inset-top, 0px)); /* 高度动态适应刘海 */
+        .status-bar {
+    height: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* 【关键】使用 padding 将内容推到刘海下方，而不是改变元素位置 */
-    padding: env(safe-area-inset-top, 0px) 15px 0 15px; 
+    padding: 0 15px;
     font-size: var(--font-size, 14px);
     font-weight: 600;
     color: var(--text-color, #000);
-    position: fixed; /* 改为 fixed 定位，更稳健 */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -235,15 +233,11 @@ html {
         }
         
         /* --- NEW: Profile Widget Container --- */
-        /* --- 【最终版】请替换为这段代码 --- */
-.profile-widget-container {
+        .profile-widget-container {
     width: 85%;
     max-width: 340px;
-    /* 关键修改：将固定的 70px 改为动态计算 */
-    margin-top: calc(40px + env(safe-area-inset-top)); 
-    margin-bottom: 20px;
-    margin-left: auto;
-    margin-right: auto;
+    /* 改为简单固定的边距 */
+    margin: 70px auto 20px; 
     background-color: var(--bg-primary, white);
     border-radius: var(--app-radius, 14px);
     padding: 20px 0;
@@ -575,7 +569,7 @@ html {
 .page > .chat-settings-content,
 .page > .diary-content-view,
 #phoneApp > .phone-app-container {
-    padding-top: calc(74px + env(safe-area-inset-top));
+    padding-top: 35px;
     height: 100%;
     overflow-y: auto;
 }
