@@ -40,6 +40,9 @@ body {
     transition: all 0.3s ease;
     color: var(--text-color, #000);
     /* 关键：确保这里没有任何 position, height, width, top, overflow */
+    position: relative; /* 新增：把它变成一个可靠的容器 */
+    overflow: hidden;   /* 新增：禁止它本身被滚动或拖拽 *
+    
 }
 
         /* --- 步骤 2.2: 替换 .phone 样式，使用JS计算出的正确高度 --- */
