@@ -217,16 +217,21 @@
         }
         
         /* --- NEW: Profile Widget Container --- */
-        .profile-widget-container {
-            width: 85%;
-            max-width: 340px;
-            margin: 70px auto 20px;
-            background-color: var(--bg-primary, white);
-            border-radius: var(--app-radius, 14px);
-            padding: 20px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
+        /* --- 【最终版】请替换为这段代码 --- */
+.profile-widget-container {
+    width: 85%;
+    max-width: 340px;
+    /* 关键修改：将固定的 70px 改为动态计算 */
+    margin-top: calc(40px + env(safe-area-inset-top)); 
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--bg-primary, white);
+    border-radius: var(--app-radius, 14px);
+    padding: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
         .profile-widget-container.transparent-bg {
             background-color: transparent;
             box-shadow: none;
@@ -542,21 +547,22 @@
 }
 
         
-       .page > .wechat-content,
+       /* --- 修改后的正确代码 --- */
+.page > .wechat-content,
 .page > .settings-content,
 .page > .discover-content,
 .page > .profile-content,
 .page > .chat-settings-content,
 .page > .diary-content-view,
 #phoneApp > .phone-app-container {
-    padding-top: 74px; /* 【重要修改】这里改为 74px */
+    padding-top: calc(74px + env(safe-area-inset-top)); /* <-- 这是关键修改 */
     height: 100%;
     overflow-y: auto;
 }
 
         /* 修复BUG：为微信主界面的内容容器添加顶部内边距 */
         #wechatApp > .wechat-content {
-    padding-top: 74px; /* 【重要修改】这里也改为 74px */
+    padding-top: calc(74px + env(safe-area-inset-top)); 
 }
         /* 修复BUG：移除子元素的无效顶部内边距，防止双重边距 */
         #wechatApp .discover-content, #wechatApp .profile-content {
