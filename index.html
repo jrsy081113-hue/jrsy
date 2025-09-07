@@ -913,18 +913,19 @@ html {
             flex-direction: column; /* FIX */
         }
         
-        .chat-input {
-            background: var(--nav-bg, #f7f7f7);
-            border-top: 1px solid var(--border-color, #e0e0e0);
-            display: flex;
-            align-items: flex-end; /* Align items to bottom for textarea growth */
-            padding: 8px;
-            gap: 8px;
-            position: relative;
-            z-index: 100;
-            transition: min-height 0.2s ease;
-            min-height: 50px;
-        }
+        /* 这是修改后的代码 */
+.chat-input {
+    background: var(--nav-bg, #f7f7f7);
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    align-items: flex-end; 
+    padding: 12px 8px;      /* 修改了这里：增加了上下留白 */
+    gap: 8px;
+    position: relative;
+    z-index: 100;
+    transition: min-height 0.2s ease;
+    min-height: 60px;       /* 修改了这里：增加了整体最小高度 */
+}
 
         .chat-input textarea {
             flex: 1;
