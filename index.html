@@ -21,36 +21,28 @@
             -ms-user-select: none;
         }
 
-        html, body {
-    height: 100%; /* 确保 HTML 和 Body 元素从根部就占满整个视口高度 */
-    margin: 0;    /* 移除浏览器默认的外边距 */
-    padding: 0;   /* 移除浏览器默认的内边距 */
-    overflow: hidden; /* 确保 html/body 不出现滚动条 */
-}
-body {
-    /* 仅保留功能性样式，移除与布局冲突的高度和定位属性 */
+        body {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-    background: #000; /* 这个背景色会被 .phone 完全覆盖，理论上不会看到 */
-    overflow: hidden; /* 防止 body 出现滚动条 */
-    width: 100vw;
-    /* 之前存在的 height, position, top 属性，请确保已移除或注释 */
+    background: #000;
     touch-action: manipulation;
     -webkit-touch-callout: none;
-    -webkit-user-select: none; /* 聊天应用通常需要选择文本，请根据您的需求考虑是否在特定元素上允许选择 */
+    -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
     transition: all 0.3s ease;
     color: var(--text-color, #000);
+    /* 关键：确保上面没有 position, height, width, top, overflow */
 }
 
         .phone {
     width: 100vw;
-    height: 100dvh; /* <<<< 【修改】务必确保这一行存在，且是 100dvh！ */
+    height: 100dvh;
     background: var(--theme-bg, #f7f7f7);
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* 将 overflow: hidden 从 body 移到这里，这是正确的做法 */
+    touch-action: manipulation; /* 保留这个属性以确保触摸行为正常 */
     border-radius: var(--phone-radius, 0px);
     transition: all 0.3s ease;
 }
@@ -73,17 +65,17 @@ body {
     align-items: center;
     padding: env(safe-area-inset-top, 0px) 15px 0 15px; /* 【新增】将内容向下推，避开刘海 */
     font-size: var(--font-size, 14px);
-    font-weight: 600;
-    color: var(--text-color, #000);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    border-radius: var(--status-radius, 0px);
-    transition: background-color 0.3s ease;
-    background-color: var(--nav-bg, #f8f8f8); /* Default background */
-}
+            font-weight: 600;
+            color: var(--text-color, #000);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-radius: var(--status-radius, 0px);
+            transition: background-color 0.3s ease;
+            background-color: var(--nav-bg, #f8f8f8); /* Default background */
+        }
         
         /* New classes for JS to control transparency */
         .phone.home-screen-active .status-bar,
@@ -212,19 +204,17 @@ body {
         }
 
         .home-screen {
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    margin-top: 0;
-    position: relative;
-    overflow-y: auto; 
-    /* 【关键修改】让 padding-bottom 动态适应底部 Dock 栏的高度和安全区域 */
-    /* Dock 的高度是 95px，并且它距离底部有 20px 的间隔，再加上 iOS 底部安全区域的高度 */
-    padding-bottom: calc(95px + 20px + env(safe-area-inset-bottom, 0px));
-}
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            margin-top: 0;
+            position: relative;
+            overflow-y: auto; 
+            padding-bottom: 120px; /* Space for the bottom dock */
+        }
         
         /* --- NEW: Profile Widget Container --- */
         .profile-widget-container {
@@ -517,6 +507,7 @@ body {
         /* MODIFIED: Top Navigation Bar for Centering Title */
         /* 替换为下面的新代码 */
 
+/* --- 修改后的 .nav-bar --- */
 .nav-bar {
     height: 44px;
     background: var(--nav-bg, #f8f8f8);
@@ -10039,22 +10030,6 @@ ${chatHistorySummary || '暂无聊天记录。'}
     updateTime();
     setActivePage('homeScreen');
     
-    const mainPhoneContainer = document.querySelector('.phone'); // 使用类选择器 '.phone'
-
-            // 检查是否在 iOS 的 "添加到主屏幕" 模式下运行
-            const isIOSStandalone = (('standalone' in window.navigator) && (window.navigator.standalone));
-
-            if (isIOSStandalone) {
-                // 如果是 iOS PWA 全屏模式，强制将高度设置为 100vh
-                mainPhoneContainer.style.height = '100vh';
-                console.log("检测到 iOS PWA 全屏模式，设置 .phone 为 100vh");
-            } else {
-                // 否则（在普通浏览器中，无论 iOS 或 Android），
-                // 确保它使用 CSS 中已经设置的 100dvh
-                mainPhoneContainer.style.height = '100dvh'; // 确保这里保持 100dvh
-                console.log("非 iOS PWA 全屏模式，设置 .phone 为 100dvh");
-            }
-    
     // ... (你 window.onload 中其余的代码)
             
             audioElement = document.getElementById('audioPlayer');
@@ -10112,9 +10087,6 @@ ${chatHistorySummary || '暂无聊天记录。'}
             toggleSendButtonActive(document.getElementById('messageInput'));
             setInterval(simulateAiBehavior, 60000); 
         };
-        
-
-        
     </script>
 </body>
 </html>
