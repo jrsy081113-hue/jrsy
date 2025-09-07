@@ -593,16 +593,27 @@ body {
             gap: 5px;
         }
 
-        .wechat-bottom-nav {
-            height: 49px;
-            background: var(--nav-bg, #f7f7f7);
-            border-top: 1px solid var(--border-color, #e0e0e0);
-            display: flex;
-            position: absolute;
-            bottom: env(safe-area-inset-bottom, 0px);
-            width: 100%;
-            z-index: 100;
-        }
+        /* --- 用这个最终版代码替换你原来的 .wechat-bottom-nav --- */
+.wechat-bottom-nav {
+    /* 【关键修改】让导航栏的高度动态计算，以填满底部安全区 */
+    height: calc(49px + env(safe-area-inset-bottom, 0px));
+    
+    background: var(--nav-bg, #f7f7f7);
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    position: absolute;
+    
+    /* 【关键修改】让它紧贴容器的物理底部 */
+    bottom: 0;
+    
+    width: 100%;
+    z-index: 100;
+
+    /* 【新增】确保内边距不会影响高度计算 */
+    box-sizing: border-box;
+    /* 【新增】只在底部增加内边距来把内容推上去，而不是整个元素上移 */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
 
         .wechat-tab {
             flex: 1;
