@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
     <title>jrsy</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,21 +21,28 @@
             -ms-user-select: none;
         }
 
-.bottom-first-loan {
-    bottom: calc(55px + env(safe-area-inset-bottom));
-    bottom: calc(55px + constant(safe-area-inset-bottom));
-}
-
-
 html {
-    height: 100%;
-    overflow: hidden;
+    height: 100%; /* 占据父级（浏览器窗口）的全部高度 */
+    overflow: hidden; /* 隐藏任何超出html边界的内容，防止全局滚动 */
+    margin: 0; /* 确保没有浏览器默认外边距 */
+    padding: 0; /* 确保没有浏览器默认内边距 */
+    /* 保留你可能在 :root 或其他地方定义的 font-family 等样式 */
 }
 
-        /* --- 步骤 2.1: 替换 body 样式，让它回归默认 --- */
+/* --- 步骤 2.1: 替换 body 样式，让它回归默认 --- */
 body {
+    height: 100%; /* 占据html的全部高度 */
+    overflow: hidden; /* 隐藏任何超出body边界的内容，防止内容从应用容器下方露出 */
+    margin: 0; /* 移除浏览器默认外边距 */
+    padding: 0; /* 移除浏览器默认内边距 */
+    
+    /* 【关键修改】：将背景色设置为你的应用主题主背景色变量 */
+    /* 这样即使在渲染差异下有缝隙，也只会显示主题色，而不是黑色。 */
+    background: var(--theme-bg, #f7f7f7); /* 假设你的应用主背景色是 --theme-bg */
+    
+    /* --- 保留你原有的其他 body 样式，例如： --- */
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-    background: #000;
+    color: var(--text-color, #000);
     touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -44,37 +51,41 @@ body {
     -ms-user-select: none;
     user-select: none;
     transition: all 0.3s ease;
-    color: var(--text-color, #000);
+    /* --- 结束保留 --- */
     /* 关键：确保这里没有任何 position, height, width, top, overflow */
 }
 
-        /* --- 步骤 2.2: 替换 .phone 样式，使用JS计算出的正确高度 --- */
+     
+
 .phone {
-    width: 100vw;
-    /* 【决定性修复】不再使用有bug的100dvh，而是使用我们JS计算出的 --vh 变量 */
-    height: calc(var(--vh, 1vh) * 100);
+    width: 100%; /* 【关键】占据父容器 (body) 的全部宽度 */
+    height: 100%; /* 【关键】占据父容器 (body) 的全部高度 */
     
-    background: var(--theme-bg, #f7f7f7);
-    position: relative;
-    overflow: hidden; /* 这一行是防止拖拽的关键，必须保留 */
-    touch-action: manipulation; 
-    border-radius: var(--phone-radius, 0px);
-    transition: all 0.3s ease;
+    /* 【已移除】不再需要依赖 JS 计算的 --vh 变量，也不再需要 100vw */
+    /* height: calc(var(--vh, 1vh) * 100);  <-- 这行被删除了 */
+    /* width: 100vw; <-- 这行被删除了 */
+    
+    background: var(--theme-bg, #f7f7f7); /* 保持应用主背景色，作为应用内容区的背景 */
+    position: relative; /* 为内部绝对定位的页面提供上下文 */
+    overflow: hidden; /* 【非常重要】确保内部页面的切换不会溢出 .phone 边界 */
+    touch-action: manipulation; /* 保持，有助于触摸响应 */
+    border-radius: var(--phone-radius, 0px); /* 保留你原有的边框圆角 */
+    transition: all 0.3s ease; /* 保留你原有的过渡效果 */
 }
 
-        .screen {
-            width: 100%;
-            height: 100%;
-            background: var(--theme-bg, #f7f7f7);
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--screen-radius, 0px);
-            transition: all 0.3s ease;
-        }
+      
 
-        /* --- MODIFIED: Status Bar Styles --- */
-        /* --- 步骤 3.1: 精确重构状态栏 --- */
-.status-bar {
+.screen {
+    width: 100%;
+    height: 100%; /* 【确认】确保它能占据父容器（.phone）的全部高度 */
+    background: var(--theme-bg, #f7f7f7); /* 页面背景色 */
+    position: relative; /* 为页面内元素提供定位上下文 */
+    overflow: hidden; /* 【确认】确保页面内部内容和切换效果不会溢出 */
+    border-radius: var(--screen-radius, 0px); /* 保留你原有的圆角 */
+    transition: all 0.3s ease; /* 保留你原有的过渡效果 */
+}
+
+       .status-bar {
     height: calc(30px + env(safe-area-inset-top, 0px)); /* 高度动态适应刘海 */
     display: flex;
     justify-content: space-between;
@@ -84,14 +95,11 @@ body {
     font-size: var(--font-size, 14px);
     font-weight: 600;
     color: var(--text-color, #000);
-    position: fixed; /* 改为 fixed 定位，更稳健 */
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    position: fixed; /* 保持 fixed 定位，更稳健 */
+    top: 0; left: 0; right: 0; z-index: 1000;
     border-radius: var(--status-radius, 0px);
     transition: background-color 0.3s ease;
-    background-color: var(--nav-bg, #f8f8f8); 
+    background-color: var(--nav-bg, #f8f8f8); /* 状态栏背景色 */
 }
         
         /* New classes for JS to control transparency */
@@ -533,19 +541,17 @@ body {
 
 /* --- 步骤 3.2: 精确重构导航栏 --- */
 .nav-bar {
-    height: 44px;
-    background: var(--nav-bg, #f8f8f8);
+    height: 44px; /* 固定高度 */
+    background: var(--nav-bg, #f8f8f8); /* 导航栏背景色 */
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 8px;
     flex-shrink: 0;
     position: absolute;
-    /* 【关键】它的顶部位置，精确地等于状态栏的高度 */
+    /* 【关键】它的顶部位置，精确地等于状态栏的高度加上状态栏的顶部安全区 */
     top: calc(30px + env(safe-area-inset-top, 0px)); 
-    left: 0;
-    right: 0;
-    z-index: 10;
+    left: 0; right: 0; z-index: 10;
 }
 
         /* 替换为下面的新代码 */
@@ -568,6 +574,7 @@ body {
 
         
        /* --- 修改后的正确代码 --- */
+/* 确保页面内容在状态栏和导航栏下方有足够的空间 */
 .page > .wechat-content,
 .page > .settings-content,
 .page > .discover-content,
@@ -575,19 +582,20 @@ body {
 .page > .chat-settings-content,
 .page > .diary-content-view,
 #phoneApp > .phone-app-container {
-    padding-top: calc(74px + env(safe-area-inset-top)); /* <-- 这是关键修改 */
-    height: 100%;
-    overflow-y: auto;
+    /* 状态栏高度(30px) + 导航栏高度(44px) + 顶部安全区 */
+    padding-top: calc(30px + 44px + env(safe-area-inset-top, 0px)); /* 这是关键修改 */
+    height: 100%; /* 确保它能撑满剩余高度 */
+    overflow-y: auto; /* 允许内容滚动 */
 }
 
-        /* 修复BUG：为微信主界面的内容容器添加顶部内边距 */
-        #wechatApp > .wechat-content {
-    padding-top: calc(74px + env(safe-area-inset-top)); 
+/* 修复BUG：为微信主界面的内容容器添加顶部内边距 */
+#wechatApp > .wechat-content {
+    padding-top: calc(30px + 44px + env(safe-area-inset-top)); /* 保持一致 */
 }
-        /* 修复BUG：移除子元素的无效顶部内边距，防止双重边距 */
-        #wechatApp .discover-content, #wechatApp .profile-content {
-            padding-top: 0;
-        }
+/* 修复BUG：移除子元素的无效顶部内边距，防止双重边距 */
+#wechatApp .discover-content, #wechatApp .profile-content {
+    padding-top: 0;
+}
 
         .nav-btn {
             background: none;
@@ -606,23 +614,17 @@ body {
 
         /* --- 步骤 2.4: 替换 .wechat-bottom-nav 样式，正确处理安全区 --- */
 .wechat-bottom-nav {
-    /* 【决定性修复】让导航栏的总高度动态增加，以填满底部安全区 */
+    /* 【关键】让导航栏的总高度动态增加，以填满底部安全区 */
     height: calc(49px + env(safe-area-inset-bottom, 0px));
-    
     background: var(--nav-bg, #f7f7f7);
     border-top: 1px solid var(--border-color, #e0e0e0);
     display: flex;
     position: absolute;
-    
-    /* 【决定性修复】让它紧贴容器的物理底部 */
-    bottom: 0;
-    
+    bottom: 0; /* 紧贴容器的物理底部 */
     width: 100%;
     z-index: 100;
-    
-    /* 【新增】确保内边距不会影响高度计算 */
     box-sizing: border-box;
-    /* 【新增】只在底部增加内边距来把 *图标和文字* 推上去，而不是整个元素上移 */
+    /* 【关键】只在底部增加内边距来把 *图标和文字* 推上去，而不是整个元素上移 */
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -656,12 +658,11 @@ body {
         }
 
         /* --- 步骤 2.5: 替换 .wechat-content 样式，适配新的导航栏高度 --- */
-.wechat-content {
+.wechat-content { /* 或你的 .chat-messages */
     flex: 1;
     overflow-y: auto;
-    /* 【决定性修复】使用和导航栏同样的方式动态计算底部间距 */
+    /* 【关键】使用和底部导航栏同样的方式动态计算底部间距 */
     padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
-    
     background: var(--theme-bg, #f7f7f7);
     transition: padding-bottom 0.3s ease;
 }
@@ -10130,16 +10131,6 @@ ${chatHistorySummary || '暂无聊天记录。'}
             setInterval(simulateAiBehavior, 60000); 
         };
     </script>
-    
-    <script>
-        function setRealViewportHeight() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        setRealViewportHeight();
-        window.addEventListener('resize', setRealViewportHeight);
-    </script>
-    <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
     
 </body>
 </html>
