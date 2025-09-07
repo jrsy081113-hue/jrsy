@@ -444,24 +444,30 @@ body {
         }
 
         /* --- MODIFIED: Bottom Dock Styles --- */
-    /* --- 步骤 2.3: 替换 .bottom-dock 样式，正确处理安全区 --- */
+    /* --- 用这个最终版代码替换你原来的 .bottom-dock --- */
 .bottom-dock {
     position: absolute;
-    /* 【决定性修复】让它的底部边缘永远在安全区的上方 20px */
-    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    /* 
+     * 【决定性修复】
+     * 删除了 "+ env(safe-area-inset-bottom, 0px)"
+     * 因为父容器 .phone 的高度已经通过JS精确计算好了，
+     * 我们不再需要在这里重复计算安全距离。
+     */
+    bottom: 20px; 
+    
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 380px;
-    height: 95px; /* MODIFIED: Increased height */
-    background: rgba(240, 240, 240, 0.7); /* MODIFIED: Frosted glass effect */
+    height: 95px; 
+    background: rgba(240, 240, 240, 0.7); 
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 40px; 
     padding: 10px 20px;
     display: flex;
     gap: 15px;
-    justify-content: center; /* MODIFIED: Will center the 3 items */
+    justify-content: center;
     align-items: center;
     z-index: 50;
 }
