@@ -26,7 +26,7 @@ html {
     overflow: hidden;
 }
 
-        /* --- 步骤一：还原 body 样式 --- */
+        /* --- 步骤一：彻底锁死 body，杜绝拖拽 --- */
 body {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     background: #000;
@@ -39,24 +39,27 @@ body {
     user-select: none;
     transition: all 0.3s ease;
     color: var(--text-color, #000);
-    /* 关键：确保这里没有任何 position, height, width, top, overflow */
+    
+    /* 【决定性修复】使用 fixed 定位来彻底锁死页面，防止任何拖动 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden; /* 确保万无一失 */
 }
 
-        /* --- 步骤二：重写 .phone 样式，让它管理安全区 --- */
+        /* --- 步骤二：让 .phone 容器简单填满 --- */
 .phone {
-    width: 100vw;
-    height: 100vh; /* 使用 100vh 来获取整个物理屏幕的高度 */
+    width: 100%; /* 继承父级(body)的100%宽度 */
+    height: 100%; /* 继承父级(body)的100%高度 */
     background: var(--theme-bg, #f7f7f7);
     position: relative;
-    overflow: hidden;
-    touch-action: manipulation;
+    overflow: hidden; 
+    touch-action: manipulation; 
     border-radius: var(--phone-radius, 0px);
     transition: all 0.3s ease;
-    
-    /* 【决定性修复】使用 padding 在容器内部创建安全区 */
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    box-sizing: border-box; /* 确保 padding 不会撑大容器 */
+    /* 【重要】移除所有自己的 padding-top/bottom */
 }
 
         .screen {
@@ -70,24 +73,26 @@ body {
         }
 
         /* --- MODIFIED: Status Bar Styles --- */
-        .status-bar {
-    height: calc(30px + env(safe-area-inset-top, 0px)); /* 让状态栏高度自适应刘海 */
+        /* --- 步骤 3.1: 精确重构状态栏 --- */
+.status-bar {
+    height: calc(30px + env(safe-area-inset-top, 0px)); /* 高度动态适应刘海 */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: env(safe-area-inset-top, 0px) 15px 0 15px; /* 【新增】将内容向下推，避开刘海 */
+    /* 【关键】使用 padding 将内容推到刘海下方，而不是改变元素位置 */
+    padding: env(safe-area-inset-top, 0px) 15px 0 15px; 
     font-size: var(--font-size, 14px);
-            font-weight: 600;
-            color: var(--text-color, #000);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            border-radius: var(--status-radius, 0px);
-            transition: background-color 0.3s ease;
-            background-color: var(--nav-bg, #f8f8f8); /* Default background */
-        }
+    font-weight: 600;
+    color: var(--text-color, #000);
+    position: fixed; /* 改为 fixed 定位，更稳健 */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    border-radius: var(--status-radius, 0px);
+    transition: background-color 0.3s ease;
+    background-color: var(--nav-bg, #f8f8f8); 
+}
         
         /* New classes for JS to control transparency */
         .phone.home-screen-active .status-bar,
@@ -445,26 +450,24 @@ body {
         }
 
         /* --- MODIFIED: Bottom Dock Styles --- */
-        /* --- 步骤三：简化 .bottom-dock 样式，防止重复计算 --- */
+    /* --- 步骤四：精确重构底部 Dock --- */
 .bottom-dock {
     position: absolute;
-    bottom: 20px; /* 【决定性修复】直接定位在父容器“安全区”的底部 */
+    /* 【关键】让它的底部边缘永远在安全区的上方 20px */
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 380px;
-    height: 95px; /* 可以恢复使用固定高度，因为定位问题已解决 */
+    height: 95px; 
     background: rgba(240, 240, 240, 0.7);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 40px; 
-    
-    /* 【决定性修复】移除所有对 env() 的计算 */
     padding: 10px 20px;
-
     display: flex;
     gap: 15px;
-    justify-content: center;
+    justify-content: center; 
     align-items: center;
     z-index: 50;
     box-sizing: border-box;
@@ -523,7 +526,7 @@ body {
         /* MODIFIED: Top Navigation Bar for Centering Title */
         /* 替换为下面的新代码 */
 
-/* --- 修改后的 .nav-bar --- */
+/* --- 步骤 3.2: 精确重构导航栏 --- */
 .nav-bar {
     height: 44px;
     background: var(--nav-bg, #f8f8f8);
@@ -533,7 +536,8 @@ body {
     padding: 0 8px;
     flex-shrink: 0;
     position: absolute;
-    top: calc(30px + env(safe-area-inset-top, 0px)); /* 【修改】使其始终位于状态栏下方，避开刘海 */
+    /* 【关键】它的顶部位置，精确地等于状态栏的高度 */
+    top: calc(30px + env(safe-area-inset-top, 0px)); 
     left: 0;
     right: 0;
     z-index: 10;
