@@ -74,7 +74,9 @@ html {
         }
 
         /* --- MODIFIED: Status Bar Styles --- */
-        .status-bar {
+        /* --- 步骤 3.1: 精确重构状态栏 --- */
+
+.status-bar {
     height: 30px;
     display: flex;
     justify-content: space-between;
@@ -92,6 +94,7 @@ html {
     transition: background-color 0.3s ease;
     background-color: var(--nav-bg, #f8f8f8); 
 }
+
         
         /* New classes for JS to control transparency */
         .phone.home-screen-active .status-bar,
@@ -233,7 +236,9 @@ html {
         }
         
         /* --- NEW: Profile Widget Container --- */
-        .profile-widget-container {
+        /* --- 【最终版】请替换为这段代码 --- */
+
+.profile-widget-container {
     width: 85%;
     max-width: 340px;
     /* 改为简单固定的边距 */
@@ -244,6 +249,7 @@ html {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
+
         .profile-widget-container.transparent-bg {
             background-color: transparent;
             box-shadow: none;
@@ -569,14 +575,15 @@ html {
 .page > .chat-settings-content,
 .page > .diary-content-view,
 #phoneApp > .phone-app-container {
-    padding-top: 35px;
+    padding-top: 74px; /* <--- 修改为 74px */
     height: 100%;
     overflow-y: auto;
 }
 
         /* 修复BUG：为微信主界面的内容容器添加顶部内边距 */
-        #wechatApp > .wechat-content {
-    padding-top: calc(74px + env(safe-area-inset-top)); 
+        /* 修复BUG：为微信主界面的内容容器添加顶部内边距 */
+#wechatApp > .wechat-content {
+    padding-top: 74px; 
 }
         /* 修复BUG：移除子元素的无效顶部内边距，防止双重边距 */
         #wechatApp .discover-content, #wechatApp .profile-content {
