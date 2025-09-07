@@ -22,27 +22,14 @@
         }
 
 html {
-    height: 100%; /* 占据父级（浏览器窗口）的全部高度 */
-    overflow: hidden; /* 隐藏任何超出html边界的内容，防止全局滚动 */
-    margin: 0; /* 确保没有浏览器默认外边距 */
-    padding: 0; /* 确保没有浏览器默认内边距 */
-    /* 保留你可能在 :root 或其他地方定义的 font-family 等样式 */
+    height: 100%;
+    overflow: hidden;
 }
 
-/* --- 步骤 2.1: 替换 body 样式，让它回归默认 --- */
+        /* --- 步骤 2.1: 替换 body 样式，让它回归默认 --- */
 body {
-    height: 100%; /* 占据html的全部高度 */
-    overflow: hidden; /* 隐藏任何超出body边界的内容，防止内容从应用容器下方露出 */
-    margin: 0; /* 移除浏览器默认外边距 */
-    padding: 0; /* 移除浏览器默认内边距 */
-    
-    /* 【关键修改】：将背景色设置为你的应用主题主背景色变量 */
-    /* 这样即使在渲染差异下有缝隙，也只会显示主题色，而不是黑色。 */
-    background: var(--theme-bg, #f7f7f7); /* 假设你的应用主背景色是 --theme-bg */
-    
-    /* --- 保留你原有的其他 body 样式，例如： --- */
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-    color: var(--text-color, #000);
+    background: #000;
     touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -51,41 +38,37 @@ body {
     -ms-user-select: none;
     user-select: none;
     transition: all 0.3s ease;
-    /* --- 结束保留 --- */
+    color: var(--text-color, #000);
     /* 关键：确保这里没有任何 position, height, width, top, overflow */
 }
 
-     
-
+        /* --- 步骤 2.2: 替换 .phone 样式，使用JS计算出的正确高度 --- */
 .phone {
-    width: 100%; /* 【关键】占据父容器 (body) 的全部宽度 */
-    height: 100%; /* 【关键】占据父容器 (body) 的全部高度 */
+    width: 100vw;
+    /* 【决定性修复】不再使用有bug的100dvh，而是使用我们JS计算出的 --vh 变量 */
+    height: calc(var(--vh, 1vh) * 100);
     
-    /* 【已移除】不再需要依赖 JS 计算的 --vh 变量，也不再需要 100vw */
-    /* height: calc(var(--vh, 1vh) * 100);  <-- 这行被删除了 */
-    /* width: 100vw; <-- 这行被删除了 */
-    
-    background: var(--theme-bg, #f7f7f7); /* 保持应用主背景色，作为应用内容区的背景 */
-    position: relative; /* 为内部绝对定位的页面提供上下文 */
-    overflow: hidden; /* 【非常重要】确保内部页面的切换不会溢出 .phone 边界 */
-    touch-action: manipulation; /* 保持，有助于触摸响应 */
-    border-radius: var(--phone-radius, 0px); /* 保留你原有的边框圆角 */
-    transition: all 0.3s ease; /* 保留你原有的过渡效果 */
+    background: var(--theme-bg, #f7f7f7);
+    position: relative;
+    overflow: hidden; /* 这一行是防止拖拽的关键，必须保留 */
+    touch-action: manipulation; 
+    border-radius: var(--phone-radius, 0px);
+    transition: all 0.3s ease;
 }
 
-      
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: var(--theme-bg, #f7f7f7);
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--screen-radius, 0px);
+            transition: all 0.3s ease;
+        }
 
-.screen {
-    width: 100%;
-    height: 100%; /* 【确认】确保它能占据父容器（.phone）的全部高度 */
-    background: var(--theme-bg, #f7f7f7); /* 页面背景色 */
-    position: relative; /* 为页面内元素提供定位上下文 */
-    overflow: hidden; /* 【确认】确保页面内部内容和切换效果不会溢出 */
-    border-radius: var(--screen-radius, 0px); /* 保留你原有的圆角 */
-    transition: all 0.3s ease; /* 保留你原有的过渡效果 */
-}
-
-       .status-bar {
+        /* --- MODIFIED: Status Bar Styles --- */
+        /* --- 步骤 3.1: 精确重构状态栏 --- */
+.status-bar {
     height: calc(30px + env(safe-area-inset-top, 0px)); /* 高度动态适应刘海 */
     display: flex;
     justify-content: space-between;
@@ -95,11 +78,14 @@ body {
     font-size: var(--font-size, 14px);
     font-weight: 600;
     color: var(--text-color, #000);
-    position: fixed; /* 保持 fixed 定位，更稳健 */
-    top: 0; left: 0; right: 0; z-index: 1000;
+    position: fixed; /* 改为 fixed 定位，更稳健 */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     border-radius: var(--status-radius, 0px);
     transition: background-color 0.3s ease;
-    background-color: var(--nav-bg, #f8f8f8); /* 状态栏背景色 */
+    background-color: var(--nav-bg, #f8f8f8); 
 }
         
         /* New classes for JS to control transparency */
@@ -229,32 +215,25 @@ body {
         }
 
         .home-screen {
-    /* 【关键修改】占据父容器 #homeScreen (page) 的全部高度 */
-    height: 100%; 
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    flex-direction: column; /* 内容垂直堆叠 */
-    position: relative;
-    overflow-y: auto; /* 允许主屏幕内容滚动 */
-    -webkit-overflow-scrolling: touch; /* 提升 iOS 上的滚动体验 */
-    
-    /* 【关键修改】添加顶部内边距，将内容推到状态栏下方 */
-    padding-top: calc(30px + env(safe-area-inset-top, 0px)); 
-    /* 保持底部留白给 dock */
-    padding-bottom: 120px; 
-    
-    /* 移除或确保没有冲突的 margin-top/padding 覆盖 */
-    margin-top: 0; 
-    padding-left: 0;
-    padding-right: 0;
-}
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            margin-top: 0;
+            position: relative;
+            overflow-y: auto; 
+            padding-bottom: 120px; /* Space for the bottom dock */
+        }
         
-        .profile-widget-container {
+        /* --- NEW: Profile Widget Container --- */
+        /* --- 【最终版】请替换为这段代码 --- */
+.profile-widget-container {
     width: 85%;
     max-width: 340px;
-    /* 【关键修改】现在是相对于 .home-screen 的顶部（已被 padding-top 下推）来计算 */
-    margin-top: 40px; /* 现在它会在状态栏下方 40px 处 */
+    /* 关键修改：将固定的 70px 改为动态计算 */
+    margin-top: calc(40px + env(safe-area-inset-top)); 
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
@@ -548,17 +527,19 @@ body {
 
 /* --- 步骤 3.2: 精确重构导航栏 --- */
 .nav-bar {
-    height: 44px; /* 固定高度 */
-    background: var(--nav-bg, #f8f8f8); /* 导航栏背景色 */
+    height: 44px;
+    background: var(--nav-bg, #f8f8f8);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 8px;
     flex-shrink: 0;
     position: absolute;
-    /* 【关键】它的顶部位置，精确地等于状态栏的高度加上状态栏的顶部安全区 */
+    /* 【关键】它的顶部位置，精确地等于状态栏的高度 */
     top: calc(30px + env(safe-area-inset-top, 0px)); 
-    left: 0; right: 0; z-index: 10;
+    left: 0;
+    right: 0;
+    z-index: 10;
 }
 
         /* 替换为下面的新代码 */
@@ -581,7 +562,6 @@ body {
 
         
        /* --- 修改后的正确代码 --- */
-/* 确保页面内容在状态栏和导航栏下方有足够的空间 */
 .page > .wechat-content,
 .page > .settings-content,
 .page > .discover-content,
@@ -589,20 +569,19 @@ body {
 .page > .chat-settings-content,
 .page > .diary-content-view,
 #phoneApp > .phone-app-container {
-    /* 状态栏高度(30px) + 导航栏高度(44px) + 顶部安全区 */
-    padding-top: calc(30px + 44px + env(safe-area-inset-top, 0px)); /* 这是关键修改 */
-    height: 100%; /* 确保它能撑满剩余高度 */
-    overflow-y: auto; /* 允许内容滚动 */
+    padding-top: calc(74px + env(safe-area-inset-top)); /* <-- 这是关键修改 */
+    height: 100%;
+    overflow-y: auto;
 }
 
-/* 修复BUG：为微信主界面的内容容器添加顶部内边距 */
-#wechatApp > .wechat-content {
-    padding-top: calc(30px + 44px + env(safe-area-inset-top)); /* 保持一致 */
+        /* 修复BUG：为微信主界面的内容容器添加顶部内边距 */
+        #wechatApp > .wechat-content {
+    padding-top: calc(74px + env(safe-area-inset-top)); 
 }
-/* 修复BUG：移除子元素的无效顶部内边距，防止双重边距 */
-#wechatApp .discover-content, #wechatApp .profile-content {
-    padding-top: 0;
-}
+        /* 修复BUG：移除子元素的无效顶部内边距，防止双重边距 */
+        #wechatApp .discover-content, #wechatApp .profile-content {
+            padding-top: 0;
+        }
 
         .nav-btn {
             background: none;
@@ -621,17 +600,23 @@ body {
 
         /* --- 步骤 2.4: 替换 .wechat-bottom-nav 样式，正确处理安全区 --- */
 .wechat-bottom-nav {
-    /* 【关键】让导航栏的总高度动态增加，以填满底部安全区 */
+    /* 【决定性修复】让导航栏的总高度动态增加，以填满底部安全区 */
     height: calc(49px + env(safe-area-inset-bottom, 0px));
+    
     background: var(--nav-bg, #f7f7f7);
     border-top: 1px solid var(--border-color, #e0e0e0);
     display: flex;
     position: absolute;
-    bottom: 0; /* 紧贴容器的物理底部 */
+    
+    /* 【决定性修复】让它紧贴容器的物理底部 */
+    bottom: 0;
+    
     width: 100%;
     z-index: 100;
+    
+    /* 【新增】确保内边距不会影响高度计算 */
     box-sizing: border-box;
-    /* 【关键】只在底部增加内边距来把 *图标和文字* 推上去，而不是整个元素上移 */
+    /* 【新增】只在底部增加内边距来把 *图标和文字* 推上去，而不是整个元素上移 */
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -665,11 +650,12 @@ body {
         }
 
         /* --- 步骤 2.5: 替换 .wechat-content 样式，适配新的导航栏高度 --- */
-.wechat-content { /* 或你的 .chat-messages */
+.wechat-content {
     flex: 1;
     overflow-y: auto;
-    /* 【关键】使用和底部导航栏同样的方式动态计算底部间距 */
+    /* 【决定性修复】使用和导航栏同样的方式动态计算底部间距 */
     padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+    
     background: var(--theme-bg, #f7f7f7);
     transition: padding-bottom 0.3s ease;
 }
@@ -743,35 +729,25 @@ body {
             text-overflow: ellipsis;
         }
         
+        /* --- [BUG FIX] White Module Fix START --- */
         #chatScreen .wechat-content {
-    position: absolute; /* 使用绝对定位，方便控制顶部和底部 */
-    top: calc(30px + 44px + env(safe-area-inset-top, 0px)); /* 状态栏高度 + 导航栏高度 + 顶部安全区 */
-    left: 0;
-    right: 0;
-    bottom: 0; /* 默认延伸到页面底部，聊天输入区会覆盖其一部分 */
-    overflow: hidden; /* 确保聊天消息容器不会溢出此区域 */
-    background: transparent; /* 允许聊天背景图片显示 */
-    display: flex; /* 内部元素使用 Flex 布局 */
-    flex-direction: column; /* 垂直堆叠 */
-}
+            padding-top: 74px;
+            padding-bottom: 0; /* Remove padding from container */
+            background: transparent; /* Make container transparent */
+            height: 100%;
+            overflow: hidden; /* Prevent double scrollbars */
+        }
         
         .chat-messages {
-    flex-grow: 1; /* 让聊天消息区域占据所有可用垂直空间 */
-    overflow-y: auto; /* 允许垂直滚动 */
-    -webkit-overflow-scrolling: touch; /* 提升 iOS 上的滚动体验 */
-    
-    /* 保持基础的左右内边距，顶部内边距会由父级 #chatScreen .wechat-content 处理 */
-    padding-left: 15px;
-    padding-right: 15px;
-    /* 重要的：动态计算底部内边距，以避开输入区域和底部安全区 */
-    padding-bottom: calc(15px + 50px + env(safe-area-inset-bottom, 0px)); /* 基础消息间距 + 输入区最小高度 + 底部安全区 */
-    
-    /* 保持其他背景相关样式 */
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    transition: padding-bottom 0.3s ease;
-}
+            height: 100%;
+            padding: 15px 15px 50px 15px; /* Add default bottom padding here */
+            overflow-y: auto;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: padding-bottom 0.3s ease;
+        }
+        /* --- [BUG FIX] White Module Fix END --- */
 
         .message {
             margin-bottom: 15px;
@@ -921,16 +897,14 @@ body {
         }
 
         .chat-input-area {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    min-height: 50px; /* 确保输入区域有最小高度 */
-    padding-bottom: env(safe-area-inset-bottom, 0px); /* 整个输入区域上移，避开底部安全区 */
-}
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex; /* FIX */
+            flex-direction: column; /* FIX */
+        }
         
         .chat-input {
             background: var(--nav-bg, #f7f7f7);
@@ -10150,6 +10124,16 @@ ${chatHistorySummary || '暂无聊天记录。'}
             setInterval(simulateAiBehavior, 60000); 
         };
     </script>
+    
+    <script>
+        function setRealViewportHeight() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        setRealViewportHeight();
+        window.addEventListener('resize', setRealViewportHeight);
+    </script>
+    <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
     
 </body>
 </html>
