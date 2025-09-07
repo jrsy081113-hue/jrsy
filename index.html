@@ -444,27 +444,26 @@ body {
         }
 
         /* --- MODIFIED: Bottom Dock Styles --- */
-    /* --- 步骤四：精确重构底部 Dock --- */
+    /* --- 步骤 2.3: 替换 .bottom-dock 样式，正确处理安全区 --- */
 .bottom-dock {
     position: absolute;
-    /* 【关键】让它的底部边缘永远在安全区的上方 20px */
+    /* 【决定性修复】让它的底部边缘永远在安全区的上方 20px */
     bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 380px;
-    height: 95px; 
-    background: rgba(240, 240, 240, 0.7);
+    height: 95px; /* MODIFIED: Increased height */
+    background: rgba(240, 240, 240, 0.7); /* MODIFIED: Frosted glass effect */
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 40px; 
     padding: 10px 20px;
     display: flex;
     gap: 15px;
-    justify-content: center; 
+    justify-content: center; /* MODIFIED: Will center the 3 items */
     align-items: center;
     z-index: 50;
-    box-sizing: border-box;
 }
         .wechat-dark-mode .bottom-dock {
             background: rgba(44, 44, 46, 0.7); /* MODIFIED: Frosted glass effect for dark mode */
@@ -593,9 +592,9 @@ body {
             gap: 5px;
         }
 
-        /* --- 用这个最终版代码替换你原来的 .wechat-bottom-nav --- */
+        /* --- 步骤 2.4: 替换 .wechat-bottom-nav 样式，正确处理安全区 --- */
 .wechat-bottom-nav {
-    /* 【关键修改】让导航栏的高度动态计算，以填满底部安全区 */
+    /* 【决定性修复】让导航栏的总高度动态增加，以填满底部安全区 */
     height: calc(49px + env(safe-area-inset-bottom, 0px));
     
     background: var(--nav-bg, #f7f7f7);
@@ -603,15 +602,15 @@ body {
     display: flex;
     position: absolute;
     
-    /* 【关键修改】让它紧贴容器的物理底部 */
+    /* 【决定性修复】让它紧贴容器的物理底部 */
     bottom: 0;
     
     width: 100%;
     z-index: 100;
-
+    
     /* 【新增】确保内边距不会影响高度计算 */
     box-sizing: border-box;
-    /* 【新增】只在底部增加内边距来把内容推上去，而不是整个元素上移 */
+    /* 【新增】只在底部增加内边距来把 *图标和文字* 推上去，而不是整个元素上移 */
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -644,13 +643,16 @@ body {
             fill: currentColor;
         }
 
-        .wechat-content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 49px; 
-            background: var(--theme-bg, #f7f7f7);
-            transition: padding-bottom 0.3s ease;
-        }
+        /* --- 步骤 2.5: 替换 .wechat-content 样式，适配新的导航栏高度 --- */
+.wechat-content {
+    flex: 1;
+    overflow-y: auto;
+    /* 【决定性修复】使用和导航栏同样的方式动态计算底部间距 */
+    padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+    
+    background: var(--theme-bg, #f7f7f7);
+    transition: padding-bottom 0.3s ease;
+}
 
         .friend-list {
             padding: 0;
