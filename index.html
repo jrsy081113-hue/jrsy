@@ -38,22 +38,15 @@ html {
     user-select: none;
     transition: all 0.3s ease;
     color: var(--text-color, #000);
-    /* 【关键修复】添加安全区域内边距，防止内容上移到状态栏 */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    margin: 0;
-    padding-left: 0;
-    padding-right: 0;
+    /* 【关键】这里不要有任何padding-top或padding-bottom */
 }
 
         .phone {
     width: 100vw;
-    /* 【修复高度计算】扣除安全区域，避免底部黑色空隙 */
-    height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    
+    height: calc(var(--vh, 1vh) * 100);
     background: var(--theme-bg, #f7f7f7);
     position: relative;
-    overflow: hidden; /* 这一行是防止拖拽的关键，必须保留 */
+    overflow: hidden;
     touch-action: manipulation; 
     border-radius: var(--phone-radius, 0px);
     transition: all 0.3s ease;
@@ -10126,15 +10119,30 @@ ${chatHistorySummary || '暂无聊天记录。'}
             toggleSendButtonActive(document.getElementById('messageInput'));
             setInterval(simulateAiBehavior, 60000); 
         };
-    </script>
+   function setRealViewportHeight() {
+    // 【关键修复】获取真实的可视区域高度
+    let actualHeight = window.innerHeight;
     
-    <script>
-        function setRealViewportHeight() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
+    // 【PWA模式检测】如果是standalone模式（添加到主屏幕）
+    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+        // 【iOS修复】在PWA模式下，使用screen.height来获取更准确的高度
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            actualHeight = window.screen.height;
         }
-        setRealViewportHeight();
-        window.addEventListener('resize', setRealViewportHeight);
+    }
+    
+    const vh = actualHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    
+    // 【调试输出】可以临时添加来检查计算结果
+    console.log('Window height:', window.innerHeight, 'Actual height:', actualHeight, 'VH:', vh);
+}
+setRealViewportHeight();
+window.addEventListener('resize', setRealViewportHeight);
+// 【新增】PWA模式变化时重新计算
+window.addEventListener('orientationchange', () => {
+    setTimeout(setRealViewportHeight, 500);
+});
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
     
