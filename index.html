@@ -21,35 +21,39 @@
             -ms-user-select: none;
         }
 
-        body {
-            font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-            background: #000;
-            overflow: hidden;
-            width: 100vw;
-            height: 100dvh;
-            position: fixed;
-            top: 0;
-            touch-action: manipulation;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            transition: all 0.3s ease;
-            color: var(--text-color, #000);
-        }
+        html, body {
+    height: 100%; /* 确保 HTML 和 Body 元素从根部就占满整个视口高度 */
+    margin: 0;    /* 移除浏览器默认的外边距 */
+    padding: 0;   /* 移除浏览器默认的内边距 */
+}
+body {
+    font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+    background: #000; /* 即使这里是黑色，如果内部元素完全覆盖，就不会显示 */
+    overflow: hidden; /* 保持隐藏溢出内容 */
+    width: 100vw;
+    /* height: 100dvh; */ /* 移除这一行，让 .phone 元素来处理动态视口高度 */
+    /* position: fixed; */ /* 移除这一行，它可能与 viewport-fit=cover 产生冲突，导致布局问题 */
+    /* top: 0; */ /* 移除这一行，因为 position: fixed 已被移除 */
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: all 0.3s ease;
+    color: var(--text-color, #000);
+}
 
         .phone {
-            width: 100vw;
-            height: 100dvh;
-            background: var(--theme-bg, #f7f7f7);
-            position: relative;
-            overflow: hidden;
-            touch-action: manipulation;
-            border-radius: var(--phone-radius, 0px);
-            transition: all 0.3s ease;
-        }
+    width: 100vw;
+    height: 100dvh; /* 保持不变，让它负责动态视口高度，并覆盖 body 的背景 */
+    background: var(--theme-bg, #f7f7f7); /* 它的背景颜色会填充整个应用区域 */
+    position: relative;
+    overflow: hidden; /* 保持不变 */
+    border-radius: var(--phone-radius, 0px);
+    transition: all 0.3s ease;
+}
 
         .screen {
             width: 100%;
@@ -208,17 +212,19 @@
         }
 
         .home-screen {
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            margin-top: 0;
-            position: relative;
-            overflow-y: auto; 
-            padding-bottom: 120px; /* Space for the bottom dock */
-        }
+    height: 100%; /* 保持不变，它相对于其父元素占据全部高度 */
+    background-size: cover;
+    background-position: center;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+    position: relative;
+    overflow-y: auto; 
+    /* 关键修改：让 padding-bottom 动态适应底部 Dock 栏的高度和安全区域 */
+    /* Dock 的高度是 95px，并且它距离底部有 20px 的间隔，再加上 iOS 底部安全区域的高度 */
+    padding-bottom: calc(95px + 20px + env(safe-area-inset-bottom, 0px));
+}
         
         /* --- NEW: Profile Widget Container --- */
         .profile-widget-container {
