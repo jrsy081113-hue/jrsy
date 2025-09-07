@@ -21,25 +21,31 @@
             -ms-user-select: none;
         }
 
+/* --- 最终修复方案 --- */
+
+/* 步骤 1: 严格锁定 <html> 标签 */
 html {
-    height: 100%;
-    overflow: hidden;
+    height: 100%;       /* 确保它占满屏幕 */
+    overflow: hidden;     /* 彻底禁止它自己滚动 */
+    position: relative;   /* 提供稳定的定位环境 */
 }
 
-        /* --- 步骤 2.1: 替换 body 样式，让它回归默认 --- */
+/* 步骤 2: 同样严格地锁定 <body> 标签 */
 body {
+    /* 保留您原有的字体、背景色等基础样式 */
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-    background: #000;
+    background: #f7f7f7;
     touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
-    transition: all 0.3s ease;
     color: var(--text-color, #000);
-    /* 关键：确保这里没有任何 position, height, width, top, overflow */
+    
+    /* 以下是关键的锁定属性，确保 body 也不能被拖拽 */
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
         /* --- 步骤 2.2: 替换 .phone 样式，使用JS计算出的正确高度 --- */
