@@ -24,6 +24,8 @@
 html {
     height: 100%;
     overflow: hidden;
+    position: fixed;
+    width: 100%;
 }
 
        body {
@@ -557,15 +559,14 @@ html {
 }
 
         
-       /* --- 修改后的正确代码 --- */
-.page > .wechat-content,
+      .page > .wechat-content,
 .page > .settings-content,
 .page > .discover-content,
 .page > .profile-content,
 .page > .chat-settings-content,
 .page > .diary-content-view,
 #phoneApp > .phone-app-container {
-    padding-top: calc(74px + env(safe-area-inset-top)); /* <-- 这是关键修改 */
+    padding-top: 74px;
     height: 100%;
     overflow-y: auto;
 }
@@ -10120,28 +10121,16 @@ ${chatHistorySummary || '暂无聊天记录。'}
             setInterval(simulateAiBehavior, 60000); 
         };
    function setRealViewportHeight() {
-    // 【关键修复】获取真实的可视区域高度
-    let actualHeight = window.innerHeight;
-    
-    // 【PWA模式检测】如果是standalone模式（添加到主屏幕）
-    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
-        // 【iOS修复】在PWA模式下，使用screen.height来获取更准确的高度
-        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-            actualHeight = window.screen.height;
-        }
-    }
-    
-    const vh = actualHeight * 0.01;
+    // 【修复】无论什么模式，都使用window.innerHeight
+    const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
     
-    // 【调试输出】可以临时添加来检查计算结果
-    console.log('Window height:', window.innerHeight, 'Actual height:', actualHeight, 'VH:', vh);
+    console.log('实际高度:', window.innerHeight, 'VH值:', vh);
 }
 setRealViewportHeight();
 window.addEventListener('resize', setRealViewportHeight);
-// 【新增】PWA模式变化时重新计算
 window.addEventListener('orientationchange', () => {
-    setTimeout(setRealViewportHeight, 500);
+    setTimeout(setRealViewportHeight, 100);
 });
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
