@@ -21,35 +21,34 @@
             -ms-user-select: none;
         }
 
-/* --- 最终修复方案 --- */
-
-/* 步骤 1: 严格锁定 <html> 标签 */
 html {
-    height: 100%;       /* 确保它占满屏幕 */
-    overflow: hidden;     /* 彻底禁止它自己滚动 */
-    position: relative;   /* 提供稳定的定位环境 */
+    height: 100%;
+    overflow: hidden;
 }
 
-/* 步骤 2: 同样严格地锁定 <body> 标签 */
-body {
-    /* 保留您原有的字体、背景色等基础样式 */
+       body {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-    background: #f7f7f7;
-    touch-action: manipulation;
+    background: #000;
+    touch-action: none; /* 改为none */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
+    transition: all 0.3s ease;
     color: var(--text-color, #000);
     
-    /* 以下是关键的锁定属性，确保 body 也不能被拖拽 */
-    height: 100%;
+    /* 新增：防止拖拽的关键设置 */
+    margin: 0;
+    padding: 0;
     width: 100%;
+    height: 100%;
     overflow: hidden;
-    position: relative;
+    position: fixed;
 }
 
-        /* --- 步骤 2.2: 替换 .phone 样式，使用JS计算出的正确高度 --- */
-.phone {
+        .phone {
     width: 100vw;
     /* 【决定性修复】不再使用有bug的100dvh，而是使用我们JS计算出的 --vh 变量 */
     height: calc(var(--vh, 1vh) * 100);
@@ -57,9 +56,12 @@ body {
     background: var(--theme-bg, #f7f7f7);
     position: relative;
     overflow: hidden; /* 这一行是防止拖拽的关键，必须保留 */
-    touch-action: manipulation; 
+    touch-action: none; /* 改为none，完全禁止拖拽 */
     border-radius: var(--phone-radius, 0px);
     transition: all 0.3s ease;
+    
+    /* 新增：处理底部安全区域 */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
         .screen {
@@ -67,6 +69,7 @@ body {
             height: 100%;
             background: var(--theme-bg, #f7f7f7);
             position: relative;
+            touch-action: none;
             overflow: hidden;
             border-radius: var(--screen-radius, 0px);
             transition: all 0.3s ease;
@@ -742,18 +745,23 @@ body {
             background: transparent; /* Make container transparent */
             height: 100%;
             overflow: hidden; /* Prevent double scrollbars */
+            touch-action: none;
         }
         
         .chat-messages {
-            height: 100%;
-            padding: 15px 15px 50px 15px; /* Add default bottom padding here */
-            overflow-y: auto;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            transition: padding-bottom 0.3s ease;
-        }
-        /* --- [BUG FIX] White Module Fix END --- */
+    height: 100%;
+    padding: 15px 15px 50px 15px; /* Add default bottom padding here */
+    overflow-y: auto; /* 允许垂直滚动 */
+    overflow-x: hidden; /* 禁止横向滚动 */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    transition: padding-bottom 0.3s ease;
+    
+    /* 关键：让这个区域可以滚动，但不影响整体页面 */
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+}
 
         .message {
             margin-bottom: 15px;
@@ -10132,14 +10140,40 @@ ${chatHistorySummary || '暂无聊天记录。'}
     </script>
     
     <script>
-        function setRealViewportHeight() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        setRealViewportHeight();
-        window.addEventListener('resize', setRealViewportHeight);
-    </script>
-    <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
+// 设置正确的视口高度变量
+function setVH() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// 页面加载时设置
+setVH();
+
+// 屏幕旋转或大小改变时重新设置
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', setVH);
+
+// 防止iOS的弹性滚动
+document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+}, { passive: false });
+
+// 防止双击缩放
+document.addEventListener('touchstart', function(e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+});
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(e) {
+    let now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+</script>
     
 </body>
 </html>
