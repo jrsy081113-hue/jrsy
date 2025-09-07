@@ -229,25 +229,32 @@ body {
         }
 
         .home-screen {
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            margin-top: 0;
-            position: relative;
-            overflow-y: auto; 
-            padding-bottom: 120px; /* Space for the bottom dock */
-        }
+    /* 【关键修改】占据父容器 #homeScreen (page) 的全部高度 */
+    height: 100%; 
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column; /* 内容垂直堆叠 */
+    position: relative;
+    overflow-y: auto; /* 允许主屏幕内容滚动 */
+    -webkit-overflow-scrolling: touch; /* 提升 iOS 上的滚动体验 */
+    
+    /* 【关键修改】添加顶部内边距，将内容推到状态栏下方 */
+    padding-top: calc(30px + env(safe-area-inset-top, 0px)); 
+    /* 保持底部留白给 dock */
+    padding-bottom: 120px; 
+    
+    /* 移除或确保没有冲突的 margin-top/padding 覆盖 */
+    margin-top: 0; 
+    padding-left: 0;
+    padding-right: 0;
+}
         
-        /* --- NEW: Profile Widget Container --- */
-        /* --- 【最终版】请替换为这段代码 --- */
-.profile-widget-container {
+        .profile-widget-container {
     width: 85%;
     max-width: 340px;
-    /* 关键修改：将固定的 70px 改为动态计算 */
-    margin-top: calc(40px + env(safe-area-inset-top)); 
+    /* 【关键修改】现在是相对于 .home-screen 的顶部（已被 padding-top 下推）来计算 */
+    margin-top: 40px; /* 现在它会在状态栏下方 40px 处 */
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
@@ -736,25 +743,35 @@ body {
             text-overflow: ellipsis;
         }
         
-        /* --- [BUG FIX] White Module Fix START --- */
         #chatScreen .wechat-content {
-            padding-top: 74px;
-            padding-bottom: 0; /* Remove padding from container */
-            background: transparent; /* Make container transparent */
-            height: 100%;
-            overflow: hidden; /* Prevent double scrollbars */
-        }
+    position: absolute; /* 使用绝对定位，方便控制顶部和底部 */
+    top: calc(30px + 44px + env(safe-area-inset-top, 0px)); /* 状态栏高度 + 导航栏高度 + 顶部安全区 */
+    left: 0;
+    right: 0;
+    bottom: 0; /* 默认延伸到页面底部，聊天输入区会覆盖其一部分 */
+    overflow: hidden; /* 确保聊天消息容器不会溢出此区域 */
+    background: transparent; /* 允许聊天背景图片显示 */
+    display: flex; /* 内部元素使用 Flex 布局 */
+    flex-direction: column; /* 垂直堆叠 */
+}
         
         .chat-messages {
-            height: 100%;
-            padding: 15px 15px 50px 15px; /* Add default bottom padding here */
-            overflow-y: auto;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            transition: padding-bottom 0.3s ease;
-        }
-        /* --- [BUG FIX] White Module Fix END --- */
+    flex-grow: 1; /* 让聊天消息区域占据所有可用垂直空间 */
+    overflow-y: auto; /* 允许垂直滚动 */
+    -webkit-overflow-scrolling: touch; /* 提升 iOS 上的滚动体验 */
+    
+    /* 保持基础的左右内边距，顶部内边距会由父级 #chatScreen .wechat-content 处理 */
+    padding-left: 15px;
+    padding-right: 15px;
+    /* 重要的：动态计算底部内边距，以避开输入区域和底部安全区 */
+    padding-bottom: calc(15px + 50px + env(safe-area-inset-bottom, 0px)); /* 基础消息间距 + 输入区最小高度 + 底部安全区 */
+    
+    /* 保持其他背景相关样式 */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    transition: padding-bottom 0.3s ease;
+}
 
         .message {
             margin-bottom: 15px;
@@ -904,14 +921,16 @@ body {
         }
 
         .chat-input-area {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            display: flex; /* FIX */
-            flex-direction: column; /* FIX */
-        }
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    min-height: 50px; /* 确保输入区域有最小高度 */
+    padding-bottom: env(safe-area-inset-bottom, 0px); /* 整个输入区域上移，避开底部安全区 */
+}
         
         .chat-input {
             background: var(--nav-bg, #f7f7f7);
