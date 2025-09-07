@@ -26,7 +26,7 @@ html {
     overflow: hidden;
 }
 
-        /* 修改后的代码 */
+        /* --- 步骤 1.1: 修改 body 样式 --- */
 body {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     background: #000;
@@ -39,16 +39,20 @@ body {
     user-select: none;
     transition: all 0.3s ease;
     color: var(--text-color, #000);
-    /* 关键：确保这里没有 position, height, width, top, overflow */
+
+    /* 【关键修改】让body占满父级(html)的高度，并禁止自身滚动 */
+    height: 100%;
+    overflow: hidden;
 }
 
-        .phone {
+        /* --- 步骤 2: 修改 .phone 容器样式 --- */
+.phone {
     width: 100vw;
-    height: 100dvh;
+    height: 100%; /* 【关键修改】将 100dvh 改为 100%，以继承父级稳定高度 */
     background: var(--theme-bg, #f7f7f7);
     position: relative;
-    overflow: hidden; /* 将 overflow: hidden 从 body 移到这里，这是正确的做法 */
-    touch-action: manipulation; /* 保留这个属性以确保触摸行为正常 */
+    overflow: hidden; /* 保留这一行，它能有效防止拖拽 */
+    touch-action: manipulation; 
     border-radius: var(--phone-radius, 0px);
     transition: all 0.3s ease;
 }
@@ -439,25 +443,30 @@ body {
         }
 
         /* --- MODIFIED: Bottom Dock Styles --- */
-        .bottom-dock {
-            position: absolute;
-            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 30px);
-            max-width: 380px;
-            height: 95px; /* MODIFIED: Increased height */
-            background: rgba(240, 240, 240, 0.7); /* MODIFIED: Frosted glass effect */
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 40px; 
-            padding: 10px 20px;
-            display: flex;
-            gap: 15px;
-            justify-content: center; /* MODIFIED: Will center the 3 items */
-            align-items: center;
-            z-index: 50;
-        }
+        /* --- 步骤 3: 修正 .bottom-dock 底部导航栏样式 --- */
+.bottom-dock {
+    position: absolute;
+    bottom: 20px; /* 【关键修改】不再计算安全区，直接使用固定值定位 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 30px);
+    max-width: 380px;
+    height: 95px; 
+    background: rgba(240, 240, 240, 0.7); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 40px; 
+    
+    /* 【关键修改】使用 padding 来把 *内部内容* 推上去，避开小横条 */
+    padding: 10px 20px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
         .wechat-dark-mode .bottom-dock {
             background: rgba(44, 44, 46, 0.7); /* MODIFIED: Frosted glass effect for dark mode */
         }
@@ -1408,11 +1417,11 @@ body {
             font-size: var(--font-size, 16px);
         }
 
-        /* 修改后的代码 */
+        /* --- 步骤 4: 修正 .add-menu 菜单位置 --- */
 .add-menu {
     position: absolute;
-    /* 导航栏顶部(30px+刘海) + 导航栏高度(44px) = 菜单的顶部位置 */
-    top: calc(74px + env(safe-area-inset-top, 0px)); 
+    /* 【关键修改】使用动态计算，确保它永远在导航栏下方 */
+    top: calc(74px + env(safe-area-inset-top, 0px));
     right: 15px;
     background: var(--bg-primary, white);
     border: 1px solid var(--border-color, #e0e0e0);
