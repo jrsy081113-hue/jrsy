@@ -26,7 +26,8 @@ html {
     overflow: hidden;
 }
 
-        body {
+        /* 修改后的代码 */
+body {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     background: #000;
     touch-action: manipulation;
@@ -38,11 +39,7 @@ html {
     user-select: none;
     transition: all 0.3s ease;
     color: var(--text-color, #000);
-
-    /* --- 修改后的最终代码 --- */
-    height: 100%;
-    overflow: hidden;
-    /* --- 修改结束 --- */
+    /* 关键：确保这里没有 position, height, width, top, overflow */
 }
 
         .phone {
@@ -252,13 +249,7 @@ html {
         }
 
 
-        .profile-widget {
-            width: 85%;
-            max-width: 340px;
-            margin: 70px auto 20px;
-            position: relative;
-            text-align: center;
-        }
+       
 
         .profile-avatar-widget {
             width: 80px;
@@ -1417,19 +1408,21 @@ html {
             font-size: var(--font-size, 16px);
         }
 
-        .add-menu {
-            position: absolute;
-            top: 88px;
-            right: 15px;
-            background: var(--bg-primary, white);
-            border: 1px solid var(--border-color, #e0e0e0);
-            border-radius: var(--menu-radius, 8px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 100;
-            display: none;
-            min-width: 120px;
-            transition: all 0.3s ease;
-        }
+        /* 修改后的代码 */
+.add-menu {
+    position: absolute;
+    /* 导航栏顶部(30px+刘海) + 导航栏高度(44px) = 菜单的顶部位置 */
+    top: calc(74px + env(safe-area-inset-top, 0px)); 
+    right: 15px;
+    background: var(--bg-primary, white);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: var(--menu-radius, 8px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 100;
+    display: none;
+    min-width: 120px;
+    transition: all 0.3s ease;
+}
 
         .add-menu.show {
             display: block;
