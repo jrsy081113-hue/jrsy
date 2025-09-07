@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
     <title>jrsy</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="https://jrsy081113-hue.github.io/jrsy/star-icon.png">
     <link rel="apple-touch-icon-precomposed" href="https://jrsy081113-hue.github.io/jrsy/star-icon.png">
     <style id="customBubblePreviewStyle"></style>
@@ -45,7 +45,8 @@ html {
 
         .phone {
     width: 100vw;
-    height: calc(var(--vh, 1vh) * 100);
+    /* 【关键修复】直接使用100vh，不用JS计算 */
+    height: 100vh;
     background: var(--theme-bg, #f7f7f7);
     position: relative;
     overflow: hidden;
@@ -559,14 +560,14 @@ html {
 }
 
         
-      .page > .wechat-content,
+     .page > .wechat-content,
 .page > .settings-content,
 .page > .discover-content,
 .page > .profile-content,
 .page > .chat-settings-content,
 .page > .diary-content-view,
 #phoneApp > .phone-app-container {
-    padding-top: 74px;
+    padding-top: calc(74px + env(safe-area-inset-top));
     height: 100%;
     overflow-y: auto;
 }
@@ -10120,18 +10121,11 @@ ${chatHistorySummary || '暂无聊天记录。'}
             toggleSendButtonActive(document.getElementById('messageInput'));
             setInterval(simulateAiBehavior, 60000); 
         };
-   function setRealViewportHeight() {
-    // 【修复】无论什么模式，都使用window.innerHeight
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-    
-    console.log('实际高度:', window.innerHeight, 'VH值:', vh);
+   // 简化版本，仅用于调试
+function setRealViewportHeight() {
+    console.log('窗口高度:', window.innerHeight, '屏幕高度:', window.screen.height);
 }
 setRealViewportHeight();
-window.addEventListener('resize', setRealViewportHeight);
-window.addEventListener('orientationchange', () => {
-    setTimeout(setRealViewportHeight, 100);
-});
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
     
