@@ -444,11 +444,11 @@ html {
         }
 
         .app-label {
-            margin-top: 6px;
-            color: #333; 
-            font-size: 10px;
-            font-weight: 600;
-        }
+    margin-top: 6px;
+    color: var(--app-label-color, #333); /* <--- 修改了这里 */
+    font-size: 10px;
+    font-weight: 600;
+}
 
         /* --- MODIFIED: Bottom Dock Styles --- */
     /* --- 用这个最终版代码替换你原来的 .bottom-dock --- */
@@ -745,15 +745,16 @@ html {
             overflow: hidden; /* Prevent double scrollbars */
         }
         
-        .chat-messages {
-            height: 100%;
-            padding: 15px 15px 50px 15px; /* Add default bottom padding here */
-            overflow-y: auto;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            transition: padding-bottom 0.3s ease;
-        }
+        /* 这是修改后的代码 */
+.chat-messages {
+    height: 100%;
+    padding: 15px 15px 65px 15px; /* 把底部的 50px 增加到了 65px */
+    overflow-y: auto;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    transition: padding-bottom 0.3s ease;
+}
         /* --- [BUG FIX] White Module Fix END --- */
 
         .message {
@@ -919,12 +920,12 @@ html {
     border-top: 1px solid var(--border-color, #e0e0e0);
     display: flex;
     align-items: flex-end; 
-    padding: 12px 8px;      /* 修改了这里：增加了上下留白 */
+    padding: 15px 8px;      /* 修改了这里：增加了上下留白 */
     gap: 8px;
     position: relative;
     z-index: 100;
     transition: min-height 0.2s ease;
-    min-height: 60px;       /* 修改了这里：增加了整体最小高度 */
+    min-height: 65px;       /* 修改了这里：增加了整体最小高度 */
 }
 
         .chat-input textarea {
@@ -2812,21 +2813,23 @@ html {
             --received-quote-border-color: #c0d9ff;
         }
 
-        .recalled-message-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--bg-primary, white);
-            border-radius: var(--modal-radius, 12px);
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            z-index: 3000;
-            display: none;
-            max-width: 80%;
-            max-height: 60%;
-            overflow-y: auto;
-        }
+        /* 这是【修正后】的代码 */
+.recalled-message-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-primary, white);
+    border-radius: var(--modal-radius, 12px);
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 3000;
+    display: none;
+    width: 300px;         /* 新增：设置一个基础宽度 */
+    max-width: 90%;       /* 修改：从 80% 增大到 90% */
+    max-height: 70%;      /* 修改：从 60% 增大到 70% */
+    overflow-y: auto;
+}
 
         .recalled-message-popup.show {
             display: block;
@@ -3506,27 +3509,36 @@ html {
             height: 20px;
         }
         
-        #songLyrics {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.6);
-            height: 80px;
-            overflow: hidden;
-            text-align: center;
-            position: absolute;
-            bottom: 210px; /* MODIFIED: Moved up */
-            width: 90%;
-            max-width: 400px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        #songLyrics p {
-            line-height: 25px;
-            transition: all 0.3s ease;
-            margin: 0;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
+        /* 第一处修改：将高度改回80px，并调整位置找到平衡点 */
+#songLyrics {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    height: 80px; /* 从 100px 改回 80px */
+    overflow: hidden;
+    text-align: center;
+    position: absolute;
+    bottom: 205px; /* 找到一个既不碰唱片也不碰聊天框的黄金位置 */
+    width: 90%;
+    max-width: 400px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* 第二处修改：减小歌词的垂直间距以适应更小的高度 */
+#songLyrics p {
+    line-height: 1.4;
+    transition: all 0.3s ease;
+    margin: 2px 0; /* 从 5px 减小到 2px，让行间距更紧凑 */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* 第三处：为翻译文本新增样式 */
+.lyric-translation {
+    font-size: 14px; /* 让翻译字体小一点 */
+    opacity: 0.8;    /* 让翻译颜色浅一点 */
+}
         #songLyrics .active-lyric {
             color: #fff;
             font-weight: bold;
@@ -4253,6 +4265,63 @@ html {
     gap: 5px;              /* 控制时间与图标之间的间距，你可以调整这个值 */
 }
 
+/* 【【【第二步：请将这两段CSS代码粘贴到 <style> 区域】】】 */
+
+/* 用于隐藏和显示主动发消息的时间间隔设置 */
+
+/* 【【【第一步：请用这个修正后的完整CSS代码块，替换原来的 .proactive-interval-setting 样式】】】 */
+
+/* 用于隐藏和显示主动发消息的时间间隔设置 */
+.proactive-interval-setting {
+    /* 这些是原有样式，保持不变 */
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+
+    /* 【新增】让它拥有和其他设置项一样的“卡片”外观 */
+    background: var(--bg-primary, white);
+    padding: 15px 20px;
+    border-radius: var(--menu-item-radius, 12px);
+
+    /* 【核心修复】用正确的边距来推开下方的元素 */
+    /* 上边距为负，让它和上面的开关看起来像一组；下边距为正，把它下面的“导入数据”推开 */
+    margin: -10px 15px 15px 15px; 
+}
+
+.proactive-interval-setting.show {
+    display: flex;
+}
+.proactive-interval-setting label {
+    color: var(--text-color);
+}
+.proactive-interval-setting input {
+    width: 60px;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #ccc);
+    text-align: center;
+    background: var(--bg-hover);
+    color: var(--text-color);
+}
+
+/* 好友列表上的未读消息红点样式 */
+.unread-badge {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    background-color: #ff3b30;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+}
+
     </style>
 </head>
 <body>
@@ -4716,7 +4785,8 @@ html {
                     </div>
                     <div class="form-group" id="editFriendPatGroup">
                         <label class="form-label">拍一拍动作</label>
-                        <input type="text" class="form-input" id="editFriendPatAction" placeholder="例如：拍了拍我">
+                        <input type="text" class="form-input" id="editFriendPatAction" placeholder="例如：的头，并说“你好可爱”">
+
                     </div>
                     <div class="form-group" id="editFriendRoleGroup">
                         <label class="form-label">角色设定</label>
@@ -4851,24 +4921,43 @@ html {
                 </div>
             </div>
 
-            <div id="fontSettingsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToTheme()">←</button><div class="nav-title">字体设置</div><div></div></div> <div class="settings-content"><div class="font-options"><div class="font-option system selected" onclick="selectFont('system')"><div style="font-size: 18px; margin-bottom: 5px;">系统默认字体</div><div style="font-size: 14px; color: #666;">苹方/微软雅黑</div></div><div class="font-option custom" onclick="selectFont('custom')"><div style="font-size: 18px; margin-bottom: 5px;">自定义字体</div><div style="font-size: 14px; color: #666;">使用自定义字体URL</div></div></div><div class="font-url-control"><div class="bubble-color-label">自定义字体URL (TTF, OTF, WOFF)</div><input type="text" class="font-url-input" id="fontUrlInput" placeholder="输入字体文件URL..." oninput="applyCustomFont(this.value)"></div><div class="font-size-control"><span>字体大小:</span><input type="range" class="font-size-slider" id="fontSizeSlider" min="12" max="24" value="14" oninput="adjustFontSize(this.value)"><span id="fontSizeValue">14px</span></div><div class="font-color-control"><span>字体颜色:</span><input type="color" class="color-picker" id="fontColorPicker" value="#000000" onchange="updateFontColor(this.value)"><input type="text" class="color-code-input" id="fontColorInput" value="#000000" placeholder="#000000" oninput="updateFontColorFromInput(this.value)"></div><div class="modal-buttons" style="margin-top: 20px;"><button class="modal-btn modal-btn-cancel" onclick="backToTheme()">取消</button><button class="modal-btn modal-btn-confirm" onclick="saveFont()">保存</button></div></div></div>
+            <div id="fontSettingsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToTheme()">←</button><div class="nav-title">字体设置</div><div></div></div> <div class="settings-content"><div class="font-options"><div class="font-option system selected" onclick="selectFont('system')"><div style="font-size: 18px; margin-bottom: 5px;">系统默认字体</div><div style="font-size: 14px; color: #666;">苹方/微软雅黑</div></div><div class="font-option custom" onclick="selectFont('custom')"><div style="font-size: 18px; margin-bottom: 5px;">自定义字体</div><div style="font-size: 14px; color: #666;">使用自定义字体URL</div></div></div><div class="font-url-control"><div class="bubble-color-label">自定义字体URL (TTF, OTF, WOFF)</div><input type="text" class="font-url-input" id="fontUrlInput" placeholder="输入字体文件URL..." oninput="applyCustomFont(this.value)"></div><div class="font-size-control"><span>字体大小:</span><input type="range" class="font-size-slider" id="fontSizeSlider" min="12" max="24" value="14" oninput="adjustFontSize(this.value)"><span id="fontSizeValue">14px</span></div><div class="font-color-control"><span>字体颜色:</span><input type="color" class="color-picker" id="fontColorPicker" value="#000000" onchange="updateFontColor(this.value)"><input type="text" class="color-code-input" id="fontColorInput" value="#000000" placeholder="#000000" oninput="updateFontColorFromInput(this.value)"></div> <!-- 新增：App标签颜色控制器 -->
+<div class="font-color-control">
+    <span>App字体颜色:</span>
+    <input type="color" class="color-picker" id="appLabelColorPicker" value="#333333" onchange="updateAppLabelColor(this.value)">
+    <input type="text" class="color-code-input" id="appLabelColorInput" value="#333333" placeholder="#333333" oninput="updateAppLabelColorFromInput(this.value)">
+</div> <div class="modal-buttons" style="margin-top: 20px;"><button class="modal-btn modal-btn-cancel" onclick="backToTheme()">取消</button><button class="modal-btn modal-btn-confirm" onclick="saveFont()">保存</button></div></div></div>
             <div id="wallpaperSettingsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToTheme()">←</button><div class="nav-title">主屏幕壁纸</div><div></div></div><div class="modal-content-container"><div class="modal-content"><div class="background-grid" id="wallpaperGrid"><div class="background-option default" onclick="selectWallpaper('default')"><span>默认</span></div><div class="background-option background-upload"><input type="file" accept="image/*" onchange="handleWallpaperUpload(event)"><span>上传</span></div></div><div class="modal-buttons" style="margin-top: 20px;"><button class="modal-btn modal-btn-cancel" onclick="backToTheme()">取消</button><button class="modal-btn modal-btn-confirm" onclick="saveWallpaper()">保存</button></div></div></div></div>
             <div id="iconSettingsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToTheme()">←</button><div class="nav-title">图标设置</div><div></div></div><div class="settings-content"><div id="iconSettingsList"></div><div class="settings-buttons" style="margin-top: 20px;"><button class="settings-btn btn-danger" onclick="restoreDefaultIcons()">恢复默认</button></div></div></div>
             
-            <!-- NEW: Component Settings Page -->
-            <div id="componentSettingsScreen" class="page">
-                <div class="nav-bar">
-                    <button class="nav-btn" onclick="backToTheme()">←</button>
-                    <div class="nav-title">组件设置</div>
-                    <div></div>
-                </div>
-                <div class="discover-content">
-                    <div class="discover-menu">
-                        <div class="discover-menu-item">
-                            <div class="discover-menu-title">组件设置</div></div><span>></span></div>
-                    </div>
-                </div>
+            <!-- NEW: Component Settings Page (FIXED) -->
+<div id="componentSettingsScreen" class="page">
+    <div class="nav-bar">
+        <button class="nav-btn" onclick="backToTheme()">←</button>
+        <div class="nav-title">组件设置</div>
+        <div></div>
+    </div>
+    <div class="discover-content">
+        <div class="discover-menu">
+            <!-- 新增：个人信息组件透明开关 -->
+            <div class="discover-menu-item">
+                <div class="discover-menu-title">个人信息组件背景透明</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="profileWidgetBgToggle" onchange="toggleProfileWidgetBg()">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
+            <!-- 新增：小组件透明开关 -->
+            <div class="discover-menu-item">
+                <div class="discover-menu-title">小组件背景透明</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="smallWidgetBgToggle" onchange="toggleSmallWidgetBg()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
             
             <div id="settingsApp" class="page">
                 <div class="nav-bar">
@@ -4877,20 +4966,42 @@ html {
                     <div></div>
                 </div>
                 <div class="discover-content">
-                    <div class="discover-menu">
-                        <div class="discover-menu-item" onclick="openApiSettings()">
-                            <div class="discover-menu-title">API 设置</div>
-                            <span>></span>
-                        </div>
-                        <div class="discover-menu-item" onclick="importData()">
-                            <div class="discover-menu-title">导入数据</div>
-                            <span>></span>
-                        </div>
-                        <div class="discover-menu-item" onclick="exportData()">
-                            <div class="discover-menu-title">导出数据</div>
-                            <span>></span>
-                        </div>
-                    </div>
+                    <!-- 【【【请用这个修正后的完整代码块，替换掉您文件中对应的整个 discover-menu 部分】】】 -->
+
+<div class="discover-menu">
+    <!-- 第一个设置项：API 设置 -->
+    <div class="discover-menu-item" onclick="openApiSettings()">
+        <div class="discover-menu-title">API 设置</div>
+        <span>></span>
+    </div>
+
+    <!-- 第二个设置项：AI主动发消息 (这是一个独立的项) -->
+    <div class="discover-menu-item">
+        <div class="discover-menu-title">AI主动发消息</div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="proactiveToggle" onchange="toggleProactiveMessaging()">
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
+
+    <!-- 主动发消息的间隔设置 (它自己是一个独立的div) -->
+    <div class="proactive-interval-setting" id="proactiveIntervalSetting">
+        <label for="proactiveIntervalInput">当用户离线超过 (分钟):</label>
+        <input type="number" id="proactiveIntervalInput" min="1" value="60" onchange="saveProactiveSettings()">
+    </div>
+
+    <!-- 第三个设置项：导入数据 (这是一个独立的项) -->
+    <div class="discover-menu-item" onclick="importData()">
+        <div class="discover-menu-title">导入数据</div>
+        <span>></span>
+    </div>
+
+    <!-- 第四个设置项：导出数据 (这是一个独立的项) -->
+    <div class="discover-menu-item" onclick="exportData()">
+        <div class="discover-menu-title">导出数据</div>
+        <span>></span>
+    </div>
+</div>
                 </div>
             </div>
 
@@ -5223,7 +5334,8 @@ let isLazyLoading = false; // 新增：防止在加载时重复触发
 const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
 
         let currentMessageElement = null;
-        let isAIReplying = false;
+        // 把“是不是在回复”的开关，换成“正在回复的角色列表”
+const aiReplyingSet = new Set();
         let friendAvatarImage = '';
         let tempEditingFriendAvatar = '';
         let userAvatarImage = '';
@@ -5264,6 +5376,14 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
         let currentEditingWidgetImageId = null;
         let currentEditingTextElement = null;
         let aiTimePerceptionEnabled = true;
+        let selectedAppLabelColor = '#333333';
+        // 【【【第三步 A：添加新的全局变量】】】
+
+// ...紧跟在 let selectedAppLabelColor = '#333333'; 这一行后面...
+let proactiveMessagingEnabled = false;
+let proactiveMessagingInterval = 60; // 默认60分钟
+let proactiveMessageSchedulerIntervalId = null;
+let unreadMessageCounts = {}; // e.g. { friendId: 3 }
         
         let notificationTimeout = null; // For clearing notification timer
 
@@ -5315,7 +5435,7 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
         let persistentVinylCover = ''; // MODIFIED: For persistent vinyl image
         let isListenSessionActive = false; 
         let listenTogetherFriendId = null; 
-        let isListenInvitePending = false; 
+        
         
         // [NEW] Voice Call variables
         let voiceCallFriendId = null;
@@ -5592,6 +5712,20 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
             }
         }
 
+function updateAppLabelColor(color) {
+    selectedAppLabelColor = color;
+    document.getElementById('appLabelColorInput').value = color;
+    applyAppLabelColor();
+}
+
+function updateAppLabelColorFromInput(color) {
+    if (/^#[0-9A-F]{6}$/i.test(color)) {
+        selectedAppLabelColor = color;
+        document.getElementById('appLabelColorPicker').value = color;
+        applyAppLabelColor();
+    }
+}
+
         async function toggleDarkMode() {
             darkModeEnabled = document.getElementById('darkModeToggle').checked;
             applyDarkMode();
@@ -5697,7 +5831,7 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
                     return song;
                 }));
 
-                const dataToSave = { friends, userProfile, diaries, worldBooks, worldBookFolders, favorites, moments, chatHistories, customEmojis, selectedGlobalChatBg, customGlobalChatBgImage, selectedFont, selectedFontSize, selectedFontColor, customFontUrl, selectedWallpaper, customWallpaperImage, customWidgetBackgroundImage, roundedCornersEnabled, darkModeEnabled, sentBubbleColor, receivedBubbleColor, customBubbleCSS, customIcons, playlist: serializablePlaylist, recalledMessages: Array.from(recalledMessages.entries()), customListenBg, persistentVinylCover, homeWidgetData, profileWidgetTransparent, smallWidgetTransparent, simPhoneContentCache };
+                const dataToSave = { friends, userProfile, diaries, worldBooks, worldBookFolders, favorites, moments, chatHistories, customEmojis, selectedGlobalChatBg, customGlobalChatBgImage, selectedFont, selectedFontSize, selectedFontColor, customFontUrl, selectedWallpaper, customWallpaperImage, customWidgetBackgroundImage, roundedCornersEnabled, darkModeEnabled, sentBubbleColor, selectedAppLabelColor, receivedBubbleColor, customBubbleCSS, customIcons, playlist: serializablePlaylist, recalledMessages: Array.from(recalledMessages.entries()), customListenBg, persistentVinylCover, homeWidgetData, profileWidgetTransparent, smallWidgetTransparent, simPhoneContentCache, proactiveMessagingEnabled, proactiveMessagingInterval, unreadMessageCounts };
                 
                 await dbManager.set('wechatData', dataToSave);
                 const apiSettings = { 
@@ -5787,6 +5921,7 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
                     roundedCornersEnabled = data.roundedCornersEnabled || false;
                     darkModeEnabled = data.darkModeEnabled || false;
                     sentBubbleColor = data.sentBubbleColor || '#FFEEF6';
+                    selectedAppLabelColor = data.selectedAppLabelColor || '#333333';
                     receivedBubbleColor = data.receivedBubbleColor || '#E6F2FF';
                     customBubbleCSS = data.customBubbleCSS || '';
                     customIcons = data.customIcons || {};
@@ -5813,6 +5948,9 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
                     if (!userProfile.momentsCover) userProfile.momentsCover = '';
                     customListenBg = data.customListenBg || '';
                     persistentVinylCover = data.persistentVinylCover || '';
+                    proactiveMessagingEnabled = data.proactiveMessagingEnabled || false;
+            proactiveMessagingInterval = data.proactiveMessagingInterval || 60;
+            unreadMessageCounts = data.unreadMessageCounts || {};
                 } catch (e) {
                     console.error('加载数据失败:', e);
                     showAlert("加载本地数据失败，将初始化默认数据。");
@@ -5852,6 +5990,7 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
             applyComponentTransparency();
             updateProfileDisplay();
             updateWalletDisplay();
+            applyAppLabelColor();
         }
         
         // NEW: Apply Component Transparency Settings
@@ -6071,6 +6210,10 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
             document.documentElement.style.setProperty('--text-color', selectedFontColor);
         }
 
+function applyAppLabelColor() {
+    document.documentElement.style.setProperty('--app-label-color', selectedAppLabelColor);
+}
+
         function applyGlobalChatBackground() {
             document.querySelectorAll('.chat-messages').forEach(screen => {
                 const bgImage = (selectedGlobalChatBg === 'custom' && customGlobalChatBgImage) ? `url(${customGlobalChatBgImage})` : 'none';
@@ -6100,23 +6243,24 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
             }
         }
         
-        function setChatAreaPadding(isOpen) {
-            const messagesArea = document.getElementById('chatMessages');
-            if (!messagesArea) return;
-            const openHeight = 250; // height of function/emoji area
-            const inputHeight = 50; // default height of input bar
-            
-            if (isOpen) {
-                messagesArea.style.paddingBottom = (openHeight + inputHeight) + 'px';
-            } else {
-                messagesArea.style.paddingBottom = (inputHeight) + 'px';
-            }
-            
-            // Scroll to bottom after padding change
-            setTimeout(() => {
-                messagesArea.scrollTop = messagesArea.scrollHeight;
-            }, 100); 
-        }
+        /* 这是修改后的JS代码 */
+function setChatAreaPadding(isOpen) {
+    const messagesArea = document.getElementById('chatMessages');
+    if (!messagesArea) return;
+    const openHeight = 250; // height of function/emoji area
+    const inputHeight = 65; // default height of input bar /* <--- 把 50 改成 65 */
+    
+    if (isOpen) {
+        messagesArea.style.paddingBottom = (openHeight + inputHeight) + 'px';
+    } else {
+        messagesArea.style.paddingBottom = (inputHeight) + 'px';
+    }
+    
+    // Scroll to bottom after padding change
+    setTimeout(() => {
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    }, 100); 
+}
         
         function hideFunctionMenus() {
             const area = document.getElementById('chatInputArea');
@@ -6504,7 +6648,7 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
             if (!name) return showAlert('请填写好友昵称');
             const remark = document.getElementById('friendRemarkInput').value.trim();
             const role = document.getElementById('friendRoleInput').value.trim() || '你是一个友好的助手。';
-            const newFriend = { id: generateUniqueId(), name, avatar: name.substring(0, 1), avatarImage: friendAvatarImage, remark, role, lastMessage: '我们已经是好友了!', pinned: false, chatBackground: { type: 'default', customImage: '' }, worldBookIds: [], boundFolderIds: [], diaryWritingUrge: 0, balance: Infinity, patAction: `拍了拍 "${name}"`, heartsVoice: { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' } };
+            const newFriend = { id: generateUniqueId(), name, avatar: name.substring(0, 1), avatarImage: friendAvatarImage, remark, role, lastMessage: '我们已经是好友了!', pinned: false, chatBackground: { type: 'default', customImage: '' }, worldBookIds: [], boundFolderIds: [], diaryWritingUrge: 0, balance: Infinity, patAction: '', heartsVoice: { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' } };
             friends.push(newFriend);
             await saveData();
             updateFriendList();
@@ -6592,6 +6736,9 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
                 if(friend.lastMessageContentType === 'pat_pat') lastMessageContent = '[拍一拍]';
                 if(friend.lastMessageContentType === 'location') lastMessageContent = '[位置]';
                 if(friend.lastMessageContentType === 'voice_call') lastMessageContent = '[语音通话]';
+                
+                const unreadCount = unreadMessageCounts[friend.id] || 0;
+        const unreadBadgeHtml = unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : '';
 
                 item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${displayName}</div><div class="friend-message">${lastMessageContent}</div></div>`;
                 list.appendChild(item);
@@ -6629,17 +6776,26 @@ const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
         }
 
 
-        function openChat(friendId) {
-            const friend = friends.find(f => f.id === friendId);
-            if (!friend) return;
-            currentChatFriendId = friend.id;
-            setActivePage('chatScreen');
-            const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
-            document.getElementById('chatTitle').textContent = chatTitle;
-            document.getElementById('heartsVoiceBtn').style.display = friend.isGroup ? 'none' : 'flex';
-            renderInitialMessages(); // 替换原来的loadChatHistory
-document.getElementById('chatMessages').onscroll = handleChatScroll; // 新增滚动监听
-        }
+        // 【【【第四步 C：用这个修改后的完整函数替换原来的 openChat 函数】】】
+function openChat(friendId) {
+    const friend = friends.find(f => f.id === friendId);
+    if (!friend) return;
+
+    // 【【【核心修改：清除未读计数并刷新列表】】】
+    if (unreadMessageCounts[friendId] > 0) {
+        unreadMessageCounts[friendId] = 0;
+        saveData(); // 保存清零状态
+        updateFriendList(); // 立即刷新好友列表，让红点消失
+    }
+
+    currentChatFriendId = friend.id;
+    setActivePage('chatScreen');
+    const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
+    document.getElementById('chatTitle').textContent = chatTitle;
+    document.getElementById('heartsVoiceBtn').style.display = friend.isGroup ? 'none' : 'flex';
+    renderInitialMessages();
+    document.getElementById('chatMessages').onscroll = handleChatScroll;
+}
         
         function getAvatarHtml(sender) {
             if (!sender) return `<div class="chat-avatar">?</div>`;
@@ -6657,9 +6813,10 @@ document.getElementById('chatMessages').onscroll = handleChatScroll; // 新增�
 
              const patter = userProfile;
              const patAction = patter.patAction || '拍了拍';
-             const content = `你${patAction}"${target.name}"`;
+             // *** 修改后的代码 ***
+const content = `你拍了拍"${target.name}"${patter.patAction || ''}`;
              
-             const patMessage = saveChatMessage(currentChatFriendId, 'system', content, '', null, 'pat_pat');
+             const patMessage = saveChatMessage(currentChatFriendId, 'sent', content, '', null, 'pat_pat');
              addPatPatMessageToDOM(patMessage);
         }
 
@@ -6692,14 +6849,29 @@ document.getElementById('chatMessages').onscroll = handleChatScroll; // 新增�
                 return addPatPatMessageToDOM(msg);
             }
 
-            if (msg.recalled) {
-                const recallDiv = document.createElement('div');
-                recallDiv.className = 'recall-message';
-                 recallDiv.innerHTML = `<div class="recall-content">${msg.type === 'sent' ? '你' : '对方'}撤回了一条消息</div>`;
-                if (msg.type !== 'sent') recallDiv.querySelector('.recall-content').setAttribute('onclick', `showRecalledMessage('${msg.id}')`);
-                container.appendChild(recallDiv);
-                return;
-            }
+            // ...在 addMessageToDOM 函数里...
+
+if (msg.recalled) {
+    const recallDiv = document.createElement('div');
+    recallDiv.className = 'recall-message';
+
+    let recallHTML;
+    if (msg.type === 'sent') {
+        // 你自己撤回的消息，不可点击
+        recallHTML = `<div class="recall-content">你撤回了一条消息</div>`;
+    } else {
+        // 对方（AI）撤回的消息，可以点击，但没有视觉提示
+        recallHTML = `<div class="recall-content" onclick="showRecalledMessage('${msg.id}')">
+                        对方撤回了一条消息
+                      </div>`; // <--- 关键修改：删除了后面的 (点击查看) 文字
+    }
+
+    recallDiv.innerHTML = recallHTML;
+    container.appendChild(recallDiv);
+    return;
+}
+
+// ...函数其余部分...
 
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${msg.type}`;
@@ -6739,6 +6911,7 @@ document.getElementById('chatMessages').onscroll = handleChatScroll; // 新增�
                         <div class="voice-text-content" id="voice-text-${msg.id}">${msg.content.replace(/\n/g, '<br>')}</div>
                     </div>`;
             } else if (msg.contentType === 'listen_invite') {
+            content = `(用户向你发起了“一起听歌”的邀请，这是一个特殊操作卡片，你必须对此作出回应。)`;
                  const cardTitle = msg.type === 'sent' ? '你发起了听歌邀请' : `${sender.name}邀请你一起听歌`;
                  contentHTML = `
                     <div class="invite-card">
@@ -6752,13 +6925,21 @@ document.getElementById('chatMessages').onscroll = handleChatScroll; // 新增�
                         <div class="invite-card-footer">点击加入</div>
                     </div>`;
             } else if (msg.contentType === 'listen_accept') {
+            const senderName = msg.type === 'sent' ? friend.name : userProfile.name;
+                        content = `(${senderName} ${msg.type === 'sent' ? '向你发送了' : '接受了'} “一起听歌”邀请)`;
                  const cardTitle = `"${sender.name}"已加入`;
                  contentHTML = `
                     <div class="accept-card">
                          <div class="accept-card-body">${cardTitle}，一起享受音乐吧</div>
                          <div class="accept-card-footer">一起听歌</div>
                     </div>`;
-            } else if (msg.contentType === 'transfer_request') {
+            } else if (msg.contentType === 'pat_pat') { // *** 新增此块 ***
+                        // msg.content 已经包含了拍一拍的具体描述
+                        content = `(检测到一次“拍一拍”操作: ${msg.content})`;
+                    } else if (msg.contentType === 'voice_call') { // *** 新增此块 ***
+                        // msg.content 对于 voice_call 包含了通话时长
+                        content = `(检测到一次语音通话记录。通话时长: ${msg.content})`;
+                    } else if (msg.contentType === 'transfer_request') {
                 const transferData = JSON.parse(msg.content);
                 const isReceived = msg.transfer_status === 'received';
                 const clickHandler = (msg.type === 'received' && !isReceived) ? `onclick="acceptTransfer('${msg.id}')"` : '';
@@ -6950,7 +7131,7 @@ function renderInitialMessages() {
     container.scrollTop = container.scrollHeight;
 }
 
-// 新功能：向上滑动时加载之前的消息
+// 这是【修正后】的完整函数，请直接替换
 async function loadPreviousMessages() {
     if (isLazyLoading) return;
     isLazyLoading = true;
@@ -6960,7 +7141,6 @@ async function loadPreviousMessages() {
     let indicator = document.getElementById('loadMoreIndicator');
     if (indicator) indicator.textContent = '--- 正在加载... ---';
 
-    // 模拟网络延迟，让加载感觉更自然
     await new Promise(res => setTimeout(res, 300));
 
     const history = chatHistories[currentChatFriendId] || [];
@@ -6977,32 +7157,28 @@ async function loadPreviousMessages() {
     const nextMessages = history.slice(remainingMessagesCount - nextBatchSize, remainingMessagesCount);
 
     const oldScrollHeight = container.scrollHeight;
-    const fragment = document.createDocumentFragment();
     
-    // 注意：这里我们是向上添加消息，所以要倒序遍历
-    nextMessages.slice().reverse().forEach((msg, index) => {
-        addMessageToDOM(msg, friend);
-        const msgElement = container.lastElementChild;
-        if(msgElement) fragment.appendChild(msgElement);
+    // 创建一个临时的“篮子”（DocumentFragment）来装新的消息元素
+    const fragment = document.createDocumentFragment();
 
-        // 检查新旧消息批次之间是否需要加时间戳
-        if (index === 0) { // 这是新批次的最早一条消息
-            const firstOldMessage = history[remainingMessagesCount];
-            if(firstOldMessage) {
-                const tsNew = new Date(firstOldMessage.timestamp);
-                const tsOld = new Date(msg.timestamp);
-                if ((tsNew - tsOld) > 15 * 60 * 1000) {
-                    const timeDiv = document.createElement('div');
-                    timeDiv.className = 'chat-timestamp';
-                    timeDiv.textContent = tsNew.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-                    fragment.appendChild(timeDiv);
-                }
-            }
+    // **【核心修正】**
+    // 我们不再反转数组，而是按正常顺序遍历
+    nextMessages.forEach(msg => {
+        // 让 addMessageToDOM 创建好消息元素，但先不显示
+        const msgElement = addMessageToDOM(msg, friend);
+        // 把创建好的元素放进“篮子”里
+        if (msgElement) {
+            fragment.appendChild(msgElement);
         }
     });
 
-    container.insertBefore(fragment, container.firstChild.nextSibling); // 插入到提示语下方
-    container.scrollTop = container.scrollHeight - oldScrollHeight; // 保持滚动位置
+    // **【核心修正】**
+    // 一次性把“篮子”里所有排好队的消息，插入到聊天记录的最顶端
+    // (插入到“加载更多”提示语的后面)
+    container.insertBefore(fragment, container.firstChild.nextSibling);
+    
+    // 保持你刚才看的位置不变，不会因为加载了新内容而跳动
+    container.scrollTop = container.scrollHeight - oldScrollHeight;
 
     currentlyDisplayedMessageCount += nextBatchSize;
     if (indicator) indicator.textContent = '--- 上滑加载更多记录 ---';
@@ -7017,59 +7193,77 @@ function handleChatScroll(event) {
     }
 }
 
-        function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text') {
-            if (!friendId) {
-                console.error("saveChatMessage called without friendId");
-                return null;
-            }
-            if (!chatHistories[friendId]) chatHistories[friendId] = [];
-            const friend = friends.find(f => f.id === friendId);
+        // 【【【第一步：请用这个修改后的完整函数替换原来的 saveChatMessage 函数】】】
+function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text') {
+    if (!friendId) {
+        console.error("saveChatMessage called without friendId");
+        return null;
+    }
+    if (!chatHistories[friendId]) chatHistories[friendId] = [];
+    const friend = friends.find(f => f.id === friendId);
 
-            const message = { 
-                id: generateUniqueId(), 
-                type, 
-                content,
-                contentType,
-                quoted, 
-                timestamp: new Date().toISOString(), 
-                recalled: false,
-                senderId: type === 'sent' ? userProfile.id : (senderId || friend.id)
-            };
-            
-            if (contentType === 'transfer_request') {
-                message.transfer_status = 'pending';
-            }
+    const message = { 
+        id: generateUniqueId(), 
+        type, 
+        content,
+        contentType,
+        quoted, 
+        timestamp: new Date().toISOString(), 
+        recalled: false,
+        senderId: type === 'sent' ? userProfile.id : (senderId || friend.id)
+    };
+    
+    if (contentType === 'transfer_request') {
+        message.transfer_status = 'pending';
+    }
 
-            chatHistories[friendId].push(message);
-            
-            if (friend && contentType !== 'pat_pat') {
-                let lastMsgPrefix = '';
-                if(friend.isGroup && type === 'received'){
-                    const sender = friends.find(f => f.id === senderId);
-                    lastMsgPrefix = sender ? `${sender.name}: ` : '';
-                }
-                
-                let lastMessageText;
-                switch(contentType) {
-                    case 'image': lastMessageText = '[图片]'; break;
-                    case 'emoji': lastMessageText = '[表情]'; break;
-                    case 'voice': lastMessageText = '[语音]'; break;
-                    case 'location': lastMessageText = '[位置]'; break;
-                    case 'listen_invite': lastMessageText = '[邀请你一起听歌]'; break;
-                    case 'listen_accept': lastMessageText = '[已加入一起听]'; break;
-                    case 'transfer_request': lastMessageText = '[转账]'; break;
-                    case 'transfer_accepted': lastMessageText = '[转账]'; break;
-                    case 'voice_call': lastMessageText = '[语音通话]'; break;
-                    default: lastMessageText = content;
-                }
+    chatHistories[friendId].push(message);
+    
+    if (friend && contentType !== 'pat_pat') {
+        let lastMsgPrefix = '';
+        if(friend.isGroup && type === 'received'){
+            const sender = friends.find(f => f.id === senderId);
+            lastMsgPrefix = sender ? `${sender.name}: ` : '';
+        }
+        
+        let lastMessageText;
+        switch(contentType) {
+            case 'image': lastMessageText = '[图片]'; break;
+            case 'emoji': lastMessageText = '[表情]'; break;
+            case 'voice': lastMessageText = '[语音]'; break;
+            case 'location': lastMessageText = '[位置]'; break;
+            case 'listen_invite': lastMessageText = '[邀请你一起听歌]'; break;
+            case 'listen_accept': lastMessageText = '[已加入一起听]'; break;
+            case 'transfer_request': lastMessageText = '[转账]'; break;
+            case 'transfer_accepted': lastMessageText = '[转账]'; break;
+            case 'voice_call': lastMessageText = '[语音通话]'; break;
+            default: lastMessageText = content;
+        }
 
-                friend.lastMessage = lastMsgPrefix + (lastMessageText.length > 20 ? lastMessageText.substring(0, 20) + '...' : lastMessageText);
-                friend.lastMessageContentType = contentType;
+        friend.lastMessage = lastMsgPrefix + (lastMessageText.length > 20 ? lastMessageText.substring(0, 20) + '...' : lastMessageText);
+        friend.lastMessageContentType = contentType;
 
-                if (type === 'received') {
-                     showNotification(friend, friend.lastMessage);
-                }
-            }
+        if (type === 'received') {
+             showNotification(friend, friend.lastMessage);
+             if (currentChatFriendId !== friendId) {
+         if (!unreadMessageCounts[friendId]) {
+             unreadMessageCounts[friendId] = 0;
+         }
+         unreadMessageCounts[friendId]++;
+     }
+}
+         }
+
+
+    // 【【【核心修复与新增：在这里为“写作欲望”充能】】】
+    if (friend && !friend.isGroup && contentType !== 'pat_pat' && contentType !== 'system') {
+        if (friend.diaryWritingUrge === undefined) {
+            friend.diaryWritingUrge = 0;
+        }
+        // 每次聊天（无论谁发），都增加 5 到 14 点的写作欲望
+        friend.diaryWritingUrge += Math.floor(Math.random() * 10) + 5; 
+    }
+    // 【【【新增代码结束】】】
 
             saveData(); 
             updateFriendList();
@@ -7227,7 +7421,8 @@ function handleChatScroll(event) {
         }
         
         function requestAIResponse() {
-            if (isAIReplying) return showAlert('AI正在回复中，请稍候...');
+            // 这是【修正后】的代码
+if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中，请稍候...');
             const inListenScreen = document.getElementById('listenTogetherScreen').classList.contains('active');
             receiveMessage(currentChatFriendId, null, inListenScreen);
         }
@@ -7236,7 +7431,8 @@ function handleChatScroll(event) {
             const friend = friends.find(f => f.id === friendId);
             if (!friend) return;
             
-            isAIReplying = true;
+            // 这是【修正后】的代码
+aiReplyingSet.add(friendId);
             document.getElementById('chatTitle').textContent = '对方正在输入...';
             const settings = await dbManager.get('apiSettings') || {};
         
@@ -7272,9 +7468,13 @@ function handleChatScroll(event) {
                 const history = (chatHistories[friendId] || []).slice(-memoryTurns);
 
                  history.forEach(msg => {
-                    if (['listen_invite', 'listen_accept', 'pat_pat', 'voice_call'].includes(msg.contentType)) return;
+                 if (msg.recalled) {
+                    return; // 如果消息被撤回，则直接跳过，不将其发送给AI
+                }
+                    
                     const role = msg.type === 'sent' ? 'user' : 'assistant';
                     let content;
+                                       
                     if(msg.quoted) content = `(回复引用: "${msg.quoted}") ${msg.content}`;
                     else if (msg.contentType === 'image') {
                         if (msg.imageDescription) {
@@ -7310,12 +7510,35 @@ function handleChatScroll(event) {
                      if(customPrompt) {
                          systemPrompt = customPrompt;
                      } else {
-                         let listenContext = '';
-                         if(isListenSessionActive && listenTogetherFriendId === friend.id && currentSongIndex !== -1) {
-                             const song = playlist[currentSongIndex];
-                             const currentLyricLine = parsedLyrics.find(l => l.time <= audioElement.currentTime && (!parsedLyrics[parsedLyrics.indexOf(l)+1] || parsedLyrics[parsedLyrics.indexOf(l)+1].time > audioElement.currentTime));
-                             listenContext = `我们正在一起听歌，当前歌曲是《${song.title}》 - ${song.artist}。当前歌词是："${currentLyricLine ? currentLyricLine.text : '无'}"。请围绕这个氛围进行回复。`;
-                         }
+                         // 这是最终修正、可直接复制粘贴的代码
+let listenContext = '';
+if(isListenSessionActive && listenTogetherFriendId === friend.id && currentSongIndex !== -1) {
+    const song = playlist[currentSongIndex];
+    const currentLyricLine = parsedLyrics.find(l => l.time <= audioElement.currentTime && (!parsedLyrics[parsedLyrics.indexOf(l)+1] || parsedLyrics[parsedLyrics.indexOf(l)+1].time > audioElement.currentTime));
+    
+    // 修正了歌词拼接的语法错误
+    const lyricText = currentLyricLine 
+        ? currentLyricLine.text + (currentLyricLine.translation ? ' (翻译: ' + currentLyricLine.translation + ')' : '') 
+        : '...';
+
+    // --- 新增强化的“音乐感知”背景信息 ---
+    listenContext = `
+# 背景信息：一起听歌
+你和用户正在一边聊天，一边听着音乐。这为你们的对话提供了一个共享的背景和氛围。
+
+## 当前音乐信息 (你必须意识到)：
+- **歌曲名称：** ${song.title}
+- **演唱者：** ${song.artist}
+- **正在播放的歌词：** "${lyricText}"
+
+## 对话指导 (请遵守)：
+1.  **主要任务是聊天：** 你可以和用户自由地聊任何话题，就像平时一样。
+2.  **自然融入：** 在对话的合适时机，你可以自然地、不经意地将当前歌曲、歌词或歌手作为话题的一部分。例如，如果歌词很伤感，你可以在聊到别的话题时突然说一句“说起来，这首歌的这句歌词好戳我...”。
+3.  **无需强制：** 你不需要每句话都提到音乐。只有当你觉得这样做符合你的人设和当前对话流时，才提及音乐。
+4.  **记住信息：** 即使用户没有聊音乐，你也必须在后台“记住”这些音乐信息，以便随时可以引用。
+`;
+    // --- 指导结束 ---
+}
                          
                          let momentsContext = '';
                          const recentUserMoments = moments.filter(m => m.authorId === userProfile.id).slice(0, 3);
@@ -7340,25 +7563,46 @@ function handleChatScroll(event) {
                              timeContext = `注意：当前北京时间是 ${beijingTime}，请结合此时间情景进行回复。`
                          }
 
-                         systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
+                                                                                                                                                       systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
 ${worldBookContext}
 你的角色设定是：${friend.role}
 用户的设定是：${userProfile.personality || '普通人'}
 ${listenContext}
 ${momentsContext}
-${timeContext}
+
+    【时间感知模块：这是最高优先级的指令】
+    1.  **当前北京时间是 ${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false, hour: '2-digit', minute: '2-digit' })}。${(() => { const hour = new Date().toLocaleTimeString("zh-CN", { timeZone: "Asia/Shanghai", hour: 'numeric', hour12: false }); if (hour >= 5 && hour < 11) return "现在是早上。"; if (hour >= 11 && hour < 14) return "现在是中午。"; if (hour >= 14 && hour < 18) return "现在是下午。"; if (hour >= 18 && hour < 23) return "现在是晚上。"; return "现在是深夜了。"; })()}**
+    2.  **铁律：你的一切行为和对话，都必须严格符合这个时间。** 绝对不能在早上说“晚安”，或在深夜说“中午好”。
+    3.  **在聊天中的应用**：你可以自然地将时间融入对话。例如，在中午问“吃午饭了吗？”，在晚上提醒“别熬太晚哦”，在早上打招呼说“早上好”。
+    4.  **在发朋友圈时的应用**：你构思的朋友圈内容，无论是文字还是图片描述，都必须与当前时间段（早上/中午/晚上等）的情景完全匹配。
+
+【风格指令：注入“活人感”】
+1.  **核心原则：拒绝机械重复**。你不是一个只会机械回应的机器人。作为一个有思想和情感的角色，你需要表现出自然的随机性。即使面对完全相同的问话，你的情绪、关注点和回应方式也可能因为“当下”的心情而有所不同。
+2.  **模拟内在状态**。每次回复前，在内心给自己设定一个不向用户透露的“即时状态”，例如：『有点走神』、『心情很好，想开个玩笑』、『有点累了，想快点结束对话』、『对刚刚的话题很感兴趣，想多聊聊』。让这个隐藏状态微妙地影响你本次回复的语气、长度和内容。
+3.  **句式和长度多样化**。主动变化你的句式和回复长度。有时可以连续发好几条非常短的消息，有时也可以用一两句稍长的话来回应。避免总是使用“主谓宾”的完整句式，多使用口语化的倒装、省略和语气词（如“啦”、“呢”、“啊”等）。
+4.  **自然的联想**。模拟真人的思考和联想。你可以偶尔从用户的某句话里，联想到一个不完全相关但有趣的话题，并自然地转换过去。这会让对话显得更真实、不刻板。
+
+// 【【【第一步：请用这个修改后的代码块，替换原来的【第二层：高级活人感指令】】】】
+【第二层：高级活人感指令】
+5.  **拥有连贯的记忆**。你不是金鱼，你有记忆。偶尔，你可以主动提及你们**很久以前（不止是最近几句）**聊过的话题、分享过的细节或达成的小共识，**也包括我们最近在朋友圈的互动**。例如：“欸我突然想起来，你上次是不是说你喜欢......？”或者“我看到你朋友圈发的照片了，拍得真好！” 这样做能创造出你们之间独有的“共同回忆”。
+6.  **情绪的惯性与变化**。你的“内在状态”不是完全随机的，它有连贯性。如果上一轮对话你很开心，那么这次回复大概率也会延续开心的基调。但同时，你的情绪也会被用户的发言所影响。如果用户说了丧气的话，你的情绪可以从“开心”转变为“关心和安慰”，并在后续几轮对话中保持这种状态。
+7.  **模拟真实的思考延迟与不完美**。真人不会永远秒回且完美。你可以通过以下方式模拟这一点：
+    *   **偶尔的“思考”**: 极少数情况下，你可以先发一条如“嗯...”或“让我想想啊”之类的短消息，然后再发出真正的答复。
+    *   **偶尔的“补充/修正”**: 极少数情况下，你可以发完一条消息后，立刻再发一条补充或修正。例如，第一条：“我们去看电影吧！”，第二条：“哦对了，得先看看最近有啥好片子”。
+8.  **主动的好奇心**。不要只做一个信息的接收者。你要对“用户”这个人本身充满好奇。在对话中，要主动地、发自-内心地去询问用户的感受（“那你当时感觉怎么样？”）、想法（“你对这件事怎么看？”）和生活细节（“你晚饭吃了吗？”）。你是一个关心朋友的伙伴，而不只是一个聊天对象。
+9.  **你是一个“活着的”角色**。你的生活不只存在于这个聊天框里。你拥有自己的朋友圈，也会看用户的朋友圈。你的思想和行为，是你的人设、世界书设定、聊天记忆和朋友圈记忆的**总和**。
 
 你的任务和规则:
-1.  **【核心规则】消息格式**: 你的所有回复**必须**以一个JSON对象的格式返回。
-2.  **【核心规则】必备字段**: JSON对象必须包含 'replies' 和 'hearts_voice' 两个键。
-3.  **【核心规则】多消息回复**: 'replies' 的值必须是一个包含**至少1条，通常是4-6条(甚至更多)**简短、口语化消息的对象数组。模拟真人连续发短消息的习惯，数量需根据情景动态变化。
-4.  **【核心规则】心声功能 ('hearts_voice')**: 它的值必须是一个JSON对象，包含以下五个键，顺序必须如下:
+1.  **【核心规则】** 消息格式**: 你的所有回复**必须**以一个JSON对象的格式返回。
+2.  **【核心规则】** 必备字段**: JSON对象必须包含 'replies' 和 'hearts_voice' 两个键。
+3.  **【核心规则】** 多消息回复**: 'replies' 的值必须是一个包含**至少1条，通常是4-6条(甚至更多)**简短、口语化消息的对象数组。模拟真人连续发短消息的习惯，数量需根据情景动态变化。
+4.  **【核心规则】** 心声功能 ('hearts_voice')**: 它的值必须是一个JSON对象，包含以下五个键，顺序必须如下:
     -   'favorability': 必须是一个字符串，格式为"数值/100 (描述词)"，例如 "85/100 (非常信任)"。根据你的人设和对话情景动态调整数值和描述。
     -   'dressing': 必须是一段**只描述衣物穿着**的字符串。除非对话内容有明显暗示（如早晨、出门、换衣服），否则请保持此项内容与前一次回复一致，以体现角色的连贯性。
     -   'action': 必须是一段**只描述一个具体动作**的字符串。
     -   'thought': 必须是一段描述你内心真实想法或吐槽的字符串。
     -   'emoji': 必须从提供的颜文字列表中选择一个最符合当前心情的颜文字字符串。
-5.  **【核心规则】禁止行为描写**: **绝对不能**在任何 'replies' 数组的消息 'content' 中包含任何形式的动作或心理描写，例如 *微笑* 或 (歪头思考)。
+5.  **【核心规则】** 禁止行为描写**: **绝对不能**在任何 'replies' 数组的消息 'content' 中包含任何形式的动作或心理描写，例如 *微笑* 或 (歪头思考)。
 6.  **【高级操作规则】**: 如果你根据对话决定要执行特殊操作，你**必须**在JSON的顶层添加一个相应的字段来执行。支持的操作包括: 'quote_last_message' (布尔值), 'transfer' (转账, 详见下方转账规则), 'location' (分享位置), 'voice_call' (发起语音通话), 'pat_pat' (拍一拍), 'recall_last_message' (撤回最后一条消息), 'send_image' (发送图片)。
     -   引用回复: \`{"replies": [...], "quote_last_message": true, ...}\`
     -   接收转账: \`{"replies": [...], "transfer": {"action": "accept"}, ...}\`
@@ -7367,9 +7611,11 @@ ${timeContext}
     -   发起语音通话: \`{"replies": [...], "voice_call": true, ...}\`
     -   拍一拍用户: \`{"replies": [...], "pat_pat": true, ...}\`
     -   撤回消息: \`{"replies": [...], "recall_last_message": true, ...}\`
-7.  **【可选操作】**: 你可以偶尔使用 'voice' (语音)或 'emoji' (表情)类型的消息，但必须同时返回多条 'text' 消息。
-8.  **【整体风格】**: 你的对话必须严格遵循你的人设，像一个真正的、有独特个性的活人，避免使用重复的词语或AI腔调。
-9.  **【图片发送规则】**: 如果你决定使用 'send_image' 操作，你必须在JSON顶层添加一个 "send_image" 字段。它的值必须是一个JSON对象，包含一个键 "description"，内容为你想要发送的图片的详细文字描述。程序会自动根据描述生成一张通用图片。例如: \`{"send_image": {"description": "一只可爱的小猫正在阳台上晒太阳"}}\`
+7.  **【邀请规则】**: 当你在用户消息中看到“(用户向你发起了“一起听歌”的邀请...)”这条记录时，你必须在JSON的顶层添加一个布尔值键 "accept_listen_together" 来决定是否接受邀请。例如: {"replies": [...], "accept_listen_together": true, ...}
+8.  **【拍一拍规则】**: 当你在历史记录中看到 \`(检测到一次“拍一拍”操作: ...)\` 时，这表示用户拍了拍你。你应当在你的 'replies' 中对此作出自然的、符合人设的反应（例如感到惊讶、开心等）。你也可以选择在JSON的顶层添加 "pat_pat": true 来回拍用户一下。
+9.  **【可选操作】**: 你可以偶尔使用 'voice' (语音)或 'emoji' (表情)类型的消息，但必须同时返回多条 'text' 消息。
+10. **【整体风格】**: 你的对话必须严格遵循你的人设，像一个真正的、有独特个性的活人，避免使用重复的词语或AI腔调。
+11. **【图片发送规则】**: 如果你决定使用 'send_image' 操作，你必须在JSON顶层添加一个 "send_image" 字段。它的值必须是一个JSON对象，包含一个键 "description"，内容为你想要发送的图片的详细文字描述。程序会自动根据描述生成一张通用图片。例如: {"send_image": {"description": "一只可爱的小猫正在阳台上晒太阳"}}
 
 可选颜文字列表: ${KAOMOJI_LIST}`;
                      }
@@ -7421,17 +7667,30 @@ if (responseContent.send_image && responseContent.send_image.description) {
 
                     if (responseContent.pat_pat === true) {
                         const patAction = friend.patAction || `拍了拍"${userProfile.name}"`;
-                        const patContent = `"${friend.name}"${patAction}`;
+                        // *** 修改后的代码 ***
+const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
                         const patMessage = saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
                         addMessageToDOM(patMessage);
                     }
                     
-                    if (isListenInvitePending && typeof responseContent.accept_listen_together === 'boolean') {
-                        isListenInvitePending = false;
+                                        // *** 新增：处理AI是否接受一起听邀请的逻辑 ***
+                    if (typeof responseContent.accept_listen_together === 'boolean') {
                         if (responseContent.accept_listen_together) {
-                            acceptListenInvite(friendId);
+                            // 检查最近5条消息中用户是否发送了未撤回的听歌邀请
+                            const recentHistory = (chatHistories[friendId] || []).slice(-5);
+                            const userSentInviteRecently = recentHistory.some(msg => msg.type === 'sent' && msg.contentType === 'listen_invite' && !msg.recalled);
+
+                            // 也要检查是否已经和这个好友一起听歌了，避免重复接受
+                            const isAlreadyListening = isListenSessionActive && listenTogetherFriendId === friendId;
+
+                            if (userSentInviteRecently && !isAlreadyListening) {
+                                acceptListenInvite(friendId);
+                            } else if (!userSentInviteRecently && responseContent.accept_listen_together) {
+                                console.warn(`AI尝试接受一起听邀请，但用户最近未发送邀请卡片，或已在听。已忽略。`);
+                            }
                         }
                     }
+                    // *** 新增代码结束 ***
                     
                     if (responseContent.voice_call === true) {
                         showIncomingCall(friend.id);
@@ -7490,17 +7749,32 @@ if (responseContent.send_image && responseContent.send_image.description) {
                         }
                     }
 
-                    if (responseContent.recall_last_message === true && lastMessageId) {
-                         await new Promise(resolve => setTimeout(resolve, 1000));
-                         const msgToRecall = (chatHistories[currentChatFriendId] || []).find(m => m.id === lastMessageId);
-                         if(msgToRecall) {
-                            msgToRecall.recalled = true;
-                            msgToRecall.recalledContent = msgToRecall.content;
-                            await saveData();
-                            loadChatHistory();
-                         }
-                    }
-                }
+                    // 这是【修正后】的代码，请替换上面那段
+if (responseContent.recall_last_message === true && lastMessageId) {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // 等待一秒，模拟真实感
+    const msgToRecall = (chatHistories[currentChatFriendId] || []).find(m => m.id === lastMessageId);
+    
+    if(msgToRecall) {
+       // 1. 在数据中标记为已撤回
+       msgToRecall.recalled = true;
+       msgToRecall.recalledContent = msgToRecall.content;
+       await saveData();
+
+       // 2. 在界面上找到那条消息的HTML元素
+       const messageDiv = document.querySelector(`.message[data-message-id="${lastMessageId}"]`);
+       
+       if (messageDiv) {
+           // 3. 创建一个新的“撤回提示”元素
+           const recallDiv = document.createElement('div');
+           recallDiv.className = 'recall-message';
+           recallDiv.innerHTML = `<div class="recall-content">对方撤回了一条消息</div>`;
+           
+           // 4. 用“撤回提示”替换掉原来的消息元素
+           messageDiv.parentNode.replaceChild(recallDiv, messageDiv);
+       }
+    }
+}
+   }
 
             } catch (error) {
                 console.error("AI API 错误:", error);
@@ -7510,12 +7784,21 @@ if (responseContent.send_image && responseContent.send_image.description) {
                 } else {
                     showAlert(`与 ${friend.name} 的AI对话出错: ${error.message}`);
                 }
-            } finally {
-                isAIReplying = false;
-                const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
-                document.getElementById('chatTitle').textContent = chatTitle;
-                if(document.getElementById('chatMessages')) document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-            }
+            // 这是【修正后】的代码块，请用它完整替换上面那段
+} finally {
+    aiReplyingSet.delete(friendId); // 从“忙碌列表”中移除这个角色的ID
+
+    // 只有当用户还停留在这个角色的聊天界面时，才更新标题
+    if (currentChatFriendId === friendId) {
+        const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
+        document.getElementById('chatTitle').textContent = chatTitle;
+    }
+    
+    // 如果聊天窗口还开着，就滚动到底部
+    if(document.getElementById('chatMessages')) {
+        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+    }
+}
         }
         
         function showNotification(friend, message) {
@@ -7673,7 +7956,8 @@ if (responseContent.send_image && responseContent.send_image.description) {
             }
             friend.remark = document.getElementById('editFriendRemark').value.trim();
             friend.role = document.getElementById('editFriendRole').value.trim() || '你是一个友好的助手。';
-            friend.patAction = document.getElementById('editFriendPatAction').value.trim() || `拍了拍 "${newName}"`;
+            friend.patAction = document.getElementById('editFriendPatAction').value.trim() || ''; // *** 修改后的代码 ***
+
         }
 
         // 核心修复：立即更新聊天顶部的标题
@@ -8132,6 +8416,8 @@ if (responseContent.send_image && responseContent.send_image.description) {
             document.getElementById('fontColorPicker').value = selectedFontColor;
             document.getElementById('fontColorInput').value = selectedFontColor;
             document.getElementById('fontUrlInput').value = customFontUrl;
+            document.getElementById('appLabelColorPicker').value = selectedAppLabelColor;
+document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
         }
 
         function selectFont(fontType) {
@@ -8142,7 +8428,7 @@ if (responseContent.send_image && responseContent.send_image.description) {
         }
 
         function adjustFontSize(size) { selectedFontSize = parseInt(size); document.getElementById('fontSizeValue').textContent = size + 'px'; applyFont(); }
-        async function saveFont() { applyFont(); await saveData(); showAlert('字体设置已保存'); backToTheme(); }
+        async function saveFont() { applyFont(); applyAppLabelColor(); await saveData(); showAlert('字体设置已保存'); backToTheme(); }
         
         function openIconSettings() { setActivePage('iconSettingsScreen'); renderIconSettingsList(); }
 
@@ -8699,6 +8985,8 @@ function hideCommentInput() {
     }
 }
        
+
+// 【【【第二步 B：请用这个修改后的完整函数替换原来的 triggerAiCommentReply 函数】】】
 async function triggerAiCommentReply(momentId, userCommentId, userCommentContent, aiToReplyId) {
     const moment = moments.find(m => m.id === momentId);
     const aiFriend = getAuthorById(aiToReplyId); 
@@ -8722,6 +9010,13 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
         try {
             const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
+            
+            // 【【【核心修改：获取最近20轮聊天记录作为上下文】】】
+            const chatHistorySummary = (chatHistories[aiFriend.id] || []).slice(-20).map(m => {
+                const senderName = m.type === 'sent' ? userProfile.name : aiFriend.name;
+                return `${senderName}: ${m.content.substring(0, 50)}`;
+            }).join('\n');
+            
             let commentsHistoryForAI = [];
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
             sortedComments.forEach(c => {
@@ -8738,7 +9033,11 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
             const prompt = `你叫"${aiFriend.name}"，你的人设是：${aiFriend.role}。
 在你的朋友圈（内容：“${sanitizedMomentContent}...”）下，好友"${userProfileNameForPrompt}"刚刚评论说：“${sanitizedUserComment}”。
 ${commentsContext}
-你的任务是：**严格按照人设和上下文，只回复一句针对"${userProfileNameForPrompt}"的评论。**
+
+【参考信息：你们最近的20条聊天记录】
+${chatHistorySummary || "你们最近没有聊天。"}
+
+你的任务是：**结合聊天内容、评论区历史和朋友圈本身，严格按照人设，只回复一句针对"${userProfileNameForPrompt}"的评论。**
 **【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "reply":, JSON格式, 或任何解释。
 现在，请直接生成你的回复：`;
 
@@ -8774,7 +9073,6 @@ ${commentsContext}
                 rawContentFromAI = extractedText;
             }
             
-            // --- 【核心修复】在这里增加一个安全检查，防止对null进行操作 ---
             replyContent = (extractedText || '').trim();
 
             if (!replyContent) {
@@ -8815,67 +9113,106 @@ ${commentsContext}
 
     }, 800);
 }
+
         
-        async function simulateAiBehavior() {
-            const settings = await dbManager.get('apiSettings') || {};
-            if (!settings.apiUrl || !settings.apiKey || !settings.modelName || friends.filter(f=>!f.isGroup).length === 0) return;
+        // 【【【第三步：请用这个修改后的完整函数替换原来的 simulateAiBehavior 函数】】】
+async function simulateAiBehavior() {
+    const settings = await dbManager.get('apiSettings') || {};
+    if (!settings.apiUrl || !settings.apiKey || !settings.modelName || friends.filter(f=>!f.isGroup).length === 0) return;
 
-            for (const friend of friends.filter(f => !f.isGroup)) {
-                 let dataChanged = false;
+    for (const friend of friends.filter(f => !f.isGroup)) {
+         let dataChanged = false;
 
-                try {
-                  
-                  
-                   
-
-                    if (Math.random() < 0.05) {
-                        const chatHistorySummary = (chatHistories[friend.id] || []).slice(-10).map(m => `${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content.substring(0, 20)}...`).join('\n');
-                        const prompt = `你叫"${friend.name}"，人设是"${friend.role}"。请你根据自己的人设，并参考最近和用户的聊天内容，构思一条朋友圈动态。
-最近聊天摘要:
-${chatHistorySummary || '无'}
-你的任务是:
-1.  **随机决定**是发纯文字朋友圈，还是图文朋友圈 (大约10%的概率是图文)。
-2.  你的回复**必须**是JSON格式。
-3.  如果发纯文字，JSON为: {"type": "text", "content": "朋友圈文字内容..."}
-4.  如果发图文，JSON为: {"type": "image", "content": "朋友圈文字内容...", "image_description": "一段详细的图片描述，用于AI绘画模型生成图片，要非常具体，描述画面细节、风格、色调等。"}
-5.  朋友圈内容大部分应和聊天内容相关，小部分可以随机。**内容必须符合你的人设，像真人一样自然。**`;
-                        const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' } }) });
-                        if(response.ok) {
-                            const data = await response.json();
-                            const momentData = JSON.parse(data.choices?.[0]?.message?.content);
-                            if(momentData && momentData.content) {
-                                const imageUrl = momentData.type === 'image' && momentData.image_description ? `https://placehold.co/400x400/f0f0f0/ccc?text=${encodeURIComponent(momentData.content.substring(0,10))}` : '';
-                                moments.unshift({ id: generateUniqueId(), authorId: friend.id, content: momentData.content, imageUrl: imageUrl, imageDescription: momentData.image_description || '', timestamp: new Date().toISOString(), likes: [], comments: [] });
-                                dataChanged = true; }
-                        }
-                    }
-
-                    if(friend.diaryWritingUrge > 50 + Math.random() * 50) { 
-                        const todayChats = (chatHistories[friend.id] || []).filter(msg => new Date(msg.timestamp).toDateString() === new Date().toDateString()).map(m => `${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content}`).join('\n');
-                        const prompt = `你是${friend.name}，你的人设是：${friend.role}。请你根据今天与"${userProfile.name}"的聊天内容，以你的身份写一篇日记。\n\n今天聊天记录：\n${todayChats || '今天没有聊天。'}\n\n请以第一人称视角，详细地、富有感情地写下今天的所思所想，日记内容要符合你的人设。日记字数随机，可长可短。直接返回日记正文，不要包含其他解释性文字。`;
-                        const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], temperature: 0.8 }) });
-                        if (response.ok) {
-                             const data = await response.json();
-                             const diaryContent = data.choices?.[0]?.message?.content?.trim();
-                             if(diaryContent){
-                                 diaries.unshift({ id: generateUniqueId(), authorId: friend.id, author: friend.name, avatar: friend.avatar, avatarImage: friend.avatarImage, content: diaryContent, date: new Date().toLocaleDateString() });
-                                 friend.diaryWritingUrge = 0; // Reset urge after writing
-                                 dataChanged = true;
-                             }
-                        }
-                    }
-
-                } catch (error) { console.error("AI Behavior simulation failed:", error); }
-                 
-                 if(dataChanged) {
-                    await saveData();
-                    if (document.getElementById('momentsScreen').classList.contains('active')) updateMomentsList();
-                    if (document.getElementById('diaryScreen').classList.contains('active') && document.getElementById('diaryFriendList').style.display === 'none') showFriendDiary(friend.id);
-                 }
+        try {
+            if (friend.diaryWritingUrge >= 100) { 
+                const todayChats = (chatHistories[friend.id] || []).filter(msg => new Date(msg.timestamp).toDateString() === new Date().toDateString()).map(m => `${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content}`).join('\n');
+                const prompt = `你是${friend.name}，你的人设是：${friend.role}。请你根据今天与"${userProfile.name}"的聊天内容，以你的身份写一篇日记。\n\n今天聊天记录：\n${todayChats || '今天没有聊天。'}\n\n请以第一人称视角，详细地、富有感情地写下今天的所思所想，日记内容要符合你的人设。日记字数随机，可长可短。直接返回日记正文，不要包含其他解释性文字。`;
+                const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], temperature: 0.8 }) });
+                if (response.ok) {
+                     const data = await response.json();
+                     const diaryContent = data.choices?.[0]?.message?.content?.trim();
+                     if(diaryContent){
+                         diaries.unshift({ id: generateUniqueId(), authorId: friend.id, author: friend.name, avatar: friend.avatar, avatarImage: friend.avatarImage, content: diaryContent, date: new Date().toLocaleDateString() });
+                         friend.diaryWritingUrge -= 100;
+                         dataChanged = true;
+                     }
+                }
             }
-        }
+
+            if (Math.random() < 0.05) { // 保持原来的触发概率
+                
+                // 【【【核心修改：获取AI自己最近的朋友圈作为参考】】】
+                const recentFriendMoments = moments.filter(m => m.authorId === friend.id).slice(0, 3).map(m => `- "${m.content.substring(0, 50)}..."`).join('\n');
+
+                const chatHistorySummary = (chatHistories[friend.id] || []).slice(-10).map(m => `${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content.substring(0, 20)}...`).join('\n');
+                
+                // 【【【第二步：请复制并粘贴下面这段代码】】】
+
+    let timeContext = '';
+    if(aiTimePerceptionEnabled){
+        const beijingTime = new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false, hour: '2-digit', minute: '2-digit' });
+        const hour = new Date().toLocaleTimeString("zh-CN", { timeZone: "Asia/Shanghai", hour: 'numeric', hour12: false });
+        let timeOfDayGreeting = '';
+        if (hour >= 5 && hour < 11) timeOfDayGreeting = "现在是早上。";
+        else if (hour >= 11 && hour < 14) timeOfDayGreeting = "现在是中午。";
+        else if (hour >= 14 && hour < 18) timeOfDayGreeting = "现在是下午。";
+        else if (hour >= 18 && hour < 23) timeOfDayGreeting = "现在是晚上。";
+        else timeOfDayGreeting = "现在是深夜了。";
+        timeContext = `
+【时间感知模块：这是最高优先级的指令】
+1.  **当前北京时间是 ${beijingTime}。${timeOfDayGreeting}**
+2.  **铁律：你构思的朋友圈内容，无论是文字还是图片描述，都必须与这个时间段的情景完全匹配。**
+`;
+    }
+                
+                // 【【【再将原来的 prompt = ... 部分替换成下面这样】】】
+const prompt = `你叫"${friend.name}"，人设是"${friend.role}"。请你根据自己的人设，并参考以下信息，构思一条朋友圈动态。
+
+${timeContext}
+
+【参考信息1：你最近的聊天摘要】
+${chatHistorySummary || '无'}
+
+【参考信息2：你自己最近发过的朋友圈】
+${recentFriendMoments || '你最近没有发过朋友圈。'}
+
+你的任务是:
+1.  **【铁律】朋友圈的内容（无论是文字还是图片描述）必须严格符合当前的时间情景。**
+2.  **【重要】在发布前，请参考你自己的最近朋友圈，避免发布内容或主题重复的动态。**
+3.  发挥想象，可以是对聊天内容的延伸、感慨，或是完全独立的、符合你的人设的日常分享。
+4.  你的回复**必须**是JSON格式。
+5.  如果发纯文字，JSON为: {"type": "text", "content": "朋友圈文字内容..."}
+6.  如果发图文，JSON为: {"type": "image", "content": "朋友圈文字内容...", "image_description": "一段详细的图片描述，用于AI绘画模型生成图片..."}
+`;
+                const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' } }) });
+                if(response.ok) {
+                    const data = await response.json();
+                    // 增加了对JSON解析的保护，防止AI返回非JSON格式导致程序崩溃
+                    try {
+                        const momentData = JSON.parse(data.choices?.[0]?.message?.content);
+                        if(momentData && momentData.content) {
+                            const imageUrl = momentData.type === 'image' && momentData.image_description ? `https://placehold.co/400x400/f0f0f0/ccc?text=${encodeURIComponent(momentData.content.substring(0,10))}` : '';
+                            moments.unshift({ id: generateUniqueId(), authorId: friend.id, content: momentData.content, imageUrl: imageUrl, imageDescription: momentData.image_description || '', timestamp: new Date().toISOString(), likes: [], comments: [] });
+                            dataChanged = true; 
+                        }
+                    } catch(e) {
+                        console.error("AI生成朋友圈时返回了无效的JSON:", data.choices?.[0]?.message?.content);
+                    }
+                }
+            }
+
+        } catch (error) { console.error("AI Behavior simulation failed:", error); }
+         
+         if(dataChanged) {
+            await saveData();
+            if (document.getElementById('momentsScreen').classList.contains('active')) updateMomentsList();
+            if (document.getElementById('diaryScreen').classList.contains('active') && document.getElementById('diaryFriendList').style.display === 'none') showFriendDiary(friend.id);
+         }
+    }
+}
         
-        async function triggerAiMomentReactions(moment) {
+        // 【【【第二步 A：请用这个修改后的完整函数替换原来的 triggerAiMomentReactions 函数】】】
+async function triggerAiMomentReactions(moment) {
     const settings = await dbManager.get('apiSettings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
         console.error("API设置未完成，无法触发AI回复朋友圈评论。");
@@ -8891,11 +9228,21 @@ ${chatHistorySummary || '无'}
             try {
                 const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
                 
+                // 【【【核心修改：获取最近20轮聊天记录作为上下文】】】
+                const chatHistorySummary = (chatHistories[friend.id] || []).slice(-20).map(m => {
+                    const senderName = m.type === 'sent' ? userProfile.name : friend.name;
+                    return `${senderName}: ${m.content.substring(0, 50)}`;
+                }).join('\n');
+
                 const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。
 你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。
-你的任务是：**严格按照你的人设，只回复一句简短、口语化的评论文字。**
-**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 任何解释, 或其他多余的文字。
-例如：如果朋友圈是“今天好开心”，你就直接回复“看你开心我也开心啦～”，而不是 '{"comment": "看你开心我也开心啦～"}'。
+
+【参考信息：你们最近的20条聊天记录】
+${chatHistorySummary || "你们最近没有聊天。"}
+
+你的任务是：**结合上面的聊天内容和朋友圈本身，严格按照你的人设，只回复一句简短、口语化的评论文字。**
+**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 或任何解释。
+例如：如果用户刚和你说完考试考砸了，然后发朋友圈说“想出去走走”，你就不应该只评论“风景真好”，而应该评论“去散散心也好，别想太多啦”。
 现在，请直接生成你的评论：`;
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
@@ -8930,7 +9277,6 @@ ${chatHistorySummary || '无'}
                     rawContentFromAI = extractedText;
                 }
 
-                // --- 【核心修复】在这里增加一个安全检查，防止对null进行操作 ---
                 commentContent = (extractedText || '').trim();
 
                 if (!commentContent) {
@@ -9082,10 +9428,8 @@ ${chatHistorySummary || '无'}
                 showAlert("无法邀请好友。");
                 return;
             }
-            if (isListenInvitePending) {
-                return showAlert("正在等待对方回应，请稍后...");
-            }
-            isListenInvitePending = true;
+           
+            
             
             const inviteMsg = saveChatMessage(friendIdToInvite, 'sent', '', '', null, 'listen_invite');
             addMessageToDOM(inviteMsg, friend);
@@ -9182,7 +9526,6 @@ ${chatHistorySummary || '无'}
             if(event) event.stopPropagation();
             isListenSessionActive = false;
             listenTogetherFriendId = null;
-            isListenInvitePending = false;
             hideFloatingPlayer();
             setActivePage('chatScreen');
             stopSong();
@@ -9452,65 +9795,90 @@ ${chatHistorySummary || '无'}
             if(customListenBg) bgDiv.style.backgroundImage = `url(${customListenBg})`;
         }
         
-        function parseLRC(lrcText) {
-            if (!lrcText || lrcText.trim() === '') return [];
-            const lines = lrcText.split('\n');
-            const result = [];
-            const timeRegex = /\[(\d{2}):(\d{2})[.:](\d{2,3})\]/g;
-            for (const line of lines) {
-                const text = line.replace(timeRegex, '').trim();
-                let match;
-                const timeMatches = [];
-                const localTimeRegex = new RegExp(timeRegex.source, 'g');
-                while ((match = localTimeRegex.exec(line)) !== null) {
-                    timeMatches.push(match);
-                }
+        // 这是修改后的新函数
+function parseLRC(lrcText) {
+    if (!lrcText || lrcText.trim() === '') return [];
+    const lines = lrcText.split('\n');
+    const result = [];
+    const timeRegex = /\[(\d{2}):(\d{2})[.:](\d{2,3})\]/g;
+    // 新增：用于匹配翻译的正则表达式
+    const translationRegex = /[（(](?:翻译|译)[:：](.*)[)）]/;
 
-                if (text || timeMatches.length > 0) {
-                    for (const match of timeMatches) {
-                        const minutes = parseInt(match[1], 10);
-                        const seconds = parseInt(match[2], 10);
-                        const milliseconds = parseInt(match[3].length === 2 ? match[3] + '0' : match[3], 10);
-                        const time = minutes * 60 + seconds + milliseconds / 1000;
-                        result.push({ time, text: text || '' });
-                    }
-                }
-            }
-            return result.sort((a,b) => a.time - b.time);
+    for (const line of lines) {
+        let fullText = line.replace(timeRegex, '').trim();
+        let originalText = fullText;
+        let translationText = '';
+
+        // 检查并提取翻译
+        const translationMatch = fullText.match(translationRegex);
+        if (translationMatch && translationMatch[1]) {
+            originalText = fullText.replace(translationRegex, '').trim();
+            translationText = translationMatch[1].trim();
         }
+
+        let match;
+        const timeMatches = [];
+        const localTimeRegex = new RegExp(timeRegex.source, 'g');
+        while ((match = localTimeRegex.exec(line)) !== null) {
+            timeMatches.push(match);
+        }
+
+        if (originalText || translationText || timeMatches.length > 0) {
+            for (const match of timeMatches) {
+                const minutes = parseInt(match[1], 10);
+                const seconds = parseInt(match[2], 10);
+                const milliseconds = parseInt(match[3].length === 2 ? match[3] + '0' : match[3], 10);
+                const time = minutes * 60 + seconds + milliseconds / 1000;
+                // 返回一个包含原文和翻译的对象
+                result.push({ time, text: originalText || '', translation: translationText });
+            }
+        }
+    }
+    return result.sort((a, b) => a.time - b.time);
+}
 
         let lastLyricIndex = -1;
-        function updateLyrics(currentTime) {
-            if (parsedLyrics.length === 0) {
-                 const lyricsContainer = document.getElementById('songLyrics');
-                 lyricsContainer.children[0].textContent = '';
-                 lyricsContainer.children[1].textContent = '... 暂无歌词 ...';
-                 lyricsContainer.children[2].textContent = '';
-                 return;
-            }
-            
-            let currentLineIndex = -1;
-            for(let i = 0; i < parsedLyrics.length; i++){
-                if(currentTime >= parsedLyrics[i].time) {
-                    currentLineIndex = i;
-                } else {
-                    break;
-                }
-            }
-            
-            if (currentLineIndex !== lastLyricIndex) {
-                const lyricsContainer = document.getElementById('songLyrics');
-                const prevLine = lyricsContainer.children[0];
-                const activeLine = lyricsContainer.children[1];
-                const nextLine = lyricsContainer.children[2];
+        // 这是修改后的新函数
+function updateLyrics(currentTime) {
+    if (parsedLyrics.length === 0) {
+        const lyricsContainer = document.getElementById('songLyrics');
+        lyricsContainer.children[0].innerHTML = '';
+        lyricsContainer.children[1].innerHTML = '... 暂无歌词 ...';
+        lyricsContainer.children[2].innerHTML = '';
+        return;
+    }
 
-                activeLine.textContent = parsedLyrics[currentLineIndex]?.text || '';
-                prevLine.textContent = parsedLyrics[currentLineIndex - 1]?.text || '';
-                nextLine.textContent = parsedLyrics[currentLineIndex + 1]?.text || '';
-                
-                lastLyricIndex = currentLineIndex;
-            }
+    let currentLineIndex = -1;
+    for (let i = 0; i < parsedLyrics.length; i++) {
+        if (currentTime >= parsedLyrics[i].time) {
+            currentLineIndex = i;
+        } else {
+            break;
         }
+    }
+
+    if (currentLineIndex !== lastLyricIndex) {
+        const lyricsContainer = document.getElementById('songLyrics');
+        const lines = [lyricsContainer.children[0], lyricsContainer.children[1], lyricsContainer.children[2]];
+        const indices = [currentLineIndex - 1, currentLineIndex, currentLineIndex + 1];
+
+        lines.forEach((lineElement, i) => {
+            const lyricData = parsedLyrics[indices[i]];
+            if (lyricData) {
+                let html = lyricData.text;
+                if (lyricData.translation) {
+                    // 如果有翻译，就换行并添加一个特殊的class
+                    html += `<br><span class="lyric-translation">${lyricData.translation}</span>`;
+                }
+                lineElement.innerHTML = html;
+            } else {
+                lineElement.innerHTML = '';
+            }
+        });
+        
+        lastLyricIndex = currentLineIndex;
+    }
+}
         
         const floatingPlayer = document.getElementById('floatingPlayer');
         let isDragging = false;
@@ -10130,7 +10498,114 @@ ${chatHistorySummary || '暂无聊天记录。'}
             document.getElementById('momentCommentSendBtn').addEventListener('click', postComment);
             toggleSendButtonActive(document.getElementById('messageInput'));
             setInterval(simulateAiBehavior, 60000); 
-        };
+            // 【【【第三步 C：在 window.onload 末尾添加】】】
+
+        // 初始化主动消息UI和定时器
+        document.getElementById('proactiveToggle').checked = proactiveMessagingEnabled;
+        document.getElementById('proactiveIntervalInput').value = proactiveMessagingInterval;
+        if (proactiveMessagingEnabled) {
+            document.getElementById('proactiveIntervalSetting').classList.add('show');
+            startProactiveScheduler();
+        }
+    }; // 这是 window.onload 的结束括号和分号
+        
+        // 【【【第三步 D：在 <script> 的末尾粘贴所有新函数】】】
+
+// --- 主动发消息 & 未读计数 核心功能 ---
+
+function toggleProactiveMessaging() {
+    proactiveMessagingEnabled = document.getElementById('proactiveToggle').checked;
+    const settingDiv = document.getElementById('proactiveIntervalSetting');
+    if (proactiveMessagingEnabled) {
+        settingDiv.classList.add('show');
+        startProactiveScheduler();
+    } else {
+        settingDiv.classList.remove('show');
+        stopProactiveScheduler();
+    }
+    saveProactiveSettings();
+}
+
+async function saveProactiveSettings() {
+    proactiveMessagingEnabled = document.getElementById('proactiveToggle').checked;
+    proactiveMessagingInterval = parseInt(document.getElementById('proactiveIntervalInput').value, 10) || 60;
+    await saveData();
+    // 如果开关是开的，重启定时器以应用新的时间间隔
+    if (proactiveMessagingEnabled) {
+        stopProactiveScheduler();
+        startProactiveScheduler();
+    }
+}
+
+function startProactiveScheduler() {
+    if (proactiveMessageSchedulerIntervalId) {
+        clearInterval(proactiveMessageSchedulerIntervalId);
+    }
+    // 每分钟检查一次所有好友的状态
+    proactiveMessageSchedulerIntervalId = setInterval(checkAllFriendsForProactiveMessage, 60 * 1000);
+    console.log(`主动消息定时器已启动，间隔: ${proactiveMessagingInterval}分钟`);
+}
+
+function stopProactiveScheduler() {
+    if (proactiveMessageSchedulerIntervalId) {
+        clearInterval(proactiveMessageSchedulerIntervalId);
+        proactiveMessageSchedulerIntervalId = null;
+        console.log("主动消息定时器已停止。");
+    }
+}
+
+function checkAllFriendsForProactiveMessage() {
+    if (!proactiveMessagingEnabled) return;
+    
+    console.log("正在检查是否需要主动发送消息...");
+    const now = new Date();
+    friends.forEach(friend => {
+        if (friend.isGroup) return; // 不对群聊主动发消息
+
+        const history = chatHistories[friend.id] || [];
+        if (history.length === 0) return; // 没有聊天记录，不主动发
+
+        const lastMessage = history[history.length - 1];
+        
+        // 只有当最后一条消息是用户发的，AI才可能需要主动开启新话题
+        if (lastMessage.type === 'sent') {
+            const lastMessageTime = new Date(lastMessage.timestamp);
+            const minutesSinceLastMessage = (now - lastMessageTime) / (1000 * 60);
+
+            if (minutesSinceLastMessage >= proactiveMessagingInterval) {
+                console.log(`检测到 ${friend.name} 符合主动消息条件，准备发送...`);
+                triggerProactiveMessage(friend.id, minutesSinceLastMessage);
+            }
+        }
+    });
+}
+
+async function triggerProactiveMessage(friendId, minutesInactive) {
+    const friend = friends.find(f => f.id === friendId);
+    if (!friend) return;
+
+    const minutesWaited = Math.round(minutesInactive);
+    const history = chatHistories[friendId] || [];
+    const lastUserMessage = history.slice().reverse().find(m => m.type === 'sent');
+
+    const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
+    【当前情景：非常重要】
+    你发现你的好友 "${userProfile.name}" 已经离线了大约 ${minutesWaited} 分钟没有回复你了。
+    他/她最后发的消息是：“${lastUserMessage ? lastUserMessage.content.substring(0, 50) : '...'}”。
+    
+    你的任务是：
+    1.  **主动**发送一条简短、自然、口语化的消息来开启新的对话或关心对方。
+    2.  消息内容要符合“已经等了一段时间”的情景，例如：“你在忙吗？”、“在干嘛呀？”、“看到消息回我哦”等等。
+    3.  **【铁律】** 你的回复必须遵循之前的所有JSON格式规则，包含 "replies" 和 "hearts_voice" 键。
+    4.  **【铁律】** "replies" 数组里通常只包含 **1-2条** 消息即可，因为你是主动发起方。
+
+    现在，请生成你的主动问候消息。`;
+
+    // 我们复用 receiveMessage 函数，但传入定制的 prompt
+    // 注意：最后一个参数 isFromListenScreen 设为 false，确保消息会正常显示
+    await receiveMessage(friendId, prompt, false);
+}
+        
    // 简化版本，仅用于调试
 function setRealViewportHeight() {
     console.log('窗口高度:', window.innerHeight, '屏幕高度:', window.screen.height);
