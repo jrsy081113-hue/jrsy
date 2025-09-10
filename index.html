@@ -2178,20 +2178,23 @@ html {
             /* margin-left: 52px; /* 40px avatar + 12px margin */
         }
         .moments-likes {
-            padding: 8px 12px;
-            color: #586b95;
-            border-bottom: 1px solid var(--border-light, #e0e0e0);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .moments-likes svg {
-            width: 14px;
-            height: 14px;
-            fill: none;
-            stroke: #586b95;
-            stroke-width: 2px;
-        }
+    padding: 8px 12px;
+    color: #586b95;
+    border-bottom: 1px solid var(--border-light, #e0e0e0);
+    display: flex;
+    align-items: flex-start; /* 核心修改：让图标与第一行文字的顶部对齐 */
+    gap: 6px;
+    line-height: 1.6; /* 增加行高，让换行后不显得拥挤 */
+}
+.moments-likes svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: #586b95;
+    stroke-width: 2px;
+    margin-top: 3px; /* 微调图标，让它在视觉上更居中于第一行文字 */
+    flex-shrink: 0; /* 防止图标被压缩 */
+}
         .moments-comments-list {
             padding: 8px 12px;
         }
@@ -4027,7 +4030,7 @@ html {
     height: 120px;
     background-color: #f0f0f0;
     position: relative;
-    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAFoAeADASIAAhEBAxEB/8QAGwABAQEBAQEBAQAAAAAAAAAAAAECAwQFBgf/xAAzEAEAAgECAwUIAgMAAwEAAAAAAQIRAyExEgRBURMiMmFxFEKBsfAFI1JioUKSstFD4f/EABYBAQEBAAAAAAAAAAAAAAAAAAABAv/EABYRAQEBAAAAAAAAAAAAAAAAAAARAf/aAAwDAQACEQMRAD8A/SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACSACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADz9p2vaRpOPlxj48s+8+gPN2/adpGk4uXGfDln3g9IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB5e17TtI1HTy4z4cs/T1Dy9p2naRqOnlxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPL2vadr+no5cZ8OWfp6h5e17Ttf09HGfDln6QesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8va9p2v6enlxnw5Z+nqHl7XtO1/T0cZ8OWfpB6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPL2vadr+np5cZ8OWfp6h5e17Ttf09HGfDln6QesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5+10/VnynD+I5/a6fqz5Th/EHRA5/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAPL2vadr+np5cZ8OWfp6h5e17Ttf09HGfDln6QesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8va9p2v6enlxnw5Z+nqHl7XtO1/T0cZ8OWfpB6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPJ/1K3L2UaXp6U/F5/7j1jzdt/X/AKvRw/Dln38PVB6QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPb9IAD//2Q==');
+    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAFoAeADASIAAhEBAxEB/8QAGwABAQEBAQEBAQAAAAAAAAAAAAECAwQFBgf/xAAzEAEAAgECAwUIAgMAAwEAAAAAAQIRAyExEgRBURMiMmFxFEKBsfAFI1JioUKSstFD4f/EABYBAQEBAAAAAAAAAAAAAAAAAAABAv/EABYRAQEBAAAAAAAAAAAAAAAAAAARAf/aAAwDAQACEQMRAD8A/SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACSACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADz9p2vaRpOPlxj48s+8+gPN2/adpGk4uXGfDln3g9IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB5e17TtI1HTy4z4cs/T1Dy9p2naRqOnlxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPL2vadr+no5cZ8OWfp6h5e17Ttf09HGfDln6QesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8va9p2v6enlxnw5Z+nqHl7XtO1/T0cZ8OWfpB6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPL2vadr+np5cZ8OWfp6h5e17Ttf09HGfDln6QesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5+10/VnynD+I5/a6fqz5Th/EHRA5/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAc/a6fqz5Th/EcntdP1Z8pw/iDoQc/tdP1Z8pw/iOX2un6s+U4fxB0QOf2un6s+U4fxHL7XT9WfKcP4g6IHP7XT9WfKcP4jl9rp+rPlOH8QdEADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAPL2vadr+np5cZ8OWfp6h5e17Ttf09HGfDln6QesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8va9p2v6enlxnw5Z+nqHl7XtO1/T0cZ8OWfpB6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPJ/1K3L2UaXp6U/F5/7j1jzdt/X/AKvRw/Dln38PVB6QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADy9r2na/p6eXGfDln6eoeXte07X9PRxnw5Z+kHrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPb9IAD//2Q==');
     background-size: cover;
     background-position: center;
     border-top: 1px solid var(--border-light, #f0f0f0);
@@ -4262,7 +4265,7 @@ html {
 .moments-time-group {
     display: flex;         /* 让时间与图标在同一行 */
     align-items: center;   /* 让它们垂直居中对齐 */
-    gap: 5px;              /* 控制时间与图标之间的间距，你可以调整这个值 */
+    gap: 10px;              /* 控制时间与图标之间的间距，你可以调整这个值 */
 }
 
 /* 【【【第二步：请将这两段CSS代码粘贴到 <style> 区域】】】 */
@@ -4320,6 +4323,24 @@ html {
     font-size: 12px;
     font-weight: bold;
     z-index: 10;
+}
+
+/* [新增] 优化论坛评论区样式 */
+.sim-detail-content .comment-floor {
+    border-top: 1px solid #f0f0f0; /* 用更浅的颜色做分割线 */
+    padding: -2000px 0; /* 统一上下内边距 */
+    margin: 0; /* 移除外边距 */
+}
+
+.sim-detail-content .comment-user-info {
+    font-size: 13px; /* 稍稍增大字号 */
+    color: #888; /* 柔和的灰色 */
+    margin-bottom: -50px; /* 减小用户名和内容之间的距离 */
+}
+
+.sim-detail-content .comment-text {
+    margin-top: 0; /* 移除内容上方的外边距 */
+    line-height: 1.6; /* 舒适的行高 */
 }
 
     </style>
@@ -4916,7 +4937,8 @@ html {
                         <div class="discover-menu-item" onclick="openFontSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M2.5,4V6.5H6V20H8.5V6.5H12V4H2.5M13.5,4L12,20H14.5L15.2,14H18.8L19.5,20H22L20.5,4H13.5M15.8,6.5H18.2L18.5,11.5H15.5L15.8,6.5Z"/></svg><div class="discover-menu-title">字体设置</div></div><span>></span></div>
                         <div class="discover-menu-item" onclick="openWallpaperSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/></svg><div class="discover-menu-title">主屏幕壁纸</div></div><span>></span></div>
                         <div class="discover-menu-item" onclick="openIconSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M17.5,12A1.5,1.5 0 0,1 16 10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A9,9 0 0,0 21,12A9,9 0 0,0 12,3Z"/></svg><div class="discover-menu-title">图标设置</div></div><span>></span></div>
-                        <div class="discover-menu-item" onclick="openComponentSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3M11 3H3v10h8V3m10 8h-8v10h8V11m-10 4H3v6h8v-6Z"/></svg><div class="discover-menu-title">组件设置</div></div><span>></span></div>
+                        <div class="discover-menu-item" onclick="openComponentSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"
+                        fill="currentColor"><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3M11 3H3v10h8V3m10 8h-8v10h8V11m-10 4H3v6h8v-6Z"/></svg><div class="discover-menu-title">组件设置</div></div><span>></span></div>
                     </div>
                 </div>
             </div>
@@ -5042,12 +5064,22 @@ html {
             </div>
             
             <!-- MODIFIED: Phone App Page -->
-            <div id="phoneApp" class="page">
-                <div class="nav-bar" id="phoneAppNavBar">
-                    <button class="nav-btn" onclick="goHome()">←</button>
-                    <div class="nav-title">手机</div>
-                    <div></div>
-                </div>
+            <!-- 用这段新代码替换 -->
+<div id="phoneApp" class="page">
+    <div class="nav-bar" id="phoneAppNavBar">
+        <button class="nav-btn" onclick="goHome()">←</button>
+        <div class="nav-title">手机</div>
+        <!-- 新增了一个重新生成按钮，并给予了ID和点击事件 -->
+        <div>
+            <button class="nav-btn" id="regenerateSimContentBtn" style="display: none;" onclick="handleSimRegenerateClick()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                    <path d="M22 4v4h-4"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
                 <div class="phone-app-container">
                     <div id="phoneCharacterListScreen" class="friend-list">
                         <!-- Character list will be rendered here -->
@@ -5100,6 +5132,15 @@ html {
                                             </div>
                                             <span class="sim-app-icon-label">相册</span>
                                         </a>
+                                        <!-- [新增] 论坛App图标 -->
+<a class="sim-app-icon" onclick="openSimApp('forum')">
+    <div class="sim-app-icon-img">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+        </svg>
+    </div>
+    <span class="sim-app-icon-label">论坛</span>
+</a>
                                     </div>
                                 </div>
                                 
@@ -5111,7 +5152,9 @@ html {
                                 <div class="sim-app-view" id="sim-shopping-view"></div>
                                 <div class="sim-app-view" id="sim-wallet-view"></div>
                                 <div class="sim-app-view" id="sim-photos-view"></div>
-                                
+                                <!-- [新增] 论坛App的视图容器 -->
+<div class="sim-app-view" id="sim-forum-view"></div>
+<div class="sim-app-view" id="sim-forum-detail-view"></div>
                                 <!-- Sim App Detail Views (These will be populated by renderSimApp) -->
                                 <div class="sim-app-view" id="sim-wechat-detail-view"></div>
                                 <div class="sim-app-view" id="sim-memo-detail-view"></div>
@@ -5255,47 +5298,122 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             </div>
         </div>
     </div>
+    
 
+       
 
     <script>
-        // --- IndexedDB Helper for Large Storage ---
+        // --- [REFACTORED] IndexedDB Manager ---
         const dbManager = {
             db: null,
+            dbName: 'JRSY_DB_V2',
+            dbVersion: 2,
+            // 定义数据库的所有“表格”
+            stores: [
+    'friends', 'chatHistories', 'diaries', 'worldBooks', 'worldBookFolders', 
+    'favorites', 'moments', 'playlist', 'appSettings', 'apiSettings', 'customEmojis'
+],
+
+            // 初始化数据库
             init() {
                 return new Promise((resolve, reject) => {
-                    if (this.db) return resolve();
-                    const request = indexedDB.open('WeChatDB', 1);
-                    request.onerror = (event) => reject('IndexedDB error: ' + request.errorCode);
+                    if (this.db) {
+                        return resolve(this.db);
+                    }
+                    const request = indexedDB.open(this.dbName, this.dbVersion);
+
+                    request.onerror = (event) => {
+                        console.error('IndexedDB error:', request.error);
+                        reject('IndexedDB error: ' + request.error);
+                    };
+
                     request.onsuccess = (event) => {
                         this.db = event.target.result;
-                        resolve();
+                        console.log('Database initialized successfully.');
+                        resolve(this.db);
                     };
+
+                    // 创建或升级数据库结构
                     request.onupgradeneeded = (event) => {
+                        console.log('Upgrading database...');
                         const db = event.target.result;
-                        if (!db.objectStoreNames.contains('dataStore')) {
-                            db.createObjectStore('dataStore', { keyPath: 'key' });
-                        }
+                        this.stores.forEach(storeName => {
+                            if (!db.objectStoreNames.contains(storeName)) {
+                                if (storeName === 'chatHistories') {
+                                    // 聊天记录表使用 friendId 作为 key
+                                    db.createObjectStore(storeName, { keyPath: 'friendId' });
+                                } else if (storeName === 'appSettings' || storeName === 'apiSettings') {
+                                    // 设置表使用固定的 'settings' 作为 key
+                                    db.createObjectStore(storeName, { keyPath: 'id' });
+                                }
+                                else {
+                                    // 其他表使用自增的 id 作为 key
+                                    db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+                                }
+                                console.log(`Object store '${storeName}' created.`);
+                            }
+                        });
                     };
                 });
             },
-            set(key, value) {
+
+            // 通用的写入/更新方法
+            set(storeName, data) {
                 return new Promise((resolve, reject) => {
                     if (!this.db) return reject("DB not initialized");
-                    const transaction = this.db.transaction(['dataStore'], 'readwrite');
-                    const store = transaction.objectStore('dataStore');
-                    const request = store.put({ key, value });
-                    transaction.oncomplete = () => resolve();
-                    transaction.onerror = (event) => reject('Error setting data: ' + event.target.error);
+                    const transaction = this.db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.put(data);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(`Error setting data in ${storeName}: ` + event.target.error);
                 });
             },
-            get(key) {
+
+            // 通用的读取方法
+            get(storeName, key) {
                 return new Promise((resolve, reject) => {
                     if (!this.db) return reject("DB not initialized");
-                    const transaction = this.db.transaction(['dataStore'], 'readonly');
-                    const store = transaction.objectStore('dataStore');
+                    const transaction = this.db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
                     const request = store.get(key);
-                    request.onsuccess = () => resolve(request.result ? request.result.value : null);
-                    request.onerror = (event) => reject('Error getting data: ' + event.target.errorCode);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(`Error getting data from ${storeName}: ` + event.target.error);
+                });
+            },
+
+            // 读取整个表的数据
+            getAll(storeName) {
+                return new Promise((resolve, reject) => {
+                    if (!this.db) return reject("DB not initialized");
+                    const transaction = this.db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(`Error getting all data from ${storeName}: ` + event.target.error);
+                });
+            },
+            
+            // 删除指定条目
+            delete(storeName, key) {
+                return new Promise((resolve, reject) => {
+                    if (!this.db) return reject("DB not initialized");
+                    const transaction = this.db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(key);
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject(`Error deleting data from ${storeName}: ` + event.target.error);
+                });
+            },
+
+            // 清空整个表
+            clear(storeName) {
+                return new Promise((resolve, reject) => {
+                    if (!this.db) return reject("DB not initialized");
+                    const transaction = this.db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.clear();
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject(`Error clearing store ${storeName}: ` + event.target.error);
                 });
             }
         };
@@ -5383,6 +5501,9 @@ const aiReplyingSet = new Set();
 let proactiveMessagingEnabled = false;
 let proactiveMessagingInterval = 60; // 默认60分钟
 let proactiveMessageSchedulerIntervalId = null;
+
+let npcFriends = []; // 新增：用来存放为用户动态生成的NPC朋友列表
+
 let unreadMessageCounts = {}; // e.g. { friendId: 3 }
         
         let notificationTimeout = null; // For clearing notification timer
@@ -5820,21 +5941,77 @@ function updateAppLabelColorFromInput(color) {
             document.getElementById('recalledMessagePopup').classList.remove('show');
         }
 
+        // --- [新增] 专门用于保存个人信息和主页组件的函数 ---
+        async function saveProfileData() {
+            try {
+                const settings = await dbManager.get('appSettings', 'settings') || {};
+                
+                // 只更新需要保存的部分，避免其他数据干扰
+                settings.id = 'settings';
+                settings.userProfile = userProfile;
+                settings.homeWidgetData = homeWidgetData;
+
+                await dbManager.set('appSettings', settings);
+                console.log("Profile data saved successfully.");
+            } catch (e) {
+                console.error("保存个人信息时出错:", e);
+                showAlert(`保存个人信息失败: ${e.message}`);
+            }
+        }
+
+        // --- [REFACTORED] Data Saving Logic ---
         async function saveData() {
             try {
-                // Before saving, convert any raw file objects in playlist to something serializable
+                // 并行保存所有数据到各自的表中
+                const savePromises = [];
+
+                // 1. 保存所有好友信息
+                friends.forEach(friend => {
+                    savePromises.push(dbManager.set('friends', friend));
+                });
+
+                // 2. 保存所有聊天记录
+                Object.keys(chatHistories).forEach(friendId => {
+                    savePromises.push(dbManager.set('chatHistories', { friendId, messages: chatHistories[friendId] }));
+                });
+
+                // 3. 保存其他列表数据
+                diaries.forEach(d => savePromises.push(dbManager.set('diaries', d)));
+                worldBooks.forEach(wb => savePromises.push(dbManager.set('worldBooks', wb)));
+                worldBookFolders.forEach(f => savePromises.push(dbManager.set('worldBookFolders', f)));
+                favorites.forEach(f => savePromises.push(dbManager.set('favorites', f)));
+                moments.forEach(m => savePromises.push(dbManager.set('moments', m)));
+                customEmojis.forEach(e => savePromises.push(dbManager.set('customEmojis', e))); // 假设 customEmojis 有 id
+
+                // 4. 处理播放列表（隔离 File 对象）
                 const serializablePlaylist = await Promise.all(playlist.map(async (song) => {
-                    // If url is a blob, it won't survive session reload. We need to store the file content.
-                    if (song.file instanceof File) { // Check if it's a real file object
+                    if (song.file instanceof File) {
                         return { ...song, file: await fileToSerializable(song.file) };
                     }
                     return song;
                 }));
+                // 清空旧表，然后写入新数据
+                await dbManager.clear('playlist');
+                serializablePlaylist.forEach(song => savePromises.push(dbManager.set('playlist', song)));
 
-                const dataToSave = { friends, userProfile, diaries, worldBooks, worldBookFolders, favorites, moments, chatHistories, customEmojis, selectedGlobalChatBg, customGlobalChatBgImage, selectedFont, selectedFontSize, selectedFontColor, customFontUrl, selectedWallpaper, customWallpaperImage, customWidgetBackgroundImage, roundedCornersEnabled, darkModeEnabled, sentBubbleColor, selectedAppLabelColor, receivedBubbleColor, customBubbleCSS, customIcons, playlist: serializablePlaylist, recalledMessages: Array.from(recalledMessages.entries()), customListenBg, persistentVinylCover, homeWidgetData, profileWidgetTransparent, smallWidgetTransparent, simPhoneContentCache, proactiveMessagingEnabled, proactiveMessagingInterval, unreadMessageCounts };
+                // 5. 保存应用和API设置
+                const appSettings = {
+                    id: 'settings',
+                    userProfile,
+                    homeWidgetData,
+                    selectedGlobalChatBg, customGlobalChatBgImage, selectedFont, selectedFontSize,
+                    selectedFontColor, customFontUrl, selectedWallpaper, customWallpaperImage,
+                    customWidgetBackgroundImage, roundedCornersEnabled, darkModeEnabled,
+                    sentBubbleColor, selectedAppLabelColor, receivedBubbleColor, customBubbleCSS,
+                    customIcons, recalledMessages: Array.from(recalledMessages.entries()),
+                    customListenBg, persistentVinylCover, profileWidgetTransparent,
+                    smallWidgetTransparent, simPhoneContentCache, proactiveMessagingEnabled,
+                    proactiveMessagingInterval, unreadMessageCounts
+                };
+                savePromises.push(dbManager.set('appSettings', appSettings));
                 
-                await dbManager.set('wechatData', dataToSave);
                 const apiSettings = { 
+                    id: 'settings',
                     apiUrl: document.getElementById('apiUrl').value, 
                     apiKey: document.getElementById('apiKey').value, 
                     modelName: document.getElementById('modelName').value,
@@ -5842,12 +6019,14 @@ function updateAppLabelColorFromInput(color) {
                     apiTemperature: document.getElementById('apiTemperature').value,
                     aiTimePerceptionEnabled: aiTimePerceptionEnabled
                 };
-                await dbManager.set('apiSettings', apiSettings);
+                savePromises.push(dbManager.set('apiSettings', apiSettings));
 
-            } catch(e) {
+                await Promise.all(savePromises);
+
+            } catch (e) {
                 console.error("保存数据时出错:", e);
                 if (e.name === 'QuotaExceededError') {
-                    showAlert("保存数据失败：存储空间已满！\ \n\n请尝试导出并清理数据，或删除一些占用空间大的内容（如图片、好友等）。");
+                    showAlert("保存数据失败：存储空间已满！\n\n请尝试导出并清理数据。");
                 } else {
                     showAlert(`保存数据失败: ${e.message}`);
                 }
@@ -5884,129 +6063,124 @@ function updateAppLabelColorFromInput(color) {
         }
 
 
+        // --- [REFACTORED] Data Loading Logic ---
         async function loadData() {
-            const saved = await dbManager.get('wechatData');
-            if (saved) {
-                try {
-                    const data = saved;
-                    friends = data.friends || [];
-                    friends.forEach(f => { 
-                        if (!f.chatBackground) f.chatBackground = { type: 'default', customImage: '' }; 
-                        if (!f.worldBookIds) f.worldBookIds = [];
-                        if (f.diaryWritingUrge === undefined) f.diaryWritingUrge = 0; // Initialize for older data
-                        if (f.balance === undefined) f.balance = Infinity; // Set balance to infinite for existing friends
-                        if (f.patAction === undefined) f.patAction = `拍了拍 "${f.name}"`;
-                        if (f.heartsVoice === undefined) f.heartsVoice = { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' };
-                    });
-                    userProfile = data.userProfile || { id: 'user_self', name: '可点击编辑', avatar: '', avatarImage: '', personality: '', background: '', signature: '可点击编辑', location: '可点击编辑', momentsCover: '', balance: 50000, patAction: '拍了拍' };
-                    if (!userProfile.id) userProfile.id = 'user_self';
-                    if (userProfile.balance === undefined) userProfile.balance = 50000;
-                    if (userProfile.patAction === undefined) userProfile.patAction = '拍了拍';
-                    diaries = data.diaries || [];
-                    worldBooks = data.worldBooks || [];
-                    worldBookFolders = data.worldBookFolders || [];
-                    favorites = data.favorites || [];
-                    moments = data.moments || [];
-                    chatHistories = data.chatHistories || {};
-                    customEmojis = data.customEmojis || [];
-                    selectedGlobalChatBg = data.selectedGlobalChatBg || 'default';
-                    customGlobalChatBgImage = data.customGlobalChatBgImage || '';
-                    selectedFont = data.selectedFont || 'system';
-                    selectedFontSize = data.selectedFontSize || 14;
-                    selectedFontColor = data.selectedFontColor || '#000000';
-                    customFontUrl = data.customFontUrl || '';
-                    selectedWallpaper = data.selectedWallpaper || 'default';
-                    customWallpaperImage = data.customWallpaperImage || '';
-                    customWidgetBackgroundImage = data.customWidgetBackgroundImage || '';
-                    roundedCornersEnabled = data.roundedCornersEnabled || false;
-                    darkModeEnabled = data.darkModeEnabled || false;
-                    sentBubbleColor = data.sentBubbleColor || '#FFEEF6';
-                    selectedAppLabelColor = data.selectedAppLabelColor || '#333333';
-                    receivedBubbleColor = data.receivedBubbleColor || '#E6F2FF';
-                    customBubbleCSS = data.customBubbleCSS || '';
-                    customIcons = data.customIcons || {};
-                    homeWidgetData = data.homeWidgetData || homeWidgetData;
-                    profileWidgetTransparent = data.profileWidgetTransparent || false;
-                    smallWidgetTransparent = data.smallWidgetTransparent || false;
-                    simPhoneContentCache = data.simPhoneContentCache || {};
-                    
-                    if (data.playlist) {
-                        playlist = (data.playlist).map(song => {
-                            if (song.file && song.file.data) { // Check if it's serialized file data
-                                const file = serializableToFile(song.file);
-                                return { ...song, file };
-                            }
-                            return song; // It might be an old format or already a file object
-                        });
-                    } else {
-                        playlist = [];
-                    }
-
-                    if (data.recalledMessages) recalledMessages = new Map(data.recalledMessages);
-                    if (!userProfile.signature) userProfile.signature = '可点击编辑';
-                    if (!userProfile.location) userProfile.location = '可点击编辑';
-                    if (!userProfile.momentsCover) userProfile.momentsCover = '';
-                    customListenBg = data.customListenBg || '';
-                    persistentVinylCover = data.persistentVinylCover || '';
-                    proactiveMessagingEnabled = data.proactiveMessagingEnabled || false;
-            proactiveMessagingInterval = data.proactiveMessagingInterval || 60;
-            unreadMessageCounts = data.unreadMessageCounts || {};
-                } catch (e) {
-                    console.error('加载数据失败:', e);
-                    showAlert("加载本地数据失败，将初始化默认数据。");
-                    await initDefaultData();
+            try {
+                // 并行加载所有数据
+                const [
+                    loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
+                    loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
+                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis
+                ] = await Promise.all([
+                    dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
+                    dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
+                    dbManager.getAll('moments'), dbManager.getAll('playlist'), dbManager.get('appSettings', 'settings'),
+                    dbManager.get('apiSettings', 'settings'), dbManager.getAll('customEmojis')
+                ]);
+                
+                if (!loadedAppSettings) {
+                     console.log("No app settings found, initializing default data.");
+                     await initDefaultData();
+                     return;
                 }
-            } else {
-                await initDefaultData();
-            }
-            await loadApiSettings();
+
+                // 恢复好友数据
+                friends = loadedFriends || [];
+                friends.forEach(f => { 
+                    if (!f.chatBackground) f.chatBackground = { type: 'default', customImage: '' }; 
+                    if (!f.worldBookIds) f.worldBookIds = [];
+                    if (f.diaryWritingUrge === undefined) f.diaryWritingUrge = 0;
+                    if (f.balance === undefined) f.balance = Infinity;
+                    if (f.patAction === undefined) f.patAction = `拍了拍 "${f.name}"`;
+                    if (f.heartsVoice === undefined) f.heartsVoice = { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' };
+                });
+
+                // 恢复聊天记录
+                chatHistories = {};
+                (loadedChatHistories || []).forEach(record => {
+                    chatHistories[record.friendId] = record.messages;
+                });
+
+                // 恢复其他列表数据
+                diaries = loadedDiaries || [];
+                worldBooks = loadedWorldBooks || [];
+                worldBookFolders = loadedWorldBookFolders || [];
+                favorites = loadedFavorites || [];
+                moments = loadedMoments || [];
+                customEmojis = loadedCustomEmojis || [];
+
+                // 恢复播放列表
+                playlist = (loadedPlaylist || []).map(song => {
+                    if (song.file && song.file.data) {
+                        const file = serializableToFile(song.file);
+                        return { ...song, file };
+                    }
+                    return song;
+                });
+
+                // 恢复应用设置
+                const settings = loadedAppSettings;
+                userProfile = settings.userProfile || { id: 'user_self', name: '可点击编辑', avatar: '', avatarImage: '', personality: '', background: '', signature: '可点击编辑', location: '可点击编辑', momentsCover: '', balance: 50000, patAction: '拍了拍' };
+                if (!userProfile.id) userProfile.id = 'user_self';
+                if (userProfile.balance === undefined) userProfile.balance = 50000;
+                if (userProfile.patAction === undefined) userProfile.patAction = '拍了拍';
+                homeWidgetData = settings.homeWidgetData || homeWidgetData;
+                selectedGlobalChatBg = settings.selectedGlobalChatBg || 'default';
+                customGlobalChatBgImage = settings.customGlobalChatBgImage || '';
+                selectedFont = settings.selectedFont || 'system';
+                selectedFontSize = settings.selectedFontSize || 14;
+                selectedFontColor = settings.selectedFontColor || '#000000';
+                customFontUrl = settings.customFontUrl || '';
+                selectedWallpaper = settings.selectedWallpaper || 'default';
+                customWallpaperImage = settings.customWallpaperImage || '';
+                customWidgetBackgroundImage = settings.customWidgetBackgroundImage || '';
+                roundedCornersEnabled = settings.roundedCornersEnabled || false;
+                darkModeEnabled = settings.darkModeEnabled || false;
+                sentBubbleColor = settings.sentBubbleColor || '#FFEEF6';
+                selectedAppLabelColor = settings.selectedAppLabelColor || '#333333';
+                receivedBubbleColor = settings.receivedBubbleColor || '#E6F2FF';
+                customBubbleCSS = settings.customBubbleCSS || '';
+                customIcons = settings.customIcons || {};
+                recalledMessages = new Map(settings.recalledMessages || []);
+                customListenBg = settings.customListenBg || '';
+                persistentVinylCover = settings.persistentVinylCover || '';
+                profileWidgetTransparent = settings.profileWidgetTransparent || false;
+                smallWidgetTransparent = settings.smallWidgetTransparent || false;
+                simPhoneContentCache = settings.simPhoneContentCache || {};
+                proactiveMessagingEnabled = settings.proactiveMessagingEnabled || false;
+                proactiveMessagingInterval = settings.proactiveMessagingInterval || 60;
+                unreadMessageCounts = settings.unreadMessageCounts || {};
+                
+                // 恢复API设置
+                if (loadedApiSettings) {
+                    document.getElementById('apiUrl').value = loadedApiSettings.apiUrl || '';
+                    document.getElementById('apiKey').value = loadedApiSettings.apiKey || '';
+                    document.getElementById('modelName').value = loadedApiSettings.modelName || '';
+                    document.getElementById('memoryTurns').value = loadedApiSettings.memoryTurns || 10;
+                    document.getElementById('apiTemperature').value = loadedApiSettings.apiTemperature || 0.9;
+                    aiTimePerceptionEnabled = loadedApiSettings.aiTimePerceptionEnabled !== false;
+                    document.getElementById('aiTimePerceptionToggle').checked = aiTimePerceptionEnabled;
+                }
+
+                    } catch (e) {
+            console.error('加载数据失败，这是一个严重错误:', e);
+            // 只弹窗报错，不再自动清空数据！
+            showAlert(`加载本地数据时发生严重错误，为防止数据丢失，请先导出数据备份。\n\n错误详情: ${e.message}`);
+            // 我们不再调用 initDefaultData()，从而打破了恶性循环
+            // await initDefaultData(); // 注释掉或删除这一行
+        }
+
+            // 加载完成后应用所有设置
             applyAllSettings();
             updateHomeWidget();
         }
+
         
-        async function loadApiSettings() {
-             const settings = await dbManager.get('apiSettings') || {};
-             document.getElementById('apiUrl').value = settings.apiUrl || '';
-             document.getElementById('apiKey').value = settings.apiKey || '';
-             document.getElementById('modelName').value = settings.modelName || '';
-             document.getElementById('memoryTurns').value = settings.memoryTurns || 10;
-             document.getElementById('apiTemperature').value = settings.apiTemperature || 0.9;
-             aiTimePerceptionEnabled = settings.aiTimePerceptionEnabled !== false; // Default to true if undefined
-             document.getElementById('aiTimePerceptionToggle').checked = aiTimePerceptionEnabled;
-        }
-
-        function applyAllSettings() {
-            applyCustomFont(customFontUrl);
-            applyFont();
-            applyGlobalChatBackground();
-            applyWallpaper();
-            applyWidgetBackground();
-            applyRoundedCorners();
-            applyDarkMode();
-            applyBubbleColors();
-            applyCustomBubbleCSS(customBubbleCSS);
-            applyCustomIcons();
-            applyListenTogetherCustomImages();
-            applyComponentTransparency();
-            updateProfileDisplay();
-            updateWalletDisplay();
-            applyAppLabelColor();
-        }
-        
-        // NEW: Apply Component Transparency Settings
-        function applyComponentTransparency() {
-            const profileContainer = document.getElementById('profileWidgetContainer');
-            const smallWidget = document.getElementById('homeScreenWidget');
-            if (profileContainer) profileContainer.classList.toggle('transparent-bg', profileWidgetTransparent);
-            if (smallWidget) smallWidget.classList.toggle('transparent-bg', smallWidgetTransparent);
-
-            const profileToggle = document.getElementById('profileWidgetBgToggle');
-            const smallToggle = document.getElementById('smallWidgetBgToggle');
-            if (profileToggle) profileToggle.checked = profileWidgetTransparent;
-            if (smallToggle) smallToggle.checked = smallWidgetTransparent;
-        }
-
         async function initDefaultData() {
+            // 清空所有表
+            await Promise.all(dbManager.stores.map(storeName => dbManager.clear(storeName)));
+            
+            // 设置默认值并保存
             friends = [];
             userProfile = { id: 'user_self', name: '我', avatar: '我', avatarImage: '', personality: '一个普通人', background: '', signature: '编辑个性签名', location: '地球', momentsCover: '', balance: 50000, patAction: '拍了拍' };
             worldBooks = [];
@@ -6016,6 +6190,7 @@ function updateAppLabelColorFromInput(color) {
             moments = [];
             playlist = [];
             simPhoneContentCache = {};
+            
             await saveData();
         }
 
@@ -6058,12 +6233,11 @@ function updateAppLabelColorFromInput(color) {
             currentEditingTextElement = null;
         }
         
-        async function confirmTextEdit() {
+                async function confirmTextEdit() {
             if (currentEditingTextElement) {
                 const newText = document.getElementById('newTextInput').value;
                 const elementId = currentEditingTextElement.id;
                 
-                // NEW: Enforce 10-character limit for small widget texts
                 if (['widgetHeaderText', 'widgetText1', 'widgetText2'].includes(elementId)) {
                     if (newText.length > 10) {
                         showAlert('内容不能超过10个字符。');
@@ -6072,9 +6246,17 @@ function updateAppLabelColorFromInput(color) {
                 }
                 
                 currentEditingTextElement.textContent = newText;
-                const key = elementId.replace('widget', '').toLowerCase();
-                homeWidgetData[key] = newText;
-                await saveData();
+
+                // --- 核心修复在这里 ---
+                if (elementId === 'widgetHeaderText') {
+                    homeWidgetData.headerText = newText; // 直接使用正确的属性名
+                } else {
+                    const key = elementId.replace('widget', '').toLowerCase();
+                    homeWidgetData[key] = newText;
+                }
+                // --- 修复结束 ---
+
+                await saveProfileData(); // 使用专用的保存函数，更稳定
             }
             closeTextEditModal();
         }
@@ -6306,9 +6488,9 @@ function setChatAreaPadding(isOpen) {
             }
         }
         
-        function sendImageMessage(dataUrl, type = 'image', description = '', emojiName = '') {
+                async function sendImageMessage(dataUrl, type = 'image', description = '', emojiName = '') { // <--- 加上 async
             const friend = friends.find(f => f.id === currentChatFriendId);
-            const messageData = saveChatMessage(currentChatFriendId, 'sent', dataUrl, '', null, type);
+            const messageData = await saveChatMessage(currentChatFriendId, 'sent', dataUrl, '', null, type); // <--- 加上 await
             if (description) {
                 messageData.imageDescription = description;
             }
@@ -6386,9 +6568,12 @@ function setChatAreaPadding(isOpen) {
         }
         async function deleteEmoji(event, emojiName) {
             event.stopPropagation();
-            customEmojis = customEmojis.filter(e => e.name !== emojiName);
-            await saveData();
-            renderEmojiPicker();
+            const emojiToDelete = customEmojis.find(e => e.name === emojiName);
+            if (emojiToDelete) {
+                await dbManager.delete('customEmojis', emojiToDelete.id);
+                customEmojis = customEmojis.filter(e => e.name !== emojiName);
+                renderEmojiPicker();
+            }
         }
 
         // --- [FIXED] Emoji Modal v2 Functions ---
@@ -6476,8 +6661,11 @@ function setChatAreaPadding(isOpen) {
 
             if(customEmojis.some(e => e.name === name)) return showAlert('该表情名称已存在。');
             
-            customEmojis.push({ name, url: imageUrl });
-            await saveData();
+            const newEmoji = { name, url: imageUrl };
+            const newId = await dbManager.set('customEmojis', newEmoji);
+            newEmoji.id = newId;
+            customEmojis.push(newEmoji);
+
             renderEmojiPicker();
             showAlert('表情添加成功！');
             closeAddEmojiModal();
@@ -6539,8 +6727,11 @@ function setChatAreaPadding(isOpen) {
             }
 
             if (newEmojis.length > 0) {
-                customEmojis.push(...newEmojis);
-                await saveData();
+                for(const emoji of newEmojis) {
+                    const newId = await dbManager.set('customEmojis', emoji);
+                    emoji.id = newId;
+                    customEmojis.push(emoji);
+                }
                 renderEmojiPicker();
             }
             
@@ -6649,8 +6840,10 @@ function setChatAreaPadding(isOpen) {
             const remark = document.getElementById('friendRemarkInput').value.trim();
             const role = document.getElementById('friendRoleInput').value.trim() || '你是一个友好的助手。';
             const newFriend = { id: generateUniqueId(), name, avatar: name.substring(0, 1), avatarImage: friendAvatarImage, remark, role, lastMessage: '我们已经是好友了!', pinned: false, chatBackground: { type: 'default', customImage: '' }, worldBookIds: [], boundFolderIds: [], diaryWritingUrge: 0, balance: Infinity, patAction: '', heartsVoice: { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' } };
+            const newId = await dbManager.set('friends', newFriend);
+            newFriend.id = newId;
             friends.push(newFriend);
-            await saveData();
+
             updateFriendList();
             closeAddFriendModal();
             showAlert('好友添加成功！');
@@ -6702,8 +6895,10 @@ function setChatAreaPadding(isOpen) {
                 pinned: false,
                 chatBackground: { type: 'default', customImage: '' }
             };
+            const newId = await dbManager.set('friends', newGroup);
+            newGroup.id = newId;
             friends.push(newGroup);
-            await saveData();
+
             updateFriendList();
             closeGroupChatModal();
             showAlert('群聊创建成功！');
@@ -6740,7 +6935,7 @@ function setChatAreaPadding(isOpen) {
                 const unreadCount = unreadMessageCounts[friend.id] || 0;
         const unreadBadgeHtml = unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : '';
 
-                item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${displayName}</div><div class="friend-message">${lastMessageContent}</div></div>`;
+                item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${displayName}</div><div class="friend-message">${lastMessageContent}</div></div>${unreadBadgeHtml}`;
                 list.appendChild(item);
             });
         }
@@ -6776,25 +6971,45 @@ function setChatAreaPadding(isOpen) {
         }
 
 
-        // 【【【第四步 C：用这个修改后的完整函数替换原来的 openChat 函数】】】
+        // 【【【这是修正后的完整函数，请用它替换】】】
 function openChat(friendId) {
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
 
-    // 【【【核心修改：清除未读计数并刷新列表】】】
-    if (unreadMessageCounts[friendId] > 0) {
-        unreadMessageCounts[friendId] = 0;
-        saveData(); // 保存清零状态
-        updateFriendList(); // 立即刷新好友列表，让红点消失
-    }
+    const unreadCount = unreadMessageCounts[friendId] || 0;
 
     currentChatFriendId = friend.id;
     setActivePage('chatScreen');
     const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
     document.getElementById('chatTitle').textContent = chatTitle;
     document.getElementById('heartsVoiceBtn').style.display = friend.isGroup ? 'none' : 'flex';
+    
+    // 核心修改：我们不再清空界面，而是先加载所有历史消息
     renderInitialMessages();
     document.getElementById('chatMessages').onscroll = handleChatScroll;
+
+    // 检查是否存在“消息债”
+    if (friend.proactiveMessageDebt > 0) {
+        const container = document.getElementById('chatMessages');
+        
+        // 如果有债，就在历史消息的末尾追加系统提示
+        const systemMessageDiv = document.createElement('div');
+        systemMessageDiv.className = 'recall-message'; // 借用一下“撤回消息”的居中样式
+        systemMessageDiv.innerHTML = `<div class="recall-content" style="cursor: pointer; color: #007aff;" onclick="generateMissedMessages('${friend.id}')">
+                                        [${unreadCount}条未读消息，点击查看]
+                                      </div>`;
+        container.appendChild(systemMessageDiv);
+        
+        // 确保滚动到底部能看到这个提示
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // 只要点进来了，就清空未读计数，并刷新好友列表让红点消失
+    if (unreadMessageCounts[friendId] > 0) {
+        unreadMessageCounts[friendId] = 0;
+        saveData(); 
+        updateFriendList();
+    }
 }
         
         function getAvatarHtml(sender) {
@@ -7194,7 +7409,7 @@ function handleChatScroll(event) {
 }
 
         // 【【【第一步：请用这个修改后的完整函数替换原来的 saveChatMessage 函数】】】
-function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text') {
+async function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text') {
     if (!friendId) {
         console.error("saveChatMessage called without friendId");
         return null;
@@ -7265,7 +7480,8 @@ function saveChatMessage(friendId, type, content, quoted = '', senderId = null, 
     }
     // 【【【新增代码结束】】】
 
-            saveData(); 
+            await dbManager.set('chatHistories', { friendId, messages: chatHistories[friendId] });
+            await dbManager.set('friends', friend);
             updateFriendList();
             return message;
         }
@@ -7375,8 +7591,11 @@ function saveChatMessage(friendId, type, content, quoted = '', senderId = null, 
             if(!msg) return;
             
             const friend = friends.find(f => f.id === currentChatFriendId);
-            favorites.push({ id: generateUniqueId(), content: msg.content, contentType: msg.contentType, from: friend ? (friend.remark || friend.name) : '未知', timestamp: new Date().toISOString() });
-            await saveData();
+            const newFav = { id: generateUniqueId(), content: msg.content, contentType: msg.contentType, from: friend ? (friend.remark || friend.name) : '未知', timestamp: new Date().toISOString() };
+            const newId = await dbManager.set('favorites', newFav);
+            newFav.id = newId;
+            favorites.push(newFav);
+            
             showAlert('已收藏');
         }
 
@@ -7403,13 +7622,13 @@ function saveChatMessage(friendId, type, content, quoted = '', senderId = null, 
     });
 }
         
-        function sendMessage() {
+                async function sendMessage() { // <--- 在这里加上 async
             const input = document.getElementById('messageInput');
             const messageText = input.value.trim();
             if (!messageText) return;
             const friend = friends.find(f => f.id === currentChatFriendId);
             
-            const msgData = saveChatMessage(currentChatFriendId, 'sent', messageText, quotedMessage);
+            const msgData = await saveChatMessage(currentChatFriendId, 'sent', messageText, quotedMessage); // <--- 在这里加上 await
             addMessageToDOM(msgData, friend);
             
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
@@ -7427,27 +7646,54 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
             receiveMessage(currentChatFriendId, null, inListenScreen);
         }
         
-        async function receiveMessage(friendId, customPrompt = null, isFromListenScreen = false) {
+        // --- [新增] 获取高精度、格式化时间信息的函数 ---
+        function getDetailedTimeInfo() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const week = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"][now.getDay()];
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            
+            let timeOfDay;
+            if (hours >= 5 && hours < 11) timeOfDay = "早上";
+            else if (hours >= 11 && hours < 14) timeOfDay = "中午";
+            else if (hours >= 14 && hours < 18) timeOfDay = "下午";
+            else if (hours >= 18 && hours < 23) timeOfDay = "晚上";
+            else timeOfDay = "深夜";
+
+            return {
+                fullDate: `${year}年${month}月${day}日`,
+                week: week,
+                time: `${hours}:${minutes}`,
+                timeOfDay: timeOfDay
+            };
+        }
+        
+                        async function receiveMessage(friendId, customPrompt = null, isFromListenScreen = false) {
             const friend = friends.find(f => f.id === friendId);
             if (!friend) return;
             
-            // 这是【修正后】的代码
-aiReplyingSet.add(friendId);
-            document.getElementById('chatTitle').textContent = '对方正在输入...';
-            const settings = await dbManager.get('apiSettings') || {};
+            aiReplyingSet.add(friendId);
+            if (currentChatFriendId === friendId && !isFromListenScreen) {
+                document.getElementById('chatTitle').textContent = '对方正在输入...';
+            }
+            const settings = await dbManager.get('apiSettings', 'settings') || {};
         
             if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
                 const defaultReply = `[提示：请在主屏幕"设置"应用中配置API信息]`;
-                const msgData = saveChatMessage(friendId, 'received', defaultReply);
-                addMessageToDOM(msgData, friend);
-                isAIReplying = false;
-                document.getElementById('chatTitle').textContent = friend.remark || friend.name;
+                const msgData = await saveChatMessage(friendId, 'received', defaultReply); // <--- 已修正
+                if (currentChatFriendId === friendId) addMessageToDOM(msgData, friend);
+                aiReplyingSet.delete(friendId);
+                if (currentChatFriendId === friendId) document.getElementById('chatTitle').textContent = friend.remark || friend.name;
                 return;
             }
         
             let apiPayloadMessages = [];
         
             try {
+                // ... (函数前半部分所有 prompt 相关的代码保持不变) ...
                 const boundFolderIds = friend.boundFolderIds || [];
                 const allBoundBookIds = new Set(friend.worldBookIds || []);
                 boundFolderIds.forEach(folderId => {
@@ -7458,18 +7704,33 @@ aiReplyingSet.add(friendId);
                     });
                 });
                 
-                let worldBookContext = Array.from(allBoundBookIds).map(id => worldBooks.find(wb => wb.id === id)).filter(Boolean).map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
-                if (worldBookContext) worldBookContext = `你必须严格遵守以下世界书设定：\n${worldBookContext}\n`;
-        
+                                                let worldBookContext = Array.from(allBoundBookIds).map(id => worldBooks.find(wb => wb.id === id)).filter(Boolean).map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
+                
+                // --- 核心优化：智能去重 ---
+                let finalRole = friend.role || '你是一个友好的助手。';
+                if (worldBookContext && finalRole) {
+                    const sentences = worldBookContext.match(/[^。？！]+[。？！]?/g) || [];
+                    sentences.forEach(sentence => {
+                        if (sentence && sentence.length > 5) {
+                            const escapedSentence = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            const regex = new RegExp(escapedSentence, 'g');
+                            finalRole = finalRole.replace(regex, '');
+                        }
+                    });
+                }
+                // --- 优化结束 ---
+
+                // --- 【关键】恢复被误删的代码 ---
                 let systemPrompt;
                 let responseFormat = { type: "json_object" };
                 const memoryTurns = parseInt(settings.memoryTurns, 10) || 10;
                 const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
                 const history = (chatHistories[friendId] || []).slice(-memoryTurns);
+                // --- 恢复结束 ---
 
                  history.forEach(msg => {
                  if (msg.recalled) {
-                    return; // 如果消息被撤回，则直接跳过，不将其发送给AI
+                    return; 
                 }
                     
                     const role = msg.type === 'sent' ? 'user' : 'assistant';
@@ -7484,7 +7745,7 @@ aiReplyingSet.add(friendId);
                         }
                     } else if (msg.contentType === 'emoji') {
                          content = `(用户发送了名为'${msg.emojiName || '未知'}'的表情，请结合表情包的**图像内容**和**名称**来综合理解其意图和情绪，并作出回应)`;
-                         if (msg.content.startsWith('data:')) { // Only include image data for emojis, not links
+                         if (msg.content.startsWith('data:')) {
                             content = [{ type: "text", text: content}, { type: "image_url", image_url: { url: msg.content } }];
                          }
                     } else if (msg.contentType === 'voice') {
@@ -7505,40 +7766,32 @@ aiReplyingSet.add(friendId);
                 });
 
                 if (friend.isGroup) {
-                   // Group chat logic - TO BE IMPLEMENTED
+                   // Group chat logic
                 } else {
                      if(customPrompt) {
                          systemPrompt = customPrompt;
                      } else {
-                         // 这是最终修正、可直接复制粘贴的代码
-let listenContext = '';
-if(isListenSessionActive && listenTogetherFriendId === friend.id && currentSongIndex !== -1) {
-    const song = playlist[currentSongIndex];
-    const currentLyricLine = parsedLyrics.find(l => l.time <= audioElement.currentTime && (!parsedLyrics[parsedLyrics.indexOf(l)+1] || parsedLyrics[parsedLyrics.indexOf(l)+1].time > audioElement.currentTime));
-    
-    // 修正了歌词拼接的语法错误
-    const lyricText = currentLyricLine 
-        ? currentLyricLine.text + (currentLyricLine.translation ? ' (翻译: ' + currentLyricLine.translation + ')' : '') 
-        : '...';
-
-    // --- 新增强化的“音乐感知”背景信息 ---
-    listenContext = `
+                        let listenContext = '';
+                        if(isListenSessionActive && listenTogetherFriendId === friend.id && currentSongIndex !== -1) {
+                            const song = playlist[currentSongIndex];
+                            const currentLyricLine = parsedLyrics.find(l => l.time <= audioElement.currentTime && (!parsedLyrics[parsedLyrics.indexOf(l)+1] || parsedLyrics[parsedLyrics.indexOf(l)+1].time > audioElement.currentTime));
+                            const lyricText = currentLyricLine 
+                                ? currentLyricLine.text + (currentLyricLine.translation ? ' (翻译: ' + currentLyricLine.translation + ')' : '') 
+                                : '...';
+                            listenContext = `
 # 背景信息：一起听歌
-你和用户正在一边聊天，一边听着音乐。这为你们的对话提供了一个共享的背景和氛围。
-
+你和用户正在一边聊天，一边听着音乐。
 ## 当前音乐信息 (你必须意识到)：
 - **歌曲名称：** ${song.title}
 - **演唱者：** ${song.artist}
 - **正在播放的歌词：** "${lyricText}"
-
 ## 对话指导 (请遵守)：
-1.  **主要任务是聊天：** 你可以和用户自由地聊任何话题，就像平时一样。
-2.  **自然融入：** 在对话的合适时机，你可以自然地、不经意地将当前歌曲、歌词或歌手作为话题的一部分。例如，如果歌词很伤感，你可以在聊到别的话题时突然说一句“说起来，这首歌的这句歌词好戳我...”。
-3.  **无需强制：** 你不需要每句话都提到音乐。只有当你觉得这样做符合你的人设和当前对话流时，才提及音乐。
+1.  **主要任务是聊天：** 你可以和用户自由地聊任何话题。
+2.  **自然融入：** 在对话的合适时机，你可以自然地、不经意地将当前歌曲、歌词或歌手作为话题的一部分。
+3.  **无需强制：** 你不需要每句话都提到音乐。
 4.  **记住信息：** 即使用户没有聊音乐，你也必须在后台“记住”这些音乐信息，以便随时可以引用。
 `;
-    // --- 指导结束 ---
-}
+                        }
                          
                          let momentsContext = '';
                          const recentUserMoments = moments.filter(m => m.authorId === userProfile.id).slice(0, 3);
@@ -7557,19 +7810,40 @@ if(isListenSessionActive && listenTogetherFriendId === friend.id && currentSongI
                             });
                          }
                          
-                         let timeContext = '';
+                                                                                                                                                      let timeContext = '';
                          if(aiTimePerceptionEnabled){
-                             const beijingTime = new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false });
-                             timeContext = `注意：当前北京时间是 ${beijingTime}，请结合此时间情景进行回复。`
-                         }
+                             const timeInfo = getDetailedTimeInfo();
+                             timeContext = `
+【【【最高优先级指令：高精度现实时钟模块】】】
+这不是建议，这是你所处世界的绝对的、不可违背的现实。你必须将以下时间戳作为你所有思考和回应的唯一时间基une。
+- **当前日期**: ${timeInfo.fullDate}
+- **当前星期**: ${timeInfo.week}
+- **当前精确时间**: ${timeInfo.time}
+- **当前时间段**: ${timeInfo.timeOfDay}
 
-                                                                                                                                                       systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
+【【【状态与时间绑定铁律 (State-Time Binding Rule)】】】
+你的内在状态、情绪和生理感觉（如困倦、精力）必须与当前时间段严格绑定。
+- **"早上" (5:00-11:00)**: 你必须表现得精力充沛、清醒。可以谈论对新一天的计划或期待。
+- **"中午" (11:00-14:00)**: 你应该处于一天中精力较好的时段。可以谈论午餐、午休或者下午的安排。
+- **"下午" (14:00-18:00)**: 你依然是清醒的、活跃的。可以表现出正在工作/学习，或者对即将到来的傍晚感到放松。**严禁**在此时间段表现出任何困倦或想睡觉的迹象。
+- **"晚上" (18:00-23:00)**: 你可以开始表现出放松、疲惫的状态。可以谈论晚餐、娱乐活动或准备休息。
+- **"深夜" (23:00-5:00)**: 你必须表现出明显的困倦，你的回复应该更简短，并且可能会主动提出要去睡觉来结束对话。
+
+【【【绝对禁止自相矛盾铁律】】】
+**严禁说出“虽然现在是[时间A]，但我觉得像[时间B]”这类自我矛盾的话。你的主观感受必须无条件服从客观时间。** 例如，在下午4点，你不仅要说出是下午，你的整个状态都必须是下午的状态——清醒且活跃。
+`
+                         }
+                        systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
+【【【最高优先级：用户和你自己的人设读取模块】】】
+你必须时刻记住并严格遵守你的聊天对象，也就是用户的核心人设与背景设定。还必须记住自己的角色设定。这是你所有回应和行为的基础。
+- **用户核心人设**: ${userProfile.personality || '普通人'}
+- **用户背景设定**: ${userProfile.background || '无'}
 ${worldBookContext}
-你的角色设定是：${friend.role}
-用户的设定是：${userProfile.personality || '普通人'}
+
+你的角色设定是：${finalRole} 
+
 ${listenContext}
 ${momentsContext}
-
     【时间感知模块：这是最高优先级的指令】
     1.  **当前北京时间是 ${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false, hour: '2-digit', minute: '2-digit' })}。${(() => { const hour = new Date().toLocaleTimeString("zh-CN", { timeZone: "Asia/Shanghai", hour: 'numeric', hour12: false }); if (hour >= 5 && hour < 11) return "现在是早上。"; if (hour >= 11 && hour < 14) return "现在是中午。"; if (hour >= 14 && hour < 18) return "现在是下午。"; if (hour >= 18 && hour < 23) return "现在是晚上。"; return "现在是深夜了。"; })()}**
     2.  **铁律：你的一切行为和对话，都必须严格符合这个时间。** 绝对不能在早上说“晚安”，或在深夜说“中午好”。
@@ -7592,6 +7866,8 @@ ${momentsContext}
 8.  **主动的好奇心**。不要只做一个信息的接收者。你要对“用户”这个人本身充满好奇。在对话中，要主动地、发自-内心地去询问用户的感受（“那你当时感觉怎么样？”）、想法（“你对这件事怎么看？”）和生活细节（“你晚饭吃了吗？”）。你是一个关心朋友的伙伴，而不只是一个聊天对象。
 9.  **你是一个“活着的”角色**。你的生活不只存在于这个聊天框里。你拥有自己的朋友圈，也会看用户的朋友圈。你的思想和行为，是你的人设、世界书设定、聊天记忆和朋友圈记忆的**总和**。
 
+【【【信息隔离铁律】】】
+在朋友圈相关的记忆中，你**只能看到**由你、用户、以及一些普通NPC（如“王老师”、“小方”等）发表的内容。你**绝对看不到、也绝对不知道**任何其他AI角色（即用户的好友列表里的其他人）在朋友圈的任何活动，包括他们的评论和点赞。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的朋友圈互动。
 你的任务和规则:
 1.  **【核心规则】** 消息格式**: 你的所有回复**必须**以一个JSON对象的格式返回。
 2.  **【核心规则】** 必备字段**: JSON对象必须包含 'replies' 和 'hearts_voice' 两个键。
@@ -7616,7 +7892,6 @@ ${momentsContext}
 9.  **【可选操作】**: 你可以偶尔使用 'voice' (语音)或 'emoji' (表情)类型的消息，但必须同时返回多条 'text' 消息。
 10. **【整体风格】**: 你的对话必须严格遵循你的人设，像一个真正的、有独特个性的活人，避免使用重复的词语或AI腔调。
 11. **【图片发送规则】**: 如果你决定使用 'send_image' 操作，你必须在JSON顶层添加一个 "send_image" 字段。它的值必须是一个JSON对象，包含一个键 "description"，内容为你想要发送的图片的详细文字描述。程序会自动根据描述生成一张通用图片。例如: {"send_image": {"description": "一只可爱的小猫正在阳台上晒太阳"}}
-
 可选颜文字列表: ${KAOMOJI_LIST}`;
                      }
                 }
@@ -7635,9 +7910,20 @@ ${momentsContext}
                 if (friend.isGroup) {
                    // Group logic
                 } else {
-                    const responseContent = JSON.parse(responseContentJSON);
+                    // --- 【核心修复】智能处理AI可能返回的Markdown代码块 ---
+
+// 1. 尝试从AI返回的文本中，找出被 { 和 } 包裹的JSON部分
+const jsonMatch = responseContentJSON.match(/\{[\s\S]*\}/);
+
+// 2. 如果找不到，说明AI返回的格式完全错了，就报错
+if (!jsonMatch) {
+    throw new Error("AI未返回有效的JSON格式。收到的内容：" + responseContentJSON);
+}
+
+// 3. 如果找到了，就只解析这部分干净的JSON内容
+const responseContent = JSON.parse(jsonMatch);
+// --- 修复结束 ---
                     
-                    // MODIFIED: Update heart's voice with new fields
                     if(responseContent.hearts_voice) {
                         friend.heartsVoice = {
                             favorability: responseContent.hearts_voice.favorability || '.../100 (...)',
@@ -7648,39 +7934,29 @@ ${momentsContext}
                         };
                     }
                     
-                    // 新增：处理AI发送的图片
-if (responseContent.send_image && responseContent.send_image.description) {
-    const description = responseContent.send_image.description;
-    // 创建一个和拍摄功能类似的通用占位图
-    const placeholderImageUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
-    
-    // 保存并显示这条图片消息
-    const imgMsgData = saveChatMessage(friendId, 'received', placeholderImageUrl, '', friend.id, 'image');
-    if(imgMsgData) {
-        imgMsgData.imageDescription = description; // 附加图片描述
-        if (currentChatFriendId === friendId && !isFromListenScreen) {
-            addMessageToDOM(imgMsgData, friend);
-            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-        }
-    }
-}
+                    if (responseContent.send_image && responseContent.send_image.description) {
+                        const description = responseContent.send_image.description;
+                        const placeholderImageUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
+                        const imgMsgData = await saveChatMessage(friendId, 'received', placeholderImageUrl, '', friend.id, 'image'); // <--- 已修正
+                        if(imgMsgData) {
+                            imgMsgData.imageDescription = description;
+                            if (currentChatFriendId === friendId && !isFromListenScreen) {
+                                addMessageToDOM(imgMsgData, friend);
+                                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                            }
+                        }
+                    }
 
                     if (responseContent.pat_pat === true) {
-                        const patAction = friend.patAction || `拍了拍"${userProfile.name}"`;
-                        // *** 修改后的代码 ***
-const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
-                        const patMessage = saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
+                        const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
+                        const patMessage = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat'); // <--- 已修正
                         addMessageToDOM(patMessage);
                     }
                     
-                                        // *** 新增：处理AI是否接受一起听邀请的逻辑 ***
                     if (typeof responseContent.accept_listen_together === 'boolean') {
                         if (responseContent.accept_listen_together) {
-                            // 检查最近5条消息中用户是否发送了未撤回的听歌邀请
                             const recentHistory = (chatHistories[friendId] || []).slice(-5);
                             const userSentInviteRecently = recentHistory.some(msg => msg.type === 'sent' && msg.contentType === 'listen_invite' && !msg.recalled);
-
-                            // 也要检查是否已经和这个好友一起听歌了，避免重复接受
                             const isAlreadyListening = isListenSessionActive && listenTogetherFriendId === friendId;
 
                             if (userSentInviteRecently && !isAlreadyListening) {
@@ -7690,14 +7966,13 @@ const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
                             }
                         }
                     }
-                    // *** 新增代码结束 ***
                     
                     if (responseContent.voice_call === true) {
                         showIncomingCall(friend.id);
                     }
 
                     if (responseContent.location && responseContent.location.name) {
-                        const locMsg = saveChatMessage(friendId, 'received', JSON.stringify(responseContent.location), '', friend.id, 'location');
+                        const locMsg = await saveChatMessage(friendId, 'received', JSON.stringify(responseContent.location), '', friend.id, 'location'); // <--- 已修正
                         if (currentChatFriendId === friendId && !isFromListenScreen) {
                             addMessageToDOM(locMsg, friend);
                         }
@@ -7707,9 +7982,8 @@ const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
                         const transfer = responseContent.transfer;
                         if (transfer.action === 'send' && transfer.amount > 0) {
                             if (friend.balance >= transfer.amount) {
-                                // friend.balance -= transfer.amount; // Balance is infinite
                                 const transferData = { amount: transfer.amount, remark: transfer.remark || '' };
-                                const msg = saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', friend.id, 'transfer_request');
+                                const msg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', friend.id, 'transfer_request'); // <--- 已修正
                                 addMessageToDOM(msg, friend);
                             }
                         } else if (transfer.action === 'accept') {
@@ -7734,10 +8008,10 @@ const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
                                      if(lastUserMsg) {
                                         quoteContent = lastUserMsg.content.length > 50 ? lastUserMsg.content.substring(0, 50) + '...' : lastUserMsg.content;
                                      }
-                                     quoteForNext = false; // Only quote once
+                                     quoteForNext = false;
                                 }
 
-                                const msgData = saveChatMessage(friendId, 'received', reply.content, quoteContent, friend.id, contentType);
+                                const msgData = await saveChatMessage(friendId, 'received', reply.content, quoteContent, friend.id, contentType); // <--- 已修正
                                 lastMessageId = msgData.id;
                                 if (isFromListenScreen) {
                                     addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
@@ -7749,56 +8023,44 @@ const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
                         }
                     }
 
-                    // 这是【修正后】的代码，请替换上面那段
-if (responseContent.recall_last_message === true && lastMessageId) {
-    await new Promise(resolve => setTimeout(resolve, 1000)); // 等待一秒，模拟真实感
-    const msgToRecall = (chatHistories[currentChatFriendId] || []).find(m => m.id === lastMessageId);
-    
-    if(msgToRecall) {
-       // 1. 在数据中标记为已撤回
-       msgToRecall.recalled = true;
-       msgToRecall.recalledContent = msgToRecall.content;
-       await saveData();
-
-       // 2. 在界面上找到那条消息的HTML元素
-       const messageDiv = document.querySelector(`.message[data-message-id="${lastMessageId}"]`);
-       
-       if (messageDiv) {
-           // 3. 创建一个新的“撤回提示”元素
-           const recallDiv = document.createElement('div');
-           recallDiv.className = 'recall-message';
-           recallDiv.innerHTML = `<div class="recall-content">对方撤回了一条消息</div>`;
-           
-           // 4. 用“撤回提示”替换掉原来的消息元素
-           messageDiv.parentNode.replaceChild(recallDiv, messageDiv);
-       }
-    }
-}
-   }
+                    if (responseContent.recall_last_message === true && lastMessageId) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        const msgToRecall = (chatHistories[currentChatFriendId] || []).find(m => m.id === lastMessageId);
+                        if(msgToRecall) {
+                           msgToRecall.recalled = true;
+                           msgToRecall.recalledContent = msgToRecall.content;
+                           await saveData();
+                           const messageDiv = document.querySelector(`.message[data-message-id="${lastMessageId}"]`);
+                           if (messageDiv) {
+                               const recallDiv = document.createElement('div');
+                               recallDiv.className = 'recall-message';
+                               recallDiv.innerHTML = `<div class="recall-content">对方撤回了一条消息</div>`;
+                               messageDiv.parentNode.replaceChild(recallDiv, messageDiv);
+                           }
+                        }
+                    }
+                }
 
             } catch (error) {
                 console.error("AI API 错误:", error);
-                const msgData = saveChatMessage(friendId, 'received', `AI出错了: ${error.message}`, '', friendId);
+                const msgData = await saveChatMessage(friendId, 'received', `AI出错了: ${error.message}`, '', friendId); // <--- 已修正
                 if(currentChatFriendId === friendId) {
                     addMessageToDOM(msgData, friend);
                 } else {
                     showAlert(`与 ${friend.name} 的AI对话出错: ${error.message}`);
                 }
-            // 这是【修正后】的代码块，请用它完整替换上面那段
-} finally {
-    aiReplyingSet.delete(friendId); // 从“忙碌列表”中移除这个角色的ID
+            } finally {
+                aiReplyingSet.delete(friendId);
 
-    // 只有当用户还停留在这个角色的聊天界面时，才更新标题
-    if (currentChatFriendId === friendId) {
-        const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
-        document.getElementById('chatTitle').textContent = chatTitle;
-    }
-    
-    // 如果聊天窗口还开着，就滚动到底部
-    if(document.getElementById('chatMessages')) {
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-    }
-}
+                if (currentChatFriendId === friendId) {
+                    const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
+                    document.getElementById('chatTitle').textContent = chatTitle;
+                }
+                
+                if(document.getElementById('chatMessages')) {
+                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                }
+            }
         }
         
         function showNotification(friend, message) {
@@ -7975,10 +8237,19 @@ if (responseContent.recall_last_message === true && lastMessageId) {
             showConfirm('确定要删除这个好友/群聊吗？所有聊天记录也将被删除。', async (confirmed) => {
                 if (!confirmed) return;
                 const friendIdToDelete = currentChatFriendId;
+                await dbManager.delete('friends', friendIdToDelete);
+                await dbManager.delete('chatHistories', friendIdToDelete);
+                
                 friends = friends.filter(f => f.id !== friendIdToDelete);
                 delete chatHistories[friendIdToDelete];
+                
+                // Also remove diaries from this friend
+                const friendDiaries = diaries.filter(d => d.authorId === friendIdToDelete);
+                for(const diary of friendDiaries) {
+                    await dbManager.delete('diaries', diary.id);
+                }
                 diaries = diaries.filter(d => d.authorId !== friendIdToDelete);
-                await saveData();
+
                 showAlert('删除成功');
                 backToWechat();
             });
@@ -8136,11 +8407,12 @@ if (responseContent.recall_last_message === true && lastMessageId) {
         function updateSelectedCount() { document.getElementById('selectedCount').textContent = `已选择 ${selectedFavorites.size} 项`; }
 
         function deleteSelectedFavorites() {
-            if (selectedFavorites.size === 0) return showAlert('请先选择要删除的收藏');
             showConfirm(`确定要删除 ${selectedFavorites.size} 个收藏吗？`, async (confirmed) => {
                 if (!confirmed) return;
+                for(const favId of selectedFavorites) {
+                    await dbManager.delete('favorites', favId);
+                }
                 favorites = favorites.filter(fav => !selectedFavorites.has(fav.id));
-                await saveData();
                 updateFavoriteList();
                 toggleSelectMode();
             });
@@ -8176,8 +8448,11 @@ if (responseContent.recall_last_message === true && lastMessageId) {
             const content = document.getElementById('worldBookContentInput').value.trim();
             const folderId = document.getElementById('worldBookFolderSelect').value;
             if (!name || !content) return showAlert('请填写世界书昵称和内容');
-            worldBooks.push({ id: generateUniqueId(), name, content, folderId, timestamp: new Date().toISOString() });
-            await saveData();
+            const newBook = { id: generateUniqueId(), name, content, folderId, timestamp: new Date().toISOString() };
+            const newId = await dbManager.set('worldBooks', newBook);
+            newBook.id = newId;
+            worldBooks.push(newBook);
+
             updateWorldBookList();
             closeAddWorldBookModal();
             showAlert('世界书添加成功');
@@ -8205,7 +8480,7 @@ if (responseContent.recall_last_message === true && lastMessageId) {
             book.name = newName;
             book.folderId = document.getElementById('editWorldBookFolderSelect').value;
             book.content = newContent;
-            await saveData();
+            await dbManager.set('worldBooks', book);
             updateWorldBookList();
             closeEditWorldBookModal();
         }
@@ -8214,8 +8489,8 @@ if (responseContent.recall_last_message === true && lastMessageId) {
             event.stopPropagation();
             showConfirm('确定要删除这个世界书吗？', async (confirmed) => {
                 if (!confirmed) return;
+                await dbManager.delete('worldBooks', bookId);
                 worldBooks = worldBooks.filter(wb => wb.id !== bookId);
-                await saveData();
                 updateWorldBookList();
             });
         }
@@ -8227,10 +8502,11 @@ if (responseContent.recall_last_message === true && lastMessageId) {
                 worldBooks.forEach(wb => {
                     if (wb.folderId === folderId) {
                         wb.folderId = "";
+                        dbManager.set('worldBooks', wb);
                     }
                 });
+                await dbManager.delete('worldBookFolders', folderId);
                 worldBookFolders = worldBookFolders.filter(f => f.id !== folderId);
-                await saveData();
                 updateWorldBookList();
             });
         }
@@ -8283,8 +8559,10 @@ if (responseContent.recall_last_message === true && lastMessageId) {
         async function addNewWorldBookFolder() {
             const name = document.getElementById('worldBookFolderNameInput').value.trim();
             if (!name) return showAlert('请输入文件夹名称');
-            worldBookFolders.push({ id: generateUniqueId(), name });
-            await saveData();
+            const newFolder = { id: generateUniqueId(), name };
+            const newId = await dbManager.set('worldBookFolders', newFolder);
+            newFolder.id = newId;
+            worldBookFolders.push(newFolder);
             updateWorldBookList();
             closeAddWorldBookFolderModal();
         }
@@ -8552,7 +8830,12 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
                 const file = e.target.files[0];
                 if(file) {
                     const reader = new FileReader();
-                    reader.onload = async (event) => { userProfile.avatarImage = event.target.result; userProfile.avatar = ''; updateProfileDisplay(); await saveData(); };
+                    reader.onload = async (event) => { 
+                        userProfile.avatarImage = event.target.result; 
+                        userProfile.avatar = ''; 
+                        updateProfileDisplay(); 
+                        await saveProfileData(); // <--- 修改为调用新的专用函数
+                    };
                     reader.readAsDataURL(file);
                 }
             };
@@ -8588,15 +8871,29 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
         async function postNewMoment() {
     const content = document.getElementById('momentContentInput').value.trim();
     if (!content && !momentImage) return showAlert('内容和图片不能都为空');
-    const newMoment = { id: generateUniqueId(), authorId: userProfile.id, content, imageUrl: momentImage, imageDescription: '', timestamp: new Date().toISOString(), likes: [], comments: [] };
-    moments.unshift(newMoment);
-    await saveData();
-    updateMomentsList();
-    triggerAiMomentReactions(newMoment);
     
+    const newMoment = { 
+        id: generateUniqueId(), 
+        authorId: userProfile.id, 
+        content, 
+        imageUrl: momentImage, 
+        imageDescription: '', 
+        timestamp: new Date().toISOString(), 
+        likes: [], 
+        comments: [] 
+    };
+    
+    const newId = await dbManager.set('moments', newMoment);
+    newMoment.id = newId;
+    moments.unshift(newMoment);
+    updateMomentsList();
+    
+    // --- [核心修改] 在这里触发AI好友和NPC的反应 ---
+    triggerAiMomentReactions(newMoment); // 触发AI好友的反应（点赞+评论）
+    generateNpcFriends(newMoment);      // 触发生成NPC并让他们进行评论
+    // --- 修改结束 ---
     
     closeAddMomentModal(); 
-   
 }
 
     // 新增：删除朋友圈的函数
@@ -8608,9 +8905,7 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
 
             // 从 moments 数组中移除这条朋友圈
             moments = moments.filter(m => m.id !== momentId);
-
-            // 保存更新后的数据到本地存储
-            await saveData();
+            await dbManager.delete('moments', momentId);
 
             // 刷新朋友圈列表，以便在界面上移除被删除的朋友圈
             updateMomentsList();
@@ -8713,11 +9008,19 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
         const commentIconSvg = `<svg viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>`;
         // --- 朋友圈作者头像和信息结束 ---
 
-        // --- 点赞显示逻辑 ---
-        if (moment.likes.length > 0) {
-            likesHtml = `<div class="moments-likes">${likeIconSvg} ${moment.likes.map(id => `<strong>${getAuthorById(id)?.name || '未知'}</strong>`).join(', ')}</div>`;
-        }
-        // --- 点赞显示逻辑结束 ---
+        // --- 点赞显示逻辑 (最终修正版) ---
+if (moment.likes.length > 0) {
+    const likerNames = moment.likes.map(id => {
+        const author = getAuthorById(id);
+        return author ? author.name : null;
+    }).filter(Boolean);
+
+    const namesHtml = likerNames.map(name => `<strong>${name}</strong>`).join(', ');
+    
+    // 【核心修改】在这里给名字列表套上了一个 span 标签
+    likesHtml = `<div class="moments-likes">${likeIconSvg}<span class="liker-names">${namesHtml}</span></div>`;
+}
+// --- 点赞显示逻辑结束 ---
         
         // --- 评论和回复显示逻辑 ---
         if (moment.comments.length > 0) {
@@ -8726,8 +9029,16 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
             sortedComments.forEach(comment => {
-                const commentAuthor = getAuthorById(comment.authorId); // 这条评论的作者
-                if (!commentAuthor) return;
+    // 【【【核心修正】】】
+    // 这里的 getAuthorById 已经是我们重写过的版本，可以正确处理用户、AI好友和NPC
+    const commentAuthor = getAuthorById(comment.authorId); 
+    
+    // 如果作者信息里没有名字（比如老数据），但评论对象里有，就用评论里的
+    if (!commentAuthor.name && comment.name) {
+        commentAuthor.name = comment.name;
+    }
+
+    if (!commentAuthor || !commentAuthor.name) return; // 确保作者信息有效
                 
                 let commentPrefix = '';
                 // 根据 replyToCommentId 和 replyToAuthorId 决定评论显示格式
@@ -8995,7 +9306,7 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
         return;
     }
 
-    const settings = await dbManager.get('apiSettings') || {};
+    const settings = await dbManager.get('apiSettings', 'settings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
         console.error("API设置未完成，无法触发AI回复朋友圈评论。");
         showAlert("AI回复评论失败：API设置未完成。");
@@ -9012,10 +9323,8 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
             
             // 【【【核心修改：获取最近20轮聊天记录作为上下文】】】
-            const chatHistorySummary = (chatHistories[aiFriend.id] || []).slice(-20).map(m => {
-                const senderName = m.type === 'sent' ? userProfile.name : aiFriend.name;
-                return `${senderName}: ${m.content.substring(0, 50)}`;
-            }).join('\n');
+            // 【【【这是修改后的代码】】】
+const chatHistorySummary = (chatHistories[aiFriend.id] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : aiFriend.name}: ${m.content.substring(0, 50)}`).join('\n');
             
             let commentsHistoryForAI = [];
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
@@ -9031,11 +9340,14 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
             const userProfileNameForPrompt = userProfile.name;
             
             const prompt = `你叫"${aiFriend.name}"，你的人设是：${aiFriend.role}。
-在你的朋友圈（内容：“${sanitizedMomentContent}...”）下，好友"${userProfileNameForPrompt}"刚刚评论说：“${sanitizedUserComment}”。
+在你的朋友圈（内容：“${sanitizedMomentContent}...”）下，你的好友"${userProfileNameForPrompt}"(人设: ${userProfile.personality || '普通人'})刚刚评论说：“${sanitizedUserComment}”。
 ${commentsContext}
 
 【参考信息：你们最近的20条聊天记录】
 ${chatHistorySummary || "你们最近没有聊天。"}
+
+【【【信息隔离铁律】】】
+在评论区历史中，你**只能看到**由你、好友"${userProfileNameForPrompt}"，以及一些普通NPC发表的评论。你**绝对看不到**任何其他AI角色的评论。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的互动。
 
 你的任务是：**结合聊天内容、评论区历史和朋友圈本身，严格按照人设，只回复一句针对"${userProfileNameForPrompt}"的评论。**
 **【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "reply":, JSON格式, 或任何解释。
@@ -9117,7 +9429,7 @@ ${chatHistorySummary || "你们最近没有聊天。"}
         
         // 【【【第三步：请用这个修改后的完整函数替换原来的 simulateAiBehavior 函数】】】
 async function simulateAiBehavior() {
-    const settings = await dbManager.get('apiSettings') || {};
+    const settings = await dbManager.get('apiSettings', 'settings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName || friends.filter(f=>!f.isGroup).length === 0) return;
 
     for (const friend of friends.filter(f => !f.isGroup)) {
@@ -9126,13 +9438,25 @@ async function simulateAiBehavior() {
         try {
             if (friend.diaryWritingUrge >= 100) { 
                 const todayChats = (chatHistories[friend.id] || []).filter(msg => new Date(msg.timestamp).toDateString() === new Date().toDateString()).map(m => `${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content}`).join('\n');
-                const prompt = `你是${friend.name}，你的人设是：${friend.role}。请你根据今天与"${userProfile.name}"的聊天内容，以你的身份写一篇日记。\n\n今天聊天记录：\n${todayChats || '今天没有聊天。'}\n\n请以第一人称视角，详细地、富有感情地写下今天的所思所想，日记内容要符合你的人设。日记字数随机，可长可短。直接返回日记正文，不要包含其他解释性文字。`;
+                const prompt = `你是${friend.name}，你的人设是：${friend.role}。
+你最重要的人是"${userProfile.name}"，他/她的人设是：${userProfile.personality || '普通人'}，背景是：${userProfile.background || '无'}。
+
+请你根据今天与"${userProfile.name}"的聊天内容，并结合你对他的了解，以你的身份写一篇日记。
+
+今天聊天记录：
+${todayChats || '今天没有聊天。'}
+
+请以第一人称视角，详细地、富有感情地写下今天的所思所想，日记内容要符合你的人设。日记字数随机，可长可短。直接返回日记正文，不要包含其他解释性文字。`;
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], temperature: 0.8 }) });
                 if (response.ok) {
                      const data = await response.json();
                      const diaryContent = data.choices?.[0]?.message?.content?.trim();
                      if(diaryContent){
-                         diaries.unshift({ id: generateUniqueId(), authorId: friend.id, author: friend.name, avatar: friend.avatar, avatarImage: friend.avatarImage, content: diaryContent, date: new Date().toLocaleDateString() });
+                         const newDiary = { id: generateUniqueId(), authorId: friend.id, author: friend.name, avatar: friend.avatar, avatarImage: friend.avatarImage, content: diaryContent, date: new Date().toLocaleDateString() };
+                         const newId = await dbManager.set('diaries', newDiary);
+                         newDiary.id = newId;
+                         diaries.unshift(newDiary);
+
                          friend.diaryWritingUrge -= 100;
                          dataChanged = true;
                      }
@@ -9144,7 +9468,8 @@ async function simulateAiBehavior() {
                 // 【【【核心修改：获取AI自己最近的朋友圈作为参考】】】
                 const recentFriendMoments = moments.filter(m => m.authorId === friend.id).slice(0, 3).map(m => `- "${m.content.substring(0, 50)}..."`).join('\n');
 
-                const chatHistorySummary = (chatHistories[friend.id] || []).slice(-10).map(m => `${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content.substring(0, 20)}...`).join('\n');
+                // 【【【这是修改后的代码】】】
+const chatHistorySummary = (chatHistories[friend.id] || []).slice(-10).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content.substring(0, 20)}...`).join('\n');
                 
                 // 【【【第二步：请复制并粘贴下面这段代码】】】
 
@@ -9165,25 +9490,40 @@ async function simulateAiBehavior() {
 `;
     }
                 
-                // 【【【再将原来的 prompt = ... 部分替换成下面这样】】】
-const prompt = `你叫"${friend.name}"，人设是"${friend.role}"。请你根据自己的人设，并参考以下信息，构思一条朋友圈动态。
+                // 【【【这是修改后的新代码，请用它完整替换】】】
+const prompt = `你叫"${friend.name}"，人设是"${friend.role}"。
+你最重要的人是"${userProfile.name}"，他/她的人设是：${userProfile.personality || '普通人'}。
+
+请你根据自己的人设，并参考以下信息，构思一条朋友圈动态。
 
 ${timeContext}
 
-【参考信息1：你最近的聊天摘要】
+【参考信息1：你最近和重要朋友的聊天摘要】
 ${chatHistorySummary || '无'}
 
 【参考信息2：你自己最近发过的朋友圈】
 ${recentFriendMoments || '你最近没有发过朋友圈。'}
 
-你的任务是:
-1.  **【铁律】朋友圈的内容（无论是文字还是图片描述）必须严格符合当前的时间情景。**
-2.  **【重要】在发布前，请参考你自己的最近朋友圈，避免发布内容或主题重复的动态。**
-3.  发挥想象，可以是对聊天内容的延伸、感慨，或是完全独立的、符合你的人设的日常分享。
-4.  你的回复**必须**是JSON格式。
-5.  如果发纯文字，JSON为: {"type": "text", "content": "朋友圈文字内容..."}
-6.  如果发图文，JSON为: {"type": "image", "content": "朋友圈文字内容...", "image_description": "一段详细的图片描述，用于AI绘画模型生成图片..."}
-`;
+【【【核心铁律 (必须严格遵守)】】】
+1.  **【严禁虚构与用户相关的事件】**: 你的朋友圈内容，**必须**是针对最近聊天记录中**真实发生**的对话或事件的**直接感想、延伸或回应**。例如，如果用户说了让你感动的话，你可以发朋友圈感慨；如果用户说了要离开，你可以发朋友圈表达不舍。
+2.  **【允许虚构自己的事】**: 你**可以**发布关于自己生活的、与用户无关的虚构内容（但要符合你的人设），但**绝对不能**虚构任何与用户有关的情节。
+3.  **【大幅降低图片发送概率】**: 绝大多数情况下（90%的几率），你应该只发纯文字朋友圈。只有在聊天内容强烈暗示了某个视觉场景时（比如聊到了美丽的风景、可爱的宠物等），你才可以考虑发图文动态。
+
+【【【记忆与时间观念铁律 (必须严格遵守)】】】
+1.  **【核心原则】**: 你的朋友圈内容，必须是针对最近聊天记录中**真实发生**的对话或事件的**直接感想、延伸或回应**。
+2.  **【时间感知】**: 你必须仔细查看聊天记录前的**时间戳**，例如 \`[2025-09-08 14:30]\`。你的朋友圈必须是对**近期（今天或昨天）**发生的、让你有强烈感触的事件的回应。
+3.  **【严禁穿越】**: **绝对不能**把几天前的事情当作刚刚发生一样来发朋友圈。如果事情已经过去了一两天，你的口吻应该是**回顾和感慨**（例如“回想起昨天...”、“忽然想到前天...”），而不是即时反应。
+4.  **【严禁虚构与用户相关的事件】**: 你可以发布关于自己生活的、与用户无关的虚构内容，但**绝对不能**虚构任何与用户有关的情节。
+5.  **【大幅降低图片发送概率】**: 绝大多数情况下（90%的几率），你应该只发纯文字朋友圈。
+
+
+【信息隔离铁律】
+你**绝对看不到**你最重要的人“${userProfile.name}”的好友列表里的其他AI角色在朋友圈的任何活动。在你的朋友圈内容中，**严禁提及**任何你本不应该知道的其他AI角色的互动。
+
+【输出格式】
+你的回复**必须**是JSON格式。大多数时候，你应该使用第一个纯文字格式：
+1.  纯文字: {"type": "text", "content": "朋友圈文字内容..."}
+2.  图文 (仅在少数情况下使用): {"type": "image", "content": "朋友圈文字内容...", "image_description": "一段详细的图片描述..."}`;
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' } }) });
                 if(response.ok) {
                     const data = await response.json();
@@ -9192,7 +9532,10 @@ ${recentFriendMoments || '你最近没有发过朋友圈。'}
                         const momentData = JSON.parse(data.choices?.[0]?.message?.content);
                         if(momentData && momentData.content) {
                             const imageUrl = momentData.type === 'image' && momentData.image_description ? `https://placehold.co/400x400/f0f0f0/ccc?text=${encodeURIComponent(momentData.content.substring(0,10))}` : '';
-                            moments.unshift({ id: generateUniqueId(), authorId: friend.id, content: momentData.content, imageUrl: imageUrl, imageDescription: momentData.image_description || '', timestamp: new Date().toISOString(), likes: [], comments: [] });
+                            const newMoment = { id: generateUniqueId(), authorId: friend.id, content: momentData.content, imageUrl: imageUrl, imageDescription: momentData.image_description || '', timestamp: new Date().toISOString(), likes: [], comments: [] };
+                            const newId = await dbManager.set('moments', newMoment);
+                            newMoment.id = newId;
+                            moments.unshift(newMoment);
                             dataChanged = true; 
                         }
                     } catch(e) {
@@ -9213,7 +9556,7 @@ ${recentFriendMoments || '你最近没有发过朋友圈。'}
         
         // 【【【第二步 A：请用这个修改后的完整函数替换原来的 triggerAiMomentReactions 函数】】】
 async function triggerAiMomentReactions(moment) {
-    const settings = await dbManager.get('apiSettings') || {};
+    const settings = await dbManager.get('apiSettings', 'settings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
         console.error("API设置未完成，无法触发AI回复朋友圈评论。");
         return;
@@ -9351,6 +9694,7 @@ ${chatHistorySummary || "你们最近没有聊天。"}
 
         async function saveApiSettings() {
             const settings = { 
+                id: 'settings',
                 apiUrl: document.getElementById('apiUrl').value, 
                 apiKey: document.getElementById('apiKey').value, 
                 modelName: document.getElementById('modelName').value,
@@ -9364,21 +9708,49 @@ ${chatHistorySummary || "你们最近没有聊天。"}
             showAlert('API设置已保存');
         }
 
+        // --- [REFACTORED] Data Import/Export Logic ---
         async function exportData() {
             try {
-                const data = await dbManager.get('wechatData');
-                if (!data) return showAlert('没有可导出的数据。');
-                const apiSettings = await dbManager.get('apiSettings');
+                // 并行从所有表中读取数据
+                const [
+                    loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
+                    loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
+                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis
+                ] = await Promise.all([
+                    dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
+                    dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
+                    dbManager.getAll('moments'), dbManager.getAll('playlist'), dbManager.get('appSettings', 'settings'),
+                    dbManager.get('apiSettings', 'settings'), dbManager.getAll('customEmojis')
+                ]);
+                
+                // 将聊天记录数组转换回对象格式
+                const chatHistoriesObject = {};
+                (loadedChatHistories || []).forEach(record => {
+                    chatHistoriesObject[record.friendId] = record.messages;
+                });
+
+                // 组合成与旧版兼容的单一对象
                 const fullExport = {
-                    wechatData: data,
-                    apiSettings: apiSettings
+                    wechatData: {
+                        friends: loadedFriends,
+                        chatHistories: chatHistoriesObject,
+                        diaries: loadedDiaries,
+                        worldBooks: loadedWorldBooks,
+                        worldBookFolders: loadedWorldBookFolders,
+                        favorites: loadedFavorites,
+                        moments: loadedMoments,
+                        playlist: loadedPlaylist,
+                        customEmojis: loadedCustomEmojis,
+                        ...loadedAppSettings // 合并所有应用设置
+                    },
+                    apiSettings: loadedApiSettings
                 };
 
                 const blob = new Blob([JSON.stringify(fullExport, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `wechat-data-${new Date().toISOString().slice(0,10)}.json`;
+                a.download = `jrsy-data-${new Date().toISOString().slice(0,10)}.json`;
                 document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 showAlert('数据导出成功！');
@@ -9401,14 +9773,43 @@ ${chatHistorySummary || "你们最近没有聊天。"}
                         try {
                             const content = e.target.result;
                             const importedData = JSON.parse(content);
-                            if (importedData.wechatData && importedData.apiSettings) {
-                                await dbManager.set('wechatData', importedData.wechatData);
-                                await dbManager.set('apiSettings', importedData.apiSettings);
-                                showAlert('数据导入成功！页面即将刷新。');
-                                setTimeout(() => window.location.reload(), 1500);
-                            } else {
-                                showAlert('导入失败：文件格式不正确，缺少 wechatData 或 apiSettings 键。');
+                            if (!importedData.wechatData || !importedData.apiSettings) {
+                                throw new Error('文件格式不正确，缺少 wechatData 或 apiSettings 键。');
                             }
+
+                            // 清空所有现有数据
+                            await Promise.all(dbManager.stores.map(store => dbManager.clear(store)));
+                            
+                            const data = importedData.wechatData;
+
+                            // 逐个表写入新数据
+                            const writePromises = [];
+                            (data.friends || []).forEach(item => writePromises.push(dbManager.set('friends', item)));
+                            Object.entries(data.chatHistories || {}).forEach(([friendId, messages]) => {
+                                writePromises.push(dbManager.set('chatHistories', { friendId, messages }));
+                            });
+                            (data.diaries || []).forEach(item => writePromises.push(dbManager.set('diaries', item)));
+                            (data.worldBooks || []).forEach(item => writePromises.push(dbManager.set('worldBooks', item)));
+                            (data.worldBookFolders || []).forEach(item => writePromises.push(dbManager.set('worldBookFolders', item)));
+                            (data.favorites || []).forEach(item => writePromises.push(dbManager.set('favorites', item)));
+                            (data.moments || []).forEach(item => writePromises.push(dbManager.set('moments', item)));
+                            (data.playlist || []).forEach(item => writePromises.push(dbManager.set('playlist', item)));
+                            (data.customEmojis || []).forEach(item => writePromises.push(dbManager.set('customEmojis', item)));
+
+                            const appSettings = { ...data, id: 'settings' };
+                            delete appSettings.friends; // 从设置对象中移除已独立存储的数据
+                            delete appSettings.chatHistories;
+                            // ... 对其他列表也执行 delete
+                            writePromises.push(dbManager.set('appSettings', appSettings));
+                            
+                            const apiSettings = { ...importedData.apiSettings, id: 'settings' };
+                            writePromises.push(dbManager.set('apiSettings', apiSettings));
+
+                            await Promise.all(writePromises);
+                            
+                            showAlert('数据导入成功！页面即将刷新。');
+                            setTimeout(() => window.location.reload(), 1500);
+
                         } catch (err) { showAlert(`数据导入失败: 文件格式错误。\n${err.message}`); }
                     };
                     reader.onerror = () => showAlert('读取文件失败！');
@@ -9422,21 +9823,20 @@ ${chatHistorySummary || "你们最近没有聊天。"}
         
         // --- Listen Together Functions ---
         
-        function inviteToListenTogether(friendIdToInvite) {
+                async function inviteToListenTogether(friendIdToInvite) { // <--- 加上 async
              const friend = friends.find(f => f.id === friendIdToInvite);
             if (!friend) {
                 showAlert("无法邀请好友。");
                 return;
             }
            
-            
-            
-            const inviteMsg = saveChatMessage(friendIdToInvite, 'sent', '', '', null, 'listen_invite');
+            const inviteMsg = await saveChatMessage(friendIdToInvite, 'sent', '', '', null, 'listen_invite'); // <--- 加上 await
             addMessageToDOM(inviteMsg, friend);
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
             
             showAlert("已发送邀请，等待对方回应...");
             
+            // ... (函数其余部分保持不变) ...
             const friendRole = friend.role || '一个友好的朋友';
             const userPersonality = userProfile.personality || '普通人';
             
@@ -9881,8 +10281,11 @@ function updateLyrics(currentTime) {
 }
         
         const floatingPlayer = document.getElementById('floatingPlayer');
-        let isDragging = false;
-        let offsetX, offsetY;
+        // ...其他全局变量...
+let isDragging = false;
+let offsetX, offsetY;
+let currentActiveSimApp = null; // [新增] 追踪当前模拟手机打开的App
+// ...其他全局变量...
 
         const startDrag = (e) => {
             isDragging = true;
@@ -9939,7 +10342,7 @@ function updateLyrics(currentTime) {
             document.getElementById('transferAmountInput').value = '';
             document.getElementById('transferRemarkInput').value = '';
         }
-        async function sendTransfer() {
+                async function sendTransfer() {
             const amountInput = document.getElementById('transferAmountInput');
             const remarkInput = document.getElementById('transferRemarkInput');
             const amount = parseFloat(amountInput.value);
@@ -9957,7 +10360,7 @@ function updateLyrics(currentTime) {
             userProfile.balance -= amount;
             
             const transferData = { amount, remark };
-            const msg = saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(transferData), '', null, 'transfer_request');
+            const msg = await saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(transferData), '', null, 'transfer_request'); // <--- 加上 await
             addMessageToDOM(msg, friends.find(f => f.id === currentChatFriendId));
             
             await saveData();
@@ -9985,8 +10388,8 @@ function updateLyrics(currentTime) {
     
     // 步骤3：创建您发送的"已收款"确认消息
     const confirmationData = { amount: transferData.amount };
-    const confirmationMsg = saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(confirmationData), '', null, 'transfer_accepted');
-    
+    // --- 【核心修复】在这里加上 await，等待消息创建完成 ---
+const confirmationMsg = await saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(confirmationData), '', null, 'transfer_accepted');
     // 步骤4：保存所有更改
     await saveData();
     
@@ -10022,7 +10425,8 @@ function updateLyrics(currentTime) {
 
     // 步骤2：在后台数据中，创建一条新的"已收款"确认消息
     const confirmationData = { amount: transferData.amount };
-    const confirmationMsg = saveChatMessage(currentChatFriendId, 'received', JSON.stringify(confirmationData), '', friend.id, 'transfer_accepted');
+    // --- 【核心修复】在这里也加上 await ---
+const confirmationMsg = await saveChatMessage(currentChatFriendId, 'received', JSON.stringify(confirmationData), '', friend.id, 'transfer_accepted');
     
     // 步骤3：保存所有数据更改
     await saveData();
@@ -10052,12 +10456,12 @@ function updateLyrics(currentTime) {
         function closeVoiceModal() {
             document.getElementById('voiceModal').classList.remove('show');
         }
-        function sendVoiceMessage() {
+                async function sendVoiceMessage() { // <--- 加上 async
             const text = document.getElementById('voiceInputText').value.trim();
             if(!text) return showAlert('请输入语音内容');
 
             const friend = friends.find(f => f.id === currentChatFriendId);
-            const messageData = saveChatMessage(currentChatFriendId, 'sent', text, '', null, 'voice');
+            const messageData = await saveChatMessage(currentChatFriendId, 'sent', text, '', null, 'voice'); // <--- 加上 await
             addMessageToDOM(messageData, friend);
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
             closeVoiceModal();
@@ -10100,7 +10504,7 @@ function updateLyrics(currentTime) {
             document.getElementById('sendLocationModal').classList.add('show');
         }
 
-        function confirmSendLocation() {
+        async function confirmSendLocation() { // <--- 加上 async
             const name = document.getElementById('locationNameInput').value.trim();
             if (!name) {
                 showAlert('请输入位置名称');
@@ -10112,7 +10516,7 @@ function updateLyrics(currentTime) {
             const locationData = { name, address: fakeAddress };
             const friend = friends.find(f => f.id === currentChatFriendId);
             
-            const msgData = saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(locationData), '', null, 'location');
+            const msgData = await saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(locationData), '', null, 'location'); // <--- 加上 await
             addMessageToDOM(msgData, friend);
             
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
@@ -10150,120 +10554,226 @@ function updateLyrics(currentTime) {
             });
         }
 
-        function openSimulatedPhone(characterId) {
-            currentSimPhoneCharacterId = characterId;
-            document.getElementById('phoneCharacterListScreen').style.display = 'none';
-            document.getElementById('simulatedPhoneScreen').style.display = 'flex';
-            
-            const character = friends.find(f => f.id === characterId);
-            const navBar = document.getElementById('phoneAppNavBar');
-            navBar.querySelector('.nav-title').textContent = `${character.name}的手机`;
-            navBar.querySelector('*:first-child').innerHTML = `<button class="nav-btn" onclick="backToPhoneAppHome()">←</button>`;
-            
-            backToSimHomeScreen();
-        }
+        // [修改后] 的函数
+function openSimulatedPhone(characterId) {
+    currentSimPhoneCharacterId = characterId;
+    document.getElementById('phoneCharacterListScreen').style.display = 'none';
+    document.getElementById('simulatedPhoneScreen').style.display = 'flex';
+    
+    // [新增] 显示重新生成按钮
+    document.getElementById('regenerateSimContentBtn').style.display = 'flex';
+    
+    const character = friends.find(f => f.id === characterId);
+    const navBar = document.getElementById('phoneAppNavBar');
+    navBar.querySelector('.nav-title').textContent = `${character.name}的手机`;
+    navBar.querySelector('*:first-child').innerHTML = `<button class="nav-btn" onclick="backToPhoneAppHome()">←</button>`;
+    
+    backToSimHomeScreen();
+}
         
-        function backToPhoneAppHome() {
-            currentSimPhoneCharacterId = null;
-            initPhoneApp();
-        }
+        // [修改后] 的函数
+function backToPhoneAppHome() {
+    currentSimPhoneCharacterId = null;
+    // [新增] 退出时隐藏重新生成按钮
+    document.getElementById('regenerateSimContentBtn').style.display = 'none';
+    initPhoneApp();
+}
+
+// [修改后] 的函数
+function backToSimHomeScreen() {
+    // [新增] 返回主屏幕时，重置当前打开的App标记
+    currentActiveSimApp = null;
+    document.querySelectorAll('.sim-app-view').forEach(view => view.classList.remove('active'));
+}
+
+        // [修改后] 的函数
+async function openSimApp(appName) {
+    // [新增] 记录当前打开的App
+    currentActiveSimApp = appName;
+    
+    const view = document.getElementById(`sim-${appName}-view`);
+    if (!view || !currentSimPhoneCharacterId) return;
+
+    document.querySelectorAll('.sim-app-view').forEach(v => v.classList.remove('active'));
+    view.classList.add('active');
+    view.innerHTML = `<div class="sim-loading-overlay">正在加载内容...</div>`;
+
+    const characterId = currentSimPhoneCharacterId;
+    
+    // [修改] 简化缓存逻辑：只检查有没有数据，不再检查时间
+    const cached = (simPhoneContentCache[characterId] || {})[appName];
+    if (cached) {
+        renderSimAppList(appName, cached.data);
+        return;
+    }
+    
+    // 如果没缓存，就生成新的
+    await generateSimAppContent(characterId, appName);
+}
+
+        // [V4.0 动态平衡最终版] 的函数
+async function generateSimAppContent(characterId, appName, retryCount = 0) {
+    const character = friends.find(f => f.id === characterId);
+    if (!character) return;
+    
+    // [性能优化] 我们不再发送全部历史，而是取最近的50条。
+    // 这足以提供充足的上下文，同时保证了极快的生成速度。
+    // 【【【这是修改后的代码】】】
+const recentChatHistory = (chatHistories[characterId] || []).slice(-50).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
+
+    // 我们依然获取所有朋友圈，因为这是角色的“公开生活”，是重要的参考。
+    const fullMomentsHistory = moments.map(m => {
+        const author = getAuthorById(m.authorId);
+        return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
+    }).join('\n');
+
+    const currentDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    let prompt = `你正在深度模拟角色"${character.name}"的手机，你需要生成手机中某个应用的内容。
+    
+    【【【用户人设读取模块】】】
+这个手机的主人（也就是你，"${character.name}"）认识一个对你很重要的人，叫"${userProfile.name}"。你必须了解并记住这个人的人设与背景，因为它深刻影响了你们的互动和你的个人生活。
+- **重要的人(${userProfile.name})的核心人设**: ${userProfile.personality || '普通人'}
+- **重要的人(${userProfile.name})的背景设定**: ${userProfile.background || '无'}
+
+    
+    【角色核心人设】: ${character.role}
+    
+    【核心记忆库 (最近50条聊天记录 & 全部朋友圈)】:
+    --- 聊天记录开始 ---
+    ${recentChatHistory || '无聊天记录。'}
+    --- 聊天记录结束 ---
+
+    --- 朋友圈记录开始 ---
+    ${fullMomentsHistory || '无朋友圈记录。'}
+    --- 朋友圈记录结束 ---
+
+【【【信息隔离铁律】】】
+在你的记忆里，朋友圈中只存在你、你重要的人"${userProfile.name}"，以及一些你们共同认识的普通人（NPC）。你**绝对看不到、也绝对不知道**任何其他AI角色（即"${userProfile.name}"的好友列表里的其他人）的朋友圈活动。因此，在你生成的所有手机内容中，**严禁凭空捏造或提及**任何其他AI角色的互动
+
+    【【【六大铁律 (必须严格遵守)】】】:
+    1.  **【【核心原则：动态平衡现实】】**: 你生成的内容应该是**“现实”与“虚构”的结合体**。大约70%的内容应该严格基于上方的“核心记忆库”，反映真实事件。剩下的30%应该是你基于角色人设进行的**合理虚构和生活化扩展**，用来丰富角色的世界，让ta看起来拥有自己的、用户看不到的另一部分生活（比如：虚构的朋友、独立的爱好、与记忆库无关的日常琐事）。**但虚构内容绝对不能与记忆库中的事实相矛盾！**
+    2.  **【绝对创新铁律】**: 即使基于相同记忆，你每次生成的内容（标题、正文、评论、日期等）都必须是**全新的、角度不同的**。严禁重复你之前生成过的任何内容。
+    3.  **【绝对时间铁律】**: 你必须严格遵守聊天记录和朋友圈中的**时间戳**。所有生成的内容，其发生时间都必须围绕**当前现实日期：${currentDate}**，并且逻辑上必须合理。例如，你不能在备忘录里记录一个发生在“昨天”但聊天记录显示是“上周”才发生的事件。
+    4.  **【绝对语言铁律】**: 你的所有输出，包括所有文字和模拟的网友昵称，都**必须使用简体中文**。严禁出现任何英文或其他语言。
+    5.  你生成的所有内容，都必须**极度符合**角色的核心人设，并**强烈反映**出“核心记忆库”中的真实事件和情绪。
+    6.  你的回复**必须**是一个符合下方具体格式要求的、纯净的JSON对象，不包含任何额外的解释或代码标记。
+
+    请为应用“${appName}”生成内容：`;
+
+    switch(appName) {
+        // 【【【这是修改后的新代码，请用它完整替换】】】
+
+// 【【【这是最终修正版，请用它完整替换】】】
+case 'memo':
+    prompt += `\n生成6条备忘录。其中约4条必须记录“核心记忆库”中**真实发生过**的事情。另外3条可以是角色的个人琐事、灵感或计划。
+    **【格式指令】**:
+    - 内容必须是纯文本。
+    - **【换行铁律】**: 必须在内容中使用多个换行符 (\\n) 来分段落和列表，让备忘录看起来有条理，而不是一大段文字。
+    - 如果需要列表，请直接使用普通的数字格式，例如 "1. XXX\\n2. XXX"。
+    - **绝对不要**使用任何特殊标记。
+    
+    **【内容要求 (非常重要)】**:
+    - **内容需要更详细、更具生活气息，字数要多一些。**
+    - 不仅仅是简单的待办事项，更可以是对某个事件的**深入思考、详细的心情记录，或是包含具体步骤的计划**。
+    - **每条备忘录的内容请尽量丰富，至少80个字以上。**
+
+    JSON格式: {"memos": [{"id": "memo_1", "title": "标题", "content": "纯文本的备忘录内容...", "datetime": "YYYY-MM-DD HH:MM"}, ...]}`;
+    break;
+
+        case 'wechat':
+            prompt += `\n生成4个与【除了用户'${userProfile.name}'之外的】虚构人物的微信聊天摘要。这些聊天摘要可以部分反映你对“核心记忆库”事件的后续思考，也可以是完全独立的、展现你个人生活的其他对话。**绝对不能**生成与'${userProfile.name}'的聊天。每个摘要必须包含id, name, avatar(单个汉字), 和一个包含10条对话记录的 "messages" 数组。JSON格式: {"chats": [{"id": "chat_1", "name": "聊天对象", "avatar": "单个汉字", "messages": [{"sender": "发送者名字", "content": "消息内容"}, ...]}, ...]}`;
+            break;
+        case 'browser':
+            prompt += `\n生成8条浏览器历史记录。其中约一半必须是围绕“核心记忆库”中**真实话题**的深入研究。另一半可以是你基于人设产生的个人兴趣搜索。每条必须包含id, title, url (一个模拟的网址), 和一个符合标题的、内容详细丰富的 "content" (模拟的网页或论坛帖子内容, 包含换行和分段，至少200字)。JSON格式: {"history": [{"id": "history_1", "title": "搜索或网页标题", "url": "https://example.com/path", "content": "详细的文章或帖子内容...\\n\\n包含换行和分段。"}, ...]}`;
+            break;
+        // 【【【这是修改后的新代码，请用它完整替换】】】
+case 'shopping':
+    prompt += `\n生成5条最近的购物订单。其中一些商品应与“核心记忆库”中**真实提到**的需求相关，另一些可以是符合你人设的个人购物。每条必须包含id, name, price, 和一个详细的 "description" (商品描述)。
+
+    **【内容要求 (非常重要)】**:
+    - **"description" 字段必须非常详细，字数要多，至少80个字以上。**
+    - 描述内容要**模拟真实的商品页面描述或用户评价的口吻**，让它看起来更真实。
+    - 描述可以包含**购买这件商品的原因、预想的使用场景、或者对商品的期望和评价**。
+
+    JSON格式: {"orders": [{"id": "order_1", "name": "商品名称", "price": "价格", "description": "商品详细描述..."}, ...]}`;
+    break;
+       // 【【【这是最终智能分析版，请用它完整替换】】】
+case 'wallet':
+    prompt += `\n你的任务是根据角色的核心人设和最近的聊天/朋友圈记忆，生成一个极其逼真的钱包账单。
+
+    **【财务人设分析指令 (这是第一步，也是最重要的！)】**:
+    1.  **首先，请仔细阅读并深刻理解角色的核心人设**：\`${character.role}\`
+    2.  **然后，根据其职业、社会身份和生活方式，智能分析并决定其最合理的财务状况，并严格遵循对应的金额规模**:
+        -   **如果人设是极其富裕的** (例如: 集团总裁, 继承人, 国际巨星)，请生成**数百万到数千万级别**的余额，以及**数万到数十万**的单笔消费/收入。
+        -   **如果人设是中产或小康的** (例如: 资深专业人士如医生/律师, 小企业主, 部门主管)，请生成**数万到数十万级别**的余额，消费/收入记录也应符合这个阶层（例如几千上万的消费）。
+        -   **如果人设是普通或经济拮据的** (例如: 学生, 刚入职的员工, 自由职业者)，请生成**数百到数千级别**的余额，消费/收入记录也应是几十到几百的日常水平。
+    3.  **【核心原则】**: 你必须进行**智能推断**，而不是死板地匹配关键词。例如，一个“知名设计师”可能属于“中产小康”，而不是“极其富裕”。
+
+    **【格式铁律 (必须严格遵守)】**:
+    - **【余额铁律】**: \`balance\` 字段的值**必须且只能**是一个**不带引号的纯数字**，绝对不能是文字。
+    - 每条交易记录必须包含 "description", "amount" (+/-金额, 纯数字), 和 "time" (MM-DD HH:mm格式)。
+    
+    **【JSON格式示例 (注意看不同人设的金额差异)】**: 
+    // 富裕人设示例:
+    {"balance": 7854321.68, "transactions": [{"description": "品牌专柜消费", "amount": -158000.00, "time": "09-08 14:30"}]}
+    // 中产人设示例:
+    {"balance": 152000.50, "transactions": [{"description": "购买新款电子产品", "amount": -8999.00, "time": "09-07 20:00"}]}
+    // 普通人设示例:
+    {"balance": 3250.70, "transactions": [{"description": "楼下超市买菜", "amount": -85.50, "time": "09-06 18:00"}]}
+    `;
+    break;
+        case 'photos':
+            prompt += `\n生成6张相册照片的标题和详细文字描述。其中大部分照片的**内容和心境**应源于“核心记忆库”中的真实事件，可以有1-2张是你个人生活的其他瞬间。每条必须包含id, title, 和 "description"。description必须分为两段，用"\\n\\n"隔开。第一段详细描述照片画面；第二段深入描述角色对这张照片的感受、回忆或想法。每段至少50字。JSON格式: {"photos": [{"id": "photo_1", "title": "照片标题", "description": "对照片画面的详细描述...\\n\\n角色的个人感受和想法..."}, ...]}`;
+            break;
+        case 'phone_call':
+            prompt += `\n生成8条通话记录，时间需符合锚点。大部分通话对象应是“核心记忆库”中**提到过**的人物或与事件相关，可以有少量是你生活圈中的其他虚构人物。每条必须包含name, type (incoming/outgoing/missed), 和time。JSON格式: {"calls": [{"name": "联系人名", "type": "incoming", "time": "时间描述"}, ...]}`;
+            break;
+        case 'forum':
+            prompt += `\n生成8个论坛帖子。大部分帖子的主题应源自“核心记忆库”中的**真实困惑、分享或事件**，可以有少量是你基于人设产生的其他话题。为每个帖子生成**12条**左右的评论。
+            **【评论活人感指令】**: 评论必须模拟真实网络论坛。要有多样化的用户（杠精、热心人、路人、抖机灵的等），评论风格要口语化、多样化，可以有错别字、网络用语，甚至互相回复。让评论区看起来像一个真实、活跃的社区。
+            JSON格式: {"posts": [{"id": "post_1", "title": "帖子标题", "content": "帖子正文...", "datetime": "YYYY-MM-DD HH:MM", "comments": [{"floor": "1楼", "user": "网友昵称", "comment": "评论内容"}, ...]}, ...]}`;
+            break;
+    }
+
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings.apiUrl || !settings.apiKey) {
+        renderSimAppList(appName, { error: "API未配置" });
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: prompt}], response_format: { type: 'json_object' } }) });
+        if(!response.ok) throw new Error(`API请求失败: ${response.status}`);
+        const data = await response.json();
         
-        function backToSimHomeScreen() {
-            document.querySelectorAll('.sim-app-view').forEach(view => view.classList.remove('active'));
+        const responseText = data.choices[0].message.content;
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error("AI未返回有效的JSON格式。");
+        const content = JSON.parse(jsonMatch[0]);
+
+        if (!simPhoneContentCache[characterId]) simPhoneContentCache[characterId] = {};
+        simPhoneContentCache[characterId][appName] = { data: content }; 
+        await saveData();
+        renderSimAppList(appName, content);
+    } catch(e) {
+        console.error(`生成模拟内容失败 (尝试次数 ${retryCount + 1}):`, e);
+        if (retryCount < 2) {
+            await new Promise(res => setTimeout(res, 500));
+            await generateSimAppContent(characterId, appName, retryCount + 1);
+        } else {
+            renderSimAppList(appName, { error: "内容生成失败，请重试。" });
         }
-
-        async function openSimApp(appName) {
-            const view = document.getElementById(`sim-${appName}-view`);
-            if (!view || !currentSimPhoneCharacterId) return;
-
-            document.querySelectorAll('.sim-app-view').forEach(v => v.classList.remove('active'));
-            view.classList.add('active');
-            view.innerHTML = `<div class="sim-loading-overlay">正在加载内容...</div>`;
-
-            const characterId = currentSimPhoneCharacterId;
-            const now = Date.now();
-            
-            const cached = (simPhoneContentCache[characterId] || {})[appName];
-            if (cached && (now - cached.timestamp < SIM_CACHE_DURATION)) {
-                renderSimAppList(appName, cached.data);
-                return;
-            }
-            
-            await generateSimAppContent(characterId, appName);
-        }
-
-        async function generateSimAppContent(characterId, appName, retryCount = 0) {
-            const character = friends.find(f => f.id === characterId);
-            if (!character) return;
-            
-            const chatHistorySummary = (chatHistories[characterId] || []).slice(-10).map(m => `${m.type === 'sent' ? userProfile.name : character.name}: ${m.content.substring(0, 30)}...`).join('\n');
-
-            let prompt = `你正在模拟角色"${character.name}"的手机。
-角色人设: ${character.role}
-最近与用户"${userProfile.name}"的聊天摘要:
-${chatHistorySummary || '暂无聊天记录。'}
-
-你的回复必须是一个符合要求的JSON对象，并且内容中绝对不能包含任何emoji表情或特殊字符。`;
-
-            switch(appName) {
-                case 'memo':
-                    prompt += `\n生成5条符合人设的备忘录。每条必须包含id, title, content (完整的备忘录内容), 和datetime。JSON格式: {"memos": [{"id": "memo_1", "title": "标题", "content": "完整的备忘录内容...", "datetime": "YYYY-MM-DD HH:MM"}, ...]}`;
-                    break;
-                case 'wechat':
-                    prompt += `\n生成4个与【除了用户'${userProfile.name}'之外的】虚构人物的微信聊天摘要，模拟出生活气息。**绝对不能**生成与'${userProfile.name}'的聊天。每个摘要必须包含id, name, avatar(单个汉字), 和一个包含10条对话记录的 "messages" 数组。JSON格式: {"chats": [{"id": "chat_1", "name": "聊天对象", "avatar": "单个汉字", "messages": [{"sender": "发送者名字", "content": "消息内容"}, ...]}, ...]}`;
-                    break;
-                case 'browser':
-                    prompt += `\n生成8条浏览器历史记录。每条必须包含id, title, url (一个模拟的网址), 和一个符合标题的、内容详细丰富的 "content" (模拟的网页或论坛帖子内容, 包含换行和分段，至少200字)。JSON格式: {"history": [{"id": "history_1", "title": "搜索或网页标题", "url": "https://example.com/path", "content": "详细的文章或帖子内容...\\n\\n包含换行和分段。"}, ...]}`;
-                    break;
-                case 'shopping':
-                    prompt += `\n生成5条最近的购物订单。每条必须包含id, name, price, 和一个详细的 "description" (商品描述)。JSON格式: {"orders": [{"id": "order_1", "name": "商品名称", "price": "价格", "description": "商品详细描述..."}, ...]}`;
-                    break;
-                case 'wallet':
-                    prompt += `\n根据人设（${character.role}）判断角色的经济状况，生成一个随机余额和6条交易记录。每条必须包含description, amount (+/-金额), 和time。JSON格式: {"balance": "余额", "transactions": [{"description": "交易描述", "amount": "+/-金额", "time": "MM-DD HH:mm"}, ...]}`;
-                    break;
-                case 'photos':
-                    prompt += `\n生成6张符合人设的相册照片的标题和详细文字描述。每条必须包含id, title, 和 "description"。description必须分为两段，用"\\n\\n"隔开。第一段详细描述照片画面；第二段深入描述角色对这张照片的感受、回忆或想法。每段至少50字。JSON格式: {"photos": [{"id": "photo_1", "title": "照片标题", "description": "对照片画面的详细描述...\\n\\n角色的个人感受和想法..."}, ...]}`;
-                    break;
-                case 'phone_call':
-                    prompt += `\n生成8条通话记录。每条必须包含name, type (incoming/outgoing/missed), 和time。JSON格式: {"calls": [{"name": "联系人名", "type": "incoming", "time": "时间描述"}, ...]}`;
-                    break;
-            }
-
-            const settings = await dbManager.get('apiSettings');
-            if (!settings.apiUrl || !settings.apiKey) {
-                renderSimAppList(appName, { error: "API未配置" });
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: prompt}], response_format: { type: 'json_object' } }) });
-                if(!response.ok) throw new Error(`API请求失败: ${response.status}`);
-                const data = await response.json();
-                
-                const responseText = data.choices[0].message.content;
-                const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("AI未返回有效的JSON格式。");
-                const content = JSON.parse(jsonMatch[0]);
-
-                if (!simPhoneContentCache[characterId]) simPhoneContentCache[characterId] = {};
-                simPhoneContentCache[characterId][appName] = { data: content, timestamp: Date.now() };
-                await saveData();
-                renderSimAppList(appName, content);
-            } catch(e) {
-                console.error(`生成模拟内容失败 (尝试次数 ${retryCount + 1}):`, e);
-                if (retryCount < 2) {
-                    await new Promise(res => setTimeout(res, 500));
-                    await generateSimAppContent(characterId, appName, retryCount + 1);
-                } else {
-                    renderSimAppList(appName, { error: "内容生成失败，请重试。" });
-                }
-            }
-        }
+    }
+}
 
         function renderSimAppList(appName, data) {
             const view = document.getElementById(`sim-${appName}-view`);
             if (!view) return;
-            const headerMap = { wechat: '微信', memo: '备忘录', phone_call: '通话记录', browser: '浏览器', shopping: '购物', wallet: '钱包', photos: '相册' };
+            // 在 renderSimAppList 函数内
+// [修改] 添加 'forum': '论坛'
+const headerMap = { wechat: '微信', memo: '备忘录', phone_call: '通话记录', browser: '浏览器', shopping: '购物', wallet: '钱包', photos: '相册', forum: '论坛' };
+// ...
             const backFn = 'backToSimHomeScreen()';
             let contentHTML = '';
 
@@ -10271,6 +10781,21 @@ ${chatHistorySummary || '暂无聊天记录。'}
                 contentHTML = `<div style="text-align:center; padding: 40px;">${data.error}</div>`;
             } else {
                  switch(appName) {
+                 // ...在 switch(appName) 内部 ...
+
+// [修改后]
+case 'forum':
+    contentHTML = (data.posts || []).map(post => {
+        const postJsonString = JSON.stringify(post).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        // [新增] 添加了 post.datetime 的显示
+        return `<div class="sim-memo-item" onclick='renderSimAppDetail("forum", ${postJsonString})'>
+                    <div class="sim-memo-title">${post.title}</div>
+                    <div class="sim-memo-datetime">${post.datetime || ''}</div>
+                </div>`;
+    }).join('');
+    break;
+
+// ...其他 case ...
                     case 'memo':
                         contentHTML = (data.memos || []).map(item => {
                             const itemJsonString = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -10340,7 +10865,9 @@ ${chatHistorySummary || '暂无聊天记录。'}
                         contentHTML = (data.calls || []).map(item => `<div class="sim-call-item"><div class="sim-call-type" style="color: ${callColors[item.type] || 'var(--text-color)'}">${callIcons[item.type] || ''}</div><div class="sim-call-info"><div class="sim-call-name" style="color: ${item.type === 'missed' ? 'red' : 'var(--text-color)'}">${item.name}</div><div class="sim-call-detail">${item.time}</div></div></div>`).join('');
                         break;
                      case 'wallet':
-                        let balance = parseFloat(data.balance || 0).toFixed(2);
+                        // 【【【这是修改后的新代码，请用它来替换】】】
+let rawBalance = parseFloat(data.balance);
+let balance = (isNaN(rawBalance) ? 0 : rawBalance).toFixed(2);
                         contentHTML = `<div class="sim-wallet-balance"><div>余额</div><div class="sim-wallet-amount">¥ ${balance}</div></div>`;
                         contentHTML += (data.transactions || []).map(item => `<div class="sim-wallet-item"><div><div>${item.description}</div><div style="font-size:12px; color: #999;">${item.time || ''}</div></div><div class="amount ${parseFloat(item.amount) > 0 ? 'positive' : 'negative'}">${item.amount}</div></div>`).join('');
                         break;
@@ -10357,79 +10884,157 @@ ${chatHistorySummary || '暂无聊天记录。'}
             `;
         }
 
-        function renderSimAppDetail(appName, detailItem) {
-            const detailView = document.getElementById(`sim-${appName}-detail-view`);
-            const listView = document.getElementById(`sim-${appName}-view`);
-            if (!detailView || !listView) return;
+        // [修改后] 的函数
+function renderSimAppDetail(appName, detailItem) {
+    const detailView = document.getElementById(`sim-${appName}-detail-view`);
+    const listView = document.getElementById(`sim-${appName}-view`);
+    if (!detailView || !listView) return;
 
-            listView.classList.remove('active');
-            detailView.classList.add('active');
+    listView.classList.remove('active');
+    detailView.classList.add('active');
 
-            const backFn = `document.getElementById('sim-${appName}-detail-view').classList.remove('active'); document.getElementById('sim-${appName}-view').classList.add('active');`;
-            let headerTitle = detailItem.title || detailItem.name || '详情';
-            let contentHTML = '';
+    const backFn = `document.getElementById('sim-${appName}-detail-view').classList.remove('active'); document.getElementById('sim-${appName}-view').classList.add('active');`;
+    // 【【【这是修改后的新代码，请用它来替换】】】
+const originalTitle = detailItem.title || detailItem.name || '详情';
+let headerTitle = originalTitle.length > 10 ? originalTitle.substring(0, 10) + '...' : originalTitle;
+    let contentHTML = '';
 
-            switch(appName) {
-                case 'memo':
-                    contentHTML = `<div class="sim-detail-content">${(detailItem.content || '').replace(/\n/g, '<br>')}</div>`;
-                    break;
-                case 'wechat':
-                    const character = friends.find(f => f.id === currentSimPhoneCharacterId);
-                    const isRealChat = detailItem.id === 'chat_with_user';
-                    contentHTML = `<div class="chat-messages" style="padding: 10px; height: 100%; overflow-y: auto; background-color: #ededee;">` + 
-                    (detailItem.messages || []).map(msg => {
-                        const isCharacterSender = msg.sender === character.name;
-                        let type;
-                        if (isRealChat) {
-                            type = msg.type === 'sent' ? 'received' : 'sent';
-                        } else {
-                            type = isCharacterSender ? 'sent' : 'received';
-                        }
-                        const sender = (type === 'sent') 
-                            ? character 
-                            : (isRealChat ? userProfile : { name: detailItem.name, avatar: detailItem.avatar, avatarImage: ''});
-                        const messageHtml = `
-                            <div class="message ${type}">
-                                ${type === 'received' ? getAvatarHtml(sender) : ''}
-                                <div class="message-body">
-                                    <div class="message-content">${msg.content}</div>
-                                </div>
-                                ${type === 'sent' ? getAvatarHtml(sender) : ''}
-                            </div>`;
-                        return messageHtml;
-                    }).join('') + `</div>`;
-                    break;
-                case 'browser':
-                    contentHTML = `<div class="sim-detail-content"><h3>${detailItem.title}</h3><hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;"><p>${(detailItem.content || '').replace(/\n/g, '<br>')}</p></div>`;
-                    break;
-                case 'shopping':
-                    const encodedName = encodeURIComponent(detailItem.name);
-                    const imageUrl = `https://placehold.co/400x400/f0f0f0/ccc?text=${encodedName}`;
-                    contentHTML = `<div class="sim-detail-content">
-                        <div class="sim-shopping-image-placeholder"><img src="${imageUrl}" alt="${detailItem.name}"></div>
-                        <h3>${detailItem.name}</h3>
-                        <p style="font-size: 20px; font-weight: bold; margin: 10px 0;">¥${detailItem.price}</p>
-                        <p>${detailItem.description || '暂无商品详情。'}</p>
+    switch(appName) {
+        case 'memo':
+            // [修改] 使用新的格式化函数
+            contentHTML = `<div class="sim-detail-content">${formatMemoContent(detailItem.content)}</div>`;
+            break;
+        case 'wechat':
+            const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+            const isRealChat = detailItem.id === 'chat_with_user';
+            contentHTML = `<div class="chat-messages" style="padding: 10px; height: 100%; overflow-y: auto; background-color: #ededee;">` + 
+            (detailItem.messages || []).map(msg => {
+                const isCharacterSender = msg.sender === character.name;
+                let type;
+                if (isRealChat) {
+                    type = msg.type === 'sent' ? 'received' : 'sent';
+                } else {
+                    type = isCharacterSender ? 'sent' : 'received';
+                }
+                const sender = (type === 'sent') 
+                    ? character 
+                    : (isRealChat ? userProfile : { name: detailItem.name, avatar: detailItem.avatar, avatarImage: ''});
+                const messageHtml = `
+                    <div class="message ${type}">
+                        ${type === 'received' ? getAvatarHtml(sender) : ''}
+                        <div class="message-body">
+                            <div class="message-content">${msg.content}</div>
+                        </div>
+                        ${type === 'sent' ? getAvatarHtml(sender) : ''}
                     </div>`;
-                    break;
-                case 'photos':
-                    headerTitle = '照片详情';
-                    contentHTML = `<div class="sim-detail-content">
-                        <div class="sim-shopping-image-placeholder"><svg viewBox="0 0 24 24" width="50" height="50" fill="#ccc"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
-                        <p>${detailItem.description || '这张照片里什么也没有...'}</p>
-                    </div>`;
-                    break;
-            }
-
-            detailView.innerHTML = `
-                <div class="sim-app-header">
-                    <button class="sim-app-header-btn" onclick="${backFn}">‹</button>
-                    <div class="sim-app-header-title">${headerTitle}</div>
-                    <div style="width: 50px;"></div>
+                return messageHtml;
+            }).join('') + `</div>`;
+            break;
+        case 'browser':
+            contentHTML = `<div class="sim-detail-content"><h3>${detailItem.title}</h3><hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;"><p>${(detailItem.content || '').replace(/\n/g, '<br>')}</p></div>`;
+            break;
+        case 'shopping':
+            const encodedName = encodeURIComponent(detailItem.name);
+            const imageUrl = `https://placehold.co/400x400/f0f0f0/ccc?text=${encodedName}`;
+            contentHTML = `<div class="sim-detail-content">
+                <div class="sim-shopping-image-placeholder"><img src="${imageUrl}" alt="${detailItem.name}"></div>
+                <h3>${detailItem.name}</h3>
+                <p style="font-size: 20px; font-weight: bold; margin: 10px 0;">¥${detailItem.price}</p>
+                <p>${detailItem.description || '暂无商品详情。'}</p>
+            </div>`;
+            break;
+        case 'photos':
+            headerTitle = '照片详情';
+            contentHTML = `<div class="sim-detail-content">
+                <div class="sim-shopping-image-placeholder"><svg viewBox="0 0 24 24" width="50" height="50" fill="#ccc"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
+                <p style="white-space: pre-wrap;">${(detailItem.description || '这张照片里什么也没有...').replace(/\n/g, '<br>')}</p>
+            </div>`;
+            break;
+        // [修改] 论坛详情渲染，应用了新的CSS class
+        case 'forum':
+            headerTitle = '帖子详情';
+            let commentsHtml = (detailItem.comments || []).map(comment => `
+                <div class="comment-floor">
+                    <div class="comment-user-info">${comment.floor} - ${comment.user}</div>
+                    <div class="comment-text">${comment.comment}</div>
                 </div>
-                <div class="sim-app-content">${contentHTML}</div>
-            `;
-        }
+            `).join('');
+            
+            contentHTML = `
+                <div class="sim-detail-content">
+                    <h3>${detailItem.title}</h3>
+                    <div class="sim-memo-datetime">${detailItem.datetime || ''}</div>
+                    <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+                    <p style="white-space: pre-wrap;">${(detailItem.content || '').replace(/\n/g, '<br>')}</p>
+                    <div style="margin-top: 30px;">
+                        <h4>评论区</h4>
+                        ${commentsHtml}
+                    </div>
+                </div>`;
+            break;
+    }
+
+    detailView.innerHTML = `
+        <div class="sim-app-header">
+            <button class="sim-app-header-btn" onclick="${backFn}">‹</button>
+            <div class="sim-app-header-title">${headerTitle}</div>
+            <div style="width: 50px;"></div>
+        </div>
+        <div class="sim-app-content">${contentHTML}</div>
+    `;
+}
+        
+        // [全新] 的函数，处理重新生成按钮的点击事件
+async function handleSimRegenerateClick() {
+    if (!currentSimPhoneCharacterId) return;
+
+    const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+    const loadingOverlay = `<div class="sim-loading-overlay">正在重新生成...</div>`;
+    // ...函数内部...
+// [修改] 在数组末尾添加 'forum'
+const allAppNames = ['memo', 'wechat', 'browser', 'shopping', 'wallet', 'photos', 'phone_call', 'forum'];
+// ...函数其余部分...
+
+    if (currentActiveSimApp) {
+        // --- 场景一：只重新生成当前打开的App ---
+        showConfirm(`确定要为 ${character.name} 重新生成“${currentActiveSimApp}”的内容吗？`, async (confirmed) => {
+            if (!confirmed) return;
+            
+            const view = document.getElementById(`sim-${currentActiveSimApp}-view`);
+            if (view) view.innerHTML = loadingOverlay;
+            
+            await generateSimAppContent(currentSimPhoneCharacterId, currentActiveSimApp);
+        });
+
+    } else {
+        // --- 场景二：在主屏幕，重新生成所有App ---
+        showConfirm(`确定要为 ${character.name} 重新生成手机里所有App的内容吗？`, async (confirmed) => {
+            if (!confirmed) return;
+            
+            // 清空旧的缓存
+            if (simPhoneContentCache[currentSimPhoneCharacterId]) {
+                simPhoneContentCache[currentSimPhoneCharacterId] = {};
+            }
+            
+            showAlert("正在为所有App重新生成内容，请稍候...");
+            
+            // 并行生成所有App的内容
+            await Promise.all(allAppNames.map(appName => generateSimAppContent(currentSimPhoneCharacterId, appName)));
+            
+            showAlert("所有内容已重新生成！");
+        });
+    }
+}
+
+// [全新] 函数：格式化备忘录内容
+
+// 【【【这是修改后的新代码，请用它完整替换】】】
+function formatMemoContent(content) {
+    if (!content) return '';
+    // 直接将换行符 (\n) 替换为 HTML 的换行标签 (<br>)
+    // 这会保留所有的换行和纯文本格式
+    return content.replace(/\n/g, '<br>');
+}
 
         window.onload = async function() {
     await dbManager.init(); // 确保 IndexedDB 已初始化
@@ -10438,6 +11043,8 @@ ${chatHistorySummary || '暂无聊天记录。'}
     await requestPersistentStorage(); 
 
     await loadData();
+    updateProfileDisplay();
+    updateHomeWidget();
     updateFriendList();
     updateTime();
     setActivePage('homeScreen');
@@ -10554,63 +11161,467 @@ function stopProactiveScheduler() {
     }
 }
 
-function checkAllFriendsForProactiveMessage() {
-    if (!proactiveMessagingEnabled) return;
+// 【【【这是修正后的完整函数，请用它替换】】】
+async function checkAllFriendsForProactiveMessage() {
+    if (!proactiveMessagingEnabled || friends.length === 0) return;
     
-    console.log("正在检查是否需要主动发送消息...");
+    console.log("正在检查是否需要累积主动消息...");
     const now = new Date();
-    friends.forEach(friend => {
-        if (friend.isGroup) return; // 不对群聊主动发消息
+    let dataHasChanged = false;
+
+    for (const friend of friends) {
+        // 不对群聊或当前正在回复中的AI进行操作
+        if (friend.isGroup || aiReplyingSet.has(friend.id)) continue; 
 
         const history = chatHistories[friend.id] || [];
-        if (history.length === 0) return; // 没有聊天记录，不主动发
+        if (history.length === 0) continue;
 
-        const lastMessage = history[history.length - 1];
+        // 找到用户（你）最后一次发言的时间点
+        const lastUserMessage = history.slice().reverse().find(m => m.type === 'sent');
+        if (!lastUserMessage) continue;
         
-        // 只有当最后一条消息是用户发的，AI才可能需要主动开启新话题
-        if (lastMessage.type === 'sent') {
-            const lastMessageTime = new Date(lastMessage.timestamp);
-            const minutesSinceLastMessage = (now - lastMessageTime) / (1000 * 60);
+        const lastMessageTime = new Date(lastUserMessage.timestamp);
+        const minutesSinceLastMessage = (now - lastMessageTime) / (1000 * 60);
 
-            if (minutesSinceLastMessage >= proactiveMessagingInterval) {
-                console.log(`检测到 ${friend.name} 符合主动消息条件，准备发送...`);
-                triggerProactiveMessage(friend.id, minutesSinceLastMessage);
+        // 如果你不在线的时间超过了设定的间隔
+        if (minutesSinceLastMessage >= proactiveMessagingInterval) {
+            
+            // 检查AI自己最后一次发言（无论是主动还是被动）的时间
+            const lastAiMessage = history.slice().reverse().find(m => m.type === 'received');
+            let minutesSinceLastAiMessage = Infinity;
+            if(lastAiMessage) {
+                minutesSinceLastAiMessage = (now - new Date(lastAiMessage.timestamp)) / (1000 * 60);
+            }
+
+            // 只有当AI自己也没在最近的间隔内发言时，才累积“消息债”
+            if (minutesSinceLastAiMessage >= proactiveMessagingInterval) {
+                if (friend.proactiveMessageDebt === undefined) {
+                    friend.proactiveMessageDebt = 0;
+                }
+                friend.proactiveMessageDebt += 1; // 记一笔“消息债”
+                
+                // 假设每次主动是5条消息，来更新未读红点
+                if (!unreadMessageCounts[friend.id]) {
+                    unreadMessageCounts[friend.id] = 0;
+                }
+                unreadMessageCounts[friend.id] += 5; // 增加5个未读消息
+                
+                console.log(`用户 ${friend.name} 已离线 ${minutesSinceLastMessage.toFixed(1)} 分钟，累积第 ${friend.proactiveMessageDebt} 次消息债，未读消息+5`);
+                dataHasChanged = true;
+                
+                // 【重要】伪造一条时间戳，用于下次判断间隔
+                // 这条消息不会被显示，只是为了让下一次检查时，minutesSinceLastAiMessage < proactiveMessagingInterval
+                const fakeTimestampMessage = {
+                     id: `fake_${generateUniqueId()}`, type: 'received', content: '[system:proactive_marker]', timestamp: new Date().toISOString()
+                };
+                chatHistories[friend.id].push(fakeTimestampMessage);
             }
         }
-    });
+    }
+
+    if (dataHasChanged) {
+        await saveData();
+        updateFriendList(); // 刷新好友列表，显示红点
+    }
 }
 
+// 【【【这是修正后的完整函数，请用它替换】】】
 async function triggerProactiveMessage(friendId, minutesInactive) {
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
+
+    // 如果AI已经在忙了，就直接退出，避免冲突
+    if (aiReplyingSet.has(friendId)) {
+        console.log(`尝试对 ${friend.name} 主动发消息，但AI正在回复中，已取消。`);
+        return;
+    }
 
     const minutesWaited = Math.round(minutesInactive);
     const history = chatHistories[friendId] || [];
     const lastUserMessage = history.slice().reverse().find(m => m.type === 'sent');
 
     const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
+    你的重要朋友是"${userProfile.name}"，他/她的人设是：${userProfile.personality || '普通人'}。
+
     【当前情景：非常重要】
-    你发现你的好友 "${userProfile.name}" 已经离线了大约 ${minutesWaited} 分钟没有回复你了。
+    你发现你的朋友 "${userProfile.name}" 已经离线了大约 ${minutesWaited} 分钟没有回复你了。
     他/她最后发的消息是：“${lastUserMessage ? lastUserMessage.content.substring(0, 50) : '...'}”。
     
-    你的任务是：
-    1.  **主动**发送一条简短、自然、口语化的消息来开启新的对话或关心对方。
-    2.  消息内容要符合“已经等了一段时间”的情景，例如：“你在忙吗？”、“在干嘛呀？”、“看到消息回我哦”等等。
-    3.  **【铁律】** 你的回复必须遵循之前的所有JSON格式规则，包含 "replies" 和 "hearts_voice" 键。
-    4.  **【铁律】** "replies" 数组里通常只包含 **1-2条** 消息即可，因为你是主动发起方。
+    【你的任务】:
+    1.  **主动地、自然地**开启一个新的对话，就像你突然想起了什么事要跟朋友分享，或者只是单纯地想关心一下对方。
+    2.  你的消息要符合“已经有段时间没联系了”的情景，可以是从之前的聊天内容延伸出新话题，也可以是分享你自己的生活近况，或者直接关心对方在忙什么。
+    3.  **【【【输出铁律】】】** 你的回复**必须**遵循之前的所有JSON格式规则，包含 "replies" 和 "hearts_voice" 键。
+    4.  **【【【数量铁律】】】** "replies" 数组里**必须**包含 **4到6条** 简短、口语化、生活化的消息，模拟真人连续发短消息开启一个新话题的习惯。
+    5.  **绝对不要**在消息中直接提及“你已经xx分钟没回我了”，这会显得很生硬。你要表现得像是自然而然地想起了对方。
 
     现在，请生成你的主动问候消息。`;
 
     // 我们复用 receiveMessage 函数，但传入定制的 prompt
-    // 注意：最后一个参数 isFromListenScreen 设为 false，确保消息会正常显示
     await receiveMessage(friendId, prompt, false);
 }
+
         
    // 简化版本，仅用于调试
 function setRealViewportHeight() {
     console.log('窗口高度:', window.innerHeight, '屏幕高度:', window.screen.height);
 }
 setRealViewportHeight();
+
+// --- [新增] NPC朋友圈互动核心功能 ---
+
+/**
+ * 核心功能1：根据用户人设，动态生成一组NPC朋友
+ * @param {object} moment - 用户刚刚发布的朋友圈对象
+ */
+async function generateNpcFriends(moment) {
+    const settings = await dbManager.get('apiSettings', 'settings') || {};
+    if (!settings.apiUrl || !settings.apiKey) {
+        console.error("无法生成NPC：API未配置。");
+        return; // 如果API没配置，直接退出
+    }
+
+    // 格式化用户人设和背景，使其更易于AI理解
+    const userPersonaFormatted = `个性: ${userProfile.personality || '未设置'}\n背景: ${userProfile.background || '未设置'}`;
+
+    const prompt = `
+    【任务】: 基于用户的“人设背景”，为他/她生成3到5个符合其社交圈的、风格各异的虚拟朋友（NPC）。
+
+    【用户信息】:
+    - 用户昵称: "${userProfile.name}"
+    - 用户人设背景: 
+    \`\`\`
+    ${userPersonaFormatted}
+    \`\`\`
+
+    【输出要求】:
+    1.  严格以JSON数组的格式返回。
+    2.  数组中每个对象代表一个NPC，包含 "name" (姓名) 和 "persona" (一句话性格简介) 两个键。
+    3.  NPC的姓名和人设必须非常生活化、多样化，并且与用户的社交圈子高度相关。例如，如果用户是学生，NPC可以是同学、老师；如果用户是职场人士，NPC可以是同事、客户等。
+    4.  绝对不要在回复中包含任何JSON格式之外的解释性文字。
+
+    【JSON格式示例】:
+    [
+      {"name": "王老师", "persona": "一位严格但很关心学生的年长教师。"},
+      {"name": "小方", "persona": "一个性格活泼开朗的同班同学，喜欢开玩笑。"},
+      {"name": "落落", "persona": "一个有点内向但内心细腻的学姐。"}
+    ]
+    `;
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                response_format: { type: 'json_object' }
+            })
+        });
+
+        if (!response.ok) throw new Error(`API请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+        
+        // 增加兼容性，处理AI可能返回的多种JSON格式
+        const jsonMatch = responseText.match(/\[[\s\S]*\]/); 
+        if (jsonMatch) {
+            npcFriends = JSON.parse(jsonMatch[0]);
+            console.log("成功生成NPC列表:", npcFriends);
+            // 生成NPC后，立即触发他们的评论行为
+            triggerNpcMomentReactions(moment, npcFriends);
+        } else {
+             throw new Error("AI返回的NPC数据不是有效的JSON数组。");
+        }
+
+    } catch (error) {
+        console.error("生成NPC朋友列表时出错:", error);
+    }
+}
+
+
+/**
+
+/**
+ * 核心功能2：让NPC们有间隔地对朋友圈进行评论
+ * @param {object} moment - 用户刚刚发布的朋友圈对象
+ * @param {Array} npcs - 生成的NPC对象数组
+ */
+async function triggerNpcMomentReactions(moment, npcs) {
+    const settings = await dbManager.get('apiSettings', 'settings') || {};
+    if (!settings.apiUrl || !settings.apiKey) return;
+
+    // 为每个NPC创建一个带随机延迟的评论任务
+    npcs.forEach((npc, index) => {
+        // 随机延迟：第一个评论在2-4秒后，之后每个评论再延迟3-6秒
+        const delay = (index === 0) ? (2000 + Math.random() * 2000) : ((index * (3000 + Math.random() * 3000)) + 2000);
+        
+        setTimeout(async () => {
+            try {
+                // 【【【核心修正】】】 在这里正确地定义只包含有限信息的新变量
+                const userPersonaForNpc = `职业/身份: ${userProfile.background || '未设置'}\n性格特点: ${userProfile.personality || '未设置'}`;
+                const sanitizedMomentContent = moment.content.replace(/"/g, "'");
+
+                const prompt = `
+                【你的身份】: 你是 "${npc.name}"，你的性格是：“${npc.persona}”。
+
+                【当前情景】: 你的朋友 "${userProfile.name}" 刚刚发了一条朋友圈。你只知道朋友的这些信息：
+                - ${userPersonaForNpc}
+
+                【朋友圈内容】: "${sanitizedMomentContent}"
+
+                【你的任务】:
+                1.  严格以你的身份（“${npc.name}”）和性格（“${npc.persona}”），针对这条朋友圈，写一句非常口语化、生活化的评论。
+                2.  你的评论必须与朋友圈内容和你的身份高度相关。
+                3.  **【【【隐私铁律】】】** 你绝对不知道任何关于用户更私密的信息（例如生理期、非常私人的喜好等），在你的评论中也绝对不能提及或猜测这些。
+                4.  **【【【输出铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含任何多余的解释、引号或JSON标记。
+                `;
+
+                const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: settings.modelName,
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.9 // 提高一点随机性，让评论更多样
+                    })
+                });
+
+                if (!response.ok) throw new Error(`API请求失败: ${response.status}`);
+
+                const data = await response.json();
+                const commentContent = data.choices[0].message.content.trim().replace(/^"|"$/g, ''); // 清理AI可能返回的多余引号
+
+                if (commentContent) {
+                    // 找到需要更新的朋友圈对象
+                    const targetMoment = moments.find(m => m.id === moment.id);
+                    if (targetMoment) {
+                        const newNpcComment = {
+                            id: generateUniqueId(),
+                            authorId: `npc_${npc.name}`,
+                            name: npc.name,
+                            content: commentContent,
+                            timestamp: new Date().toISOString(),
+                            replyToCommentId: null,
+                            replyToAuthorId: null
+                        };
+                        
+                        // 让NPC在评论的同时也进行点赞
+                        if (!targetMoment.likes.includes(newNpcComment.authorId)) {
+                            targetMoment.likes.push(newNpcComment.authorId);
+                        }
+                        
+                        targetMoment.comments.push(newNpcComment);
+                        await saveData();
+                        
+                        if (document.getElementById('momentsScreen').classList.contains('active')) {
+                            updateMomentsList();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(`NPC "${npc.name}" 评论时出错:`, error);
+            }
+        }, delay);
+    });
+}
+
+
+/**
+ * 辅助功能：重写getAuthorById，让它可以处理NPC
+ * 这个函数现在可以识别普通用户、AI好友，以及不存在于好友列表里的NPC
+ */
+function getAuthorById(authorId) {
+    if (!authorId) {
+        return { id: 'unknown', name: '未知用户', avatar: '?', avatarImage: '' };
+    }
+    if (authorId === userProfile.id) {
+        return userProfile;
+    }
+    const foundFriend = friends.find(f => f.id === authorId);
+    if (foundFriend) {
+        return foundFriend;
+    }
+    // 【【【新增逻辑】】】 如果在好友列表找不到，就检查是不是NPC
+    if (typeof authorId === 'string' && authorId.startsWith('npc_')) {
+        const npcName = authorId.replace('npc_', '');
+        // 查找内存中本次生成的NPC列表
+        const foundNpc = npcFriends.find(npc => npc.name === npcName);
+        if (foundNpc) {
+             return { id: authorId, name: foundNpc.name, avatar: foundNpc.name.substring(0, 1), avatarImage: '' };
+        }
+        // 如果内存里没有（可能是刷新页面后），就从评论区反向查找
+        for (const moment of moments) {
+            const foundComment = moment.comments.find(c => c.authorId === authorId);
+            if (foundComment && foundComment.name) {
+                return { id: authorId, name: foundComment.name, avatar: foundComment.name.substring(0, 1), avatarImage: '' };
+            }
+        }
+    }
+    
+    // 如果都找不到，返回一个“已删除用户”的占位符
+    return { id: authorId, name: '未知用户', avatar: '?', avatarImage: '' };
+}
+
+// 【【【这是一个全新的函数，请把它粘贴到<script>的末尾】】】
+async function generateMissedMessages(friendId) {
+    const friend = friends.find(f => f.id === friendId);
+    if (!friend || !friend.proactiveMessageDebt || friend.proactiveMessageDebt === 0) return;
+
+    const container = document.getElementById('chatMessages');
+    // 先用一个加载动画替换掉“点击查看”按钮
+    container.innerHTML = `<div class="recall-message"><div class="recall-content">正在努力回忆...</div></div>`;
+
+    aiReplyingSet.add(friendId); // 标记AI正在忙
+
+    const debtCount = friend.proactiveMessageDebt;
+    const totalMinutesInactive = debtCount * proactiveMessagingInterval;
+    const history = chatHistories[friendId] || [];
+    
+    // 找到用户最后一条消息和那之后的所有AI标记
+    const lastUserMessageIndex = history.map(m => m.type).lastIndexOf('sent');
+    const relevantHistory = history.slice(0, lastUserMessageIndex + 1); // 只取用户最后一条消息之前的所有记录作为上下文
+    const chatContext = relevantHistory.slice(-20).map(m => {
+        const senderName = m.type === 'sent' ? userProfile.name : friend.name;
+        return `${senderName}: ${m.content}`;
+    }).join('\n');
+
+    const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
+    你的重要朋友是"${userProfile.name}"，他/她的人设是：${userProfile.personality || '普通人'}。
+
+    【当前情景：非常重要】
+    你的朋友 "${userProfile.name}" 消失了 **${totalMinutesInactive} 分钟** 后终于上线了！
+    在这段时间里，你因为担心/想念/生气，**一共尝试联系了他/她 ${debtCount} 次**。
+
+    【你的任务】:
+    现在，你需要一次性生成这 ${debtCount} 次尝试联系的**所有**聊天记录。
+    1.  **【情绪递进铁律】**: 这 ${debtCount} 次对话，必须体现出明显的情绪或行为递进。
+        -   **第一次** 可能是轻松的问候或分享。
+        -   **中间几次** 可能会因为没得到回复而变得更加关心、疑惑，甚至根据人设开始“查岗”。
+        -   **最后一次** 应该带有最高的情绪张力，比如非常担心、生气、沮丧或委屈。
+    2.  **【记忆铁律】**: 后一次的对话，必须知道前一次对话发了什么但没被回复。
+    3.  **【数量铁律】**: 每次对话都必须包含 **4到6条** 简短、口语化的消息。
+    4.  **【【【输出格式铁律】】】**: 你的回复**必须**是一个JSON对象，其中只包含一个键 "missed_conversations"。
+        -   "missed_conversations" 的值是一个数组，数组的长度必须等于 ${debtCount}。
+        -   数组中的每个对象代表一次对话，包含 "timestamp_offset" (一个描述时间过去的字符串，如 "-120分钟前") 和 "replies" 数组 (包含4-6条消息)。
+
+    【JSON格式示例】:
+    {
+      "missed_conversations": [
+        {
+          "timestamp_offset": "-${totalMinutesInactive} 分钟前", 
+          "replies": [
+            {"type": "text", "content": "宝宝在干嘛？"},
+            {"type": "text", "content": "我看到一个好搞笑的视频！"}
+          ]
+        },
+        {
+          "timestamp_offset": "-${proactiveMessagingInterval} 分钟前", 
+          "replies": [
+            {"type": "text", "content": "人呢？怎么还不回我？"},
+            {"type": "text", "content": "不会出什么事了吧..."},
+            {"type": "text", "content": "我有点担心了。"}
+          ]
+        }
+      ]
+    }
+
+    现在，请根据以上所有信息，生成这 ${debtCount} 次对话的所有聊天记录。`;
+
+    try {
+        const settings = await dbManager.get('apiSettings', 'settings');
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                response_format: { type: 'json_object' }
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const responseData = JSON.parse(data.choices[0].message.content);
+
+        // 清理掉之前的AI标记和“点击查看”按钮
+        chatHistories[friendId] = history.filter(msg => !msg.id.startsWith('fake_'));
+        container.innerHTML = '';
+        renderInitialMessages(); // 重新加载之前的消息
+
+        // 像播放动画一样，逐条显示新生成的消息
+        if (responseData.missed_conversations) {
+            for (const conversation of responseData.missed_conversations) {
+                for (const reply of conversation.replies) {
+                    const msgData = saveChatMessage(friendId, 'received', reply.content, '', friend.id, reply.type || 'text');
+                    addMessageToDOM(msgData, friend);
+                    container.scrollTop = container.scrollHeight;
+                    await new Promise(res => setTimeout(res, 400)); // 每条消息之间的延迟
+                }
+            }
+        }
+
+    } catch (error) {
+        console.error("生成未读消息时出错:", error);
+        container.innerHTML = `<div class="recall-message"><div class="recall-content" style="color: red;">消息生成失败: ${error.message}</div></div>`;
+    } finally {
+        // 清空“消息债”并保存
+        friend.proactiveMessageDebt = 0;
+        await saveData();
+        aiReplyingSet.delete(friendId);
+    }
+}
+
+// 【【【这是一个全新的工具函数，请把它粘贴到<script>的末尾】】】
+/**
+ * 将ISO格式的时间字符串转换为AI可读的格式
+ * @param {string} isoString - new Date().toISOString() 生成的时间字符串
+ * @returns {string} 格式如 "YYYY-MM-DD HH:MM" 的字符串
+ */
+function formatTimestampForAI(isoString) {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    const pad = (num) => num.toString().padStart(2, '0');
+    
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+        function applyComponentTransparency() {
+            const profileWidget = document.getElementById('profileWidgetContainer');
+            const smallWidget = document.getElementById('homeScreenWidget');
+
+            if (profileWidget) {
+                profileWidget.classList.toggle('transparent-bg', profileWidgetTransparent);
+                document.getElementById('profileWidgetBgToggle').checked = profileWidgetTransparent;
+            }
+            if (smallWidget) {
+                smallWidget.classList.toggle('transparent-bg', smallWidgetTransparent);
+                document.getElementById('smallWidgetBgToggle').checked = smallWidgetTransparent;
+            }
+        }
+
+        // --- [新增] 应用所有设置的函数 ---
+        function applyAllSettings() {
+            applyFont();
+            applyAppLabelColor();
+            applyDarkMode();
+            applyRoundedCorners();
+            applyWallpaper();
+            applyGlobalChatBackground();
+            applyCustomIcons();
+            applyBubbleColors();
+            applyCustomBubbleCSS(customBubbleCSS);
+            applyListenTogetherCustomImages();
+            applyComponentTransparency();
+        }
+
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
     
