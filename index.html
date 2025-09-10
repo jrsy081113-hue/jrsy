@@ -3076,24 +3076,24 @@ html {
         }
         
         /* NEW: Image Description Modal Styles */
-        #imageDescriptionModal .modal-content, #cameraDescriptionModal .modal-content {
-            width: 90%;
-            max-width: 400px;
-            max-height: 70vh;
-        }
-        #imageDescriptionContent {
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            white-space: pre-wrap; /* Preserve line breaks */
-            word-wrap: break-word;
-            text-align: left;
-            max-height: 50vh;
-            overflow-y: auto;
-            background-color: var(--bg-hover, #f5f5f5);
-            padding: 10px;
-            border-radius: 8px;
-        }
+        /* 【【【第二步：请用这段新代码替换】】】 */
+#imageDescriptionModal .modal-content, #cameraDescriptionModal .modal-content {
+    width: 85%;       /* 从90%改窄到85% */
+    max-width: 320px; /* 从400px大幅改窄到320px */
+    max-height: 70vh;
+}
+       /* 【【【第一步：请用这段新代码替换】】】 */
+#imageDescriptionContent {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    white-space: pre-wrap; /* Preserve line breaks */
+    word-wrap: break-word;
+    text-align: left; /* 文字保持左对齐 */
+    max-height: 50vh;
+    overflow-y: auto;
+    /* 我们删除了 background-color, padding, 和 border-radius 这三行 */
+}
 
         .multi-select-list {
             max-height: 200px;
@@ -4343,9 +4343,33 @@ html {
     line-height: 1.6; /* 舒适的行高 */
 }
 
+/* 【【【第二步：请将这段CSS代码粘贴到 <style> 区域的末尾】】】 */
+
+/* 加载动画的样式 */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
     </style>
 </head>
 <body>
+
+<!-- 【【【第一步：请将这行代码粘贴到 <body> 标签下面】】】 -->
+
+<!-- 【【【这是修改后的正确代码】】】 -->
+<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; color: white; flex-direction: column; gap: 20px; text-align: center;"></div>
+
     <audio id="audioPlayer"></audio>
     <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
     <input type="file" id="widgetImageInput" accept="image/*" style="display: none;" onchange="handleWidgetImageUpload(event)">
@@ -9668,25 +9692,48 @@ ${chatHistorySummary || "你们最近没有聊天。"}
         function toggleModelDropdown() { document.getElementById('modelDropdown').classList.toggle('show'); }
         function selectModel(modelName) { document.getElementById('modelName').value = modelName; toggleModelDropdown(); }
 
-        async function fetchModels() {
-            const apiUrl = document.getElementById('apiUrl').value, apiKey = document.getElementById('apiKey').value;
-            if (!apiUrl || !apiKey) return showAlert('请先填写API地址和密钥');
-            try {
-                const response = await fetch(`${apiUrl}/models`, { headers: { 'Authorization': `Bearer ${apiKey}` } });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                const dropdown = document.getElementById('modelDropdown');
-                dropdown.innerHTML = '';
-                (data.data || []).forEach(model => {
-                    const option = document.createElement('div');
-                    option.className = 'model-option';
-                    option.textContent = model.id;
-                    option.onclick = () => selectModel(model.id);
-                    dropdown.appendChild(option);
-                });
-                showAlert(`成功拉取到 ${data.data.length} 个模型`);
-            } catch (error) { showAlert(`拉取模型失败: ${error.message}`); }
-        }
+        // 【【【第三步：请用这个修改后的完整函数，替换你原来的 fetchModels 函数】】】
+async function fetchModels() {
+    const apiUrl = document.getElementById('apiUrl').value;
+    const apiKey = document.getElementById('apiKey').value;
+    if (!apiUrl || !apiKey) return showAlert('请先填写API地址和密钥');
+    
+    // 获取加载动画的容器
+    const overlay = document.getElementById('loadingOverlay');
+    
+    // ---- 核心修改：在这里开始“挂牌” ----
+    // 1. 设置加载动画和文字
+    overlay.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p>正在拉取模型...</p>
+    `;
+    // 2. 显示加载动画
+    overlay.style.display = 'flex';
+
+    try {
+        const response = await fetch(`${apiUrl}/models`, { headers: { 'Authorization': `Bearer ${apiKey}` } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        
+        const dropdown = document.getElementById('modelDropdown');
+        dropdown.innerHTML = '';
+        (data.data || []).forEach(model => {
+            const option = document.createElement('div');
+            option.className = 'model-option';
+            option.textContent = model.id;
+            option.onclick = () => selectModel(model.id);
+            dropdown.appendChild(option);
+        });
+        showAlert(`成功拉取到 ${data.data.length} 个模型`);
+
+    } catch (error) {
+        showAlert(`拉取模型失败: ${error.message}`);
+    } finally {
+        // ---- 核心修改：在这里“摘牌” ----
+        // 无论成功还是失败 (finally)，最后都隐藏加载动画
+        overlay.style.display = 'none';
+    }
+}
 
         async function toggleTimePerception() {
             aiTimePerceptionEnabled = document.getElementById('aiTimePerceptionToggle').checked;
