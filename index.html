@@ -7019,21 +7019,22 @@ function openChat(friendId) {
             return avatarImage ? `<div class="chat-avatar" data-sender-id="${sender.id}" style="background-image: url('${avatarImage}');"></div>` : `<div class="chat-avatar" data-sender-id="${sender.id}">${avatarText}</div>`;
         }
 
-        function handlePatPat(targetId) {
-             const friend = friends.find(f => f.id === currentChatFriendId);
-             if(!friend) return;
+        // --- 【这是修改后的代码】 ---
+async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
+     const friend = friends.find(f => f.id === currentChatFriendId);
+     if(!friend) return;
 
-             const target = targetId === userProfile.id ? userProfile : friends.find(f => f.id === targetId);
-             if(!target) return;
+     const target = targetId === userProfile.id ? userProfile : friends.find(f => f.id === targetId);
+     if(!target) return;
 
-             const patter = userProfile;
-             const patAction = patter.patAction || '拍了拍';
-             // *** 修改后的代码 ***
-const content = `你拍了拍"${target.name}"${patter.patAction || ''}`;
-             
-             const patMessage = saveChatMessage(currentChatFriendId, 'sent', content, '', null, 'pat_pat');
-             addPatPatMessageToDOM(patMessage);
-        }
+     const patter = userProfile;
+     const patAction = patter.patAction || '拍了拍';
+     const content = `你拍了拍"${target.name}"${patter.patAction || ''}`;
+     
+     // <--- 修复2：在这里加上 await
+     const patMessage = await saveChatMessage(currentChatFriendId, 'sent', content, '', null, 'pat_pat');
+     addPatPatMessageToDOM(patMessage);
+}
 
         function addPatPatMessageToDOM(msg) {
             const container = document.getElementById('chatMessages');
@@ -9959,15 +9960,17 @@ ${chatHistorySummary || "你们最近没有聊天。"}
             }
         }
         
-        function sendListenTogetherMessage() {
-            const input = document.getElementById('listenTogetherChatInput');
-            const message = input.value.trim();
-            if(message) {
-                const msgData = saveChatMessage(currentChatFriendId, 'sent', message);
-                addMessageToDOM(msgData, friends.find(f=>f.id===currentChatFriendId), 'listenTogetherChatOverlay');
-                input.value = '';
-            }
-        }
+        // --- 【这是修改后的代码】 ---
+async function sendListenTogetherMessage() { // <--- 修复1：在这里加上 async
+    const input = document.getElementById('listenTogetherChatInput');
+    const message = input.value.trim();
+    if(message) {
+        // <--- 修复2：在这里加上 await
+        const msgData = await saveChatMessage(currentChatFriendId, 'sent', message);
+        addMessageToDOM(msgData, friends.find(f=>f.id===currentChatFriendId), 'listenTogetherChatOverlay');
+        input.value = '';
+    }
+}
         
         function toggleListenChat() {
             document.getElementById('listenTogetherChatWrapper').classList.toggle('expanded');
