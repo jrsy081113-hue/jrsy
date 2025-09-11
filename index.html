@@ -7161,9 +7161,12 @@ function setChatAreaPadding(isOpen) {
             newFriend.id = newId;
             friends.push(newFriend);
 
-            updateFriendList();
-            closeAddFriendModal();
-            showAlert('好友添加成功！');
+            // ...
+updateFriendList();
+document.getElementById('addMenu').classList.remove('show'); // <-- 请在这里添加这行代码
+closeAddFriendModal();
+showAlert('好友添加成功！');
+// ...
         }
         
         function openGroupChatModal() {
@@ -8360,7 +8363,7 @@ ${timeContext}
                                         if (msgElementToRecall) {
                                             const recallDiv = document.createElement('div');
                                             recallDiv.className = 'recall-message';
-                                            recallDiv.innerHTML = `<div class="recall-content">"${sender.name}"撤回了一条消息</div>`;
+                                            recallDiv.innerHTML = `<div class="recall-content" onclick="showRecalledMessage('${lastMessageFromSender.id}')">"${sender.name}"撤回了一条消息</div>`;
                                             msgElementToRecall.parentNode.replaceChild(recallDiv, msgElementToRecall);
                                         }
                                     }
@@ -9904,8 +9907,38 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
             
             // 【【【核心修改：获取最近20轮聊天记录作为上下文】】】
-            // 【【【这是修改后的代码】】】
-const chatHistorySummary = (chatHistories[aiFriend.id] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : aiFriend.name}: ${m.content.substring(0, 50)}`).join('\n');
+            // 【【【这是修改后的新代码，请用它完整替换】】】
+const chatHistorySummary = (chatHistories[friend.id] || []).slice(-20).map(m => {
+    const senderName = m.type === 'sent' ? userProfile.name : friend.name;
+    let summary = '';
+    // 使用 switch 语句来智能判断消息类型
+    switch (m.contentType) {
+        case 'image':
+            summary = '[发送了一张图片]';
+            break;
+        case 'voice':
+            summary = `[发送了一条语音消息]`;
+            break;
+        case 'transfer_request':
+            summary = '[发起了一笔转账]';
+            break;
+        case 'pat_pat':
+            summary = `[拍了拍对方]`;
+            break;
+        case 'location':
+            summary = '[分享了一个位置]';
+            break;
+        // 对于其他所有类型（包括纯文本），执行默认操作
+        default:
+            // 确保 m.content 是字符串再进行截取，防止出错
+            if (typeof m.content === 'string') {
+                summary = m.content.substring(0, 50);
+            } else {
+                summary = '[一条非文本消息]';
+            }
+    }
+    return `${senderName}: ${summary}`;
+}).join('\n');
             
             let commentsHistoryForAI = [];
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
