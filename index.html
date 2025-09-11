@@ -9092,6 +9092,14 @@ ${timeContext}
 
                 // 【【【这是修改后的新代码，请用它完整替换】】】
         function renderDiaryFriendList() {
+        // 1. 同样找到导航栏和返回按钮
+    const navBar = document.querySelector('#diaryScreen .nav-bar');
+    const backBtn = navBar.querySelector('.nav-btn');
+
+    // 2. 将返回按钮的onclick事件恢复为 backToDiscover()
+    backBtn.setAttribute('onclick', 'backToDiscover()');
+
+    // --- ↑↑↑ 新代码添加到这里结束 ↑↑↑ ---
             const friendList = document.getElementById('diaryFriendList');
             const contentArea = document.getElementById('diaryContentArea');
             friendList.style.display = 'block';
@@ -9135,6 +9143,15 @@ ${timeContext}
         function showFriendDiary(friendId) {
             const friend = friends.find(f => f.id === friendId);
             if (!friend) return;
+            // 1. 找到日记页面的导航栏和返回按钮
+    const navBar = document.querySelector('#diaryScreen .nav-bar');
+    const backBtn = navBar.querySelector('.nav-btn');
+
+    // 2. 动态修改返回按钮的onclick事件
+    //    让它点击后调用 renderDiaryFriendList() 函数，即重新显示角色选择列表
+    backBtn.setAttribute('onclick', 'renderDiaryFriendList()');
+
+    // --- ↑↑↑ 新代码添加到这里结束 ↑↑↑ ---
             document.getElementById('diaryFriendList').style.display = 'none';
             
             // *** 核心修改1：把导航栏右侧区域的内容，从纯文本换成一个按钮 ***
@@ -9881,7 +9898,7 @@ function hideCommentInput() {
 }
        
 
-// 【【【第二步 B：请用这个修改后的完整函数替换原来的 triggerAiCommentReply 函数】】】
+// --- ↓↓↓ 请从这里开始完整复制，替换掉整个旧函数 ↓↓↓ ---
 async function triggerAiCommentReply(momentId, userCommentId, userCommentContent, aiToReplyId) {
     const moment = moments.find(m => m.id === momentId);
     const aiFriend = getAuthorById(aiToReplyId); 
@@ -9892,54 +9909,22 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
 
     const settings = await dbManager.get('apiSettings', 'settings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
-        console.error("API设置未完成，无法触发AI回复朋友圈评论。");
-        showAlert("AI回复评论失败：API设置未完成。");
+        console.error("API设置未完成，无法触发AI朋友圈互动。");
         return;
     }
 
+    // 为每个AI设置一个随机的延迟，模拟真实世界中不同人看到朋友圈的时间差
     setTimeout(async () => {
-        let replyContent = '';
-        let rawContentFromAI = '';
-        let httpResponseStatus = 0;
-
+        let commentContent = '';
         try {
-            const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
+            const sanitizedMomentContent = sanitizeForJSON(moment.content);
             const sanitizedUserComment = sanitizeForJSON(userCommentContent);
+            const chatHistorySummary = (chatHistories[aiFriend.id] || []).slice(-20).map(m => {
+                const senderName = m.type === 'sent' ? userProfile.name : aiFriend.name;
+                return `${senderName}: ${m.content.substring(0, 50)}`;
+            }).join('\n');
             
-            // 【【【核心修改：获取最近20轮聊天记录作为上下文】】】
-            // 【【【这是修改后的新代码，请用它完整替换】】】
-const chatHistorySummary = (chatHistories[friend.id] || []).slice(-20).map(m => {
-    const senderName = m.type === 'sent' ? userProfile.name : friend.name;
-    let summary = '';
-    // 使用 switch 语句来智能判断消息类型
-    switch (m.contentType) {
-        case 'image':
-            summary = '[发送了一张图片]';
-            break;
-        case 'voice':
-            summary = `[发送了一条语音消息]`;
-            break;
-        case 'transfer_request':
-            summary = '[发起了一笔转账]';
-            break;
-        case 'pat_pat':
-            summary = `[拍了拍对方]`;
-            break;
-        case 'location':
-            summary = '[分享了一个位置]';
-            break;
-        // 对于其他所有类型（包括纯文本），执行默认操作
-        default:
-            // 确保 m.content 是字符串再进行截取，防止出错
-            if (typeof m.content === 'string') {
-                summary = m.content.substring(0, 50);
-            } else {
-                summary = '[一条非文本消息]';
-            }
-    }
-    return `${senderName}: ${summary}`;
-}).join('\n');
-            
+            // 收集评论区历史记录 (你指出的那段重要代码)
             let commentsHistoryForAI = [];
             const sortedComments = [...moment.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
             sortedComments.forEach(c => {
@@ -9950,95 +9935,107 @@ const chatHistorySummary = (chatHistories[friend.id] || []).slice(-20).map(m => 
                     commentsHistoryForAI.push(commentLine);
                 }
             });
-            const commentsContext = commentsHistoryForAI.length > 0 ? `以下是之前评论区的所有对话历史：\n${commentsHistoryForAI.join('\n')}\n` : '';
-            const userProfileNameForPrompt = userProfile.name;
+            const commentsContext = commentsHistoryForAI.length > 0 ? `【参考信息3：当前评论区的对话历史】:\n${commentsHistoryForAI.join('\n')}\n` : '';
+
+            // 动态判断朋友圈的归属
+            let scenarioDescription = '';
+            let momentAuthor = getAuthorById(moment.authorId);
+
+            if (moment.authorId === userProfile.id) {
+                scenarioDescription = `【当前情景】: 你的好友 "${userProfile.name}" 发布了一条朋友圈。现在，你正在这条朋友圈的评论区，准备回复他/她刚刚发表的评论。`;
+            } else {
+                scenarioDescription = `【当前情景】: 这是你自己的朋友圈。你的好友 "${userProfile.name}" 刚刚在下面发表了评论，你正在回复他/她。`;
+            }
+
+            // 构造最终的、完整的AI指令
+            const prompt = `
+            【你的身份】: 你是 "${aiFriend.name}"，你的性格是：“${aiFriend.role}”。
             
-            const prompt = `你叫"${aiFriend.name}"，你的人设是：${aiFriend.role}。
-在你的朋友圈（内容：“${sanitizedMomentContent}...”）下，你的好友"${userProfileNameForPrompt}"(人设: ${userProfile.personality || '普通人'})刚刚评论说：“${sanitizedUserComment}”。
-${commentsContext}
+            ${scenarioDescription}
 
-【参考信息：你们最近的20条聊天记录】
-${chatHistorySummary || "你们最近没有聊天。"}
+            【参考信息1：朋友圈内容】:
+            - 作者: "${momentAuthor.name}"
+            - 内容: "${sanitizedMomentContent}"
 
-【【【信息隔离铁律】】】
-在评论区历史中，你**只能看到**由你、好友"${userProfileNameForPrompt}"，以及一些普通NPC发表的评论。你**绝对看不到**任何其他AI角色的评论。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的互动。
+            【参考信息2：你们最近的聊天记录】:
+            ${chatHistorySummary || "你们最近没有聊天。"}
+            
+            ${commentsContext}
+            
+            【当前需要你回复的最新评论】:
+            - "${userProfile.name}" 刚刚评论说: "${sanitizedUserComment}"
 
-你的任务是：**结合聊天内容、评论区历史和朋友圈本身，严格按照人设，只回复一句针对"${userProfileNameForPrompt}"的评论。**
-**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "reply":, JSON格式, 或任何解释。
-现在，请直接生成你的回复：`;
-
+            【你的任务】:
+            严格根据你的人设、聊天记录、评论历史以及朋友圈内容，写一句简短、口语化、生活化的评论来回复 "${userProfile.name}"。
+            
+            【【【输出铁律】】】
+            你的回复**必须且只能**是纯文本的评论本身。绝对不要包含任何多余的解释、引号或JSON标记。`;
+            
+            const apiMessages = [{ role: 'system', content: "你是一个朋友圈评论助手。" }, { role: 'user', content: prompt }];
+            if (moment.imageUrl && moment.imageUrl.startsWith('data:image')) {
+                 apiMessages[1] = { 
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: prompt },
+                        { type: 'image_url', image_url: { url: moment.imageUrl } }
+                    ]
+                };
+            }
+            
             const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     model: settings.modelName,
-                    messages: [{ role: 'user', content: prompt }],
-                    temperature: 0.7
+                    messages: apiMessages,
+                    temperature: 0.9
                 })
             });
 
-            httpResponseStatus = response.status;
-            const data = await response.json();
-
             if (!response.ok) {
-                rawContentFromAI = JSON.stringify(data);
                 throw new Error(`API 请求失败，状态码: ${response.status}.`);
             }
             
-            let extractedText = '';
-            if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-                extractedText = data.choices[0].message.content;
-            } else if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
-                extractedText = data.candidates[0].content.parts[0].text;
-            } else {
-                console.error("无法识别API返回的JSON结构 (评论回复)", data);
-                rawContentFromAI = JSON.stringify(data);
-            }
-            
-            if (extractedText) {
-                rawContentFromAI = extractedText;
-            }
-            
-            replyContent = (extractedText || '').trim();
-
-            if (!replyContent) {
-                replyContent = "嗯嗯";
-            }
+            const data = await response.json();
+            const extractedText = data.choices[0].message.content;
+            commentContent = (extractedText || '嗯嗯').trim();
 
         } catch (error) {
-            console.error(`外部捕获到错误:`, error);
-            replyContent = `AI出错了，请稍后再试。`;
+            console.error(`AI "${aiFriend.name}" 评论时出错:`, error);
+            commentContent = `AI自动评论时发生错误。`;
         }
         
-        const finalCommentContent = replyContent;
-
-        if (!moment.likes.includes(aiFriend.id)) {
-            moment.likes.push(aiFriend.id);
+        const targetMoment = moments.find(m => m.id === moment.id);
+        if (targetMoment) {
+            if (!targetMoment.likes.includes(aiFriend.id)) {
+                targetMoment.likes.push(aiFriend.id);
+            }
+            
+            const newAiComment = {
+                id: generateUniqueId(), 
+                authorId: aiFriend.id,
+                content: commentContent,
+                timestamp: new Date().toISOString(),
+                replyToCommentId: userCommentId, 
+                replyToAuthorId: userProfile.id 
+            };
+            
+            const existingAiReplyIndex = targetMoment.comments.findIndex(c => c.authorId === aiFriend.id && c.replyToCommentId === userCommentId);
+            if (existingAiReplyIndex > -1) {
+                targetMoment.comments[existingAiReplyIndex] = newAiComment;
+            } else {
+                targetMoment.comments.push(newAiComment);
+            }
+            
+            await saveData();
+            
+            if (document.getElementById('momentsScreen').classList.contains('active')) {
+                updateMomentsList();
+            }
         }
-        
-        const newAiComment = {
-            id: generateUniqueId(), 
-            authorId: aiFriend.id, 
-            content: finalCommentContent,
-            timestamp: new Date().toISOString(),
-            replyToCommentId: userCommentId, 
-            replyToAuthorId: userProfile.id 
-        };
-
-        const existingAiReplyIndex = moment.comments.findIndex(c => c.authorId === aiFriend.id && c.replyToCommentId === userCommentId);
-        if (existingAiReplyIndex > -1) {
-            moment.comments[existingAiReplyIndex] = newAiComment;
-        } else {
-            moment.comments.push(newAiComment);
-        }
-        
-        await saveData();
-        if (document.getElementById('momentsScreen').classList.contains('active')) {
-            updateMomentsList();
-        }
-
-    }, 800);
+    }, 2000 + Math.random() * 4000);
 }
+// --- ↑↑↑ 请在这里结束完整复制 ---
 
                         /**
          * 【【【这是终极修正版，确保日期绝对正确并基于聊天记录】】】
@@ -10238,114 +10235,135 @@ ${todayChats || '今天和TA很安静，我们没有聊天。'}
             }
         }
         
-        // 【【【第二步 A：请用这个修改后的完整函数替换原来的 triggerAiMomentReactions 函数】】】
+        // --- ↓↓↓ 请从这里开始复制，完整替换旧的 triggerAiMomentReactions 函数 ↓↓↓ ---
 async function triggerAiMomentReactions(moment) {
     const settings = await dbManager.get('apiSettings', 'settings') || {};
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
-        console.error("API设置未完成，无法触发AI回复朋友圈评论。");
+        console.error("API设置未完成，无法触发AI朋友圈互动。");
         return;
     }
 
+    // 遍历所有非群聊的AI好友
     for (const friend of friends.filter(f => !f.isGroup)) {
+        // 为每个AI设置一个随机的延迟，模拟真实世界中不同人看到朋友圈的时间差
+        const reactionDelay = 2000 + Math.random() * 4000; // 延迟2到6秒
+
         setTimeout(async () => {
-            let commentContent = ''; 
-            let rawContentFromAI = ''; 
-            let httpResponseStatus = 0; 
+            let commentContent = '';
 
             try {
-                const sanitizedMomentContent = sanitizeForJSON(moment.content.substring(0, 100));
-                
-                // 【【【核心修改：获取最近20轮聊天记录作为上下文】】】
+                const sanitizedMomentContent = sanitizeForJSON(moment.content);
                 const chatHistorySummary = (chatHistories[friend.id] || []).slice(-20).map(m => {
                     const senderName = m.type === 'sent' ? userProfile.name : friend.name;
                     return `${senderName}: ${m.content.substring(0, 50)}`;
                 }).join('\n');
 
-                const prompt = `你叫"${friend.name}"，你的人设是：${friend.role}。
-你的好友"${userProfile.name}"刚刚发布了一条朋友圈，内容是：“${sanitizedMomentContent}”。
+                // --- 核心改造开始：构建更智能的AI指令 ---
+                
+                // 1. 先定义通用的指令部分
+                const basePrompt = `
+                【你的身份】: 你是 "${friend.name}"，你的性格是：“${friend.role}”。
+                【当前情景】: 你的好友 "${userProfile.name}" 刚刚发布了一条朋友圈。
+                【参考信息：你们最近的聊天记录】:
+                ${chatHistorySummary || "你们最近没有聊天。"}
 
-【参考信息：你们最近的20条聊天记录】
-${chatHistorySummary || "你们最近没有聊天。"}
+                【你的任务】:
+                严格根据你的人设、你们的聊天记录，以及朋友圈的**文字和图片内容**，写一句简短、口语化、生活化的评论。
+                
+                【【【输出铁律】】】
+                你的回复**必须且只能**是纯文本的评论本身。绝对不要包含任何多余的解释、引号或JSON标记。`;
 
-你的任务是：**结合上面的聊天内容和朋友圈本身，严格按照你的人设，只回复一句简短、口语化的评论文字。**
-**【【【铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含 "comment":, JSON格式, 或任何解释。
-例如：如果用户刚和你说完考试考砸了，然后发朋友圈说“想出去走走”，你就不应该只评论“风景真好”，而应该评论“去散散心也好，别想太多啦”。
-现在，请直接生成你的评论：`;
+                // 2. 准备API请求的消息体
+                let userMessageContent;
+
+                // 3. 【关键逻辑判断】根据朋友圈是否有图片，构建不同的消息内容
+                if (moment.imageUrl && moment.imageUrl.startsWith('data:image')) {
+                    // --- 情况A：图文朋友圈 ---
+                    // 我们创建一个包含文本和图片的复合消息体
+                    userMessageContent = [
+                        { 
+                            type: 'text', 
+                            text: `这是朋友圈的文字内容：\n“${sanitizedMomentContent}”\n\n请仔细观察下面的图片，并结合文字内容给出你的评论。` 
+                        },
+                        { 
+                            type: 'image_url', 
+                            image_url: { url: moment.imageUrl } 
+                        }
+                    ];
+                } else {
+                    // --- 情况B：纯文字朋友圈 ---
+                    // 我们只发送文字内容
+                    userMessageContent = `这是朋友圈的文字内容：\n“${sanitizedMomentContent}”\n\n请对此发表你的评论。`;
+                }
+
+                // 4. 组装最终发送给API的完整消息
+                const apiMessages = [
+                    { role: 'system', content: basePrompt },
+                    { role: 'user', content: userMessageContent }
+                ];
+                
+                // --- 核心改造结束 ---
 
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: settings.modelName,
-                        messages: [{ role: 'user', content: prompt }],
+                        messages: apiMessages, // 使用我们新构建的消息体
                         temperature: 0.9
                     })
                 });
 
-                httpResponseStatus = response.status;
-                const data = await response.json();
-
                 if (!response.ok) {
-                    rawContentFromAI = JSON.stringify(data);
                     throw new Error(`API 请求失败，状态码: ${response.status}.`);
                 }
                 
-                let extractedText = '';
-                if (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-                    extractedText = data.choices[0].message.content;
-                } else if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
-                    extractedText = data.candidates[0].content.parts[0].text;
-                } else {
-                    console.error("无法识别API返回的JSON结构:", data);
-                    rawContentFromAI = JSON.stringify(data);
-                }
-                
-                if (extractedText) {
-                    rawContentFromAI = extractedText;
-                }
-
-                commentContent = (extractedText || '').trim();
-
-                if (!commentContent) {
-                    commentContent = "嗯嗯!";
-                }
+                const data = await response.json();
+                const extractedText = data.choices[0].message.content;
+                commentContent = (extractedText || '不错！').trim();
 
             } catch (error) {
-                console.error(`[AI自动评论 - 调试] 捕获到错误:`, error);
-                commentContent = `AI自动评论时发生错误。`;
+                console.error(`AI "${friend.name}" 评论时出错:`, error);
+                commentContent = `AI自动评论时发生错误。`; // 保留错误提示，便于调试
             }
             
-            const finalCommentContent = commentContent;
-
-            if (!moment.likes.includes(friend.id)) {
-                moment.likes.push(friend.id);
+            // --- 更新数据和UI的逻辑保持不变 ---
+            const targetMoment = moments.find(m => m.id === moment.id);
+            if (targetMoment) {
+                // AI在评论的同时，也会点赞
+                if (!targetMoment.likes.includes(friend.id)) {
+                    targetMoment.likes.push(friend.id);
+                }
+                
+                // 创建新的评论对象
+                const newAiComment = {
+                    id: generateUniqueId(), 
+                    authorId: friend.id,
+                    content: commentContent,
+                    timestamp: new Date().toISOString(),
+                    replyToCommentId: null, 
+                    replyToAuthorId: null
+                };
+                
+                // 检查AI是否已经评论过，避免重复
+                const existingAiCommentIndex = targetMoment.comments.findIndex(c => c.authorId === friend.id && !c.replyToCommentId);
+                if (existingAiCommentIndex > -1) {
+                    targetMoment.comments[existingAiCommentIndex] = newAiComment;
+                } else {
+                    targetMoment.comments.push(newAiComment);
+                }
+                
+                await saveData();
+                
+                // 如果用户还停留在朋友圈页面，就刷新列表
+                if (document.getElementById('momentsScreen').classList.contains('active')) {
+                    updateMomentsList();
+                }
             }
-            
-            const newAiInitialComment = {
-                id: generateUniqueId(), 
-                authorId: friend.id,
-                content: finalCommentContent,
-                timestamp: new Date().toISOString(),
-                replyToCommentId: null, 
-                replyToAuthorId: null
-            };
-
-            const existingAiCommentIndex = moment.comments.findIndex(c => c.authorId === friend.id && c.replyToCommentId === null && c.replyToAuthorId === null);
-            if (existingAiCommentIndex > -1) {
-                moment.comments[existingAiCommentIndex] = newAiInitialComment;
-            } else {
-                moment.comments.push(newAiInitialComment);
-            }
-            
-            await saveData();
-            if (document.getElementById('momentsScreen').classList.contains('active')) {
-                updateMomentsList();
-            }
-
-        }, 2000 + Math.random() * 3000);
+        }, reactionDelay);
     }
 }
-
+// --- ↑↑↑ 请在这里结束复制 ---
         function backToSettingsMenu() { setActivePage('settingsApp'); }
         function openApiSettings() { setActivePage('apiSettingsScreen'); loadApiSettings(); }
         function toggleModelDropdown() { document.getElementById('modelDropdown').classList.toggle('show'); }
