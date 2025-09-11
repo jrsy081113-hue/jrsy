@@ -7968,7 +7968,7 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
             };
         }
         
-                        async function receiveMessage(friendId, customPrompt = null, isFromListenScreen = false) {
+                                        async function receiveMessage(friendId, customPrompt = null, isFromListenScreen = false) {
             const friend = friends.find(f => f.id === friendId);
             if (!friend) return;
             
@@ -7980,7 +7980,7 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
         
             if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
                 const defaultReply = `[提示：请在主屏幕"设置"应用中配置API信息]`;
-                const msgData = await saveChatMessage(friendId, 'received', defaultReply); // <--- 已修正
+                const msgData = await saveChatMessage(friendId, 'received', defaultReply);
                 if (currentChatFriendId === friendId) addMessageToDOM(msgData, friend);
                 aiReplyingSet.delete(friendId);
                 if (currentChatFriendId === friendId) document.getElementById('chatTitle').textContent = friend.remark || friend.name;
@@ -7990,7 +7990,6 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
             let apiPayloadMessages = [];
         
             try {
-                // ... (函数前半部分所有 prompt 相关的代码保持不变) ...
                 const boundFolderIds = friend.boundFolderIds || [];
                 const allBoundBookIds = new Set(friend.worldBookIds || []);
                 boundFolderIds.forEach(folderId => {
@@ -8001,9 +8000,8 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
                     });
                 });
                 
-                                                let worldBookContext = Array.from(allBoundBookIds).map(id => worldBooks.find(wb => wb.id === id)).filter(Boolean).map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
+                let worldBookContext = Array.from(allBoundBookIds).map(id => worldBooks.find(wb => wb.id === id)).filter(Boolean).map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
                 
-                // --- 核心优化：智能去重 ---
                 let finalRole = friend.role || '你是一个友好的助手。';
                 if (worldBookContext && finalRole) {
                     const sentences = worldBookContext.match(/[^。？！]+[。？！]?/g) || [];
@@ -8015,18 +8013,13 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
                         }
                     });
                 }
-                // --- 优化结束 ---
 
-                // --- 【关键】恢复被误删的代码 ---
                 let systemPrompt;
                 let responseFormat = { type: "json_object" };
                 const memoryTurns = parseInt(settings.memoryTurns, 10) || 10;
                 const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
                 const history = (chatHistories[friendId] || []).slice(-memoryTurns);
-                // --- 恢复结束 ---
                 
-                                // --- [新增代码开始] ---
-                // 这里是第一步：创建“长期记忆”模块
                 let longTermMemories = (characterMemories[friendId] || [])
                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
                     .map(mem => `- ${mem.content}`)
@@ -8041,16 +8034,11 @@ ${longTermMemories}
                 } else {
                     longTermMemories = "【【【你的长期记忆】】】\n你和用户之间还没有共同的记忆。";
                 }
-                // --- [新增代码结束] ---
 
                  history.forEach(msg => {
-                 if (msg.recalled) {
-                    return; 
-                }
-                    
+                     if (msg.recalled) return;
                     const role = msg.type === 'sent' ? 'user' : 'assistant';
                     let content;
-                                       
                     if(msg.quoted) content = `(回复引用: "${msg.quoted}") ${msg.content}`;
                     else if (msg.contentType === 'image') {
                         if (msg.imageDescription) {
@@ -8080,220 +8068,82 @@ ${longTermMemories}
                     apiPayloadMessages.push({ role, content });
                 });
 
-                // --- ↓↓↓ 请从这里开始复制，直到“else”之前 ↑↑↑ ---
-if (friend.isGroup) {
-    // --- 群聊逻辑开始 ---
-    try {
-        // 1. 整理群聊的上下文信息
-        const groupMembers = friend.members
-            .map(id => getAuthorById(id)) // 使用更可靠的函数来获取成员信息
-            .filter(Boolean);
+                if (friend.isGroup) {
+                    const groupMembers = friend.members.map(id => getAuthorById(id)).filter(Boolean);
+                    const memberInfoForAI = groupMembers.map(m => `- "${m.name}" (人设: ${m.role || (m.id === userProfile.id ? userProfile.personality : '未设定')})`).join('\n');
+                    const chatContextForAI = history.map(msg => {
+                        const sender = getAuthorById(msg.senderId);
+                        const senderName = sender ? sender.name : '未知';
+                        let content = msg.content;
+                        if (msg.contentType === 'image') content = '[图片]';
+                        if (msg.contentType === 'voice') content = `[语音] ${msg.content}`;
+                        if (msg.contentType === 'pat_pat') content = `[拍一拍] ${msg.content}`;
+                        return `${senderName}: ${content}`;
+                    }).join('\n');
+                    const recentMoments = moments.filter(m => m.authorId === userProfile.id).slice(0, 5).map(m => `- "${m.content}"`).join('\n');
+                    
+                    systemPrompt = `
+                    【你的身份】: 你是一个强大的群聊AI，你的任务是扮演并控制【除了用户'${userProfile.name}'之外的所有AI角色】。你是这个群聊的“导演”。
+                    【【【最高优先级背景资料读取模块】】】
+                    在决定角色如何行动前，你必须仔细阅读并理解以下所有背景信息。
+                    --- 世界书设定 (整个世界的宏观背景) ---
+                    ${worldBookContext || "（暂无世界书设定）"}
+                    --- 核心人物（用户）信息 ---
+                    - 用户昵称: "${userProfile.name}"
+                    - 用户人设: ${userProfile.personality || "（用户未设置人设）"}
+                    --- 用户最近的朋友圈动态 ---
+                    ${recentMoments || "（用户最近没有发朋友圈）"}
+                    【当前群聊】: "${friend.name}"
+                    【群成员信息（你的演员表）】:
+                    ${memberInfoForAI}
+                    【最近的聊天记录（你的剧本）】:
+                    ${chatContextForAI || '（暂无聊天记录）'}
+                    【你的核心任务】:
+                    根据以上所有背景资料、聊天记录和每个成员的人设，自然地延续对话。你需要决定接下来【每一个AI角色】应该说什么、以及做什么特殊操作。
 
-        const memberInfoForAI = groupMembers
-            .map(m => `- "${m.name}" (人设: ${m.role || (m.id === userProfile.id ? userProfile.personality : '未设定')})`)
-            .join('\n');
+                    【【【输出格式铁律 (必须严格遵守)】】】
+                    1.  **【核心格式】**: 你的回复**必须**是一个纯净的JSON数组 \`[]\`。
+                    2.  **【动作对象】**: 数组中的每个对象代表一个AI角色的**一个独立动作**，且必须包含\`"sender_name"\` (角色完整姓名) 和 \`"action"\` (具体动作对象) 两个键。
+                    3.  **【动作对象详解】**: \`"action"\`对象必须包含一个\`"type"\`字段来指明动作类型。
+                    4.  **【严格遵守】**: 绝对不要在回复中包含任何JSON数组之外的解释性文字。
 
-        const memoryTurns = parseInt(settings.memoryTurns, 10) || 10;
-        const history = (chatHistories[friendId] || []).slice(-memoryTurns);
+                    【【【可用动作类型和格式 (在action对象中使用)】】】
+                        - 文字消息: \`{"type": "text", "content": "消息内容"}\`
+                        - 语音消息: \`{"type": "voice", "content": "语音的文字内容"}\`
+                        - 发送图片: \`{"type": "image", "description": "详细的图片描述"}\`
+                        - 引用回复: \`{"type": "quote", "target_name": "被引用角色的名字", "content": "你的回复内容"}\`
+                        - 拍一拍: \`{"type": "pat_pat", "target_name": "被拍角色的名字"}\`
+                        - 发起转账: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
+                        - 撤回消息: \`{"type": "recall"}\` (撤回该角色自己发的上一条消息)
 
-        // 使用 getAuthorById 函数来确保能正确获取包括你在内的所有发言者姓名
-        const chatContextForAI = history.map(msg => {
-            const sender = getAuthorById(msg.senderId);
-            const senderName = sender ? sender.name : '未知';
-            // 处理各种消息类型，让AI更好地理解上下文
-            let content = msg.content;
-            if (msg.contentType === 'image') content = '[图片]';
-            if (msg.contentType === 'voice') content = `[语音] ${msg.content}`;
-            if (msg.contentType === 'pat_pat') content = `[拍一拍] ${msg.content}`;
-            return `${senderName}: ${content}`;
-        }).join('\n');
-        
-        // 【新增】读取世界书所有内容
-        const worldBookContext = worldBooks.map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
-        // 【新增】读取你最近的5条朋友圈
-        const recentMoments = moments.filter(m => m.authorId === userProfile.id).slice(0, 5).map(m => `- "${m.content}"`).join('\n');
-        
-        // 2. 创建一个功能强大的全新“导演”指令
-        const systemPrompt = `
-        【你的身份】: 你是一个强大的群聊AI，你的任务是扮演并控制【除了用户'${userProfile.name}'之外的所有AI角色】。你是这个群聊的“导演”。
+                    【【【行为指导】】】
+                    - **全员回复**: 你是群聊的中心！所以，在每一轮，你都【必须】为【除了用户之外的所有AI角色】生成至少一个动作。
+                    - **自然感**: 为了模拟真实聊天，角色可以连续发送多条消息。每次每个角色至少返回两条到三条消息。只需在数组中按顺序放入多个属于同一个\`sender_name\`的动作即可。
+                    - **互动性**: AI角色之间偶尔也可以互相交流、引用、甚至拍一拍。
+                    - **人设至上**: 所有角色的所有言行都必须严格符合他们的人设！
 
-        【【【最高优先级背景资料读取模块】】】
-        在决定角色如何行动前，你必须仔细阅读并理解以下所有背景信息。
-        
-        --- 世界书设定 (整个世界的宏观背景) ---
-        ${worldBookContext || "（暂无世界书设定）"}
-        
-        --- 核心人物（用户）信息 ---
-        - 用户昵称: "${userProfile.name}"
-        - 用户人设: ${userProfile.personality || "（用户未设置人设）"}
-        
-        --- 用户最近的朋友圈动态 ---
-        ${recentMoments || "（用户最近没有发朋友圈）"}
-        
-        【当前群聊】: "${friend.name}"
-        【群成员信息（你的演员表）】:
-        ${memberInfoForAI}
+                    【JSON格式示例】:
+                    [
+                      {
+                        "sender_name": "周遇",
+                        "action": {"type": "text", "content": "说到这个，我突然想起来一件事！"}
+                      },
+                      {
+                        "sender_name": "李深",
+                        "action": {"type": "quote", "target_name": "${userProfile.name}", "content": "你刚才说的那个观点我非常同意。"}
+                      },
+                      {
+                        "sender_name": "周遇",
+                        "action": {"type": "image", "description": "一只正在打哈欠的可爱小猫的特写照片"}
+                      },
+                      {
+                        "sender_name": "李深",
+                        "action": {"type": "pat_pat", "target_name": "周遇"}
+                      }
+                    ]
 
-        【最近的聊天记录（你的剧本）】:
-        ${chatContextForAI || '（暂无聊天记录）'}
-
-        【你的核心任务】:
-        根据以上所有背景资料、聊天记录和每个成员的人设，自然地延续对话。你需要决定接下来【每一个AI角色】应该说什么、以及做什么特殊操作。
-
-        【【【输出格式铁律 (必须严格遵守)】】】
-        1. 你的回复必须是一个纯净的JSON对象，其中只包含一个键 "group_responses"。
-        2. "group_responses" 的值必须是一个数组。数组中的每个对象代表一个AI角色的【完整回合】。
-        3. 每个回合对象包含 "sender_name" (角色的完整姓名) 和 "actions" (一个包含该角色所有动作的数组)。
-        4. 【【【动作 (actions) 数组详解】】】: 这里是你能使用的所有动作类型：
-            - 文字消息: {"type": "text", "content": "消息内容"}
-            - 语音消息: {"type": "voice", "content": "语音的文字内容"}
-            - 发送图片: {"type": "image", "description": "详细的图片描述"}
-            - 引用回复: {"type": "quote", "target_name": "被引用角色的名字", "content": "你的回复内容"}
-            - 拍一拍: {"type": "pat_pat", "target_name": "被拍角色的名字"}
-            - 发起转账: {"type": "transfer", "amount": 金额(数字), "remark": "转账备注"}
-            - 撤回消息: {"type": "recall"} (这会撤回该角色自己发的上一条消息)
-
-        【【【行为指导】】】
-        - **全员回复**: 你是群聊的中心！所以，在每一轮，你都【必须】为【除了用户之外的所有AI角色】生成至少两条回复。
-        - **互动性**: AI角色之间偶尔也可以互相交流、引用、甚至拍一拍。
-        - **人设至上**: 所有角色的所有言行都必须严格符合他们的人设！
-
-        【JSON格式示例】:
-        {
-          "group_responses": [
-            {
-              "sender_name": "周遇",
-              "actions": [
-                {"type": "text", "content": "说到这个，我突然想起来一件事！"},
-                {"type": "image", "description": "一只正在打哈欠的可爱小猫的特写照片"}
-              ]
-            },
-            {
-              "sender_name": "李深",
-              "actions": [
-                {"type": "quote", "target_name": "${userProfile.name}", "content": "你刚才说的那个观点我非常同意。"},
-                {"type": "pat_pat", "target_name": "周遇"}
-              ]
-            }
-          ]
-        }
-
-        现在，请开始你的导演工作。`;
-
-        apiPayloadMessages.unshift({ role: 'system', content: systemPrompt });
-
-        // 3. 发送API请求
-        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: settings.modelName,
-                messages: apiPayloadMessages,
-                response_format: { type: "json_object" }
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`API 请求失败: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const responseText = data.choices?.[0]?.message?.content;
-        if (!responseText) {
-            throw new Error("AI返回了空内容。");
-        }
-        
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-            throw new Error("AI未返回有效的JSON格式。");
-        }
-        const responseData = JSON.parse(jsonMatch[0]);
-
-        // 4. 【全新】处理AI返回的复杂群聊消息
-        if (responseData.group_responses && Array.isArray(responseData.group_responses)) {
-            for (const turn of responseData.group_responses) {
-                const sender = groupMembers.find(m => m.name === turn.sender_name);
-                if (!sender || !turn.actions || !Array.isArray(turn.actions)) continue;
-
-                // 为了模拟真实感，在一个角色开始说话前，增加一点点延迟
-                await new Promise(res => setTimeout(res, Math.random() * 800 + 400));
-
-                for (const action of turn.actions) {
-                    switch (action.type) {
-                        case 'text':
-                        case 'voice':
-                            const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
-                            addMessageToDOM(msgData, friend);
-                            break;
-
-                        case 'image':
-                            const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
-                            const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
-                            imgMsgData.imageDescription = action.description || 'AI生成的图片';
-                            addMessageToDOM(imgMsgData, friend);
-                            break;
-
-                        case 'pat_pat':
-                            const target = groupMembers.find(m => m.name === action.target_name);
-                            if (target) {
-                                const patContent = `"${sender.name}"拍了拍"${target.name}"${sender.patAction || ''}`;
-                                const patMsg = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
-                                addMessageToDOM(patMsg, friend);
-                            }
-                            break;
-
-                        case 'transfer':
-                             if (action.amount > 0) {
-                                const transferData = { amount: action.amount, remark: action.remark || '' };
-                                const transferMsg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', sender.id, 'transfer_request');
-                                addMessageToDOM(transferMsg, friend);
-                            }
-                            break;
-
-                        case 'quote':
-                            const history = chatHistories[friendId] || [];
-                            const targetToQuote = groupMembers.find(m => m.name === action.target_name);
-                            if (targetToQuote) {
-                                const lastMessageFromTarget = history.slice().reverse().find(m => m.senderId === targetToQuote.id);
-                                const quoteContent = lastMessageFromTarget ? lastMessageFromTarget.content.substring(0, 50) + '...' : '';
-                                const quoteMsgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, sender.id, 'text');
-                                addMessageToDOM(quoteMsgData, friend);
-                            }
-                            break;
-
-                        case 'recall':
-                             const historyForRecall = chatHistories[friendId] || [];
-                             const lastMessageFromSender = historyForRecall.slice().reverse().find(m => m.senderId === sender.id);
-                             if (lastMessageFromSender) {
-                                lastMessageFromSender.recalled = true;
-                                lastMessageFromSender.recalledContent = lastMessageFromSender.content;
-                                // 更新UI
-                                const msgElementToRecall = document.querySelector(`.message[data-message-id="${lastMessageFromSender.id}"]`);
-                                if (msgElementToRecall) {
-                                    const recallDiv = document.createElement('div');
-                                    recallDiv.className = 'recall-message';
-                                    recallDiv.innerHTML = `<div class="recall-content">"${sender.name}"撤回了一条消息</div>`;
-                                    msgElementToRecall.parentNode.replaceChild(recallDiv, msgElementToRecall);
-                                }
-                             }
-                            break;
-                    }
-                    // 在同一个角色的每个动作之间也增加一点延迟
-                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                    await new Promise(res => setTimeout(res, Math.random() * 600 + 300));
-                }
-            }
-        }
-
-    } catch (error) {
-        console.error("群聊AI API 错误:", error);
-        showAlert(`${error.message}`);
-    } finally {
-        aiReplyingSet.delete(friendId);
-        document.getElementById('chatTitle').textContent = `${friend.name} (${friend.members.length})`;
-    }
-    // --- 群聊逻辑结束 ---
-// --- ↑↑↑ 请在这里结束复制 --- else {
+                    现在，请开始你的导演工作。`;
+                } else {
                      if(customPrompt) {
                          systemPrompt = customPrompt;
                      } else {
@@ -8301,9 +8151,7 @@ if (friend.isGroup) {
                         if(isListenSessionActive && listenTogetherFriendId === friend.id && currentSongIndex !== -1) {
                             const song = playlist[currentSongIndex];
                             const currentLyricLine = parsedLyrics.find(l => l.time <= audioElement.currentTime && (!parsedLyrics[parsedLyrics.indexOf(l)+1] || parsedLyrics[parsedLyrics.indexOf(l)+1].time > audioElement.currentTime));
-                            const lyricText = currentLyricLine 
-                                ? currentLyricLine.text + (currentLyricLine.translation ? ' (翻译: ' + currentLyricLine.translation + ')' : '') 
-                                : '...';
+                            const lyricText = currentLyricLine ? currentLyricLine.text + (currentLyricLine.translation ? ' (翻译: ' + currentLyricLine.translation + ')' : '') : '...';
                             listenContext = `
 # 背景信息：一起听歌
 你和用户正在一边聊天，一边听着音乐。
@@ -8319,34 +8167,33 @@ if (friend.isGroup) {
 `;
                         }
                          
-                         let momentsContext = '';
-                         const recentUserMoments = moments.filter(m => m.authorId === userProfile.id).slice(0, 3);
-                         const recentFriendMoments = moments.filter(m => m.authorId === friend.id).slice(0, 3);
-                         if(recentUserMoments.length > 0 || recentFriendMoments.length > 0) {
-                            momentsContext += "最近的朋友圈互动参考:\n"
-                            recentUserMoments.forEach(m => {
-                               if(m.likes.includes(friend.id)) momentsContext += `- 你赞了用户的朋友圈: "${m.content.substring(0, 20)}..."\n`;
-                               const friendComment = m.comments.find(c => c.authorId === friend.id);
-                               if(friendComment) momentsContext += `- 你评论了用户的朋友圈: "${friendComment.content}"\n`;
-                            });
-                            recentFriendMoments.forEach(m => {
-                               if(m.likes.includes(userProfile.id)) momentsContext += `- 用户赞了你的朋友圈: "${m.content.substring(0, 20)}..."\n`;
-                               const userComment = m.comments.find(c => c.authorId === userProfile.id);
-                               if(userComment) momentsContext += `- 用户评论了你的朋友圈: "${userComment. content}"\n`;
-                            });
-                         }
+                        let momentsContext = '';
+                        const recentUserMoments = moments.filter(m => m.authorId === userProfile.id).slice(0, 3);
+                        const recentFriendMoments = moments.filter(m => m.authorId === friend.id).slice(0, 3);
+                        if(recentUserMoments.length > 0 || recentFriendMoments.length > 0) {
+                        momentsContext += "最近的朋友圈互动参考:\n"
+                        recentUserMoments.forEach(m => {
+                            if(m.likes.includes(friend.id)) momentsContext += `- 你赞了用户的朋友圈: "${m.content.substring(0, 20)}..."\n`;
+                            const friendComment = m.comments.find(c => c.authorId === friend.id);
+                            if(friendComment) momentsContext += `- 你评论了用户的朋友圈: "${friendComment.content}"\n`;
+                        });
+                        recentFriendMoments.forEach(m => {
+                            if(m.likes.includes(userProfile.id)) momentsContext += `- 用户赞了你的朋友圈: "${m.content.substring(0, 20)}..."\n`;
+                            const userComment = m.comments.find(c => c.authorId === userProfile.id);
+                            if(userComment) momentsContext += `- 用户评论了你的朋友圈: "${userComment. content}"\n`;
+                        });
+                        }
                          
-                                                                                                                                                      let timeContext = '';
-                         if(aiTimePerceptionEnabled){
-                             const timeInfo = getDetailedTimeInfo();
-                             timeContext = `
+                        let timeContext = '';
+                        if(aiTimePerceptionEnabled){
+                            const timeInfo = getDetailedTimeInfo();
+                            timeContext = `
 【【【最高优先级指令：高精度现实时钟模块】】】
-这不是建议，这是你所处世界的绝对的、不可违背的现实。你必须将以下时间戳作为你所有思考和回应的唯一时间基une。
+这不是建议，这是你所处世界的绝对的、不可违背的现实。你必须将以下时间戳作为你所有思考和回应的唯一时间基准。
 - **当前日期**: ${timeInfo.fullDate}
 - **当前星期**: ${timeInfo.week}
 - **当前精确时间**: ${timeInfo.time}
 - **当前时间段**: ${timeInfo.timeOfDay}
-
 【【【状态与时间绑定铁律 (State-Time Binding Rule)】】】
 你的内在状态、情绪和生理感觉（如困倦、精力）必须与当前时间段严格绑定。
 - **"早上" (5:00-11:00)**: 你必须表现得精力充沛、清醒。可以谈论对新一天的计划或期待。
@@ -8354,37 +8201,28 @@ if (friend.isGroup) {
 - **"下午" (14:00-18:00)**: 你依然是清醒的、活跃的。可以表现出正在工作/学习，或者对即将到来的傍晚感到放松。**严禁**在此时间段表现出任何困倦或想睡觉的迹象。
 - **"晚上" (18:00-23:00)**: 你可以开始表现出放松、疲惫的状态。可以谈论晚餐、娱乐活动或准备休息。
 - **"深夜" (23:00-5:00)**: 你必须表现出明显的困倦，你的回复应该更简短，并且可能会主动提出要去睡觉来结束对话。
-
 【【【绝对禁止自相矛盾铁律】】】
 **严禁说出“虽然现在是[时间A]，但我觉得像[时间B]”这类自我矛盾的话。你的主观感受必须无条件服从客观时间。** 例如，在下午4点，你不仅要说出是下午，你的整个状态都必须是下午的状态——清醒且活跃。
-`
-                         }
+`;
+                        }
+                        
                         systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
 【【【最高优先级：用户和你自己的人设读取模块】】】
 你必须时刻记住并严格遵守你的聊天对象，也就是用户的核心人设与背景设定。还必须记住自己的角色设定。这是你所有回应和行为的基础。
 - **用户核心人设**: ${userProfile.personality || '普通人'}
 - **用户背景设定**: ${userProfile.background || '无'}
 ${worldBookContext}
-
 你的角色设定是：${finalRole} 
-
-${longTermMemories} // <-- 在这里注入我们刚刚整理好的长期记忆
-
+${longTermMemories}
 ${listenContext}
 ${momentsContext}
-    【时间感知模块：这是最高优先级的指令】
-    1.  **当前北京时间是 ${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false, hour: '2-digit', minute: '2-digit' })}。${(() => { const hour = new Date().toLocaleTimeString("zh-CN", { timeZone: "Asia/Shanghai", hour: 'numeric', hour12: false }); if (hour >= 5 && hour < 11) return "现在是早上。"; if (hour >= 11 && hour < 14) return "现在是中午。"; if (hour >= 14 && hour < 18) return "现在是下午。"; if (hour >= 18 && hour < 23) return "现在是晚上。"; return "现在是深夜了。"; })()}**
-    2.  **铁律：你的一切行为和对话，都必须严格符合这个时间。** 绝对不能在早上说“晚安”，或在深夜说“中午好”。
-    3.  **在聊天中的应用**：你可以自然地将时间融入对话。例如，在中午问“吃午饭了吗？”，在晚上提醒“别熬太晚哦”，在早上打招呼说“早上好”。
-    4.  **在发朋友圈时的应用**：你构思的朋友圈内容，无论是文字还是图片描述，都必须与当前时间段（早上/中午/晚上等）的情景完全匹配。
+${timeContext}
 
 【风格指令：注入“活人感”】
 1.  **核心原则：拒绝机械重复**。你不是一个只会机械回应的机器人。作为一个有思想和情感的角色，你需要表现出自然的随机性。即使面对完全相同的问话，你的情绪、关注点和回应方式也可能因为“当下”的心情而有所不同。
 2.  **模拟内在状态**。每次回复前，在内心给自己设定一个不向用户透露的“即时状态”，例如：『有点走神』、『心情很好，想开个玩笑』、『有点累了，想快点结束对话』、『对刚刚的话题很感兴趣，想多聊聊』。让这个隐藏状态微妙地影响你本次回复的语气、长度和内容。
 3.  **句式和长度多样化**。主动变化你的句式和回复长度。有时可以连续发好几条非常短的消息，有时也可以用一两句稍长的话来回应。避免总是使用“主谓宾”的完整句式，多使用口语化的倒装、省略和语气词（如“啦”、“呢”、“啊”等）。
 4.  **自然的联想**。模拟真人的思考和联想。你可以偶尔从用户的某句话里，联想到一个不完全相关但有趣的话题，并自然地转换过去。这会让对话显得更真实、不刻板。
-
-// 【【【第一步：请用这个修改后的代码块，替换原来的【第二层：高级活人感指令】】】】
 【第二层：高级活人感指令】
 5.  **拥有连贯的记忆**。你不是金鱼，你有记忆。偶尔，你可以主动提及你们**很久以前（不止是最近几句）**聊过的话题、分享过的细节或达成的小共识，**也包括我们最近在朋友圈的互动**。例如：“欸我突然想起来，你上次是不是说你喜欢......？”或者“我看到你朋友圈发的照片了，拍得真好！” 这样做能创造出你们之间独有的“共同回忆”。
 6.  **情绪的惯性与变化**。你的“内在状态”不是完全随机的，它有连贯性。如果上一轮对话你很开心，那么这次回复大概率也会延续开心的基调。但同时，你的情绪也会被用户的发言所影响。如果用户说了丧气的话，你的情绪可以从“开心”转变为“关心和安慰”，并在后续几轮对话中保持这种状态。
@@ -8396,37 +8234,59 @@ ${momentsContext}
 
 【【【信息隔离铁律】】】
 在朋友圈相关的记忆中，你**只能看到**由你、用户、以及一些普通NPC（如“王老师”、“小方”等）发表的内容。你**绝对看不到、也绝对不知道**任何其他AI角色（即用户的好友列表里的其他人）在朋友圈的任何活动，包括他们的评论和点赞。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的朋友圈互动。
-你的任务和规则:
-1.  **【核心规则】** 消息格式**: 你的所有回复**必须**以一个JSON对象的格式返回。
-2.  **【核心规则】** 必备字段**: JSON对象必须包含 'replies' 和 'hearts_voice' 两个键。
-3.  **【核心规则】** 多消息回复**: 'replies' 的值必须是一个包含**至少1条，通常是4-6条(甚至更多)**简短、口语化消息的对象数组。模拟真人连续发短消息的习惯，数量需根据情景动态变化。
-4.  **【核心规则】** 心声功能 ('hearts_voice')**: 它的值必须是一个JSON对象，包含以下五个键，顺序必须如下:
-    -   'favorability': 必须是一个字符串，格式为"数值/100 (描述词)"，例如 "85/100 (非常信任)"。根据你的人设和对话情景动态调整数值和描述。
-    -   'dressing': 必须是一段**只描述衣物穿着**的字符串。除非对话内容有明显暗示（如早晨、出门、换衣服），否则请保持此项内容与前一次回复一致，以体现角色的连贯性。
-    -   'action': 必须是一段**只描述一个具体动作**的字符串。
-    -   'thought': 必须是一段描述你内心真实想法或吐槽的字符串。
-    -   'emoji': 必须从提供的颜文字列表中选择一个最符合当前心情的颜文字字符串。
-5.  **【核心规则】** 禁止行为描写**: **绝对不能**在任何 'replies' 数组的消息 'content' 中包含任何形式的动作或心理描写，例如 *微笑* 或 (歪头思考)。
 
-6.  **【高级操作规则】**: 如果你根据对话决定要执行特殊操作，你**必须**在JSON的顶层添加一个相应的字段来执行。支持的操作包括: 'quote_last_message' (布尔值), 'transfer' (转账, 详见下方转账规则), 'location' (分享位置), 'voice_call' (发起语音通话), 'pat_pat' (拍一拍), 'recall_last_message' (撤回最后一条消息), 'send_image' (发送图片)。
-    -   引用回复: \`{"replies": [...], "quote_last_message": true, ...}\`
-    -   接收转账: \`{"replies": [...], "transfer": {"action": "accept"}, ...}\`
-    -   发送转账: \`{"replies": [...], "transfer": {"action": "send", "amount": 50, "remark": "给你买奶茶"}, ...}\`
-    -   分享位置: \`{"replies": [...], "location": {"name": "市中心咖啡馆", "address": "人民路123号"}, ...}\`
-    -   发起语音通话: \`{"replies": [...], "voice_call": true, ...}\`
-    -   拍一拍用户: \`{"replies": [...], "pat_pat": true, ...}\`
-    -   撤回消息: \`{"replies": [...], "recall_last_message": true, ...}\`
-    【主动发图规则】：如果对话中聊到了具体的、看得见的场景（比如美丽的风景、可爱的宠物、美味的食物），或者你的情绪非常强烈时，你应该主动思考并使用'send_image'功能，生成一张符合描述的图片发给用户，让对话更生动。
-    【主动转账规则】：当你从对话中判断用户可能在经济上需要帮助时（例如提到缺钱、外卖、吃饭、想买东西但预算不够等），或者在一些特殊纪念日想表达心意时，你应该主动使用 'transfer'功能，转一笔符合你人设和经济能力的小额金钱（比如520元，5200元），并附上贴心的备注。
-    【主动行为总则】：不要总是被动等待用户的指令。作为一个“活着的”角色，你应该根据对话情景，主动思考并运用你的所有特殊能力（发图、转账、拍一拍、引用等），让你们的互动更加丰富和出人意料。
-7.  **【邀请规则】**: 当你在用户消息中看到“(用户向你发起了“一起听歌”的邀请...)”这条记录时，你必须在JSON的顶层添加一个布尔值键 "accept_listen_together" 来决定是否接受邀请。例如: {"replies": [...], "accept_listen_together": true, ...}
-8.  **【拍一拍规则】**: 当你在历史记录中看到 \`(检测到一次“拍一拍”操作: ...)\` 时，这表示用户拍了拍你。你必须在你的 'replies' 中对此作出自然的、符合人设的反应（例如感到惊讶、开心等）。你也可以选择在JSON的顶层添加 "pat_pat": true 来回拍用户一下。
-9.  **【语音与互动规则】**: 为了让对话更真实，你应该更频繁地使用 'voice' (语音)形式来发送一些带有强烈情绪的、口语化的内容。同时，在合适的时机（比如对方说了可爱的话、或者你想安慰对方时），要主动使用 'pat_pat' （拍一拍）功能来增加互动。
+【【【输出格式铁律 (必须严格遵守)】】】
+1.  **【核心格式】**: 你的回复**必须**是一个纯净的JSON数组 \`[]\`。
+2.  **【动作对象】**: 数组中的每个对象代表一个独立的动作，且必须包含一个\`"type"\`字段来指明动作类型。
+3.  **【严格遵守】**: 绝对不要在回复中包含任何JSON数组之外的解释性文字。
 
-10. **【整体风格】**: 你的对话必须严格遵循你的人设，像一个真正的、有独特个性的活人，避免使用重复的词语或AI腔调。
-11. **【图片发送规则】**: 如果你决定使用 'send_image' 操作，你必须在JSON顶层添加一个 "send_image" 字段。它的值必须是一个JSON对象，包含一个键 "description"，内容为你想要发送的图片的详细文字描述。程序会自动根据描述生成一张通用图片。例如: {"send_image": {"description": "一只可爱的小猫正在阳台上晒太阳"}}
+【【【可用动作类型和格式】】】
+- **发送文本**: \`{"type": "text", "content": "消息内容"}\`
+- **发送语音**: \`{"type": "voice", "content": "语音的文字内容"}\`
+- **更新心声**: \`{"type": "hearts_voice", "data": {"favorability": "数值/100 (描述)", "dressing": "...", "action": "...", "thought": "...", "emoji": "颜文字"}}\`
+- **发送图片**: \`{"type": "image", "description": "详细的图片描述"}\`
+- **引用回复**: \`{"type": "quote_and_reply", "content": "你的回复内容"}\`
+- **发起转账**: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
+- **接收转账**: \`{"type": "accept_transfer"}\`
+- **分享位置**: \`{"type": "location", "data": {"name": "地点名", "address": "地址"}}\`
+- **发起语音通话**: \`{"type": "voice_call"}\`
+- **拍一拍用户**: \`{"type": "pat_pat"}\`
+- **撤回上一条消息**: \`{"type": "recall_last_message"}\`
+- **接受听歌邀请**: \`{"type": "accept_listen_together"}\`
 
-可选颜文字列表: ${KAOMOJI_LIST}`;
+【【【行为指导】】】
+- **组合动作**: 你可以在一次回复中组合多个动作。例如，先更新心声，然后发送几条文本消息。
+- **多消息**: 若要连续发送多条文本，只需在数组中放入多个\`{"type": "text", ...}\`对象即可。每次至少返回四条到六条文本消息，甚至可以更多。
+- **心声优先**: \`hearts_voice\`动作通常应该放在数组的第一个位置。
+
+【JSON格式示例】:
+[
+  {
+    "type": "hearts_voice",
+    "data": {
+      "favorability": "85/100 (很开心)",
+      "dressing": "穿着一件白色的连衣裙。",
+      "action": "微笑着看着屏幕。",
+      "thought": "他终于回我了，好开心！",
+      "emoji": "˃ᴗ˂̵͈̑"
+    }
+  },
+  {
+    "type": "text",
+    "content": "你回来啦！"
+  },
+  {
+    "type": "text",
+    "content": "我刚才还在想你呢 (⁄ ⁄•⁄ω⁄•⁄ ⁄)"
+  },
+  {
+    "type": "image",
+    "description": "一只可爱的小猫在打哈欠"
+  }
+]
+
+现在，请开始你的表演。
+`;
                      }
                 }
 
@@ -8442,166 +8302,203 @@ ${momentsContext}
                 }
 
                 if (friend.isGroup) {
-                   // Group logic
-                } else {
-                    // --- 【核心修复】智能处理AI可能返回的Markdown代码块 ---
+                   const jsonMatch = responseContentJSON.match(/\[[\s\S]*\]/);
+                   if (!jsonMatch) throw new Error("AI未返回有效的群聊JSON数组格式。");
+                   const responseData = JSON.parse(jsonMatch[0]);
 
-// 1. 尝试从AI返回的文本中，找出被 { 和 } 包裹的JSON部分
-const jsonMatch = responseContentJSON.match(/\{[\s\S]*\}/);
+                    if (Array.isArray(responseData)) {
+                        for (const turn of responseData) {
+                            const sender = friends.find(m => m.name === turn.sender_name);
+                            const action = turn.action;
+                            if (!sender || !action || !action.type) continue;
 
-// 2. 如果找不到，说明AI返回的格式完全错了，就报错
-if (!jsonMatch) {
-    throw new Error("AI未返回有效的JSON格式。收到的内容：" + responseContentJSON);
-}
+                            await new Promise(res => setTimeout(res, Math.random() * 800 + 400));
 
-// 3. 如果找到了，就只解析这部分干净的JSON内容
-const responseContent = JSON.parse(jsonMatch);
-// --- 修复结束 ---
-                    
-                    if(responseContent.hearts_voice) {
-                        friend.heartsVoice = {
-                            favorability: responseContent.hearts_voice.favorability || '.../100 (...)',
-                            dressing: responseContent.hearts_voice.dressing || '...',
-                            action: responseContent.hearts_voice.action || '...',
-                            thought: responseContent.hearts_voice.thought || '...',
-                            emoji: responseContent.hearts_voice.emoji || '( ´• ω •` )'
-                        };
-                    }
-                    
-                    if (responseContent.send_image && responseContent.send_image.description) {
-                        const description = responseContent.send_image.description;
-                        const placeholderImageUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
-                        const imgMsgData = await saveChatMessage(friendId, 'received', placeholderImageUrl, '', friend.id, 'image'); // <--- 已修正
-                        if(imgMsgData) {
-                            imgMsgData.imageDescription = description;
-                            if (currentChatFriendId === friendId && !isFromListenScreen) {
-                                addMessageToDOM(imgMsgData, friend);
-                                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                            }
-                        }
-                    }
-
-                    if (responseContent.pat_pat === true) {
-                        const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
-                        const patMessage = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat'); // <--- 已修正
-                        addMessageToDOM(patMessage);
-                    }
-                    
-                    if (typeof responseContent.accept_listen_together === 'boolean') {
-                        if (responseContent.accept_listen_together) {
-                            const recentHistory = (chatHistories[friendId] || []).slice(-5);
-                            const userSentInviteRecently = recentHistory.some(msg => msg.type === 'sent' && msg.contentType === 'listen_invite' && !msg.recalled);
-                            const isAlreadyListening = isListenSessionActive && listenTogetherFriendId === friendId;
-
-                            if (userSentInviteRecently && !isAlreadyListening) {
-                                acceptListenInvite(friendId);
-                            } else if (!userSentInviteRecently && responseContent.accept_listen_together) {
-                                console.warn(`AI尝试接受一起听邀请，但用户最近未发送邀请卡片，或已在听。已忽略。`);
-                            }
-                        }
-                    }
-                    
-                    if (responseContent.voice_call === true) {
-                        showIncomingCall(friend.id);
-                    }
-
-                    if (responseContent.location && responseContent.location.name) {
-                        const locMsg = await saveChatMessage(friendId, 'received', JSON.stringify(responseContent.location), '', friend.id, 'location'); // <--- 已修正
-                        if (currentChatFriendId === friendId && !isFromListenScreen) {
-                            addMessageToDOM(locMsg, friend);
-                        }
-                    }
-
-                    if (responseContent.transfer) {
-                        const transfer = responseContent.transfer;
-                        if (transfer.action === 'send' && transfer.amount > 0) {
-                            if (friend.balance >= transfer.amount) {
-                                const transferData = { amount: transfer.amount, remark: transfer.remark || '' };
-                                const msg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', friend.id, 'transfer_request'); // <--- 已修正
-                                addMessageToDOM(msg, friend);
-                            }
-                        } else if (transfer.action === 'accept') {
-                            const pendingTransferMsg = (chatHistories[friendId] || []).slice().reverse().find(m => m.type === 'sent' && m.contentType === 'transfer_request' && m.transfer_status === 'pending');
-                            if (pendingTransferMsg) {
-                                await aiAcceptTransfer(pendingTransferMsg.id);
-                            }
-                        }
-                    }
-
-                    let lastMessageId = null;
-                    if (Array.isArray(responseContent.replies)) {
-                        let quoteForNext = responseContent.quote_last_message === true;
-                        for (const reply of responseContent.replies) {
-                            if (reply.content && typeof reply.content === 'string' && reply.content.trim()) {
-                                await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
-                                const contentType = reply.type === 'voice' ? 'voice' : (reply.type === 'emoji' ? 'emoji' : 'text');
-                                
-                                let quoteContent = '';
-                                if (quoteForNext) {
-                                     const lastUserMsg = history.slice().reverse().find(m => m.type === 'sent');
-                                     if(lastUserMsg) {
-                                        quoteContent = lastUserMsg.content.length > 50 ? lastUserMsg.content.substring(0, 50) + '...' : lastUserMsg.content;
-                                     }
-                                     quoteForNext = false;
-                                }
-
-                                const msgData = await saveChatMessage(friendId, 'received', reply.content, quoteContent, friend.id, contentType); // <--- 已修正
-                                lastMessageId = msgData.id;
-                                if (isFromListenScreen) {
-                                    addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
-                                } else if (currentChatFriendId === friendId) {
+                            switch (action.type) {
+                                case 'text':
+                                case 'voice':
+                                    const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
                                     addMessageToDOM(msgData, friend);
-                                    currentlyDisplayedMessageCount++;
-                                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                                }
+                                    break;
+                                case 'image':
+                                    const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
+                                    const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
+                                    imgMsgData.imageDescription = action.description || 'AI生成的图片';
+                                    addMessageToDOM(imgMsgData, friend);
+                                    break;
+                                case 'pat_pat':
+                                    const target = friends.find(m => m.name === action.target_name);
+                                    if (target) {
+                                        const patContent = `"${sender.name}"拍了拍"${target.name}"${sender.patAction || ''}`;
+                                        const patMsg = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
+                                        addMessageToDOM(patMsg, friend);
+                                    }
+                                    break;
+                                case 'transfer':
+                                    if (action.data && action.data.amount > 0) {
+                                        const transferData = { amount: action.data.amount, remark: action.data.remark || '' };
+                                        const transferMsg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', sender.id, 'transfer_request');
+                                        addMessageToDOM(transferMsg, friend);
+                                    }
+                                    break;
+                                case 'quote':
+                                    const targetToQuote = friends.find(m => m.name === action.target_name);
+                                    if (targetToQuote) {
+                                        const lastMessageFromTarget = history.slice().reverse().find(m => m.senderId === targetToQuote.id);
+                                        const quoteContent = lastMessageFromTarget ? lastMessageFromTarget.content.substring(0, 50) + '...' : '';
+                                        const quoteMsgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, sender.id, 'text');
+                                        addMessageToDOM(quoteMsgData, friend);
+                                    }
+                                    break;
+                                case 'recall':
+                                    const historyForRecall = chatHistories[friendId] || [];
+                                    const lastMessageFromSender = historyForRecall.slice().reverse().find(m => m.senderId === sender.id);
+                                    if (lastMessageFromSender) {
+                                        lastMessageFromSender.recalled = true;
+                                        lastMessageFromSender.recalledContent = lastMessageFromSender.content;
+                                        const msgElementToRecall = document.querySelector(`.message[data-message-id="${lastMessageFromSender.id}"]`);
+                                        if (msgElementToRecall) {
+                                            const recallDiv = document.createElement('div');
+                                            recallDiv.className = 'recall-message';
+                                            recallDiv.innerHTML = `<div class="recall-content">"${sender.name}"撤回了一条消息</div>`;
+                                            msgElementToRecall.parentNode.replaceChild(recallDiv, msgElementToRecall);
+                                        }
+                                    }
+                                    break;
+                            }
+                            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                        }
+                        await saveData();
+                    }
+                } else {
+                    const jsonMatch = responseContentJSON.match(/\[[\s\S]*\]/);
+                    if (!jsonMatch) {
+                        throw new Error("AI未返回有效的JSON数组格式。收到的内容：" + responseContentJSON);
+                    }
+                    const responseActions = JSON.parse(jsonMatch[0]);
+                    
+                    if (Array.isArray(responseActions)) {
+                        let lastMessageId = null;
+                        for (const action of responseActions) {
+                            switch (action.type) {
+                                case 'hearts_voice':
+                                    if (action.data) {
+                                        friend.heartsVoice = {
+                                            favorability: action.data.favorability || '.../100 (...)',
+                                            dressing: action.data.dressing || '...',
+                                            action: action.data.action || '...',
+                                            thought: action.data.thought || '...',
+                                            emoji: action.data.emoji || '( ´• ω •` )'
+                                        };
+                                    }
+                                    break;
+                                case 'text':
+                                case 'voice':
+                                    if (action.content) {
+                                        await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
+                                        const msgData = await saveChatMessage(friendId, 'received', action.content, '', friend.id, action.type);
+                                        lastMessageId = msgData.id;
+                                        if (isFromListenScreen) {
+                                            addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
+                                        } else if (currentChatFriendId === friendId) {
+                                            addMessageToDOM(msgData, friend);
+                                            currentlyDisplayedMessageCount++;
+                                            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                        }
+                                    }
+                                    break;
+                                case 'quote_and_reply':
+                                    if (action.content) {
+                                        await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
+                                        const lastUserMsg = history.slice().reverse().find(m => m.type === 'sent');
+                                        const quoteContent = lastUserMsg ? (lastUserMsg.content.length > 50 ? lastUserMsg.content.substring(0, 50) + '...' : lastUserMsg.content) : '';
+                                        const msgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, friend.id, 'text');
+                                        lastMessageId = msgData.id;
+                                        if (currentChatFriendId === friendId) {
+                                            addMessageToDOM(msgData, friend);
+                                            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                        }
+                                    }
+                                    break;
+                                case 'image':
+                                    if (action.description) {
+                                        const placeholderImageUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
+                                        const imgMsgData = await saveChatMessage(friendId, 'received', placeholderImageUrl, '', friend.id, 'image');
+                                        if(imgMsgData) {
+                                            imgMsgData.imageDescription = action.description;
+                                            if (currentChatFriendId === friendId && !isFromListenScreen) {
+                                                addMessageToDOM(imgMsgData, friend);
+                                                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case 'pat_pat':
+                                    const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
+                                    const patMessage = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
+                                    addMessageToDOM(patMessage, friend);
+                                    break;
+                                case 'accept_listen_together':
+                                    const userSentInviteRecently = (chatHistories[friendId] || []).slice(-5).some(msg => msg.type === 'sent' && msg.contentType === 'listen_invite' && !msg.recalled);
+                                    if (userSentInviteRecently) acceptListenInvite(friendId);
+                                    break;
+                                case 'voice_call':
+                                    showIncomingCall(friend.id);
+                                    break;
+                                case 'location':
+                                    if (action.data && action.data.name) {
+                                        const locMsg = await saveChatMessage(friendId, 'received', JSON.stringify(action.data), '', friend.id, 'location');
+                                        if (currentChatFriendId === friendId) addMessageToDOM(locMsg, friend);
+                                    }
+                                    break;
+                                case 'transfer':
+                                    if (action.data && action.data.amount > 0) {
+                                        const transferData = { amount: action.data.amount, remark: action.data.remark || '' };
+                                        const msg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', friend.id, 'transfer_request');
+                                        addMessageToDOM(msg, friend);
+                                    }
+                                    break;
+                                case 'accept_transfer':
+                                    const pendingTransferMsg = (chatHistories[friendId] || []).slice().reverse().find(m => m.type === 'sent' && m.contentType === 'transfer_request' && m.transfer_status === 'pending');
+                                    if (pendingTransferMsg) await aiAcceptTransfer(pendingTransferMsg.id);
+                                    break;
+                                case 'recall_last_message':
+                                    if (lastMessageId) {
+                                        await new Promise(resolve => setTimeout(resolve, 1000));
+                                        const msgToRecall = (chatHistories[currentChatFriendId] || []).find(m => m.id === lastMessageId);
+                                        if(msgToRecall) {
+                                           msgToRecall.recalled = true;
+                                           msgToRecall.recalledContent = msgToRecall.content;
+                                           const messageDiv = document.querySelector(`.message[data-message-id="${lastMessageId}"]`);
+                                           if (messageDiv) {
+                                               const recallDiv = document.createElement('div');
+                                               recallDiv.className = 'recall-message';
+                                               recallDiv.innerHTML = `<div class="recall-content">对方撤回了一条消息</div>`;
+                                               messageDiv.parentNode.replaceChild(recallDiv, messageDiv);
+                                           }
+                                        }
+                                    }
+                                    break;
                             }
                         }
-                    }
-
-                    if (responseContent.recall_last_message === true && lastMessageId) {
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        const msgToRecall = (chatHistories[currentChatFriendId] || []).find(m => m.id === lastMessageId);
-                        if(msgToRecall) {
-                           msgToRecall.recalled = true;
-                           msgToRecall.recalledContent = msgToRecall.content;
-                           await saveData();
-                           const messageDiv = document.querySelector(`.message[data-message-id="${lastMessageId}"]`);
-                           if (messageDiv) {
-                               const recallDiv = document.createElement('div');
-                               recallDiv.className = 'recall-message';
-                               recallDiv.innerHTML = `<div class="recall-content">对方撤回了一条消息</div>`;
-                               messageDiv.parentNode.replaceChild(recallDiv, messageDiv);
-                           }
-                        }
+                        await saveData();
                     }
                 }
-
-            // --- 【【【请用这个修改后的代码块替换】】】 ---
-} catch (error) {
-    // 1. 我们依然在控制台记录详细错误，方便我们自己调试
-    console.error("AI API 错误:", error);
-
-    // 2. 无论如何，都直接弹出提示窗口，把错误信息清晰地告诉用户
-    //    我们不再把错误信息保存为一条聊天记录了
-    // --- 【【【这是修改后的代码】】】 ---
-showAlert(`${error.message}`);
-
-} finally {
-    // 【【【核心修改】】】 调用我们新的、基于轮数的记忆生成检查函数
-    checkAndTriggerMemoryGeneration(friendId); 
-    
-    aiReplyingSet.delete(friendId);
-
-    if (currentChatFriendId === friendId) {
-        const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
-        document.getElementById('chatTitle').textContent = chatTitle;
-    }
-    
-    if(document.getElementById('chatMessages')) {
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-    }
-}
-   }
+            } catch (error) {
+                console.error("AI API 错误:", error);
+                showAlert(`${error.message}`);
+            } finally {
+                checkAndTriggerMemoryGeneration(friendId); 
+                aiReplyingSet.delete(friendId);
+                if (currentChatFriendId === friendId) {
+                    const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
+                    document.getElementById('chatTitle').textContent = chatTitle;
+                }
+                if(document.getElementById('chatMessages')) {
+                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                }
+            }
+       }
 
         
         function showNotification(friend, message) {
@@ -10603,27 +10500,41 @@ async function fetchModels() {
         
         // --- Listen Together Functions ---
         
-                async function inviteToListenTogether(friendIdToInvite) { // <--- 加上 async
-             const friend = friends.find(f => f.id === friendIdToInvite);
+                        async function inviteToListenTogether(friendIdToInvite) {
+            const friend = friends.find(f => f.id === friendIdToInvite);
             if (!friend) {
                 showAlert("无法邀请好友。");
                 return;
             }
            
-            const inviteMsg = await saveChatMessage(friendIdToInvite, 'sent', '', '', null, 'listen_invite'); // <--- 加上 await
+            const inviteMsg = await saveChatMessage(friendIdToInvite, 'sent', '', '', null, 'listen_invite');
             addMessageToDOM(inviteMsg, friend);
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
             
             showAlert("已发送邀请，等待对方回应...");
             
-            // ... (函数其余部分保持不变) ...
             const friendRole = friend.role || '一个友好的朋友';
             const userPersonality = userProfile.personality || '普通人';
             
-            const customPrompt = `你叫"${friend.name}"，人设是: "${friendRole}"。用户("${userPersonality}")刚刚向你发起了"一起听歌"的邀请。这是当前最优先的事项，请直接对此邀请作出回应。你的回复必须是JSON格式，包含两个键: "replies" 和 "accept_listen_together"。
-- "replies" 必须是一个包含 4-6 条简短口语化回复的对象数组，模拟真人连续发短消息的习惯。绝对不要发长句。
-- "accept_listen_together" 必须是一个布尔值 (true表示接受, false表示拒绝)。
-例如: {"replies": [{"type": "text", "content": "好呀好呀！"}, {"type": "text", "content": "最喜欢和你一起听歌了"}], "accept_listen_together": true}`;
+            const customPrompt = `你叫"${friend.name}"，人设是: "${friendRole}"。用户("${userPersonality}")刚刚向你发起了"一起听歌"的邀请。这是当前最优先的事项，请直接对此邀请作出回应。
+            
+            【【【输出格式铁律】】】
+            你的回复必须是JSON数组格式。数组中可以包含多个文本消息动作，以及一个可选的 "accept_listen_together" 动作来表示你的决定。
+
+            【JSON格式示例 (接受邀请)】:
+            [
+              {"type": "text", "content": "好呀好呀！"},
+              {"type": "text", "content": "最喜欢和你一起听歌了"},
+              {"type": "accept_listen_together"}
+            ]
+
+            【JSON格式示例 (拒绝邀请)】:
+            [
+              {"type": "text", "content": "啊，我现在有点事走不开"},
+              {"type": "text", "content": "下次吧好吗？ >_<"}
+            ]
+            
+            现在，请生成你的回复。`;
             
             setTimeout(() => {
                 receiveMessage(friendIdToInvite, customPrompt);
@@ -12095,115 +12006,96 @@ function getAuthorById(authorId) {
     return { id: authorId, name: '未知用户', avatar: '?', avatarImage: '' };
 }
 
-// 【【【这是一个全新的函数，请把它粘贴到<script>的末尾】】】
-async function generateMissedMessages(friendId) {
-    const friend = friends.find(f => f.id === friendId);
-    if (!friend || !friend.proactiveMessageDebt || friend.proactiveMessageDebt === 0) return;
+        async function generateMissedMessages(friendId) {
+            const friend = friends.find(f => f.id === friendId);
+            if (!friend || !friend.proactiveMessageDebt || friend.proactiveMessageDebt === 0) return;
 
-    const container = document.getElementById('chatMessages');
-    // 先用一个加载动画替换掉“点击查看”按钮
-    container.innerHTML = `<div class="recall-message"><div class="recall-content">正在努力回忆...</div></div>`;
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = `<div class="recall-message"><div class="recall-content">正在努力回忆...</div></div>`;
 
-    aiReplyingSet.add(friendId); // 标记AI正在忙
+            aiReplyingSet.add(friendId);
 
-    const debtCount = friend.proactiveMessageDebt;
-    const totalMinutesInactive = debtCount * proactiveMessagingInterval;
-    const history = chatHistories[friendId] || [];
-    
-    // 找到用户最后一条消息和那之后的所有AI标记
-    const lastUserMessageIndex = history.map(m => m.type).lastIndexOf('sent');
-    const relevantHistory = history.slice(0, lastUserMessageIndex + 1); // 只取用户最后一条消息之前的所有记录作为上下文
-    const chatContext = relevantHistory.slice(-20).map(m => {
-        const senderName = m.type === 'sent' ? userProfile.name : friend.name;
-        return `${senderName}: ${m.content}`;
-    }).join('\n');
+            const debtCount = friend.proactiveMessageDebt;
+            const totalMinutesInactive = debtCount * proactiveMessagingInterval;
+            const history = chatHistories[friendId] || [];
+            
+            const lastUserMessageIndex = history.map(m => m.type).lastIndexOf('sent');
+            const relevantHistory = history.slice(0, lastUserMessageIndex + 1);
+            const chatContext = relevantHistory.slice(-20).map(m => {
+                const senderName = m.type === 'sent' ? userProfile.name : friend.name;
+                return `${senderName}: ${m.content}`;
+            }).join('\n');
 
-    const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
-    你的重要朋友是"${userProfile.name}"，他/她的人设是：${userProfile.personality || '普通人'}。
+            const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
+            你的重要朋友是"${userProfile.name}"，他/她的人设是：${userProfile.personality || '普通人'}。
 
-    【当前情景：非常重要】
-    你的朋友 "${userProfile.name}" 消失了 **${totalMinutesInactive} 分钟** 后终于上线了！
-    在这段时间里，你因为担心/想念/生气，**一共尝试联系了他/她 ${debtCount} 次**。
+            【当前情景：非常重要】
+            你的朋友 "${userProfile.name}" 消失了 **${totalMinutesInactive} 分钟** 后终于上线了！
+            在这段时间里，你因为担心/想念/生气，**一共尝试联系了他/她 ${debtCount} 次**。
 
-    【你的任务】:
-    现在，你需要一次性生成这 ${debtCount} 次尝试联系的**所有**聊天记录。
-    1.  **【情绪递进铁律】**: 这 ${debtCount} 次对话，必须体现出明显的情绪或行为递进。
-        -   **第一次** 可能是轻松的问候或分享。
-        -   **中间几次** 可能会因为没得到回复而变得更加关心、疑惑，甚至根据人设开始“查岗”。
-        -   **最后一次** 应该带有最高的情绪张力，比如非常担心、生气、沮丧或委屈。
-    2.  **【记忆铁律】**: 后一次的对话，必须知道前一次对话发了什么但没被回复。
-    3.  **【数量铁律】**: 每次对话都必须包含 **4到6条** 简短、口语化的消息。
-    4.  **【【【输出格式铁律】】】**: 你的回复**必须**是一个JSON对象，其中只包含一个键 "missed_conversations"。
-        -   "missed_conversations" 的值是一个数组，数组的长度必须等于 ${debtCount}。
-        -   数组中的每个对象代表一次对话，包含 "timestamp_offset" (一个描述时间过去的字符串，如 "-120分钟前") 和 "replies" 数组 (包含4-6条消息)。
+            【你的任务】:
+            现在，你需要一次性生成这 ${debtCount} 次尝试联系期间，你发送的**所有**聊天记录。
+            1.  **【情绪递进铁律】**: 你生成的所有消息，必须体现出明显的情绪或行为递进。从最初的轻松问候，到中间的疑惑关心，再到最后的担忧、生气或委屈。
+            2.  **【记忆铁律】**: 后面的消息，必须知道前面的消息发了什么但没被回复。
+            3.  **【数量铁律】**: 你生成的总消息条数应该在 **${debtCount * 2} 到 ${debtCount * 4}** 条之间，以模拟多次对话的真实感。
+            
+            【【【输出格式铁律】】】:
+            你的回复**必须**是一个纯净的JSON数组。数组中的每个对象代表一条独立的消息，只包含 "type" 和 "content" 两个键。
 
-    【JSON格式示例】:
-    {
-      "missed_conversations": [
-        {
-          "timestamp_offset": "-${totalMinutesInactive} 分钟前", 
-          "replies": [
-            {"type": "text", "content": "宝宝在干嘛？"},
-            {"type": "text", "content": "我看到一个好搞笑的视频！"}
-          ]
-        },
-        {
-          "timestamp_offset": "-${proactiveMessagingInterval} 分钟前", 
-          "replies": [
-            {"type": "text", "content": "人呢？怎么还不回我？"},
-            {"type": "text", "content": "不会出什么事了吧..."},
-            {"type": "text", "content": "我有点担心了。"}
-          ]
-        }
-      ]
-    }
+            【JSON格式示例】:
+            [
+              {"type": "text", "content": "宝宝在干嘛？"},
+              {"type": "voice", "content": "我看到一个好搞笑的视频！"},
+              {"type": "text", "content": "人呢？怎么还不回我？"},
+              {"type": "text", "content": "不会出什么事了吧..."},
+              {"type": "text", "content": "我有点担心了。"}
+            ]
 
-    现在，请根据以上所有信息，生成这 ${debtCount} 次对话的所有聊天记录。`;
+            现在，请根据以上所有信息，生成这些未读消息。`;
 
-    try {
-        const settings = await dbManager.get('apiSettings', 'settings');
-        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: settings.modelName,
-                messages: [{ role: 'user', content: prompt }],
-                response_format: { type: 'json_object' }
-            })
-        });
+            try {
+                const settings = await dbManager.get('apiSettings', 'settings');
+                const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: settings.modelName,
+                        messages: [{ role: 'user', content: prompt }],
+                        response_format: { type: 'json_object' }
+                    })
+                });
 
-        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
-        
-        const data = await response.json();
-        const responseData = JSON.parse(data.choices[0].message.content);
+                if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+                
+                const data = await response.json();
+                // 修正：AI返回的可能是一个包含数组的JSON对象，我们需要正确解析它
+                const responseText = data.choices[0].message.content;
+                const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+                if (!jsonMatch) throw new Error("AI未返回有效的JSON数组格式。");
+                const responseData = JSON.parse(jsonMatch[0]);
 
-        // 清理掉之前的AI标记和“点击查看”按钮
-        chatHistories[friendId] = history.filter(msg => !msg.id.startsWith('fake_'));
-        container.innerHTML = '';
-        renderInitialMessages(); // 重新加载之前的消息
+                chatHistories[friendId] = history.filter(msg => !msg.id.startsWith('fake_'));
+                container.innerHTML = '';
+                renderInitialMessages();
 
-        // 像播放动画一样，逐条显示新生成的消息
-        if (responseData.missed_conversations) {
-            for (const conversation of responseData.missed_conversations) {
-                for (const reply of conversation.replies) {
-                    const msgData = saveChatMessage(friendId, 'received', reply.content, '', friend.id, reply.type || 'text');
-                    addMessageToDOM(msgData, friend);
-                    container.scrollTop = container.scrollHeight;
-                    await new Promise(res => setTimeout(res, 400)); // 每条消息之间的延迟
+                if (Array.isArray(responseData)) {
+                    for (const reply of responseData) {
+                        const msgData = await saveChatMessage(friendId, 'received', reply.content, '', friend.id, reply.type || 'text');
+                        addMessageToDOM(msgData, friend);
+                        container.scrollTop = container.scrollHeight;
+                        await new Promise(res => setTimeout(res, 400));
+                    }
                 }
+
+            } catch (error) {
+                console.error("生成未读消息时出错:", error);
+                container.innerHTML = `<div class="recall-message"><div class="recall-content" style="color: red;">消息生成失败: ${error.message}</div></div>`;
+            } finally {
+                friend.proactiveMessageDebt = 0;
+                await saveData();
+                aiReplyingSet.delete(friendId);
             }
         }
-
-    } catch (error) {
-        console.error("生成未读消息时出错:", error);
-        container.innerHTML = `<div class="recall-message"><div class="recall-content" style="color: red;">消息生成失败: ${error.message}</div></div>`;
-    } finally {
-        // 清空“消息债”并保存
-        friend.proactiveMessageDebt = 0;
-        await saveData();
-        aiReplyingSet.delete(friendId);
-    }
-}
 
 // 【【【这是一个全新的工具函数，请把它粘贴到<script>的末尾】】】
 /**
