@@ -11373,10 +11373,12 @@ async function generateSimAppContent(characterId, appName, retryCount = 0) {
 const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
 
     // 我们依然获取所有朋友圈，因为这是角色的“公开生活”，是重要的参考。
-    const fullMomentsHistory = moments.map(m => {
-        const author = getAuthorById(m.authorId);
-        return `[${author.name} 在 ${m.timestamp.slice(0,5)} 发布的朋友圈]: ${m.content}`;
-    }).join('\n');
+    // 这是【修改后】的代码
+// 我们只取最近的5条朋友圈作为参考，大大减少了信息量
+const recentMoments = moments.slice(0, 5).map(m => {
+    const author = getAuthorById(m.authorId);
+    return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
+}).join('\n');
 
     const currentDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -11395,9 +11397,10 @@ const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m =>
     ${recentChatHistory || '无聊天记录。'}
     --- 聊天记录结束 ---
 
-    --- 朋友圈记录开始 ---
-    ${fullMomentsHistory || '无朋友圈记录。'}
-    --- 朋友圈记录结束 ---
+    // 这是【修改后】的指令部分
+--- 朋友圈记录开始 ---
+${recentMoments || '无朋友圈记录。'}
+--- 朋友圈记录结束 ---
 
 【【【信息隔离铁律】】】
 在你的记忆里，朋友圈中只存在你、你重要的人"${userProfile.name}"，以及一些你们共同认识的普通人（NPC）。你**绝对看不到、也绝对不知道**任何其他AI角色（即"${userProfile.name}"的好友列表里的其他人）的朋友圈活动。因此，在你生成的所有手机内容中，**严禁凭空捏造或提及**任何其他AI角色的互动
