@@ -4526,6 +4526,180 @@ html {
     font-size: 14px;
 }
 
+/* ↓↓↓ 第2步：从这里开始复制 ↓↓↓ */
+
+/* 红包卡片在聊天界面的样式 */
+.message-content.has-red-envelope {
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    max-width: 250px; 
+}
+
+/* ↓↓↓ 第1步：用这个替换你原来的 .red-envelope-card 样式 ↓↓↓ */
+.red-envelope-card {
+    width: 200px; /* --- 核心修改：宽度从240px改为200px，与转账卡片一致 --- */
+    background-color: #F9953F;
+    color: white;
+    border-radius: 10px;
+    overflow-hidden;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.red-envelope-card:hover {
+    filter: brightness(0.95);
+}
+.red-envelope-card.opened {
+    background-color: #FDEFE1;
+    color: #D3A27F;
+}
+.red-envelope-card-body {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.red-envelope-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+.red-envelope-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+.red-envelope-remark {
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.red-envelope-status-text {
+    font-size: 13px;
+    opacity: 0.9;
+}
+.red-envelope-card.opened .red-envelope-status-text {
+    color: #D3A27F;
+}
+.red-envelope-footer {
+    font-size: 10px;
+    background-color: #FFFFFF;
+    color: #B2B2B2;
+    padding: 4px 15px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+/* 红包系统提示消息的样式 */
+.system-message-tip {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 12px;
+    color: #999;
+}
+
+/* 红包领取详情列表的样式 */
+.claim-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: white;
+    border-bottom: 1px solid #f0f0f0;
+}
+.claim-list-item:last-child {
+    border-bottom: none;
+}
+.claim-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    margin-right: 12px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background-color: #eee;
+}
+.claim-info {
+    flex-grow: 1;
+}
+.claim-name {
+    font-size: 16px;
+    color: #333;
+}
+.claim-time {
+    font-size: 12px;
+    color: #aaa;
+}
+.claim-amount {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+.claim-best-luck {
+    background-color: #FFC107;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+/* ↑↑↑ 第2步：在这里结束复制 ↑↑↑ */
+
+/* --- 新增：优化红包详情列表中“手气最佳”的显示 --- */
+.claim-list-item .claim-name {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 名字和“手气最佳”标签之间的间距 */
+}
+
+#redEnvelopeOpenCard {
+    /* 这就是红包卡片本身 */
+    width: 280px; /* 红包宽度 */
+    height: 380px; /* 红包高度 */
+    background-color: #D85847; /* 微信红包的经典红色 */
+    border-radius: 12px; /* 让卡片有圆角，更好看 */
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2); /* 添加一点立体阴影 */
+    position: relative; /* 使得内部的按钮可以相对于它定位 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* 隐藏超出边界的装饰 */
+}
+
+#redEnvelopeOpenCard::before {
+    /* 用伪元素给红包顶部加一个好看的金色装饰 */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom, rgba(255, 220, 150, 0.4), transparent);
+}
+
+#openRedEnvelopeButton {
+    /* 这才是那个“开”字按钮 */
+    width: 90px;
+    height: 90px;
+    background-color: #FAD04E; /* 经典的金色 */
+    border-radius: 50%;
+    color: #A36B28; /* 暗金色字体 */
+    font-size: 48px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 更有弹性的动画效果 */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1; /* 确保按钮在金色装饰之上 */
+}
+
     </style>
 </head>
 <body>
@@ -5541,6 +5715,60 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             </div>
         </div>
     </div>
+    
+    <!-- ↓↓↓ 第1步：从这里开始复制 ↓↓↓ -->
+
+    <!-- 新增：发红包的弹窗 -->
+    <div id="redEnvelopeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">发红包</div>
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <label style="width: 80px;">总金额</label>
+                <input type="number" class="modal-input" id="redEnvelopeAmount" placeholder="0.00" style="margin-bottom: 0;">
+                <span style="margin-left: 10px;">元</span>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <label style="width: 80px;">红包个数</label>
+                <input type="number" class="modal-input" id="redEnvelopeCount" placeholder="填写个数" style="margin-bottom: 0;">
+                <span style="margin-left: 10px;">个</span>
+            </div>
+             <input type="text" class="modal-input" id="redEnvelopeRemark" placeholder="恭喜发财，大吉大利">
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeRedEnvelopeModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" style="background-color: #E64340;" onclick="sendGroupRedEnvelope()">塞钱进红包</button>
+            </div>
+        </div>
+    </div>
+    
+       <!-- 新增：开红包的动画弹窗 -->
+    <div id="openRedEnvelopeModal" class="modal">
+        <div id="redEnvelopeOpenCard"> 
+            <div id="openRedEnvelopeButton"> <!-- 看，我们把“Red”加回来了！ -->
+                开
+            </div>
+        </div>
+    </div>
+
+<!-- ↑↑↑ 第2步：在这里结束复制 ↑↑↑ -->
+
+    <!-- 新增：查看红包详情的弹窗 -->
+    <div id="redEnvelopeDetailsModal" class="modal">
+        <div class="modal-content" style="background-color: #F7F7F7; padding: 0;">
+            <div style="background-color: #E64340; color: white; padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
+                <div id="redEnvelopeDetailsRemark" style="font-size: 20px; margin-bottom: 5px;"></div>
+                <div id="redEnvelopeDetailsFrom"></div>
+            </div>
+            <div id="redEnvelopeDetailsStatus" style="padding: 10px 15px; font-size: 14px; color: #888; border-bottom: 1px solid #eee;"></div>
+            <div id="redEnvelopeClaimList" style="max-height: 50vh; overflow-y: auto;">
+                <!-- 领取记录将在这里动态生成 -->
+            </div>
+             <div class="modal-buttons" style="padding: 15px;">
+                <button class="modal-btn modal-btn-confirm" onclick="closeRedEnvelopeDetailsModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+<!-- ↑↑↑ 第1步：在这里结束复制 ↑↑↑ -->
     
     <!-- [MODIFIED] Heart's Voice Modal -->
     <div id="heartsVoiceModal" class="modal">
@@ -7296,12 +7524,10 @@ const newGroup = {
         }
 
 
-        // 【【【这是修正后的完整函数，请用它替换】】】
+        // ↓↓↓ 3.1 修改 openChat 函数 ↓↓↓
 function openChat(friendId) {
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
-
-   
 
     currentChatFriendId = friend.id;
     setActivePage('chatScreen');
@@ -7309,13 +7535,38 @@ function openChat(friendId) {
     document.getElementById('chatTitle').textContent = chatTitle;
     document.getElementById('heartsVoiceBtn').style.display = friend.isGroup ? 'none' : 'flex';
     
-    // 核心修改：我们不再清空界面，而是先加载所有历史消息
+    // --- 核心修改在这里 ---
+    const functionMenu = document.getElementById('chatFunctions').querySelector('.function-menu');
+    const listenTogetherButton = functionMenu.querySelector('.function-item[onclick="openListenTogether()"]');
+    let redEnvelopeButton = functionMenu.querySelector('.function-item[onclick="openRedEnvelopeModal()"]');
+
+    if (friend.isGroup) {
+        // 如果是群聊
+        if (listenTogetherButton) listenTogetherButton.style.display = 'none'; // 隐藏“一起听”
+        if (!redEnvelopeButton) {
+            // 如果红包按钮不存在，就创建一个
+            redEnvelopeButton = document.createElement('div');
+            redEnvelopeButton.className = 'function-item';
+            redEnvelopeButton.setAttribute('onclick', 'openRedEnvelopeModal()');
+            redEnvelopeButton.innerHTML = `<div class="function-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm-1 14H5c-.55 0-1-.45-1-1V7c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1zm-8-2h2v-4h4v-2h-4V8h-2v4H7v2h4v4z"/></svg></div><div class="function-label">红包</div>`;
+            // 找到“位置”按钮并把它插在前面
+            const locationButton = functionMenu.querySelector('.function-item[onclick="openLocationModal()"]');
+            if (locationButton) {
+                functionMenu.insertBefore(redEnvelopeButton, locationButton);
+            } else {
+                functionMenu.appendChild(redEnvelopeButton);
+            }
+        }
+        redEnvelopeButton.style.display = 'flex'; // 显示红包按钮
+    } else {
+        // 如果是私聊
+        if (listenTogetherButton) listenTogetherButton.style.display = 'flex'; // 显示“一起听”
+        if (redEnvelopeButton) redEnvelopeButton.style.display = 'none'; // 隐藏红包按钮
+    }
+    // --- 核心修改结束 ---
+
     renderInitialMessages();
     document.getElementById('chatMessages').onscroll = handleChatScroll;
-
-   
-
-   
 }
         
         function getAvatarHtml(sender) {
@@ -7359,65 +7610,83 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
         }
 
         function addMessageToDOM(msg, friendOrGroup, containerId = 'chatMessages') {
-            if (!msg || !msg.id) {
-                console.error("addMessageToDOM called with invalid msgData:", msg);
-                return; 
-            }
-
-            const container = document.getElementById(containerId);
-            if (!container) return;
-
-            if (msg.contentType === 'pat_pat') {
-                return addPatPatMessageToDOM(msg);
-            }
-
-            // ...在 addMessageToDOM 函数里...
-
-if (msg.recalled) {
-    const recallDiv = document.createElement('div');
-    recallDiv.className = 'recall-message';
-
-    let recallHTML;
-    if (msg.type === 'sent') {
-        // 你自己撤回的消息，不可点击
-        recallHTML = `<div class="recall-content">你撤回了一条消息</div>`;
-    } else {
-        // 对方（AI）撤回的消息，可以点击，但没有视觉提示
-        recallHTML = `<div class="recall-content" onclick="showRecalledMessage('${msg.id}')">
-                        对方撤回了一条消息
-                      </div>`; // <--- 关键修改：删除了后面的 (点击查看) 文字
+    if (!msg || !msg.id) {
+        console.error("addMessageToDOM called with invalid msgData:", msg);
+        return null; 
     }
 
-    recallDiv.innerHTML = recallHTML;
-    container.appendChild(recallDiv);
-    return;
-}
+    const container = document.getElementById(containerId);
+    if (!container) return null;
 
-// ...函数其余部分...
+    // ↓↓↓ 【【【 你问的代码在这里！ 】】】 ↓↓↓
+    // 它的作用就是处理 "XXX领取了你的红包" 这种系统消息
+    if (msg.contentType === 'system_tip') {
+        const tipDiv = document.createElement('div');
+        tipDiv.className = 'system-message-tip';
+        tipDiv.textContent = msg.content;
+        container.appendChild(tipDiv);
+        container.scrollTop = container.scrollHeight;
+        return tipDiv; // 处理完直接返回，不执行下面的代码
+    }
+    // ↑↑↑ 【【【 它在这里！ 】】】 ↑↑↑
 
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${msg.type}`;
-            msgDiv.setAttribute('data-message-id', msg.id);
-            
-            let sender = null;
-            if (msg.type === 'sent') {
-                sender = userProfile;
-            } else if (friendOrGroup.isGroup) {
-                sender = friends.find(f => f.id === msg.senderId);
-            } else {
-                sender = friendOrGroup;
-            }
+    if (msg.contentType === 'pat_pat') {
+        return addPatPatMessageToDOM(msg);
+    }
 
-            if (!sender) sender = { name: '未知', avatar: '?' };
+    if (msg.recalled) {
+        const recallDiv = document.createElement('div');
+        recallDiv.className = 'recall-message';
+        let recallHTML = (msg.type === 'sent')
+            ? `<div class="recall-content">你撤回了一条消息</div>`
+            : `<div class="recall-content" onclick="showRecalledMessage('${msg.id}')">对方撤回了一条消息</div>`;
+        recallDiv.innerHTML = recallHTML;
+        container.appendChild(recallDiv);
+        return recallDiv;
+    }
 
-            let contentHTML;
-            const hasImage = msg.contentType === 'image';
-            const hasEmoji = msg.contentType === 'emoji';
-            const hasVoice = msg.contentType === 'voice';
-            const hasLocation = msg.contentType === 'location';
-            const hasVoiceCallEnd = msg.contentType === 'voice_call';
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${msg.type}`;
+    msgDiv.setAttribute('data-message-id', msg.id);
+    
+    let sender = null;
+    if (msg.type === 'sent') {
+        sender = userProfile;
+    } else if (friendOrGroup && friendOrGroup.isGroup) {
+        sender = friends.find(f => f.id === msg.senderId);
+    } else {
+        sender = friendOrGroup;
+    }
 
-            if (hasVoice) {
+    if (!sender) sender = { name: '未知', avatar: '?' };
+
+    let contentHTML;
+    
+    const hasImage = msg.contentType === 'image';
+    const hasGroupRedEnvelope = msg.contentType === 'group_red_envelope';
+    const hasEmoji = msg.contentType === 'emoji';
+    const hasVoice = msg.contentType === 'voice';
+    const hasLocation = msg.contentType === 'location';
+    const hasVoiceCallEnd = msg.contentType === 'voice_call';
+
+    // ↓↓↓ 3.3 修改 addMessageToDOM 中的红包卡片逻辑 ↓↓↓
+    if (hasGroupRedEnvelope) {
+        const data = JSON.parse(msg.content);
+        const isOpened = data.claimedBy.length >= data.totalCount;
+        // --- 核心修改：onclick事件从 openRedEnvelopeDetails 改为 handleRedEnvelopeClick ---
+        contentHTML = `
+        <div class="red-envelope-card ${isOpened ? 'opened' : ''}" onclick="handleRedEnvelopeClick('${msg.id}')">
+            <div class="red-envelope-card-body">
+                <svg class="red-envelope-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M864 128H160c-17.673 0-32 14.327-32 32v696c0 17.673 14.327 32 32 32h704c17.673 0 32-14.327 32-32V160c0-17.673-14.327-32-32-32z m-32 728H192V192h640v664z" fill="#FFFFFF" /><path d="M512 448c-35.346 0-64 28.654-64 64s28.654 64 64 64 64-28.654 64-64-28.654-64-64-64z m0 96c-17.673 0-32-14.327-32-32s14.327-32 32-32 32 14.327 32 32-14.327 32-32 32z" fill="#FFFFFF" /><path d="M512 640C333.172 640 224 531.42 224 512c0-19.42 12.58-32 32-32s32 12.58 32 32c0 8.58 87.172 80 224 80s224-71.42 224-80c0-19.42 12.58-32 32-32s32 12.58 32 32c0 19.42-110.051 128-224 128z" fill="#FFFFFF" /></svg>
+                <div class="red-envelope-info">
+                    <div class="red-envelope-remark">${data.remark}</div>
+                    <div class="red-envelope-status-text">${isOpened ? '红包已被领完' : '领取红包'}</div>
+                </div>
+            </div>
+            <div class="red-envelope-footer">微信红包</div>
+        </div>
+        `;
+    }  else if (hasVoice) {
                 const textLength = msg.content.length;
                 const duration = Math.max(1, Math.min(60, Math.round(textLength / 4)));
                 const barWidth = Math.max(80, Math.min(220, 80 + textLength * 2.5));
@@ -7543,7 +7812,9 @@ if (msg.recalled) {
                 }
             }
 
-            const contentClass = `message-content ${hasImage ? 'has-image' : ''} ${hasEmoji ? 'has-emoji' : ''} ${hasVoice ? 'has-voice' : ''} ${(msg.contentType.startsWith('listen_') || msg.contentType.startsWith('transfer_') || hasLocation) ? 'has-image' : ''} ${hasVoiceCallEnd ? 'has-voice-call-end' : ''}`;
+            // ↓↓↓ 3.3 替换 addMessageToDOM 函数里的这一行 ↓↓↓
+const contentClass = `message-content ${hasImage ? 'has-image' : ''} ${hasEmoji ? 'has-emoji' : ''} ${hasVoice ? 'has-voice' : ''} ${hasGroupRedEnvelope ? 'has-red-envelope' : ''} ${(msg.contentType.startsWith('listen_') || msg.contentType.startsWith('transfer_') || hasLocation) ? 'has-image' : ''} ${hasVoiceCallEnd ? 'has-voice-call-end' : ''}`;
+// ↑↑↑ 3.3 替换结束 ↑↑↑
             const senderNameHtml = (friendOrGroup.isGroup && msg.type === 'received') ? `<div class="message-sender-name">${sender.name}</div>` : '';
             
             if (containerId === 'listenTogetherChatOverlay') {
@@ -7750,6 +8021,7 @@ async function saveChatMessage(friendId, type, content, quoted = '', senderId = 
         
         let lastMessageText;
         switch(contentType) {
+        case 'group_red_envelope': lastMessageText = '[红包]'; break;
             case 'image': lastMessageText = '[图片]'; break;
             case 'emoji': lastMessageText = '[表情]'; break;
             case 'voice': lastMessageText = '[语音]'; break;
@@ -7973,6 +8245,28 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
         
                                         async function receiveMessage(friendId, customPrompt = null, isFromListenScreen = false) {
             const friend = friends.find(f => f.id === friendId);
+                                    if (friend.isGroup) {
+                const history = (chatHistories[friendId] || []).slice().reverse();
+                const lastRedEnvelopeMsg = history.find(m => m.contentType === 'group_red_envelope');
+
+                if (lastRedEnvelopeMsg) {
+                    const redEnvelopeData = JSON.parse(lastRedEnvelopeMsg.content);
+                    
+                    // 【核心修正】在这里，我们使用 friend.members 而不是不存在的 group.members
+                    const claimedAiIds = new Set(redEnvelopeData.claimedBy.map(c => c.userId));
+                    const hasUnclaimedAis = friend.members.some(id => id !== userProfile.id && !claimedAiIds.has(id));
+                    const hasPacketsLeft = redEnvelopeData.remainingPackets && redEnvelopeData.remainingPackets.length > 0;
+
+                    // 只有在“还有AI没领”并且“红包里还有钱”的情况下，才执行领取操作
+                    if (hasUnclaimedAis && hasPacketsLeft) {
+                        console.log("检测到AI可领取的群红包，将触发AI领取流程。");
+                        triggerAiRedEnvelopeClaim(lastRedEnvelopeMsg.id);
+                        // 领取流程会自动调用AI进行后续聊天，所以这里必须结束，防止重复回应
+                        return; 
+                    }
+                }
+            }
+            // --- 新增逻辑结束 ---
             if (!friend) return;
             
             aiReplyingSet.add(friendId);
@@ -8020,8 +8314,10 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
                 let systemPrompt;
                 let responseFormat = { type: "json_object" };
                 const memoryTurns = parseInt(settings.memoryTurns, 10) || 10;
-                const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
-                const history = (chatHistories[friendId] || []).slice(-memoryTurns);
+                // ...
+const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
+const history = (chatHistories[friendId] || []).slice(-15); // <-- 修改后的代码！
+// ...
                 
                 let longTermMemories = (characterMemories[friendId] || [])
                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
@@ -8038,12 +8334,23 @@ ${longTermMemories}
                     longTermMemories = "【【【你的长期记忆】】】\n你和用户之间还没有共同的记忆。";
                 }
 
-                 history.forEach(msg => {
+                 // ↓↓↓ 3.6 替换 receiveMessage 函数内的 forEach 循环 ↓↓↓
+                history.forEach(msg => {
                      if (msg.recalled) return;
                     const role = msg.type === 'sent' ? 'user' : 'assistant';
                     let content;
-                    if(msg.quoted) content = `(回复引用: "${msg.quoted}") ${msg.content}`;
-                    else if (msg.contentType === 'image') {
+                    // --- 核心修改：在这里告诉AI红包事件 ---
+                    if (msg.contentType === 'group_red_envelope') {
+                        const redEnvelope = JSON.parse(msg.content);
+                        const senderName = msg.type === 'sent' ? userProfile.name : friend.name;
+                        content = `(${senderName} 发了一个群红包，备注是: "${redEnvelope.remark}")`;
+                    } else if (msg.contentType === 'system_tip' && msg.content.includes('领取了')) {
+                        content = `(系统提示: ${msg.content})`;
+                    // --- 修改结束 ---
+                    } else if(msg.quoted) {
+                        content = `(回复引用: "${msg.quoted}") ${msg.content}`;
+                    } else if (msg.contentType === 'image') {
+                        // ... (image, emoji 等其他逻辑保持不变)
                         if (msg.imageDescription) {
                             content = `(用户通过[拍摄]功能发送了一张图片，图片的文字描述是: "${msg.imageDescription}")`;
                         } else {
@@ -8085,67 +8392,66 @@ ${longTermMemories}
                     }).join('\n');
                     const recentMoments = moments.filter(m => m.authorId === userProfile.id).slice(0, 5).map(m => `- "${m.content}"`).join('\n');
                     
-                    systemPrompt = `
-                    【你的身份】: 你是一个强大的群聊AI，你的任务是扮演并控制【除了用户'${userProfile.name}'之外的所有AI角色】。你是这个群聊的“导演”。
-                    【【【最高优先级背景资料读取模块】】】
-                    在决定角色如何行动前，你必须仔细阅读并理解以下所有背景信息。
-                    --- 世界书设定 (整个世界的宏观背景) ---
-                    ${worldBookContext || "（暂无世界书设定）"}
-                    --- 核心人物（用户）信息 ---
-                    - 用户昵称: "${userProfile.name}"
-                    - 用户人设: ${userProfile.personality || "（用户未设置人设）"}
-                    --- 用户最近的朋友圈动态 ---
-                    ${recentMoments || "（用户最近没有发朋友圈）"}
-                    【当前群聊】: "${friend.name}"
-                    【群成员信息（你的演员表）】:
-                    ${memberInfoForAI}
-                    【最近的聊天记录（你的剧本）】:
-                    ${chatContextForAI || '（暂无聊天记录）'}
-                    【你的核心任务】:
-                    根据以上所有背景资料、聊天记录和每个成员的人设，自然地延续对话。你需要决定接下来【每一个AI角色】应该说什么、以及做什么特殊操作。
+                    // ↓↓↓ 3.5 替换 receiveMessage 函数里的群聊 systemPrompt ↓↓↓
 
-                    【【【输出格式铁律 (必须严格遵守)】】】
-                    1.  **【核心格式】**: 你的回复**必须**是一个纯净的JSON数组 \`[]\`。
-                    2.  **【动作对象】**: 数组中的每个对象代表一个AI角色的**一个独立动作**，且必须包含\`"sender_name"\` (角色完整姓名) 和 \`"action"\` (具体动作对象) 两个键。
-                    3.  **【动作对象详解】**: \`"action"\`对象必须包含一个\`"type"\`字段来指明动作类型。
-                    4.  **【严格遵守】**: 绝对不要在回复中包含任何JSON数组之外的解释性文字。
+                    // ↓↓↓ 从这里开始复制 ↓↓↓
 
-                    【【【可用动作类型和格式 (在action对象中使用)】】】
-                        - 文字消息: \`{"type": "text", "content": "消息内容"}\`
-                        - 语音消息: \`{"type": "voice", "content": "语音的文字内容"}\`
-                        - 发送图片: \`{"type": "image", "description": "详细的图片描述"}\`
-                        - 引用回复: \`{"type": "quote", "target_name": "被引用角色的名字", "content": "你的回复内容"}\`
-                        - 拍一拍: \`{"type": "pat_pat", "target_name": "被拍角色的名字"}\`
-                        - 发起转账: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
-                        - 撤回消息: \`{"type": "recall"}\` (撤回该角色自己发的上一条消息)
+            systemPrompt = `【你的身份】: 你是一个强大的群聊AI，你的任务是扮演并控制【除了用户'${userProfile.name}'之外的所有AI角色】。你是这个群聊的“总导演”，全权负责所有AI角色的所有言行。
+【【【最高优先级背景资料读取模块】】】
+在决定角色如何行动前，你必须仔细阅读并理解以下所有背景信息。
+--- 世界书设定 (整个世界的宏观背景) ---
+${worldBookContext || "（暂无世界书设定）"}
+--- 核心人物（用户）信息 ---
+- 用户昵称: "${userProfile.name}"
+- 用户人设: ${userProfile.personality || "（用户未设置人设）"}
+--- 用户最近的朋友圈动态 ---
+${recentMoments || "（用户最近没有发朋友圈）"}
+【当前群聊】: "${friend.name}"
+【群成员信息（你的演员表）】:
+${memberInfoForAI}
+【最近的聊天记录（你的剧本）】:
+${chatContextForAI || '（暂无聊天记录）'}
+【【【核心任务：编写剧本】】】
+根据以上所有信息，自然地延续对话。你需要决定接下来【每一个AI角色】应该说什么、做什么。
+特别地，如果最近的聊天记录中出现了特殊事件（如红包），你的剧本必须围绕这个事件展开。
+【【【行为指导与铁律】】】
+1. 【人设至上】: 所有角色的所有言行都必须严格符合他们的人设！这是最高原则。
+2. 【全员参与】: 你是总导演！在每一轮，你都【必须】为【除了用户之外的所有AI角色】生成至少一个动作。不能遗漏任何人。
+3. 【模拟时间差】: 为了让对话看起来真实，你必须为每个角色的动作设定一个延迟时间。在动作对象中加入 "delay_seconds" 字段，值为0到5之间的数字（可以有小数，如1.5）。
+4. 【红包反应个性化】: 如果有角色领取了红包（聊天记录中会以系统提示的形式出现，并包含金额），你必须让他们作出完全符合人设的反应。绝对禁止所有人都只会说“谢谢老板”。例如：活泼的角色可能会发颜文字，高冷的角色可能只说“嗯”，财迷的角色会关心金额大小，调皮的角色可能会吐槽手气差。
+5. 【自然感】: 角色可以连续发送多条消息，只需在剧本（JSON数组）中按顺序放入多个属于同一个 "sender_name" 的动作即可。
+【【【输出格式铁律 (必须严格遵守)】】】
+1. 【核心格式】: 你的回复必须是一个纯净的JSON数组 []。
+2. 【动作对象】: 数组中的每个对象代表一个AI角色的一个独立动作，必须包含 "sender_name", "action", 和 "delay_seconds" 三个键。
+3. 【严格遵守】: 绝对不要在回复中包含任何JSON数组之外的解释性文字。
+【【【可用动作类型 (在action对象中使用)】】】
+- 文字消息: {"type": "text", "content": "消息内容"}
+- 语音消息: {"type": "voice", "content": "语音的文字内容"}
+- 发送图片: {"type": "image", "description": "详细的图片描述"}
+- 引用回复: {"type": "quote", "target_name": "被引用角色的名字", "content": "你的回复内容"}
+- 拍一拍: {"type": "pat_pat", "target_name": "被拍角色的名字"}
+- 撤回消息: {"type": "recall"}
+【JSON格式剧本示例】:
+[
+  {
+    "sender_name": "周遇",
+    "action": {"type": "text", "content": "哇，抢到红包了！"},
+    "delay_seconds": 1.2
+  },
+  {
+    "sender_name": "谢余年",
+    "action": {"type": "text", "content": "谢谢老板！"},
+    "delay_seconds": 2.5
+  },
+  {
+    "sender_name": "周遇",
+    "action": {"type": "text", "content": "我看看我抢了多少..."},
+    "delay_seconds": 3.0
+  }
+]
+现在，请开始你的导演工作，生成下一幕的剧本。`;
 
-                    【【【行为指导】】】
-                    - **全员回复**: 你是群聊的中心！所以，在每一轮，你都【必须】为【除了用户之外的所有AI角色】生成至少一个动作。
-                    - **自然感**: 为了模拟真实聊天，角色可以连续发送多条消息。每次每个角色至少返回两条到三条消息。只需在数组中按顺序放入多个属于同一个\`sender_name\`的动作即可。
-                    - **互动性**: AI角色之间偶尔也可以互相交流、引用、甚至拍一拍。
-                    - **人设至上**: 所有角色的所有言行都必须严格符合他们的人设！
-
-                    【JSON格式示例】:
-                    [
-                      {
-                        "sender_name": "周遇",
-                        "action": {"type": "text", "content": "说到这个，我突然想起来一件事！"}
-                      },
-                      {
-                        "sender_name": "李深",
-                        "action": {"type": "quote", "target_name": "${userProfile.name}", "content": "你刚才说的那个观点我非常同意。"}
-                      },
-                      {
-                        "sender_name": "周遇",
-                        "action": {"type": "image", "description": "一只正在打哈欠的可爱小猫的特写照片"}
-                      },
-                      {
-                        "sender_name": "李深",
-                        "action": {"type": "pat_pat", "target_name": "周遇"}
-                      }
-                    ]
-
-                    现在，请开始你的导演工作。`;
+// ↑↑↑ 在这里结束复制 ↑↑↑
                 } else {
                      if(customPrompt) {
                          systemPrompt = customPrompt;
@@ -8313,67 +8619,64 @@ ${timeContext}
                         for (const turn of responseData) {
                             const sender = friends.find(m => m.name === turn.sender_name);
                             const action = turn.action;
+                            // --- 核心修改：读取延迟时间 ---
+                            const delay = (turn.delay_seconds || 0) * 1000; 
+
                             if (!sender || !action || !action.type) continue;
-
-                            await new Promise(res => setTimeout(res, Math.random() * 800 + 400));
-
-                            switch (action.type) {
-                                case 'text':
-                                case 'voice':
-                                    const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
-                                    addMessageToDOM(msgData, friend);
-                                    break;
-                                case 'image':
-                                    const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
-                                    const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
-                                    imgMsgData.imageDescription = action.description || 'AI生成的图片';
-                                    addMessageToDOM(imgMsgData, friend);
-                                    break;
-                                case 'pat_pat':
-                                    const target = friends.find(m => m.name === action.target_name);
-                                    if (target) {
-                                        const patContent = `"${sender.name}"拍了拍"${target.name}"${sender.patAction || ''}`;
-                                        const patMsg = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
-                                        addMessageToDOM(patMsg, friend);
-                                    }
-                                    break;
-                                case 'transfer':
-                                    if (action.data && action.data.amount > 0) {
-                                        const transferData = { amount: action.data.amount, remark: action.data.remark || '' };
-                                        const transferMsg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', sender.id, 'transfer_request');
-                                        addMessageToDOM(transferMsg, friend);
-                                    }
-                                    break;
-                                case 'quote':
-                                    const targetToQuote = friends.find(m => m.name === action.target_name);
-                                    if (targetToQuote) {
-                                        const lastMessageFromTarget = history.slice().reverse().find(m => m.senderId === targetToQuote.id);
-                                        const quoteContent = lastMessageFromTarget ? lastMessageFromTarget.content.substring(0, 50) + '...' : '';
-                                        const quoteMsgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, sender.id, 'text');
-                                        addMessageToDOM(quoteMsgData, friend);
-                                    }
-                                    break;
-                                case 'recall':
-                                    const historyForRecall = chatHistories[friendId] || [];
-                                    const lastMessageFromSender = historyForRecall.slice().reverse().find(m => m.senderId === sender.id);
-                                    if (lastMessageFromSender) {
-                                        lastMessageFromSender.recalled = true;
-                                        lastMessageFromSender.recalledContent = lastMessageFromSender.content;
-                                        const msgElementToRecall = document.querySelector(`.message[data-message-id="${lastMessageFromSender.id}"]`);
-                                        if (msgElementToRecall) {
-                                            const recallDiv = document.createElement('div');
-                                            recallDiv.className = 'recall-message';
-                                            recallDiv.innerHTML = `<div class="recall-content" onclick="showRecalledMessage('${lastMessageFromSender.id}')">"${sender.name}"撤回了一条消息</div>`;
-                                            msgElementToRecall.parentNode.replaceChild(recallDiv, msgElementToRecall);
+                            
+                            // --- 核心修改：使用 setTimeout 来延迟执行每个动作 ---
+                            setTimeout(async () => {
+                                switch (action.type) {
+                                    case 'text':
+                                    case 'voice':
+                                        const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
+                                        addMessageToDOM(msgData, friend);
+                                        break;
+                                    case 'image':
+                                        const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
+                                        const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
+                                        imgMsgData.imageDescription = action.description || 'AI生成的图片';
+                                        addMessageToDOM(imgMsgData, friend);
+                                        break;
+                                    case 'pat_pat':
+                                        const target = friends.find(m => m.name === action.target_name);
+                                        if (target) {
+                                            const patContent = `"${sender.name}"拍了拍"${target.name}"${sender.patAction || ''}`;
+                                            const patMsg = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
+                                            addMessageToDOM(patMsg, friend);
                                         }
-                                    }
-                                    break;
+                                        break;
+                                    case 'quote':
+                                        const targetToQuote = friends.find(m => m.name === action.target_name);
+                                        if (targetToQuote) {
+                                            const lastMessageFromTarget = history.slice().reverse().find(m => m.senderId === targetToQuote.id);
+                                            const quoteContent = lastMessageFromTarget ? lastMessageFromTarget.content.substring(0, 50) + '...' : '';
+                                            const quoteMsgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, sender.id, 'text');
+                                            addMessageToDOM(quoteMsgData, friend);
+                                        }
+                                        break;
+                                    case 'recall':
+                                        const historyForRecall = chatHistories[friendId] || [];
+                                        const lastMessageFromSender = historyForRecall.slice().reverse().find(m => m.senderId === sender.id);
+                                        if (lastMessageFromSender) {
+                                            lastMessageFromSender.recalled = true;
+                                            lastMessageFromSender.recalledContent = lastMessageFromSender.content;
+                                            const msgElementToRecall = document.querySelector(`.message[data-message-id="${lastMessageFromSender.id}"]`);
+                                            if (msgElementToRecall) {
+                                                const recallDiv = document.createElement('div');
+                                                recallDiv.className = 'recall-message';
+                                                recallDiv.innerHTML = `<div class="recall-content" onclick="showRecalledMessage('${lastMessageFromSender.id}')">"${sender.name}"撤回了一条消息</div>`;
+                                                msgElementToRecall.parentNode.replaceChild(recallDiv, msgElementToRecall);
+                                            }
+                                        }
+                                        break;
+                                    // 我们不再需要 red_envelope_thanks 这个case，因为AI会直接用 text 类型来回应
+                                }
+                                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                            }, delay); // 将延迟时间应用到 setTimeout
                             }
-                            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                        }
-                        await saveData();
-                    }
-                } else {
+                          }
+                        } else {
                     const jsonMatch = responseContentJSON.match(/\[[\s\S]*\]/);
                     if (!jsonMatch) {
                         throw new Error("AI未返回有效的JSON数组格式。收到的内容：" + responseContentJSON);
@@ -12557,6 +12860,339 @@ function removeGroupMember(groupId, memberIdToRemove) {
 }
 
 // --- ↑↑↑ 请在这里结束复制 ---
+
+// ↓↓↓ 3.2 添加所有新的红包函数 ↓↓↓
+
+/**
+ * 打开“发红包”弹窗
+ */
+function openRedEnvelopeModal() {
+    const group = friends.find(f => f.id === currentChatFriendId);
+    if (!group || !group.isGroup) return;
+
+    // 重置输入框
+    document.getElementById('redEnvelopeAmount').value = '';
+    document.getElementById('redEnvelopeCount').value = '';
+    document.getElementById('redEnvelopeRemark').value = '';
+    document.getElementById('redEnvelopeRemark').placeholder = `恭喜发财，大吉大利`;
+
+    // 更新红包个数输入框的 placeholder
+    document.getElementById('redEnvelopeCount').placeholder = `本群共 ${group.members.length} 人`;
+
+    document.getElementById('redEnvelopeModal').classList.add('show');
+    hideFunctionMenus();
+}
+
+/**
+ * 关闭“发红包”弹窗
+ */
+function closeRedEnvelopeModal() {
+    document.getElementById('redEnvelopeModal').classList.remove('show');
+}
+
+// ↓↓↓ 3.1 用这个完整的新函数替换旧的 sendGroupRedEnvelope ↓↓↓
+async function sendGroupRedEnvelope() {
+    const group = friends.find(f => f.id === currentChatFriendId);
+    const amount = parseFloat(document.getElementById('redEnvelopeAmount').value);
+    const count = parseInt(document.getElementById('redEnvelopeCount').value, 10);
+    let remark = document.getElementById('redEnvelopeRemark').value.trim();
+
+    if (isNaN(amount) || amount <= 0) return showAlert('请输入有效的红包金额。');
+    if (isNaN(count) || count <= 0) return showAlert('请输入有效的红包个数。');
+    if (count > group.members.length) return showAlert(`红包个数不能超过群成员人数 (${group.members.length})。`);
+    if (amount < count * 0.01) return showAlert('单个红包金额不能低于0.01元。');
+    if (userProfile.balance < amount) return showAlert('钱包余额不足。');
+    if (!remark) remark = '恭喜发财，大吉大利';
+
+    userProfile.balance -= amount;
+
+    // --- 核心修改：数据结构升级 ---
+    const redEnvelopeData = {
+        id: `re_${generateUniqueId()}`,
+        totalAmount: amount,
+        totalCount: count,
+        remark: remark,
+        claimedBy: [], 
+        // 【新增】一个“待领取池”，所有随机金额包都在这里
+        remainingPackets: splitRedEnvelope(amount, count), 
+        // 【新增】记录你自己是否领取
+        userClaimed: false 
+    };
+    // --- 修改结束 ---
+
+    const msg = await saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(redEnvelopeData), '', null, 'group_red_envelope');
+    addMessageToDOM(msg, group);
+
+    await saveData();
+    updateWalletDisplay();
+    closeRedEnvelopeModal();
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+    
+}
+
+// ↓↓↓ 3.2 粘贴这3个新函数到 sendGroupRedEnvelope 的下方 ↓↓↓
+
+/**
+ * 核心功能：处理红包卡片的点击事件
+ * @param {string} messageId - 红包消息的ID
+ */
+function handleRedEnvelopeClick(messageId) {
+    const history = chatHistories[currentChatFriendId];
+    const msg = history.find(m => m.id === messageId);
+    if (!msg) return;
+
+    const data = JSON.parse(msg.content);
+
+    if (msg.type === 'sent' && !data.userClaimed) {
+        // 如果是你发的，并且你还没领 -> 显示“开”红包动画
+        openRedEnvelopeAnimation(messageId);
+    } else {
+        // 其他情况（你发的且领了、别人发的） -> 直接显示详情
+        openRedEnvelopeDetails(messageId);
+    }
+}
+
+/**
+ * 打开“开红包”的动画弹窗
+ * @param {string} messageId - 红包消息的ID
+ */
+function openRedEnvelopeAnimation(messageId) {
+    const modal = document.getElementById('openRedEnvelopeModal');
+    const button = document.getElementById('openRedEnvelopeButton');
+    
+    modal.classList.add('show');
+    
+    // 绑定点击事件，点击后领取红包
+    button.onclick = () => claimUserRedEnvelope(messageId);
+
+    // 点击背景关闭
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('show');
+        }
+    };
+}
+
+/**
+ * 核心功能：用户自己领取红包
+ * @param {string} messageId - 红包消息的ID
+ */
+async function claimUserRedEnvelope(messageId) {
+    const history = chatHistories[currentChatFriendId];
+    const msgIndex = history.findIndex(m => m.id === messageId);
+    if (msgIndex === -1) return;
+
+    const data = JSON.parse(history[msgIndex].content);
+
+    // 如果红包已经被领完了，或者你已经领过了
+    if (data.remainingPackets.length === 0 || data.userClaimed) {
+        document.getElementById('openRedEnvelopeModal').classList.remove('show');
+        openRedEnvelopeDetails(messageId); // 直接显示详情
+        return;
+    }
+
+    // 播放旋转动画
+    const button = document.getElementById('openRedEnvelopeButton');
+    button.style.transform = 'rotateY(360deg)';
+
+    // 从“待领取池”里拿出一个红包
+    const claimedAmount = data.remainingPackets.pop();
+    
+    // 更新你的钱包余额
+    userProfile.balance += claimedAmount;
+
+    // 记录你的领取信息
+    data.claimedBy.push({
+        userId: userProfile.id,
+        amount: claimedAmount,
+        timestamp: new Date().toISOString()
+    });
+    data.userClaimed = true; // 标记你已领取
+
+    // 更新消息数据并保存
+    history[msgIndex].content = JSON.stringify(data);
+    await saveData();
+    
+    // 更新UI
+    updateWalletDisplay();
+    updateRedEnvelopeCard(messageId); // 刷新聊天界面的卡片状态
+
+    // 动画结束后，关闭“开”红包弹窗，并立即打开详情弹窗
+    setTimeout(() => {
+        document.getElementById('openRedEnvelopeModal').classList.remove('show');
+        button.style.transform = ''; // 重置动画
+        openRedEnvelopeDetails(messageId);
+    }, 500);
+}
+
+/**
+ * 工具函数：拆分红包金额
+ * @param {number} totalAmount - 总金额
+ * @param {number} numPackets - 红包数量
+ * @returns {Array<number>} - 一个包含每个小红包金额的数组
+ */
+function splitRedEnvelope(totalAmount, numPackets) {
+    const packets = [];
+    let remainingAmount = totalAmount;
+    let remainingPackets = numPackets;
+
+    for (let i = 0; i < numPackets - 1; i++) {
+        const maxAmount = remainingAmount - (remainingPackets - 1) * 0.01;
+        const minAmount = 0.01;
+        const amount = Math.random() * (maxAmount - minAmount) + minAmount;
+        
+        const packetAmount = parseFloat(amount.toFixed(2));
+        packets.push(packetAmount);
+        remainingAmount -= packetAmount;
+        remainingPackets--;
+    }
+
+    packets.push(parseFloat(remainingAmount.toFixed(2))); // 最后一个包是剩余的所有金额
+    return packets.sort(() => Math.random() - 0.5); // 打乱顺序
+}
+
+async function triggerAiRedEnvelopeClaim(messageId) {
+    const group = friends.find(f => f.id === currentChatFriendId);
+    const history = chatHistories[currentChatFriendId];
+    const msgIndex = history.findIndex(m => m.id === messageId);
+    if (!group || msgIndex === -1) return;
+
+    let redEnvelopeData = JSON.parse(history[msgIndex].content);
+    
+    const claimedAiIds = new Set(redEnvelopeData.claimedBy.map(c => c.userId));
+    const unclaimedAiMembers = group.members.filter(id => id !== userProfile.id && !claimedAiIds.has(id));
+
+    for (const aiMemberId of unclaimedAiMembers) {
+        if (redEnvelopeData.remainingPackets.length === 0) break;
+
+        await new Promise(res => setTimeout(res, 500 + Math.random() * 1000));
+        
+        const claimedAmount = redEnvelopeData.remainingPackets.pop();
+        
+        redEnvelopeData.claimedBy.push({
+            userId: aiMemberId,
+            amount: claimedAmount,
+            timestamp: new Date().toISOString()
+        });
+        
+        const aiMember = getAuthorById(aiMemberId);
+        const tipContent = `${aiMember.name}领取了你的红包`;
+        const systemTipMsg = await saveChatMessage(currentChatFriendId, 'system', tipContent, '', null, 'system_tip');
+        
+        history[msgIndex].content = JSON.stringify(redEnvelopeData);
+        await saveData();
+        
+        updateRedEnvelopeCard(messageId);
+        addMessageToDOM(systemTipMsg, group);
+    }
+
+    // 【【【核心修复！！！】】】
+    // 在所有AI都领取完毕后，如果确实有AI领取了红包，
+    // 就再次调用 receiveMessage，让总导演回来继续安排聊天戏份。
+    if (unclaimedAiMembers.length > 0) {
+        receiveMessage(currentChatFriendId);
+    }
+}
+
+
+
+// ↓↓↓ 3.3 用这个完整的新函数替换旧的 openRedEnvelopeDetails ↓↓↓
+function openRedEnvelopeDetails(messageId) {
+    const history = chatHistories[currentChatFriendId];
+    const msg = history.find(m => m.id === messageId);
+    if (!msg) return;
+
+    const data = JSON.parse(msg.content);
+    const fromUser = getAuthorById(msg.senderId);
+    
+    document.getElementById('redEnvelopeDetailsRemark').textContent = data.remark;
+    document.getElementById('redEnvelopeDetailsFrom').textContent = `${fromUser.name}的红包`;
+
+    // --- 核心修改：显示更详细的状态信息 ---
+    const totalAmountFormatted = data.totalAmount.toFixed(2);
+    let statusText = `已领取${data.claimedBy.length}/${data.totalCount}个，共${totalAmountFormatted}元`;
+    if (data.claimedBy.length >= data.totalCount) {
+        statusText = `全部红包已被领取完`;
+    }
+    document.getElementById('redEnvelopeDetailsStatus').textContent = statusText;
+    // --- 修改结束 ---
+
+    const claimList = document.getElementById('redEnvelopeClaimList');
+    claimList.innerHTML = '';
+
+    const claims = data.claimedBy;
+    let bestLuckAmount = 0;
+    // --- 核心修改：只有领完了才显示“手气最佳” ---
+    if (claims.length > 0 && claims.length === data.totalCount) {
+        bestLuckAmount = Math.max(...claims.map(c => c.amount));
+    }
+    // --- 修改结束 ---
+
+    claims.forEach(claim => {
+        const user = getAuthorById(claim.userId);
+        const item = document.createElement('div');
+        item.className = 'claim-list-item';
+
+        const avatarHtml = user.avatarImage 
+            ? `<div class="claim-avatar" style="background-image: url(${user.avatarImage})"></div>` 
+            : `<div class="claim-avatar">${user.avatar || user.name.substring(0,1)}</div>`;
+        
+        const isBestLuck = claim.amount === bestLuckAmount && bestLuckAmount > 0;
+
+                // --- 这是修改后的代码 ---
+                // --- 这是修改后的代码 ---
+        item.innerHTML = `
+            ${avatarHtml}
+            <div class="claim-info">
+                <div class="claim-name">
+                    ${user.name} 
+                    ${isBestLuck ? '<span class="claim-best-luck">手气最佳</span>' : ''} 
+                </div>
+                <div class="claim-time">${new Date(claim.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            </div>
+            <div class="claim-amount">
+                ${claim.amount.toFixed(2)} 元
+            </div>
+        `;
+        // --- 修改结束 ---
+        // --- 修改结束 ---
+        claimList.appendChild(item);
+    });
+
+    document.getElementById('redEnvelopeDetailsModal').classList.add('show');
+}
+
+/**
+ * 关闭红包详情弹窗
+ */
+function closeRedEnvelopeDetailsModal() {
+    document.getElementById('redEnvelopeDetailsModal').classList.remove('show');
+}
+
+/**
+ * 工具函数：当红包状态更新时，刷新聊天界面上的卡片
+ * @param {string} messageId - 红包消息的ID
+ */
+function updateRedEnvelopeCard(messageId) {
+    const cardElement = document.querySelector(`.message[data-message-id="${messageId}"] .red-envelope-card`);
+    if (!cardElement) return;
+
+    const history = chatHistories[currentChatFriendId];
+    const msg = history.find(m => m.id === messageId);
+    if (!msg) return;
+
+    const data = JSON.parse(msg.content);
+    const statusTextElement = cardElement.querySelector('.red-envelope-status-text');
+
+    if (data.claimedBy.length >= data.totalCount) {
+        cardElement.classList.add('opened');
+        statusTextElement.textContent = `红包已被领完`;
+    } else {
+        statusTextElement.textContent = `领取红包`;
+    }
+}
+// ↑↑↑ 3.2 在这里结束粘贴 ↑↑↑
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
