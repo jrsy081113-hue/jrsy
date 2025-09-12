@@ -11363,13 +11363,15 @@ async function generateSimAppContent(characterId, appName, retryCount = 0) {
     // [性能优化] 我们不再发送全部历史，而是取最近的50条。
     // 这足以提供充足的上下文，同时保证了极快的生成速度。
     // 【【【这是修改后的代码】】】
-const recentChatHistory = (chatHistories[characterId] || []).slice(-50).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
+const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
 
     // 我们依然获取所有朋友圈，因为这是角色的“公开生活”，是重要的参考。
-    const fullMomentsHistory = moments.map(m => {
-        const author = getAuthorById(m.authorId);
-        return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
-    }).join('\n');
+    // 这是【修改后】的代码
+// 我们只取最近的5条朋友圈作为参考，大大减少了信息量
+const recentMoments = moments.slice(0, 5).map(m => {
+    const author = getAuthorById(m.authorId);
+    return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
+}).join('\n');
 
     const currentDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -11383,7 +11385,7 @@ const recentChatHistory = (chatHistories[characterId] || []).slice(-50).map(m =>
     
     【角色核心人设】: ${character.role}
     
-    【核心记忆库 (最近50条聊天记录 & 全部朋友圈)】:
+    【核心记忆库 (最近20条聊天记录 & 5条朋友圈)】:
     --- 聊天记录开始 ---
     ${recentChatHistory || '无聊天记录。'}
     --- 聊天记录结束 ---
@@ -11474,7 +11476,7 @@ case 'wallet':
             prompt += `\n生成8条通话记录，时间需符合锚点。大部分通话对象应是“核心记忆库”中**提到过**的人物或与事件相关，可以有少量是你生活圈中的其他虚构人物。每条必须包含name, type (incoming/outgoing/missed), 和time。JSON格式: {"calls": [{"name": "联系人名", "type": "incoming", "time": "时间描述"}, ...]}`;
             break;
         case 'forum':
-            prompt += `\n生成8个论坛帖子。大部分帖子的主题应源自“核心记忆库”中的**真实困惑、分享或事件**，可以有少量是你基于人设产生的其他话题。为每个帖子生成**12条**左右的评论。
+            prompt += `\n生成6个论坛帖子。大部分帖子的主题应源自“核心记忆库”中的**真实困惑、分享或事件**，可以有少量是你基于人设产生的其他话题。为每个帖子生成**8条**左右的评论。
             **【评论活人感指令】**: 评论必须模拟真实网络论坛。要有多样化的用户（杠精、热心人、路人、抖机灵的等），评论风格要口语化、多样化，可以有错别字、网络用语，甚至互相回复。让评论区看起来像一个真实、活跃的社区。
             JSON格式: {"posts": [{"id": "post_1", "title": "帖子标题", "content": "帖子正文...", "datetime": "YYYY-MM-DD HH:MM", "comments": [{"floor": "1楼", "user": "网友昵称", "comment": "评论内容"}, ...]}, ...]}`;
             break;
