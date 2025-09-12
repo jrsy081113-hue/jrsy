@@ -11651,7 +11651,7 @@ async function generateSimAppContent(characterId, appName) {
 
     // --- 指令准备部分 (与上次相同，保持简化) ---
     const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
-    const recentMoments = moments.slice(0, 5).map(m => {
+    const recentMoments = moments.slice(0, 3).map(m => {
         const author = getAuthorById(m.authorId);
         return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
     }).join('\n');
@@ -11659,7 +11659,7 @@ async function generateSimAppContent(characterId, appName) {
     
     let prompt = `你正在深度模拟角色"${character.name}"的手机，你需要生成手机中某个应用的内容。
     【角色核心人设】: ${character.role}
-    【核心记忆库 (最近20条聊天记录 & 最近5条朋友圈)】:
+    【核心记忆库 (最近20条聊天记录 & 最近3条朋友圈)】:
     --- 聊天记录开始 ---
     ${recentChatHistory || '无聊天记录。'}
     --- 聊天记录结束 ---
@@ -11691,13 +11691,13 @@ async function generateSimAppContent(characterId, appName) {
             break;
             
         case 'browser':
-            prompt += `\n生成5条浏览器历史记录。内容应与“核心记忆库”中的话题或你的人设兴趣相关。每条记录必须包含id, title, url (一个模拟网址), 和一段模拟的网页正文 "content" (需包含换行\\n, 至少150字)。
+            prompt += `\n生成4条浏览器历史记录。内容应与“核心记忆库”中的话题或你的人设兴趣相关。每条记录必须包含id, title, url (一个模拟网址), 和一段模拟的网页正文 "content" (需包含换行\\n, 至少100字)。
             JSON格式: {"history": [{"id": "history_1", "title": "网页标题", "url": "https://example.com/path", "content": "详细的网页内容...\\n\\n包含分段。"}, ...]}`;
             break;
 
         case 'shopping':
             prompt += `\n生成4条购物订单。商品应符合你的角色人设和消费习惯。每条必须包含id, name, price, 和一段详细的 "description" (商品描述或购买理由)。
-            **【内容要求】**: "description" 字段必须详细，至少50字，模拟真实的商品描述或购买心得。
+            **【内容要求】**: "description" 字段必须详细，至少40字，模拟真实的商品描述或购买心得。
             JSON格式: {"orders": [{"id": "order_1", "name": "商品名称", "price": "价格", "description": "详细描述..."}, ...]}`;
             break;
 
@@ -11711,7 +11711,7 @@ async function generateSimAppContent(characterId, appName) {
             
             **【格式铁律】**:
             - **【余额铁律】**: \`balance\` 字段的值**必须**是一个**不带引号的纯数字**。
-            - 生成6条交易记录，每条必须包含 "description", "amount" (+/-金额, 纯数字), 和 "time" (MM-DD HH:mm)。
+            - 生成5条交易记录，每条必须包含 "description", "amount" (+/-金额, 纯数字), 和 "time" (MM-DD HH:mm)。
             
             **【JSON格式示例】**: 
             // 富裕人设示例:
