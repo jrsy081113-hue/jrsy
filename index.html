@@ -11362,122 +11362,99 @@ async function openSimApp(appName) {
     await generateSimAppContent(characterId, appName);
 }
 
-        // [V4.0 动态平衡最终版] 的函数
-async function generateSimAppContent(characterId, appName, retryCount = 0) {
+        // 【【【这是最终修复版，请用它完整替换】】】
+async function generateSimAppContent(characterId, appName) {
     const character = friends.find(f => f.id === characterId);
     if (!character) return;
-    
-    // [性能优化] 我们不再发送全部历史，而是取最近的20条。
-    // 这足以提供充足的上下文，同时保证了极快的生成速度。
-    // 【【【这是修改后的代码】】】
-const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
 
-    // 我们依然获取所有朋友圈，因为这是角色的“公开生活”，是重要的参考。
-    // 这是【修改后】的代码
-// 我们只取最近的5条朋友圈作为参考，大大减少了信息量
-const recentMoments = moments.slice(0, 5).map(m => {
-    const author = getAuthorById(m.authorId);
-    return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
-}).join('\n');
-
+    // --- 指令准备部分 (与上次相同，保持简化) ---
+    const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
+    const recentMoments = moments.slice(0, 5).map(m => {
+        const author = getAuthorById(m.authorId);
+        return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
+    }).join('\n');
     const currentDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-
+    
     let prompt = `你正在深度模拟角色"${character.name}"的手机，你需要生成手机中某个应用的内容。
-    
-    【【【用户人设读取模块】】】
-这个手机的主人（也就是你，"${character.name}"）认识一个对你很重要的人，叫"${userProfile.name}"。你必须了解并记住这个人的人设与背景，因为它深刻影响了你们的互动和你的个人生活。
-- **重要的人(${userProfile.name})的核心人设**: ${userProfile.personality || '普通人'}
-- **重要的人(${userProfile.name})的背景设定**: ${userProfile.background || '无'}
-
-    
     【角色核心人设】: ${character.role}
-    
-    【核心记忆库 (最近20条聊天记录 & 全部朋友圈)】:
+    【核心记忆库 (最近20条聊天记录 & 最近5条朋友圈)】:
     --- 聊天记录开始 ---
     ${recentChatHistory || '无聊天记录。'}
     --- 聊天记录结束 ---
-
-    // 这是【修改后】的指令部分
---- 朋友圈记录开始 ---
-${recentMoments || '无朋友圈记录。'}
---- 朋友圈记录结束 ---
-
-【【【信息隔离铁律】】】
-在你的记忆里，朋友圈中只存在你、你重要的人"${userProfile.name}"，以及一些你们共同认识的普通人（NPC）。你**绝对看不到、也绝对不知道**任何其他AI角色（即"${userProfile.name}"的好友列表里的其他人）的朋友圈活动。因此，在你生成的所有手机内容中，**严禁凭空捏造或提及**任何其他AI角色的互动
-
-    【【【六大铁律 (必须严格遵守)】】】:
-    1.  **【【核心原则：动态平衡现实】】**: 你生成的内容应该是**“现实”与“虚构”的结合体**。大约70%的内容应该严格基于上方的“核心记忆库”，反映真实事件。剩下的30%应该是你基于角色人设进行的**合理虚构和生活化扩展**，用来丰富角色的世界，让ta看起来拥有自己的、用户看不到的另一部分生活（比如：虚构的朋友、独立的爱好、与记忆库无关的日常琐事）。**但虚构内容绝对不能与记忆库中的事实相矛盾！**
-    2.  **【绝对创新铁律】**: 即使基于相同记忆，你每次生成的内容（标题、正文、评论、日期等）都必须是**全新的、角度不同的**。严禁重复你之前生成过的任何内容。
-    3.  **【绝对时间铁律】**: 你必须严格遵守聊天记录和朋友圈中的**时间戳**。所有生成的内容，其发生时间都必须围绕**当前现实日期：${currentDate}**，并且逻辑上必须合理。例如，你不能在备忘录里记录一个发生在“昨天”但聊天记录显示是“上周”才发生的事件。
-    4.  **【绝对语言铁律】**: 你的所有输出，包括所有文字和模拟的网友昵称，都**必须使用简体中文**。严禁出现任何英文或其他语言。
-    5.  你生成的所有内容，都必须**极度符合**角色的核心人设，并**强烈反映**出“核心记忆库”中的真实事件和情绪。
-    6.  你的回复**必须**是一个符合下方具体格式要求的、纯净的JSON对象，不包含任何额外的解释或代码标记。
+    --- 朋友圈记录开始 ---
+    ${recentMoments || '无朋友圈记录。'}
+    --- 朋友圈记录结束 ---
+    【【【核心铁律】】】:
+    1.  你生成的内容应该是**“现实”与“虚构”的结合体**。大部分内容应基于“核心记忆库”，反映真实事件。小部分可以是角色的合理虚构，但**绝对不能与记忆库中的事实相矛盾！**
+    2.  **【绝对创新铁律】**: 即使基于相同记忆，你每次生成的内容都必须是**全新的**。严禁重复。
+    3.  **【绝对时间铁律】**: 所有生成的内容，其发生时间都必须围绕**当前现实日期：${currentDate}**，并且逻辑上必须合理。
+    4.  你的回复**必须**是一个符合下方具体格式要求的、纯净的JSON对象，不包含任何额外的解释。
 
     请为应用“${appName}”生成内容：`;
+    
+    // --- App具体指令 (与上次相同) ---
+    switch(appName) {
+        case 'memo':
+            prompt += `\n生成4条备忘录。内容应基于“核心记忆库”中的事件，或符合角色人设的个人想法。
+            **【格式指令】**:
+            - **【换行铁律】**: 必须在内容中使用多个换行符 (\\n) 来分段落，让备忘录看起来有条理。
+            - **内容要详细、生活化。**
+            
+            JSON格式: {"memos": [{"id": "memo_1", "title": "标题", "content": "备忘录内容...", "datetime": "YYYY-MM-DD HH:MM"}, ...]}`;
+            break;
 
-    // 【【【这是优化后的新代码，请用它完整替换】】】
-switch(appName) {
-    case 'memo':
-        prompt += `\n生成4条备忘录。内容应基于“核心记忆库”中的事件，或符合角色人设的个人想法。
-        **【格式指令】**:
-        - **【换行铁律】**: 必须在内容中使用多个换行符 (\\n) 来分段落，让备忘录看起来有条理。
-        - **内容要详细、生活化。**
-        
-        JSON格式: {"memos": [{"id": "memo_1", "title": "标题", "content": "备忘录内容...", "datetime": "YYYY-MM-DD HH:MM"}, ...]}`;
-        break;
+        case 'wechat':
+            prompt += `\n生成3个与【除了用户'${userProfile.name}'之外的】虚构人物的微信聊天摘要。这些对话应展现你的个人生活。**绝对不能**生成与'${userProfile.name}'的聊天。每个摘要必须包含id, name, avatar(单个汉字), 和一个包含8条对话的 "messages" 数组。
+            JSON格式: {"chats": [{"id": "chat_1", "name": "聊天对象", "avatar": "单个汉字", "messages": [{"sender": "发送者名字", "content": "消息内容"}, ...]}, ...]}`;
+            break;
+            
+        case 'browser':
+            prompt += `\n生成5条浏览器历史记录。内容应与“核心记忆库”中的话题或你的人设兴趣相关。每条记录必须包含id, title, url (一个模拟网址), 和一段模拟的网页正文 "content" (需包含换行\\n, 至少150字)。
+            JSON格式: {"history": [{"id": "history_1", "title": "网页标题", "url": "https://example.com/path", "content": "详细的网页内容...\\n\\n包含分段。"}, ...]}`;
+            break;
 
-    case 'wechat':
-        prompt += `\n生成3个与【除了用户'${userProfile.name}'之外的】虚构人物的微信聊天摘要。这些对话应展现你的个人生活。**绝对不能**生成与'${userProfile.name}'的聊天。每个摘要必须包含id, name, avatar(单个汉字), 和一个包含8条对话的 "messages" 数组。
-        JSON格式: {"chats": [{"id": "chat_1", "name": "聊天对象", "avatar": "单个汉字", "messages": [{"sender": "发送者名字", "content": "消息内容"}, ...]}, ...]}`;
-        break;
-        
-    case 'browser':
-        prompt += `\n生成5条浏览器历史记录。内容应与“核心记忆库”中的话题或你的人设兴趣相关。每条记录必须包含id, title, url (一个模拟网址), 和一段模拟的网页正文 "content" (需包含换行\\n, 至少150字)。
-        JSON格式: {"history": [{"id": "history_1", "title": "网页标题", "url": "https://example.com/path", "content": "详细的网页内容...\\n\\n包含分段。"}, ...]}`;
-        break;
+        case 'shopping':
+            prompt += `\n生成4条购物订单。商品应符合你的角色人设和消费习惯。每条必须包含id, name, price, 和一段详细的 "description" (商品描述或购买理由)。
+            **【内容要求】**: "description" 字段必须详细，至少50字，模拟真实的商品描述或购买心得。
+            JSON格式: {"orders": [{"id": "order_1", "name": "商品名称", "price": "价格", "description": "详细描述..."}, ...]}`;
+            break;
 
-    case 'shopping':
-        prompt += `\n生成4条购物订单。商品应符合你的角色人设和消费习惯。每条必须包含id, name, price, 和一段详细的 "description" (商品描述或购买理由)。
-        **【内容要求】**: "description" 字段必须详细，至少50字，模拟真实的商品描述或购买心得。
-        JSON格式: {"orders": [{"id": "order_1", "name": "商品名称", "price": "价格", "description": "详细描述..."}, ...]}`;
-        break;
+        case 'wallet':
+            prompt += `\n你的任务是根据角色的核心人设和记忆，生成一个极其逼真的钱包账单。
+            **【财务人设分析指令 (最重要！)】**:
+            1.  **首先，请根据角色人设 \`${character.role}\` 智能分析并决定其最合理的财务状况**:
+                -   如果角色是**富裕的** (总裁, 明星), 请生成**数万到百万级别**的余额，及**数千到数万**的单笔消费。
+                -   如果角色是**普通人** (学生, 员工), 请生成**数百到数千级别**的余额，消费记录也应是几十到几百的日常水平。
+            2.  **【核心原则】**: 你必须进行**智能推断**，而不是死板匹配。
+            
+            **【格式铁律】**:
+            - **【余额铁律】**: \`balance\` 字段的值**必须**是一个**不带引号的纯数字**。
+            - 生成6条交易记录，每条必须包含 "description", "amount" (+/-金额, 纯数字), 和 "time" (MM-DD HH:mm)。
+            
+            **【JSON格式示例】**: 
+            // 富裕人设示例:
+            {"balance": 854321.68, "transactions": [{"description": "品牌专柜消费", "amount": -18000.00, "time": "09-08 14:30"}]}
+            // 普通人设示例:
+            {"balance": 3250.70, "transactions": [{"description": "超市买菜", "amount": -85.50, "time": "09-06 18:00"}]}
+            `;
+            break;
 
-    case 'wallet':
-        prompt += `\n你的任务是根据角色的核心人设和记忆，生成一个极其逼真的钱包账单。
-        **【财务人设分析指令 (最重要！)】**:
-        1.  **首先，请根据角色人设 \`${character.role}\` 智能分析并决定其最合理的财务状况**:
-            -   如果角色是**富裕的** (总裁, 明星), 请生成**数万到百万级别**的余额，及**数千到数万**的单笔消费。
-            -   如果角色是**普通人** (学生, 员工), 请生成**数百到数千级别**的余额，消费记录也应是几十到几百的日常水平。
-        2.  **【核心原则】**: 你必须进行**智能推断**，而不是死板匹配。
-        
-        **【格式铁律】**:
-        - **【余额铁律】**: \`balance\` 字段的值**必须**是一个**不带引号的纯数字**。
-        - 生成6条交易记录，每条必须包含 "description", "amount" (+/-金额, 纯数字), 和 "time" (MM-DD HH:mm)。
-        
-        **【JSON格式示例】**: 
-        // 富裕人设示例:
-        {"balance": 854321.68, "transactions": [{"description": "品牌专柜消费", "amount": -18000.00, "time": "09-08 14:30"}]}
-        // 普通人设示例:
-        {"balance": 3250.70, "transactions": [{"description": "超市买菜", "amount": -85.50, "time": "09-06 18:00"}]}
-        `;
-        break;
+        case 'photos':
+            prompt += `\n生成4张相册照片的标题和详细文字描述。照片内容应源于“核心记忆库”中的真实事件或符合人设的生活瞬间。每条必须包含id, title, 和 "description"。description必须分为两段，用"\\n\\n"隔开：第一段描述画面；第二段描述照片背后的心情故事。每段至少40字。
+            JSON格式: {"photos": [{"id": "photo_1", "title": "照片标题", "description": "照片画面描述...\\n\\n心情故事..."}, ...]}`;
+            break;
 
-    case 'photos':
-        prompt += `\n生成4张相册照片的标题和详细文字描述。照片内容应源于“核心记忆库”中的真实事件或符合人设的生活瞬间。每条必须包含id, title, 和 "description"。description必须分为两段，用"\\n\\n"隔开：第一段描述画面；第二段描述照片背后的心情故事。每段至少40字。
-        JSON格式: {"photos": [{"id": "photo_1", "title": "照片标题", "description": "照片画面描述...\\n\\n心情故事..."}, ...]}`;
-        break;
-
-    case 'phone_call':
-        prompt += `\n生成6条通话记录。通话对象应与“核心记忆库”中提到的人物或事件相关。每条必须包含name, type (incoming/outgoing/missed), 和time。
-        JSON格式: {"calls": [{"name": "联系人名", "type": "incoming", "time": "时间描述"}, ...]}`;
-        break;
-        
-    case 'forum':
-        prompt += `\n生成4个论坛帖子。主题应源自“核心记忆库”中的真实困惑或分享。为每个帖子生成**8条**左右的评论。
-        **【评论活人感指令】**: 评论必须模拟真实论坛，要有多样化的用户（杠精、热心人、路人等），风格要口语化、多样化。
-        JSON格式: {"posts": [{"id": "post_1", "title": "帖子标题", "content": "帖子正文...", "datetime": "YYYY-MM-DD HH:MM", "comments": [{"floor": "1楼", "user": "网友昵称", "comment": "评论内容"}, ...]}, ...]}`;
-        break;
-}
+        case 'phone_call':
+            prompt += `\n生成6条通话记录。通话对象应与“核心记忆库”中提到的人物或事件相关。每条必须包含name, type (incoming/outgoing/missed), 和time。
+            JSON格式: {"calls": [{"name": "联系人名", "type": "incoming", "time": "时间描述"}, ...]}`;
+            break;
+            
+        case 'forum':
+            prompt += `\n生成4个论坛帖子。主题应源自“核心记忆库”中的真实困惑或分享。为每个帖子生成**8条**左右的评论。
+            **【评论活人感指令】**: 评论必须模拟真实论坛，要有多样化的用户（杠精、热心人、路人等），风格要口语化、多样化。
+            JSON格式: {"posts": [{"id": "post_1", "title": "帖子标题", "content": "帖子正文...", "datetime": "YYYY-MM-DD HH:MM", "comments": [{"floor": "1楼", "user": "网友昵称", "comment": "评论内容"}, ...]}, ...]}`;
+            break;
+    }
 
     const settings = await dbManager.get('apiSettings', 'settings');
     if (!settings.apiUrl || !settings.apiKey) {
@@ -11485,28 +11462,56 @@ switch(appName) {
         return;
     }
     
+    // --- 核心修复：在这里引入“AI自我修复”逻辑 ---
     try {
-        const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: prompt}], response_format: { type: 'json_object' } }) });
+        // 发起第一次请求
+        let response = await fetch(`${settings.apiUrl}/chat/completions`, { 
+            method: 'POST', 
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: prompt}], response_format: { type: 'json_object' } }) 
+        });
         if(!response.ok) throw new Error(`API请求失败: ${response.status}`);
-        const data = await response.json();
-        
-        const responseText = data.choices[0].message.content;
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("AI未返回有效的JSON格式。");
-        const content = JSON.parse(jsonMatch[0]);
+        let data = await response.json();
+        let responseText = data.choices[0].message.content;
+
+        let content;
+        try {
+            // 1. 第一次尝试解析：更智能地查找JSON
+            const firstBracket = responseText.indexOf('{');
+            const lastBracket = responseText.lastIndexOf('}');
+            if (firstBracket === -1 || lastBracket === -1) {
+                throw new Error("响应中未找到有效的JSON对象。");
+            }
+            const jsonString = responseText.substring(firstBracket, lastBracket + 1);
+            content = JSON.parse(jsonString);
+        } catch (parseError) {
+            console.error("初次解析JSON失败，启动AI自我修复:", parseError);
+            console.log("需要修复的文本:", responseText);
+
+            // 2. 如果失败，启动“AI自我修复”
+            const repairPrompt = `以下是一段损坏的JSON文本，请修复它，并只返回修复后的、纯净的、没有任何额外文字的JSON代码。\n\n损坏的文本：\n\`\`\`json\n${responseText}\n\`\`\``;
+            
+            response = await fetch(`${settings.apiUrl}/chat/completions`, { 
+                method: 'POST', 
+                headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: repairPrompt}], response_format: { type: 'json_object' } }) 
+            });
+            if(!response.ok) throw new Error(`AI修复请求失败: ${response.status}`);
+            data = await response.json();
+            const repairedText = data.choices[0].message.content;
+            
+            // 3. 再次尝试解析修复后的文本
+            content = JSON.parse(repairedText); 
+        }
 
         if (!simPhoneContentCache[characterId]) simPhoneContentCache[characterId] = {};
         simPhoneContentCache[characterId][appName] = { data: content }; 
         await saveData();
         renderSimAppList(appName, content);
+
     } catch(e) {
-        console.error(`生成模拟内容失败 (尝试次数 ${retryCount + 1}):`, e);
-        if (retryCount < 2) {
-            await new Promise(res => setTimeout(res, 500));
-            await generateSimAppContent(characterId, appName, retryCount + 1);
-        } else {
-            renderSimAppList(appName, { error: "内容生成失败，请重试。" });
-        }
+        console.error(`生成模拟内容失败，即使在修复后也是如此:`, e);
+        renderSimAppList(appName, { error: "内容生成失败，请重试。" });
     }
 }
 
