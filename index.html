@@ -8606,7 +8606,7 @@ ${chatContextForAI || '无'}
 【输出格式】(严格遵守)
 - 你的回复必须是纯净的JSON数组 []。
 - 数组中每个对象代表一个动作，必须包含 "sender_name", "action", "delay_seconds" 三个键。
-- 可用 action: {"type": "text", "content": "..."} | {"type": "voice", "content": "..."} | {"type": "image", "description": "..."} | {"type": "pat_pat", "target_name": "..."}
+- 可用 action: {"type": "text", "content": "..."} | {"type": "voice", "content": "..."} | {"type": "image", "description": "..."} | {"type": "pat_pat", "target_name": "..."} | {"type": "transfer", "target_name": "...", "amount": 数字, "remark": "..."} | {"type": "accept_transfer", "target_name": "..."}
 【剧本示例】:
 [
   {"sender_name": "周遇", "action": {"type": "text", "content": "哇，抢到红包了！"}, "delay_seconds": 1.2},
@@ -8790,52 +8790,83 @@ ${timeContext}
                             
                             // --- 核心修改：使用 setTimeout 来延迟执行每个动作 ---
                             setTimeout(async () => {
-                                switch (action.type) {
-                                    case 'text':
-                                    case 'voice':
-                                        const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
-                                        addMessageToDOM(msgData, friend);
-                                        break;
-                                    case 'image':
-                                        const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
-                                        const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
-                                        imgMsgData.imageDescription = action.description || 'AI生成的图片';
-                                        addMessageToDOM(imgMsgData, friend);
-                                        break;
-                                    case 'pat_pat':
-                                        const target = friends.find(m => m.name === action.target_name);
-                                        if (target) {
-                                            const patContent = `"${sender.name}"拍了拍"${target.name}"${sender.patAction || ''}`;
-                                            const patMsg = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
-                                            addMessageToDOM(patMsg, friend);
-                                        }
-                                        break;
-                                    case 'quote':
-                                        const targetToQuote = friends.find(m => m.name === action.target_name);
-                                        if (targetToQuote) {
-                                            const lastMessageFromTarget = history.slice().reverse().find(m => m.senderId === targetToQuote.id);
-                                            const quoteContent = lastMessageFromTarget ? lastMessageFromTarget.content.substring(0, 50) + '...' : '';
-                                            const quoteMsgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, sender.id, 'text');
-                                            addMessageToDOM(quoteMsgData, friend);
-                                        }
-                                        break;
-                                    case 'recall':
-                                        const historyForRecall = chatHistories[friendId] || [];
-                                        const lastMessageFromSender = historyForRecall.slice().reverse().find(m => m.senderId === sender.id);
-                                        if (lastMessageFromSender) {
-                                            lastMessageFromSender.recalled = true;
-                                            lastMessageFromSender.recalledContent = lastMessageFromSender.content;
-                                            const msgElementToRecall = document.querySelector(`.message[data-message-id="${lastMessageFromSender.id}"]`);
-                                            if (msgElementToRecall) {
-                                                const recallDiv = document.createElement('div');
-                                                recallDiv.className = 'recall-message';
-                                                recallDiv.innerHTML = `<div class="recall-content" onclick="showRecalledMessage('${lastMessageFromSender.id}')">"${sender.name}"撤回了一条消息</div>`;
-                                                msgElementToRecall.parentNode.replaceChild(recallDiv, msgElementToRecall);
-                                            }
-                                        }
-                                        break;
-                                    // 我们不再需要 red_envelope_thanks 这个case，因为AI会直接用 text 类型来回应
-                                }
+                                // ↓↓↓ 请从这里开始复制，替换掉旧的 switch 语句 ↓↓↓
+switch (action.type) {
+    case 'text':
+    case 'voice':
+        const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
+        addMessageToDOM(msgData, friend);
+        break;
+    case 'image':
+        const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
+        const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
+        imgMsgData.imageDescription = action.description || 'AI生成的图片';
+        addMessageToDOM(imgMsgData, friend);
+        break;
+    case 'pat_pat':
+        // --- 新增代码：处理拍一拍 ---
+        const target = friends.find(m => m.name === action.target_name) || (action.target_name === userProfile.name ? userProfile : null);
+        if (target) {
+            // 如果AI拍的是自己，也显示出来
+            const patContent = `"${sender.name}"拍了拍"${target.name}"${sender.patAction || ''}`;
+            const patMsg = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
+            addMessageToDOM(patMsg, friend);
+        }
+        break;
+
+    // --- 新增代码：处理转账 ---
+    case 'transfer':
+        const targetForTransfer = friends.find(m => m.name === action.target_name) || (action.target_name === userProfile.name ? userProfile : null);
+        if (targetForTransfer && action.amount) {
+            const transferData = { amount: action.amount, remark: action.remark || '' };
+            // 注意：这里我们模拟的是“你收到了一个转账”，所以类型是 received
+            const transferMsg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', sender.id, 'transfer_request');
+            addMessageToDOM(transferMsg, friend);
+        }
+        break;
+    
+    // --- 新增代码：处理接受转账 ---
+    case 'accept_transfer':
+        const targetOfTransfer = friends.find(m => m.name === action.target_name) || (action.target_name === userProfile.name ? userProfile : null);
+        if (targetOfTransfer) {
+            const pendingTransferMsg = (chatHistories[friendId] || []).slice().reverse().find(m => 
+                m.senderId === targetOfTransfer.id && // 找到转账发起人
+                m.contentType === 'transfer_request' && 
+                m.transfer_status === 'pending'
+            );
+            if (pendingTransferMsg) {
+                // 模拟AI接受转账
+                await aiAcceptTransfer(pendingTransferMsg.id);
+            }
+        }
+        break;
+
+    case 'quote':
+        const targetToQuote = friends.find(m => m.name === action.target_name);
+        if (targetToQuote) {
+            const lastMessageFromTarget = history.slice().reverse().find(m => m.senderId === targetToQuote.id);
+            const quoteContent = lastMessageFromTarget ? lastMessageFromTarget.content.substring(0, 50) + '...' : '';
+            const quoteMsgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, sender.id, 'text');
+            addMessageToDOM(quoteMsgData, friend);
+        }
+        break;
+    case 'recall':
+        const historyForRecall = chatHistories[friendId] || [];
+        const lastMessageFromSender = historyForRecall.slice().reverse().find(m => m.senderId === sender.id);
+        if (lastMessageFromSender) {
+            lastMessageFromSender.recalled = true;
+            lastMessageFromSender.recalledContent = lastMessageFromSender.content;
+            const msgElementToRecall = document.querySelector(`.message[data-message-id="${lastMessageFromSender.id}"]`);
+            if (msgElementToRecall) {
+                const recallDiv = document.createElement('div');
+                recallDiv.className = 'recall-message';
+                recallDiv.innerHTML = `<div class="recall-content" onclick="showRecalledMessage('${lastMessageFromSender.id}')">"${sender.name}"撤回了一条消息</div>`;
+                msgElementToRecall.parentNode.replaceChild(recallDiv, msgElementToRecall);
+            }
+        }
+        break;
+}
+// ↑↑↑ 请在这里结束复制 ↑↑↑
                                 document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
                             }, delay); // 将延迟时间应用到 setTimeout
                             }
