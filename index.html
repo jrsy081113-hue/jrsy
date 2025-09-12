@@ -4700,6 +4700,106 @@ html {
     z-index: 1; /* 确保按钮在金色装饰之上 */
 }
 
+/* ↓↓↓ 第二步：将这些CSS代码粘贴到 <style> 标签的末尾 ↓↓↓ */
+
+/* 聊天界面中的投票卡片样式 */
+.message-content.has-poll {
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    max-width: 280px; /* 卡片最大宽度 */
+}
+
+.poll-card {
+    width: 250px; /* 卡片固定宽度 */
+    background-color: var(--bg-primary, white);
+    border-radius: 12px;
+    border: 1px solid var(--border-light, #f0f0f0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+    color: var(--text-color, #000);
+}
+
+.poll-card-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.poll-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    white-space: pre-wrap; /* 允许标题换行 */
+    word-break: break-word;
+}
+
+.poll-card-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary, #999);
+    margin-top: 4px;
+}
+
+.poll-card-options {
+    padding: 10px 15px;
+}
+
+.poll-option-item {
+    margin-bottom: 10px;
+}
+.poll-option-item:last-child {
+    margin-bottom: 0;
+}
+
+.poll-option-text {
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block; /* 让文字单独占一行 */
+}
+
+.poll-voters-line {
+    display: flex;
+    align-items: center;
+    gap: 4px; /* 头像之间的间距 */
+    min-height: 24px; /* 即使没人投票也保持高度 */
+    border-left: 3px solid var(--bg-hover, #f0f0f0); /* 左侧的指示条 */
+    padding-left: 8px;
+}
+
+.poll-voter-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    flex-shrink: 0; /* 防止头像被压缩 */
+}
+
+/* 投票创建弹窗的选项输入框样式 */
+.poll-option-input {
+    flex-grow: 1; /* 让输入框占据大部分空间 */
+}
+
+.remove-option-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 30px;
+    flex-shrink: 0;
+}
+
+/* ↑↑↑ 第二步：代码粘贴到此结束 ↑↑↑ */
+
     </style>
 </head>
 <body>
@@ -5769,6 +5869,46 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 
 <!-- ↑↑↑ 第1步：在这里结束复制 ↑↑↑ -->
+
+<!-- ↓↓↓ 第一步：将这两段代码粘贴到 <body> 标签的末尾 ↓↓↓ -->
+
+<!-- 这是新增的“发起投票”功能的弹窗 -->
+<div id="pollModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">发起投票</div>
+        <input type="text" class="modal-input" id="pollTitleInput" placeholder="投票标题">
+        <div id="pollOptionsContainer">
+            <!-- 投票选项会动态添加到这里 -->
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="text" class="form-input poll-option-input" placeholder="选项 1">
+                <!-- 第一个选项不允许删除 -->
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="text" class="form-input poll-option-input" placeholder="选项 2">
+                <!-- 第二个选项也不允许删除 -->
+            </div>
+        </div>
+        <button class="modal-btn modal-btn-cancel" onclick="addPollOption()" style="margin-top: 10px; background: var(--bg-hover);">+ 添加选项</button>
+        <div class="modal-buttons" style="margin-top: 20px;">
+            <button class="modal-btn modal-btn-cancel" onclick="closePollModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="sendPoll()">发起投票</button>
+        </div>
+    </div>
+</div>
+
+<!-- 这是聊天界面里的“投票”按钮 -->
+<!-- 注意：这段代码我们稍后会用JavaScript动态添加到“+”菜单里，你先不用动 -->
+<!-- <div class="function-item" onclick="openPollModal()">
+    <div class="function-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-4h2v4zm4 0h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+        </svg>
+    </div>
+    <div class="function-label">投票</div>
+</div> -->
+
+<!-- ↑↑↑ 第一步：代码粘贴到此结束 ↑↑↑ -->
+
     
     <!-- [MODIFIED] Heart's Voice Modal -->
     <div id="heartsVoiceModal" class="modal">
@@ -7524,7 +7664,7 @@ const newGroup = {
         }
 
 
-        // ↓↓↓ 3.1 修改 openChat 函数 ↓↓↓
+        // ↓↓↓ 3.1 用这个新函数完整替换旧的 openChat 函数 ↓↓↓
 function openChat(friendId) {
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
@@ -7539,17 +7679,19 @@ function openChat(friendId) {
     const functionMenu = document.getElementById('chatFunctions').querySelector('.function-menu');
     const listenTogetherButton = functionMenu.querySelector('.function-item[onclick="openListenTogether()"]');
     let redEnvelopeButton = functionMenu.querySelector('.function-item[onclick="openRedEnvelopeModal()"]');
+    // 新增：获取或创建投票按钮
+    let pollButton = functionMenu.querySelector('.function-item[onclick="openPollModal()"]');
 
     if (friend.isGroup) {
         // 如果是群聊
-        if (listenTogetherButton) listenTogetherButton.style.display = 'none'; // 隐藏“一起听”
+        if (listenTogetherButton) listenTogetherButton.style.display = 'none'; 
+        
+        // 红包按钮逻辑 (保持不变)
         if (!redEnvelopeButton) {
-            // 如果红包按钮不存在，就创建一个
             redEnvelopeButton = document.createElement('div');
             redEnvelopeButton.className = 'function-item';
             redEnvelopeButton.setAttribute('onclick', 'openRedEnvelopeModal()');
             redEnvelopeButton.innerHTML = `<div class="function-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm-1 14H5c-.55 0-1-.45-1-1V7c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1zm-8-2h2v-4h4v-2h-4V8h-2v4H7v2h4v4z"/></svg></div><div class="function-label">红包</div>`;
-            // 找到“位置”按钮并把它插在前面
             const locationButton = functionMenu.querySelector('.function-item[onclick="openLocationModal()"]');
             if (locationButton) {
                 functionMenu.insertBefore(redEnvelopeButton, locationButton);
@@ -7557,11 +7699,29 @@ function openChat(friendId) {
                 functionMenu.appendChild(redEnvelopeButton);
             }
         }
-        redEnvelopeButton.style.display = 'flex'; // 显示红包按钮
+        redEnvelopeButton.style.display = 'flex';
+
+        // 新增：投票按钮逻辑
+        if (!pollButton) {
+            pollButton = document.createElement('div');
+            pollButton.className = 'function-item';
+            pollButton.setAttribute('onclick', 'openPollModal()');
+            pollButton.innerHTML = `<div class="function-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-4h2v4zm4 0h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg></div><div class="function-label">投票</div>`;
+            const transferButton = functionMenu.querySelector('.function-item[onclick="openTransferModal()"]');
+            // 把投票按钮放在转账按钮后面
+            if (transferButton) {
+                 transferButton.insertAdjacentElement('afterend', pollButton);
+            } else {
+                functionMenu.appendChild(pollButton);
+            }
+        }
+        pollButton.style.display = 'flex'; // 显示投票按钮
+
     } else {
         // 如果是私聊
-        if (listenTogetherButton) listenTogetherButton.style.display = 'flex'; // 显示“一起听”
-        if (redEnvelopeButton) redEnvelopeButton.style.display = 'none'; // 隐藏红包按钮
+        if (listenTogetherButton) listenTogetherButton.style.display = 'flex';
+        if (redEnvelopeButton) redEnvelopeButton.style.display = 'none';
+        if (pollButton) pollButton.style.display = 'none'; // 隐藏投票按钮
     }
     // --- 核心修改结束 ---
 
@@ -7664,6 +7824,7 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
     
     const hasImage = msg.contentType === 'image';
     const hasGroupRedEnvelope = msg.contentType === 'group_red_envelope';
+    const hasPoll = msg.contentType === 'poll';
     const hasEmoji = msg.contentType === 'emoji';
     const hasVoice = msg.contentType === 'voice';
     const hasLocation = msg.contentType === 'location';
@@ -7686,6 +7847,37 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
             <div class="red-envelope-footer">微信红包</div>
         </div>
         `;
+        
+        } else if (hasPoll) {
+    const pollData = JSON.parse(msg.content);
+    // 为每个选项生成HTML
+    const optionsHtml = pollData.options.map((option, index) => {
+        // 为每个投票者生成头像HTML
+        const votersHtml = option.votes.map(voterId => {
+            const voter = getAuthorById(voterId);
+            return voter.avatarImage 
+                ? `<div class="poll-voter-avatar" style="background-image: url(${voter.avatarImage})"></div>`
+                : `<div class="poll-voter-avatar">${voter.avatar}</div>`;
+        }).join('');
+
+        return `
+            <div class="poll-option-item">
+                <span class="poll-option-text">${index + 1}. ${option.text}</span>
+                <div class="poll-voters-line">${votersHtml}</div>
+            </div>
+        `;
+    }).join('');
+
+    contentHTML = `
+        <div class="poll-card" id="poll-${pollData.id}">
+            <div class="poll-card-header">
+                <div class="poll-card-title">${pollData.title}</div>
+                <div class="poll-card-subtitle">${pollData.voterCount || 0}人已参与</div>
+            </div>
+            <div class="poll-card-options">${optionsHtml}</div>
+        </div>
+    `;
+        
     }  else if (hasVoice) {
                 const textLength = msg.content.length;
                 const duration = Math.max(1, Math.min(60, Math.round(textLength / 4)));
@@ -7812,9 +8004,7 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
                 }
             }
 
-            // ↓↓↓ 3.3 替换 addMessageToDOM 函数里的这一行 ↓↓↓
-const contentClass = `message-content ${hasImage ? 'has-image' : ''} ${hasEmoji ? 'has-emoji' : ''} ${hasVoice ? 'has-voice' : ''} ${hasGroupRedEnvelope ? 'has-red-envelope' : ''} ${(msg.contentType.startsWith('listen_') || msg.contentType.startsWith('transfer_') || hasLocation) ? 'has-image' : ''} ${hasVoiceCallEnd ? 'has-voice-call-end' : ''}`;
-// ↑↑↑ 3.3 替换结束 ↑↑↑
+            const contentClass = `message-content ${hasImage ? 'has-image' : ''} ${hasEmoji ? 'has-emoji' : ''} ${hasVoice ? 'has-voice' : ''} ${hasGroupRedEnvelope ? 'has-red-envelope' : ''} ${hasPoll ? 'has-poll' : ''} ${(msg.contentType.startsWith('listen_') || msg.contentType.startsWith('transfer_') || hasLocation) ? 'has-image' : ''} ${hasVoiceCallEnd ? 'has-voice-call-end' : ''}`;
             const senderNameHtml = (friendOrGroup.isGroup && msg.type === 'received') ? `<div class="message-sender-name">${sender.name}</div>` : '';
             
             if (containerId === 'listenTogetherChatOverlay') {
@@ -12065,6 +12255,257 @@ function formatMemoContent(content) {
     // 这会保留所有的换行和纯文本格式
     return content.replace(/\n/g, '<br>');
 }
+
+// ↓↓↓ 3.3 将以下所有新函数，完整地粘贴到 <script> 的末尾 ↓↓↓
+
+// --- 投票功能核心函数 ---
+
+/**
+ * 打开创建投票的弹窗
+ */
+function openPollModal() {
+    // 重置弹窗状态
+    document.getElementById('pollTitleInput').value = '';
+    const optionsContainer = document.getElementById('pollOptionsContainer');
+    optionsContainer.innerHTML = `
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="text" class="form-input poll-option-input" placeholder="选项 1">
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="text" class="form-input poll-option-input" placeholder="选项 2">
+        </div>
+    `;
+    document.getElementById('pollModal').classList.add('show');
+    hideFunctionMenus();
+}
+
+/**
+ * 关闭创建投票的弹窗
+ */
+function closePollModal() {
+    document.getElementById('pollModal').classList.remove('show');
+}
+
+/**
+ * 在弹窗中动态添加一个新选项
+ */
+function addPollOption() {
+    const optionsContainer = document.getElementById('pollOptionsContainer');
+    const optionCount = optionsContainer.children.length + 1;
+    if (optionCount > 10) {
+        return showAlert('最多只能添加10个选项。');
+    }
+    const newOptionDiv = document.createElement('div');
+    newOptionDiv.className = 'form-group';
+    newOptionDiv.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+    newOptionDiv.innerHTML = `
+        <input type="text" class="form-input poll-option-input" placeholder="选项 ${optionCount}">
+        <button class="remove-option-btn" onclick="removePollOption(this)">-</button>
+    `;
+    optionsContainer.appendChild(newOptionDiv);
+}
+
+/**
+ * 在弹窗中移除一个选项
+ * @param {HTMLElement} button - 被点击的移除按钮
+ */
+function removePollOption(button) {
+    button.parentElement.remove();
+    // 更新所有选项的 placeholder
+    const options = document.querySelectorAll('.poll-option-input');
+    options.forEach((input, index) => {
+        input.placeholder = `选项 ${index + 1}`;
+    });
+}
+
+/**
+ * 核心功能：发送投票
+ */
+async function sendPoll() {
+    const title = document.getElementById('pollTitleInput').value.trim();
+    const optionInputs = document.querySelectorAll('.poll-option-input');
+    const options = Array.from(optionInputs)
+        .map(input => ({ text: input.value.trim(), votes: [] }))
+        .filter(option => option.text);
+
+    if (!title) return showAlert('请输入投票标题。');
+    if (options.length < 2) return showAlert('至少需要两个有效的选项。');
+
+    const pollData = {
+        id: `poll_${generateUniqueId()}`,
+        title: title,
+        options: options,
+        voterCount: 0,
+        votedBy: [] // 记录已投票的AI ID，防止重复投票
+    };
+
+    const group = friends.find(f => f.id === currentChatFriendId);
+    const msgData = await saveChatMessage(currentChatFriendId, 'sent', JSON.stringify(pollData), '', null, 'poll');
+    
+    addMessageToDOM(msgData, group);
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+    closePollModal();
+
+    // 触发AI投票
+    triggerAiPollVote(msgData.id);
+}
+
+/**
+ * 核心功能：触发所有AI角色进行投票
+ * @param {string} messageId - 投票卡片的消息ID
+ */
+async function triggerAiPollVote(messageId) {
+    const group = friends.find(f => f.id === currentChatFriendId);
+    if (!group || !group.isGroup) return;
+
+    const history = chatHistories[currentChatFriendId];
+    const msgIndex = history.findIndex(m => m.id === messageId);
+    if (msgIndex === -1) return;
+
+    const pollData = JSON.parse(history[msgIndex].content);
+
+    // 遍历群里除用户外的所有AI成员
+    const aiMembers = group.members.filter(id => id !== userProfile.id);
+    for (const memberId of aiMembers) {
+        // 设置一个随机延迟，让投票看起来更真实
+        const delay = 1500 + Math.random() * 3000;
+        setTimeout(() => {
+            requestAiVote(messageId, pollData, memberId);
+        }, delay);
+    }
+}
+
+// ↓↓↓ 第一步：用这个新函数完整替换旧的 requestAiVote 函数 ↓↓↓
+
+/**
+ * 核心功能：为单个AI请求投票决策 (V2 - 无理由版)
+ * @param {string} messageId - 投票消息ID
+ * @param {object} pollData - 投票数据对象
+ * @param {string} aiMemberId - 需要投票的AI成员ID
+ */
+async function requestAiVote(messageId, pollData, aiMemberId) {
+    const ai = friends.find(f => f.id === aiMemberId);
+    if (!ai) return;
+
+    const settings = await dbManager.get('apiSettings', 'settings') || {};
+    if (!settings.apiUrl || !settings.apiKey) return;
+    
+    const optionsText = pollData.options.map((opt, index) => `${index}. ${opt.text}`).join('\n');
+
+    // --- 修改点1：简化了AI的指令 ---
+    const prompt = `
+    【你的身份】: 你是群聊成员 "${ai.name}"，你的性格是：“${ai.role}”。
+
+    【当前情景】:
+    群主 "${userProfile.name}" 在群里发起了一个投票，你需要根据自己的性格和判断，选择一个选项。
+
+    【投票详情】:
+    - 标题: "${pollData.title}"
+    - 选项:
+    ${optionsText}
+
+    【你的任务】:
+    仔细阅读投票标题和所有选项，根据你的人设，选择一个你最倾向的选项。
+    
+    【【【输出格式铁律】】】
+    你的回复必须是一个纯净的JSON对象，只包含一个键：
+    1.  "choice_index": 你选择的选项的**数字索引** (从0开始)。
+
+    【JSON格式示例】:
+    {
+      "choice_index": 1
+    }
+
+    现在，请做出你的选择。`;
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                response_format: { type: 'json_object' },
+                temperature: 1.0 
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const responseData = JSON.parse(data.choices[0].message.content);
+
+        // --- 修改点2：不再检查 reason ---
+        if (responseData && typeof responseData.choice_index === 'number') {
+            // --- 修改点3：调用时不再传递 reason ---
+            await processAiVote(messageId, aiMemberId, responseData.choice_index);
+        }
+
+    } catch (error) {
+        console.error(`AI "${ai.name}" 投票时出错:`, error);
+    }
+}
+
+// ↓↓↓ 第二步：用这个新函数完整替换旧的 processAiVote 函数 ↓↓↓
+
+/**
+ * 核心功能：处理AI的投票结果，并更新UI (V2 - 无理由版)
+ * @param {string} messageId - 投票消息ID
+ * @param {string} aiVoterId - 投票的AI的ID
+ * @param {number} choiceIndex - AI选择的选项索引
+ */
+async function processAiVote(messageId, aiVoterId, choiceIndex) { // --- 修改点1：移除了 reason 参数 ---
+    const history = chatHistories[currentChatFriendId];
+    const msgIndex = history.findIndex(m => m.id === messageId);
+    if (msgIndex === -1) return;
+
+    let pollData = JSON.parse(history[msgIndex].content);
+
+    if (pollData.votedBy.includes(aiVoterId)) return;
+    
+    if (choiceIndex >= 0 && choiceIndex < pollData.options.length) {
+        pollData.options[choiceIndex].votes.push(aiVoterId);
+        pollData.voterCount++;
+        pollData.votedBy.push(aiVoterId);
+
+        history[msgIndex].content = JSON.stringify(pollData);
+        await saveData();
+        
+        updatePollCardInDOM(pollData);
+
+        // --- 修改点2：删除了原来发送投票理由消息的所有代码 ---
+        // (这里原来有一大段代码用于发送理由消息，现在已经没有了)
+    }
+}
+
+/**
+ * 核心功能：在DOM中实时更新投票卡片的内容
+ * @param {object} pollData - 最新的投票数据
+ */
+function updatePollCardInDOM(pollData) {
+    const cardElement = document.getElementById(`poll-${pollData.id}`);
+    if (!cardElement) return;
+
+    // 更新参与人数
+    cardElement.querySelector('.poll-card-subtitle').textContent = `${pollData.voterCount}人已参与`;
+
+    // 重新渲染所有选项的投票者头像
+    const optionItems = cardElement.querySelectorAll('.poll-option-item');
+    pollData.options.forEach((option, index) => {
+        if (optionItems[index]) {
+            const votersLine = optionItems[index].querySelector('.poll-voters-line');
+            const votersHtml = option.votes.map(voterId => {
+                const voter = getAuthorById(voterId);
+                return voter.avatarImage 
+                    ? `<div class="poll-voter-avatar" style="background-image: url(${voter.avatarImage})"></div>`
+                    : `<div class="poll-voter-avatar">${voter.avatar}</div>`;
+            }).join('');
+            votersLine.innerHTML = votersHtml;
+        }
+    });
+}
+
+// ↑↑↑ 第三步：新函数粘贴到此结束 ↑↑↑
 
         window.onload = async function() {
     await dbManager.init(); // 确保 IndexedDB 已初始化
