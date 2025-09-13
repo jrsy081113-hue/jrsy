@@ -4802,6 +4802,37 @@ html {
 
 /* ↑↑↑ 第二步：代码粘贴到此结束 ↑↑↑ */
 
+/* --- 【新增】导出数据时的加载动画样式 --- */
+#loadingOverlay {
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.6); 
+    z-index: 10000; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    flex-direction: column; 
+    gap: 20px; 
+    text-align: center;
+}
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
     </style>
 </head>
 <body>
@@ -6294,6 +6325,17 @@ let memoryGenerationTurns = 20; // 新增：记忆生成轮数，默认20轮
         function closeAlertModal() {
             document.getElementById('alertModal').classList.remove('show');
         }
+        
+
+// --- 【新增】关闭弹窗并释放Blob URL内存的辅助函数 ---
+function closeAlertModalAndRevoke(urlToRevoke) {
+    closeAlertModal(); // 调用已有的关闭函数
+    if (urlToRevoke) {
+        URL.revokeObjectURL(urlToRevoke);
+        console.log('Blob URL has been revoked to free up memory.');
+    }
+}
+
         
         // NEW: Image Description Modal Functions
         function showImageDescription(description ) {
@@ -11048,59 +11090,88 @@ async function fetchModels() {
             showAlert('API设置已保存');
         }
 
-        // --- [REFACTORED] Data Import/Export Logic ---
-        async function exportData() {
-            try {
-                // 并行从所有表中读取数据
-                const [
-                    loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
-                    loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
-                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories
-                ] = await Promise.all([
-                    dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
-                    dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
-                    dbManager.getAll('moments'), dbManager.getAll('playlist'), dbManager.get('appSettings', 'settings'),
-                    dbManager.get('apiSettings', 'settings'), dbManager.getAll('customEmojis'),
-                    dbManager.getAll('memories')
-                ]);
-                
-                // 将聊天记录数组转换回对象格式
-                const chatHistoriesObject = {};
-                (loadedChatHistories || []).forEach(record => {
-                    chatHistoriesObject[record.friendId] = record.messages;
-                });
+        // --- 【请用这个全新的函数，完整替换掉您旧的 exportData 函数】 ---
+async function exportData() {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (!loadingOverlay) {
+        showAlert('错误：找不到加载动画元素。');
+        return;
+    }
 
-                // 组合成与旧版兼容的单一对象
-                const fullExport = {
-                    wechatData: {
-                        friends: loadedFriends,
-                        chatHistories: chatHistoriesObject,
-                        diaries: loadedDiaries,
-                        worldBooks: loadedWorldBooks,
-                        worldBookFolders: loadedWorldBookFolders,
-                        favorites: loadedFavorites,
-                        moments: loadedMoments,
-                        playlist: loadedPlaylist,
-                        customEmojis: loadedCustomEmojis,
-                        memories: loadedMemories, // <-- 新增
-                        ...loadedAppSettings // 合并所有应用设置
-                    },
-                    apiSettings: loadedApiSettings
-                };
+    // 步骤 1: 显示“正在加载”的界面
+    loadingOverlay.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p style="color: white; margin-top: 20px;">正在准备数据，请稍候...</p>
+    `;
+    loadingOverlay.style.display = 'flex';
 
-                const blob = new Blob([JSON.stringify(fullExport, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `jrsy-data-${new Date().toISOString().slice(0,10)}.json`;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                showAlert('数据导出成功！');
-            } catch (e) {
-                console.error("Export failed:", e);
-                showAlert(`数据导出失败: ${e.message}`);
-            }
-        }
+    try {
+        // 步骤 2: 异步读取所有数据 (这部分与您原来的代码相同)
+        const [
+            loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
+            loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
+            loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories
+        ] = await Promise.all([
+            dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
+            dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
+            dbManager.getAll('moments'), dbManager.getAll('playlist'), dbManager.get('appSettings', 'settings'),
+            dbManager.get('apiSettings', 'settings'), dbManager.getAll('customEmojis'),
+            dbManager.getAll('memories')
+        ]);
+        
+        const chatHistoriesObject = {};
+        (loadedChatHistories || []).forEach(record => {
+            chatHistoriesObject[record.friendId] = record.messages;
+        });
+
+        const fullExport = {
+            wechatData: {
+                friends: loadedFriends,
+                chatHistories: chatHistoriesObject,
+                diaries: loadedDiaries,
+                worldBooks: loadedWorldBooks,
+                worldBookFolders: loadedWorldBookFolders,
+                favorites: loadedFavorites,
+                moments: loadedMoments,
+                playlist: loadedPlaylist,
+                customEmojis: loadedCustomEmojis,
+                memories: loadedMemories,
+                ...loadedAppSettings
+            },
+            apiSettings: loadedApiSettings
+        };
+
+        // 步骤 3: 创建Blob和下载链接
+        const blob = new Blob([JSON.stringify(fullExport, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const filename = `jrsy-data-${new Date().toISOString().slice(0,10)}.json`;
+
+        // 步骤 4: 隐藏加载界面，并显示一个带有【真实、可见的下载按钮】的弹窗
+        loadingOverlay.style.display = 'none';
+        
+        const alertModal = document.getElementById('alertModal');
+        const alertTitle = alertModal.querySelector('.modal-title');
+        const alertMessage = alertModal.querySelector('#alertMessage');
+        const alertButtons = alertModal.querySelector('.modal-buttons');
+
+        alertTitle.textContent = '文件已生成';
+        alertMessage.innerHTML = `<p style="text-align: center; line-height: 1.6;">您的数据备份文件已准备就绪。<br>点击下方按钮进行下载。</p>`;
+        
+        // 创建一个用户可以亲自点击的下载链接和一个关闭按钮
+        alertButtons.innerHTML = `
+            <a href="${url}" download="${filename}" class="modal-btn modal-btn-confirm" style="flex: 2; text-decoration: none;">点击下载</a>
+            <button class="modal-btn modal-btn-cancel" onclick="closeAlertModalAndRevoke('${url}')">关闭</button>
+        `;
+        
+        alertModal.classList.add('show');
+
+    } catch (e) {
+        // 如果出错，也要确保隐藏加载动画
+        loadingOverlay.style.display = 'none';
+        console.error("Export failed:", e);
+        showAlert(`数据导出失败: ${e.message}`);
+    }
+}
 
         function importData() {
             showConfirm("导入数据将覆盖当前所有设置和聊天记录，确定要继续吗？", (confirmed) => {
