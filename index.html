@@ -8612,6 +8612,15 @@ ${longTermMemories}
                 });
 
                 if (friend.isGroup) {
+                                // --- ↓↓↓ 新增：为群聊AI准备表情包列表 ↓↓↓ ---
+                let emojiContext = '';
+                if (customEmojis && customEmojis.length > 0) {
+                    const emojiListForAI = customEmojis.map(e => `- ${e.name}: ${e.url}`).join('\n');
+                    emojiContext = `【你的表情包库 (优先使用)】
+这是你拥有的所有表情包，当需要发送表情时，你应该首先从这里寻找：
+${emojiListForAI}
+`;
+}
                     const groupMembers = friend.members.map(id => getAuthorById(id)).filter(Boolean);
                     const memberInfoForAI = groupMembers.map(m => `- "${m.name}" (人设: ${m.role || (m.id === userProfile.id ? userProfile.personality : '未设定')})`).join('\n');
                     const chatContextForAI = history.map(msg => {
@@ -8639,6 +8648,8 @@ ${longTermMemories}
 ${memberInfoForAI}
 - 最近聊天记录:
 ${chatContextForAI || '无'}
+- 你的表情包库:
+${emojiContext || "无"}
 【核心任务】: 续写对话。为【除用户外的所有AI角色】生成下一轮动作。
 【行为铁律】
 1.  【人设至上】: 角色言行必须严格符合其人设。
@@ -8646,10 +8657,12 @@ ${chatContextForAI || '无'}
 3.  【模拟延迟】: 动作需包含 "delay_seconds" 字段 (值为0-5的数字)，模拟真实反应时间差。
 4.  【红包反应】: 若有角色领红包，其反应必须符合人设，禁止统一说“谢谢老板”。
 5.  【多条消息铁律】: 为了让对话更真实，你必须为每个AI角色生成 2到4条 连续的消息。只需在JSON数组中按顺序放入多个属于同一个"sender_name"的动作对象即可。
+6.  **【表情包指令】**: 指导你的AI演员们，在合适的时机（例如表达惊讶、喜悦、赞同等情绪时），根据他们各自的人设，主动使用 \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\` 动作来发送表情包，让群聊氛围更活跃。
 【输出格式】(严格遵守)
 - 你的回复必须是纯净的JSON数组 []。
 - 数组中每个对象代表一个动作，必须包含 "sender_name", "action", "delay_seconds" 三个键。
 - 可用 action: {"type": "text", "content": "..."} | {"type": "voice", "content": "..."} | {"type": "image", "description": "..."} | {"type": "pat_pat", "target_name": "..."} | {"type": "transfer", "target_name": "...", "amount": 数字, "remark": "..."} | {"type": "accept_transfer", "target_name": "..."}
+ | {"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}
 【剧本示例】:
 [
   {"sender_name": "周遇", "action": {"type": "text", "content": "哇，抢到红包了！"}, "delay_seconds": 1.2},
@@ -8722,16 +8735,33 @@ ${chatContextForAI || '无'}
 `;
                         }
                         
-                        systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
-【【【最高优先级：用户和你自己的人设读取模块】】】
-你必须时刻记住并严格遵守你的聊天对象，也就是用户的核心人设与背景设定。还必须记住自己的角色设定。这是你所有回应和行为的基础。
+                                            
+                    let emojiContext = '';
+                    if (customEmojis && customEmojis.length > 0) {
+                        const emojiListForAI = customEmojis.map(e => `- ${e.name}: ${e.url}`).join('\n');
+                        emojiContext = `
+【你的表情包库 (优先使用)】
+这是你拥有的所有表情包，当需要发送表情时，你应该首先从这里寻找：
+${emojiListForAI}
+; } else { emojiContext = 【你的表情包库】\n你目前没有自定义表情包。`;
+}
+                        
+                                        systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
+
+【【【最高优先级：世界观与核心设定读取模块】】】
+这是你所处世界的背景，是绝对的真理。你的所有行为和认知都不能违背以下设定。
+- **世界书设定 (绝对真理)**: 
+${worldBookContext || "无"}
+- **你的角色设定**: ${finalRole} 
+
+【【【第二优先级：用户人设读取模块】】】
+这是你的聊天对象，你需要了解他/她。
 - **用户核心人设**: ${userProfile.personality || '普通人'}
 - **用户背景设定**: ${userProfile.background || '无'}
-${worldBookContext}
-你的角色设定是：${finalRole} 
 ${longTermMemories}
 ${listenContext}
 ${momentsContext}
+${emojiContext}
 ${timeContext}
 
 【风格指令：注入“活人感”】
@@ -8759,6 +8789,7 @@ ${timeContext}
 【【【可用动作类型和格式】】】
 - **发送文本**: \`{"type": "text", "content": "消息内容"}\`
 - **发送语音**: \`{"type": "voice", "content": "语音的文字内容"}\`
+- **发送表情**: \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\`
 - **更新心声**: \`{"type": "hearts_voice", "data": {"favorability": "数值/100 (描述)", "dressing": "...", "action": "...", "thought": "...", "emoji": "颜文字"}}\`
 - **发送图片**: \`{"type": "image", "description": "详细的图片描述"}\`
 - **引用回复**: \`{"type": "quote_and_reply", "content": "你的回复内容"}\`
@@ -8774,6 +8805,13 @@ ${timeContext}
 - **组合动作**: 你可以在一次回复中组合多个动作。例如，先更新心声，然后发送几条文本消息。
 - **多消息**: 若要连续发送多条文本，只需在数组中放入多个\`{"type": "text", ...}\`对象即可。每次至少返回四条到六条文本消息，甚至可以更多。
 - **心声优先**: \`hearts_voice\`动作通常应该放在数组的第一个位置。
+
+    【【【新增指令：主动表情模块】】】
+    主动使用表情包，是让你显得更真实的关键。
+    1.  **时机**: 当对话内容有趣、可爱、好笑，或者你想表达强烈的情绪（如开心、惊讶、委屈）时，你应该主动发送1到2个表情包。
+    2.  **方式**: 你可以将表情包放在消息的开头，中间，结尾，也可以紧跟在一条文本消息之后发送，以增强语气。
+    3.  **来源**: 你必须从你的【你的表情包库】中，也可以从世界书中，根据表情的**名称**和**URL**，选择一个最符合当前情景的表情。
+    4.  **动作**: 你必须使用 \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\` 这个动作来发送表情。
 
 【JSON格式示例】:
 [
@@ -8840,6 +8878,16 @@ switch (action.type) {
         const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
         addMessageToDOM(msgData, friend);
         break;
+                                    case 'send_emoji':
+                                if (action.data && action.data.url) {
+                                    const emojiMsgData = await saveChatMessage(friendId, 'received', action.data.url, '', sender.id, 'emoji');
+                                    if (action.data.name) {
+                                        emojiMsgData.emojiName = action.data.name;
+                                    }
+                                    addMessageToDOM(emojiMsgData, friend);
+                                }
+                                break;
+                       
     case 'image':
         const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
         const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
@@ -8925,6 +8973,22 @@ switch (action.type) {
                         let lastMessageId = null;
                         for (const action of responseActions) {
                             switch (action.type) {
+                                                        case 'send_emoji':
+                                if (action.data && action.data.url) {
+                                    await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
+                                    const msgData = await saveChatMessage(friendId, 'received', action.data.url, '', friend.id, 'emoji');
+                                    if (action.data.name) {
+                                        msgData.emojiName = action.data.name;
+                                    }
+                                    if (isFromListenScreen) {
+                                        addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
+                                    } else if (currentChatFriendId === friendId) {
+                                        addMessageToDOM(msgData, friend);
+                                        currentlyDisplayedMessageCount++;
+                                        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                    }
+                                }
+                                break;
                                 case 'hearts_voice':
                                     if (action.data) {
                                         friend.heartsVoice = {
