@@ -551,11 +551,6 @@ html {
     z-index: 10;
 }
 
-.buggy-android-safe-area .nav-bar {
-    top: 30px; /* 忽略不准确的 env()，直接使用状态栏的固定高度 */
-}
-
-
         /* 替换为下面的新代码 */
 .nav-title {
     position: absolute;   /* 魔法1：让标题"漂浮"起来 */
@@ -592,28 +587,6 @@ html {
 #wechatApp > .wechat-content {
     padding-top: 74px; 
 }
-
-/* ▼▼▼ 请将这一整块全新的代码，粘贴到您刚刚找到的代码块的【正下方】▼▼▼ */
-
-/*
- * 【核心修复逻辑 - 内容区域】
- * 这段代码是为所有页面的内容区域准备的“特效药方”。
- * 它同样只在JS检测到问题的手机上生效。
- * 它的作用是确保，即使在有问题的手机上，内容区域的顶部留白也是正确的高度。
-*/
-.buggy-android-safe-area .page > .wechat-content,
-.buggy-android-safe-area .page > .settings-content,
-.buggy-android-safe-area .page > .discover-content,
-.buggy-android-safe-area .page > .profile-content,
-.buggy-android-safe-area .page > .chat-settings-content,
-.buggy-android-safe-area .page > .diary-content-view,
-.buggy-android-safe-area #phoneApp > .phone-app-container,
-.buggy-android-safe-area #wechatApp > .wechat-content {
-    padding-top: 74px !important; /* 使用 !important 确保这条规则的最高优先级 */
-}
-
-/* ▲▲▲ 粘贴结束 ▲▲▲ */
-
         /* 修复BUG：移除子元素的无效顶部内边距，防止双重边距 */
         #wechatApp .discover-content, #wechatApp .profile-content {
             padding-top: 0;
@@ -4829,6 +4802,37 @@ html {
 
 /* ↑↑↑ 第二步：代码粘贴到此结束 ↑↑↑ */
 
+/* --- 【新增】导出数据时的加载动画样式 --- */
+#loadingOverlay {
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.6); 
+    z-index: 10000; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    flex-direction: column; 
+    gap: 20px; 
+    text-align: center;
+}
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
     </style>
 </head>
 <body>
@@ -6321,6 +6325,33 @@ let memoryGenerationTurns = 20; // 新增：记忆生成轮数，默认20轮
         function closeAlertModal() {
             document.getElementById('alertModal').classList.remove('show');
         }
+        
+
+// 这是【修改后】的新代码，请用它完整替换上面的旧代码
+function closeAlertModalAndRevoke(urlToRevoke) {
+    closeAlertModal(); // 同样是先关闭弹窗
+    if (urlToRevoke) {
+        URL.revokeObjectURL(urlToRevoke);
+        console.log('Blob URL has been revoked to free up memory.');
+    }
+
+    // --- 新增的“恢复”代码从这里开始 ---
+    // 为了防止影响下一次正常的弹窗，我们需要把弹窗的标题和按钮恢复成默认状态
+    const alertModal = document.getElementById('alertModal');
+    const alertTitle = alertModal.querySelector('.modal-title');
+    const alertButtons = alertModal.querySelector('.modal-buttons');
+
+    // 恢复默认标题“提示”
+    if (alertTitle) {
+        alertTitle.textContent = '提示';
+    }
+    // 恢复默认的“确定”按钮
+    if (alertButtons) {
+        alertButtons.innerHTML = `<button class="modal-btn modal-btn-confirm" onclick="closeAlertModal()">确定</button>`;
+    }
+    // --- 新增的“恢复”代码在这里结束 ---
+}
+
         
         // NEW: Image Description Modal Functions
         function showImageDescription(description ) {
@@ -8503,6 +8534,54 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
             };
         }
         
+        // ↓↓↓ 把下面这个全新的函数，完整地粘贴到 receiveMessage 函数的正上方 ↓↓↓
+
+/**
+ * [智能记忆核心] 根据轮数上限和字符数上限，动态获取最相关的聊天记录
+ * @param {string} friendId - 当前聊天对象的ID
+ * @param {number} maxTurns - 你在设置中指定的“记忆轮数上限”
+ * @param {number} maxChars - 我们设定的安全字符数上限，防止超出API限制
+ * @returns {Array} - 一个处理好的、准备发给AI的消息数组
+ */
+function getSmartHistoryForAI(friendId, maxTurns, maxChars = 8000) {
+    // 1. 先从全局变量里，把这个好友的【全部】聊天记录都拿出来
+    const fullHistory = chatHistories[friendId] || [];
+    if (fullHistory.length === 0) {
+        return []; // 如果没有历史记录，就直接返回空数组
+    }
+
+    let recentHistory = []; // 这是我们要打包的“智能”历史记录
+    let currentCharCount = 0; // 这是我们的“办公桌”已用空间计数器
+
+    // 2.【核心】从最新的消息开始，一条一条“倒着”往前拿
+    for (let i = fullHistory.length - 1; i >= 0; i--) {
+        // 检查轮数上限：我们拿的消息数量不能超过你设置的轮数 * 2 (因为一轮包含你和AI)
+        if (recentHistory.length >= maxTurns * 2) {
+            break; // 如果拿够了，就停手
+        }
+
+        const msg = fullHistory[i];
+        
+        // 3. 估算这条消息的长度。如果是图片等特殊消息，我们给一个固定的较小长度，避免干扰
+        const messageLength = (typeof msg.content === 'string') ? msg.content.length : 150;
+
+        // 4.【最关键的一步】检查“办公桌”容量
+        // 如果把这条消息再放上去，总字数就会超过我们的安全上限
+        if (currentCharCount + messageLength > maxChars) {
+            break; // 那么就立刻停手，不再拿更早的记录了！
+        }
+
+        // 5. 如果一切正常，就把这条消息加到我们的包里，并更新已用字数
+        recentHistory.push(msg);
+        currentCharCount += messageLength;
+    }
+
+    // 6. 因为我们是倒着拿的，所以最后要把它反转一次，恢复成正常的“从旧到新”的顺序
+    return recentHistory.reverse();
+}
+
+// ↑↑↑ 新函数到此结束 ↑↑↑
+        
                                         async function receiveMessage(friendId, customPrompt = null, isFromListenScreen = false) {
             const friend = friends.find(f => f.id === friendId);
                                     if (friend.isGroup) {
@@ -8574,10 +8653,8 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
                 let systemPrompt;
                 let responseFormat = { type: "json_object" };
                 const memoryTurns = parseInt(settings.memoryTurns, 10) || 10;
-                // ...
+const history = getSmartHistoryForAI(friendId, memoryTurns);
 const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
-const history = (chatHistories[friendId] || []).slice(-10); // <-- 修改后的代码！
-// ...
                 
                 let longTermMemories = (characterMemories[friendId] || [])
                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
@@ -11075,59 +11152,84 @@ async function fetchModels() {
             showAlert('API设置已保存');
         }
 
-        // --- [REFACTORED] Data Import/Export Logic ---
-        async function exportData() {
-            try {
-                // 并行从所有表中读取数据
-                const [
-                    loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
-                    loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
-                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories
-                ] = await Promise.all([
-                    dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
-                    dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
-                    dbManager.getAll('moments'), dbManager.getAll('playlist'), dbManager.get('appSettings', 'settings'),
-                    dbManager.get('apiSettings', 'settings'), dbManager.getAll('customEmojis'),
-                    dbManager.getAll('memories')
-                ]);
-                
-                // 将聊天记录数组转换回对象格式
-                const chatHistoriesObject = {};
-                (loadedChatHistories || []).forEach(record => {
-                    chatHistoriesObject[record.friendId] = record.messages;
-                });
+        // 这是【修改后】的新代码，请用它完整替换上面的旧代码
+async function exportData() {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (!loadingOverlay) {
+        showAlert('错误：找不到加载动画元素。');
+        return;
+    }
 
-                // 组合成与旧版兼容的单一对象
-                const fullExport = {
-                    wechatData: {
-                        friends: loadedFriends,
-                        chatHistories: chatHistoriesObject,
-                        diaries: loadedDiaries,
-                        worldBooks: loadedWorldBooks,
-                        worldBookFolders: loadedWorldBookFolders,
-                        favorites: loadedFavorites,
-                        moments: loadedMoments,
-                        playlist: loadedPlaylist,
-                        customEmojis: loadedCustomEmojis,
-                        memories: loadedMemories, // <-- 新增
-                        ...loadedAppSettings // 合并所有应用设置
-                    },
-                    apiSettings: loadedApiSettings
-                };
+    loadingOverlay.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p style="color: white; margin-top: 20px;">正在准备数据，请稍候...</p>
+    `;
+    loadingOverlay.style.display = 'flex';
 
-                const blob = new Blob([JSON.stringify(fullExport, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `jrsy-data-${new Date().toISOString().slice(0,10)}.json`;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                showAlert('数据导出成功！');
-            } catch (e) {
-                console.error("Export failed:", e);
-                showAlert(`数据导出失败: ${e.message}`);
-            }
-        }
+    try {
+        const [
+            loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
+            loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
+            loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories
+        ] = await Promise.all([
+            dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
+            dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
+            dbManager.getAll('moments'), dbManager.getAll('playlist'), dbManager.get('appSettings', 'settings'),
+            dbManager.get('apiSettings', 'settings'), dbManager.getAll('customEmojis'),
+            dbManager.getAll('memories')
+        ]);
+        
+        const chatHistoriesObject = {};
+        (loadedChatHistories || []).forEach(record => {
+            chatHistoriesObject[record.friendId] = record.messages;
+        });
+
+        const fullExport = {
+            wechatData: {
+                friends: loadedFriends,
+                chatHistories: chatHistoriesObject,
+                diaries: loadedDiaries,
+                worldBooks: loadedWorldBooks,
+                worldBookFolders: loadedWorldBookFolders,
+                favorites: loadedFavorites,
+                moments: loadedMoments,
+                playlist: loadedPlaylist,
+                customEmojis: loadedCustomEmojis,
+                memories: loadedMemories,
+                ...loadedAppSettings
+            },
+            apiSettings: loadedApiSettings
+        };
+
+        const blob = new Blob([JSON.stringify(fullExport, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const filename = `jrsy-data-${new Date().toISOString().slice(0,10)}.json`;
+
+        loadingOverlay.style.display = 'none';
+        
+        const alertModal = document.getElementById('alertModal');
+        const alertTitle = alertModal.querySelector('.modal-title');
+        const alertMessage = alertModal.querySelector('#alertMessage');
+        const alertButtons = alertModal.querySelector('.modal-buttons');
+
+        alertTitle.textContent = '文件已生成';
+        alertMessage.innerHTML = `<p style="text-align: center; line-height: 1.6;">您的数据备份文件已准备就绪。<br>点击下方按钮进行下载。</p>`;
+        
+        // --- 核心修改就在下面这行代码中 ---
+        alertButtons.innerHTML = `
+            <a href="${url}" download="${filename}" class="modal-btn modal-btn-confirm" style="text-align: center; text-decoration: none;">点击下载</a>
+            <button class="modal-btn modal-btn-cancel" onclick="closeAlertModalAndRevoke('${url}')">关闭</button>
+        `;
+        // --- 修改结束 ---
+        
+        alertModal.classList.add('show');
+
+    } catch (e) {
+        loadingOverlay.style.display = 'none';
+        console.error("Export failed:", e);
+        showAlert(`数据导出失败: ${e.message}`);
+    }
+}
 
         function importData() {
             showConfirm("导入数据将覆盖当前所有设置和聊天记录，确定要继续吗？", (confirmed) => {
@@ -12004,8 +12106,62 @@ async function generateSimAppContent(characterId, appName) {
     const character = friends.find(f => f.id === characterId);
     if (!character) return;
 
-    // --- 指令准备部分 (与上次相同，保持简化) ---
-    const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
+    // ↓↓↓ 用这段新代码，完整替换掉你原来的那一行 const recentChatHistory = ... ↓↓↓
+
+const recentChatHistory = (chatHistories[characterId] || [])
+    .slice(-20) // 我们仍然只取最近20条
+    .map(m => {
+        const senderName = m.type === 'sent' ? userProfile.name : character.name;
+        let messageText = ''; // 先创建一个空变量来装“翻译”后的内容
+
+        // 新增一个 switch 语句，来判断每条消息的类型
+        switch (m.contentType) {
+            case 'image':
+                messageText = '[图片]'; // 对于图片，直接告诉AI这是一张图片
+                break;
+            case 'emoji':
+                messageText = '[表情]'; // 对于表情，也简化为文字描述
+                break;
+            case 'voice':
+                messageText = `[语音] ${m.content}`; // 语音消息，内容是文字，可以保留
+                break;
+            case 'transfer_request':
+                messageText = '[发起了转账]'; // 把转账代码翻译成人类行为
+                break;
+            case 'transfer_accepted':
+                messageText = '[接收了转账]'; // 同上
+                break;
+            case 'group_red_envelope':
+                messageText = '[发了一个红包]'; // 把红包代码翻译成人类行为
+                break;
+            case 'poll':
+                messageText = '[发起了一个投票]'; // 把投票代码翻译成人类行为
+                break;
+            case 'listen_invite':
+            case 'listen_accept':
+                messageText = '[邀请一起听歌]';
+                break;
+            case 'location':
+                messageText = '[分享了位置]';
+                break;
+            case 'pat_pat':
+                messageText = `[拍了拍] ${m.content}`;
+                break;
+            case 'voice_call':
+                messageText = `[语音通话] 通话时长 ${m.content}`;
+                break;
+            // 如果是其他普通类型（比如text），就还用原来的内容
+            default:
+                messageText = m.content;
+                break;
+        }
+
+        // 最后，把发送者和“翻译”好的内容组合起来
+        return `[${formatTimestampForAI(m.timestamp)}] ${senderName}: ${messageText}`;
+    })
+    .join('\n'); // 拼接成最终的聊天记录文本
+
+// ↑↑↑ 替换到这里结束 ↑↑↑
     const recentMoments = moments.slice(0, 3).map(m => {
         const author = getAuthorById(m.authorId);
         return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
@@ -12669,53 +12825,6 @@ function updatePollCardInDOM(pollData) {
         }
     });
 }
-
-// 【【【请将这段JS代码添加到您的 <script> 区域】】】
-
-/**
- * 检测并修复异常的顶部安全区域（Safe Area）问题
- * 此函数专门用于解决某些安卓机型返回过大 safe-area-inset-top 值导致的布局bug
- */
-function detectAndFixSafeArea() {
-    // 1. 创建一个临时的、看不见的div元素用于测量
-    const probe = document.createElement('div');
-    probe.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 1px;
-        height: 1px;
-        visibility: hidden;
-        /* 关键：我们将安全距离应用为上内边距 */
-        padding-top: env(safe-area-inset-top); 
-    `;
-    document.body.appendChild(probe);
-
-    // 2. 获取浏览器计算后的上内边距值
-    // getComputedStyle可以读取到env()转换成的实际像素值
-    const safeAreaTop = parseInt(window.getComputedStyle(probe).paddingTop, 10);
-
-    // 3. 移除测量用的div，保持页面干净
-    document.body.removeChild(probe);
-
-    // 4. 设定一个合理的阈值（例如100像素）
-    // 大部分手机的刘海屏安全距离都不会超过100px，如果超过了，就极有可能是出问题的设备
-    const ABNORMAL_THRESHOLD = 100;
-
-    // 5. 进行判断和处理
-    if (safeAreaTop > ABNORMAL_THRESHOLD) {
-        console.warn(`检测到异常的顶部安全距离: ${safeAreaTop}px，已启动修复程序。`);
-        // 如果检测到的值过大，就给 <body> 元素添加一个特殊的CSS类
-        document.body.classList.add('buggy-android-safe-area');
-    } else {
-        console.log(`顶部安全距离检测正常: ${safeAreaTop}px`);
-    }
-}
-
-// 在页面加载完成后立即执行检测
-window.addEventListener('load', detectAndFixSafeArea);
-
-// 【【【JS代码结束】】】
 
 // ↑↑↑ 第三步：新函数粘贴到此结束 ↑↑↑
 
