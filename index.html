@@ -12060,8 +12060,62 @@ async function generateSimAppContent(characterId, appName) {
     const character = friends.find(f => f.id === characterId);
     if (!character) return;
 
-    // --- 指令准备部分 (与上次相同，保持简化) ---
-    const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
+    // ↓↓↓ 用这段新代码，完整替换掉你原来的那一行 const recentChatHistory = ... ↓↓↓
+
+const recentChatHistory = (chatHistories[characterId] || [])
+    .slice(-20) // 我们仍然只取最近20条
+    .map(m => {
+        const senderName = m.type === 'sent' ? userProfile.name : character.name;
+        let messageText = ''; // 先创建一个空变量来装“翻译”后的内容
+
+        // 新增一个 switch 语句，来判断每条消息的类型
+        switch (m.contentType) {
+            case 'image':
+                messageText = '[图片]'; // 对于图片，直接告诉AI这是一张图片
+                break;
+            case 'emoji':
+                messageText = '[表情]'; // 对于表情，也简化为文字描述
+                break;
+            case 'voice':
+                messageText = `[语音] ${m.content}`; // 语音消息，内容是文字，可以保留
+                break;
+            case 'transfer_request':
+                messageText = '[发起了转账]'; // 把转账代码翻译成人类行为
+                break;
+            case 'transfer_accepted':
+                messageText = '[接收了转账]'; // 同上
+                break;
+            case 'group_red_envelope':
+                messageText = '[发了一个红包]'; // 把红包代码翻译成人类行为
+                break;
+            case 'poll':
+                messageText = '[发起了一个投票]'; // 把投票代码翻译成人类行为
+                break;
+            case 'listen_invite':
+            case 'listen_accept':
+                messageText = '[邀请一起听歌]';
+                break;
+            case 'location':
+                messageText = '[分享了位置]';
+                break;
+            case 'pat_pat':
+                messageText = `[拍了拍] ${m.content}`;
+                break;
+            case 'voice_call':
+                messageText = `[语音通话] 通话时长 ${m.content}`;
+                break;
+            // 如果是其他普通类型（比如text），就还用原来的内容
+            default:
+                messageText = m.content;
+                break;
+        }
+
+        // 最后，把发送者和“翻译”好的内容组合起来
+        return `[${formatTimestampForAI(m.timestamp)}] ${senderName}: ${messageText}`;
+    })
+    .join('\n'); // 拼接成最终的聊天记录文本
+
+// ↑↑↑ 替换到这里结束 ↑↑↑
     const recentMoments = moments.slice(0, 3).map(m => {
         const author = getAuthorById(m.authorId);
         return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
