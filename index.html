@@ -8077,11 +8077,12 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
                 contentEl.addEventListener('touchend', handleTouchEnd);
             }
              
-            // NEW: Add long-press for pat-pat on avatar
+                        // NEW: Add long-press for pat-pat on avatar
             const avatarEl = msgDiv.querySelector('.chat-avatar');
             if (avatarEl && sender.id !== userProfile.id) {
                  let patTimer;
                  avatarEl.addEventListener('touchstart', (e) => {
+                     // 阻止默认的触摸行为，比如页面滚动
                      e.preventDefault();
                      patTimer = setTimeout(() => {
                          handlePatPat(sender.id);
@@ -8094,6 +8095,10 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
                  avatarEl.addEventListener('touchmove', () => {
                      clearTimeout(patTimer);
                  });
+                 
+                 // ↓↓↓ 新增的核心代码就在这一行 ↓↓↓
+                 // 明确地阻止在安卓上长按时触发的“右键菜单”事件
+                 avatarEl.addEventListener('contextmenu', (e) => e.preventDefault());
             }
 
             return msgDiv;
