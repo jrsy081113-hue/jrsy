@@ -6846,21 +6846,46 @@ memoryGenerationTurns = settings.memoryGenerationTurns || 20; // <-- 新增：�
         }
 
         function updateProfileDisplay() {
-            document.getElementById('profileName').textContent = userProfile.name;
-            const avatarElements = [document.getElementById('profileAvatar'), document.getElementById('widgetAvatar')];
-            avatarElements.forEach(el => {
-                if (userProfile.avatarImage) {
-                    el.style.backgroundImage = `url(${userProfile.avatarImage})`;
-                    el.textContent = '';
-                } else {
-                    el.style.backgroundImage = '';
-                    el.textContent = userProfile.name ? userProfile.name.substring(0, 1) : '我';
-                }
-            });
-            document.getElementById('widgetName').textContent = userProfile.name;
-            document.getElementById('widgetSignature').textContent = userProfile.signature;
-            document.getElementById('widgetLocation').textContent = userProfile.location;
+    document.getElementById('profileName').textContent = userProfile.name;
+    const avatarElements = [document.getElementById('profileAvatar'), document.getElementById('widgetAvatar')];
+    
+    avatarElements.forEach(el => {
+        if (!el) return; // 安全检查
+
+        if (userProfile.avatarImage) {
+            // --- 如果有自定义头像 ---
+            // 1. 设置背景图片
+            el.style.backgroundImage = `url(${userProfile.avatarImage})`;
+            
+            // 2. 为了覆盖CSS中的默认渐变背景，我们再次用图片来设置background属性
+            el.style.background = `url(${userProfile.avatarImage})`; 
+            el.style.backgroundSize = 'cover'; 
+            el.style.backgroundPosition = 'center';
+
+            // 3. 【【【核心修复】】】移除边框
+            el.style.border = 'none'; // 或者 '0px'
+            
+            // 4. 清空文字
+            el.textContent = '';
+        } else {
+            // --- 如果没有自定义头像 ---
+            // 1. 移除背景图片
+            el.style.backgroundImage = '';
+            
+            // 2. 恢复CSS中定义的默认样式（包括渐变背景和边框）
+            el.style.background = ''; 
+            el.style.border = ''; // 👈 这行会恢复CSS中定义的 `border: 3px solid rgba(0,0,0,0.1);`
+
+            // 3. 显示文字
+            el.textContent = userProfile.name ? userProfile.name.substring(0, 1) : '我';
         }
+    });
+
+    // 更新其他信息（保持不变）
+    document.getElementById('widgetName').textContent = userProfile.name;
+    document.getElementById('widgetSignature').textContent = userProfile.signature;
+    document.getElementById('widgetLocation').textContent = userProfile.location;
+}
         
         function updateHomeWidget() {
             document.getElementById('widgetHeaderText').textContent = homeWidgetData.headerText;
@@ -7612,13 +7637,13 @@ const newGroup = {
                 item.onclick = () => openChat(friend.id);
                 const displayName = friend.remark || friend.name || '未知好友';
                 
-                // 【核心修改】统一处理好友和群聊的头像逻辑
+                                // 【核心修改】统一处理好友和群聊的头像逻辑
                 let avatarHtml;
                 if (friend.avatarImage) {
-                    // 如果有图片头像，就用图片
-                    avatarHtml = `<div class="friend-avatar" style="background-image: url(${friend.avatarImage});"></div>`;
+                    // 如果有图片头像，就用图片，并且用内联样式去掉边框
+                    avatarHtml = `<div class="friend-avatar" style="background-image: url(${friend.avatarImage}); border: none;"></div>`;
                 } else {
-                    // 否则，用文字头像
+                    // 否则，用文字头像（这种情况下我们希望保留边框，所以不需要加style）
                     const avatarText = friend.avatar || (friend.name ? friend.name.substring(0, 1) : '?');
                     avatarHtml = `<div class="friend-avatar">${avatarText}</div>`;
                 }
@@ -7739,12 +7764,16 @@ function openChat(friendId) {
 }
         
         function getAvatarHtml(sender) {
-            if (!sender) return `<div class="chat-avatar">?</div>`;
-            const name = sender.name || '', avatarImage = sender.avatarImage || '';
-            const avatarText = sender.avatar || (name ? name.substring(0, 1) : '?');
-            return avatarImage ? `<div class="chat-avatar" data-sender-id="${sender.id}" style="background-image: url('${avatarImage}');"></div>` : `<div class="chat-avatar" data-sender-id="${sender.id}">${avatarText}</div>`;
-        }
-
+    if (!sender) return `<div class="chat-avatar">?</div>`;
+    const name = sender.name || '', avatarImage = sender.avatarImage || '';
+    const avatarText = sender.avatar || (name ? name.substring(0, 1) : '?');
+    
+    // ↓↓↓ 核心修改就在下面这一行 ↓↓↓
+    return avatarImage 
+        ? `<div class="chat-avatar" data-sender-id="${sender.id}" style="background-image: url('${avatarImage}'); border: none;"></div>` 
+        : `<div class="chat-avatar" data-sender-id="${sender.id}">${avatarText}</div>`;
+    // ↑↑↑ 当有图片时，我们用内联样式强制移除边框 ↑↑↑
+}
         // --- 【这是修改后的代码】 ---
 async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
      const friend = friends.find(f => f.id === currentChatFriendId);
@@ -9909,24 +9938,24 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
         async function saveGlobalChatBg() { applyGlobalChatBackground(); await saveData(); showAlert('全局背景已保存'); backToMySettings(); }
         
         function changeAvatar() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if(file) {
-                    const reader = new FileReader();
-                    reader.onload = async (event) => { 
-                        userProfile.avatarImage = event.target.result; 
-                        userProfile.avatar = ''; 
-                        updateProfileDisplay(); 
-                        await saveProfileData(); // <--- 修改为调用新的专用函数
-                    };
-                    reader.readAsDataURL(file);
-                }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => { 
+                userProfile.avatarImage = event.target.result; 
+                userProfile.avatar = ''; 
+                updateProfileDisplay(); 
+                await saveProfileData();
             };
-            input.click();
+            reader.readAsDataURL(file);
         }
+    };
+    input.click();
+}
         
         function openMoments() { setActivePage('momentsScreen'); updateMomentsList(); }
         function openAddMoment() { document.getElementById('addMomentModal').classList.add('show'); }
