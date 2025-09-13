@@ -362,6 +362,7 @@ html {
             font-family: monospace;
             cursor: pointer;
             color: var(--text-color, #333);
+            min-height: 20px; /* ←←← 在这里添加新代码 */
         }
 
         .widget-bubble {
@@ -375,10 +376,11 @@ html {
             font-weight: 500;
              color: var(--text-color, #333);
         }
-        .widget-bubble span {
+                .widget-bubble span {
             cursor: pointer;
             flex-grow: 1;
             text-align: center;
+            min-height: 20px; /* ←←← 新增：给它一个最小高度！ */
         }
         .widget-bubble img {
             width: 32px;
@@ -2745,8 +2747,8 @@ html {
         .wechat-dark-mode .app-label {
             color: #eee;
         }
-        .wechat-dark-mode .app-icon-container {
-             background: rgba(44,44,46,0.8);
+               .wechat-dark-mode .app-icon-container {
+             background-color: rgba(44,44,46,0.8); /* ←←← 就改这里！ */
         }
         .wechat-dark-mode .profile-name-widget, .wechat-dark-mode .profile-signature-widget, .wechat-dark-mode .profile-location {
             color: #eee;
@@ -4950,11 +4952,15 @@ html {
             </div>
 
             <div id="wechatApp" class="page">
-                <div class="nav-bar">
-                    <button class="nav-btn" onclick="goHome()">←</button>
-                    <div class="nav-title">消息</div>
-                    <button class="nav-btn" onclick="toggleAddMenu()">+</button>
-                </div>
+                 <div class="nav-bar">
+    <button class="nav-btn" onclick="goHome()">←</button>
+    <div class="nav-title">消息</div>
+    <!-- ↓↓↓ 修改从这里开始 ↓↓↓ -->
+    <div id="navRightButtons">
+        <button class="nav-btn" id="addMenuBtn" onclick="toggleAddMenu()">+</button>
+    </div>
+    <!-- ↑↑↑ 修改到这里结束 ↑↑↑ -->
+</div>
                 <div class="add-menu" id="addMenu">
                     <div class="add-menu-item" onclick="openGroupChatModal()">发起群聊</div>
                     <div class="add-menu-item" onclick="openAddFriend()">添加好友</div>
@@ -7634,34 +7640,37 @@ const newGroup = {
         }
 
         function switchWechatTab(tab) {
-            document.querySelectorAll('.wechat-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.wechat-tab[onclick="switchWechatTab('${tab}')"]`)?.classList.add('active');
-            document.getElementById('wechatMessages').style.display = 'none';
-            document.getElementById('wechatDiscover').style.display = 'none';
-            document.getElementById('wechatProfile').style.display = 'none';
-            
-            const navBar = document.querySelector('#wechatApp .nav-bar');
-            const navTitle = navBar.querySelector('.nav-title');
-            const rightButtons = navBar.querySelector('*:last-child');
-            
-            let title = '消息';
-            if (tab === 'discover') { 
-                title = '发现'; 
-                document.getElementById('wechatDiscover').style.display = 'block'; 
-                rightButtons.innerHTML = ''; // Hide right button
-            } 
-            else if (tab === 'profile') { 
-                title = '我'; 
-                document.getElementById('wechatProfile').style.display = 'block'; 
-                updateWalletDisplay(); 
-                rightButtons.innerHTML = ''; // Hide right button
-            } 
-            else { 
-                document.getElementById('wechatMessages').style.display = 'block'; 
-                rightButtons.innerHTML = `<button class="nav-btn" onclick="toggleAddMenu()">+</button>`; // Show right button
-            }
-            navTitle.textContent = title;
-        }
+    document.getElementById('addMenu').classList.remove('show'); // 步骤一的核心修复依然保留
+
+    document.querySelectorAll('.wechat-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.wechat-tab[onclick="switchWechatTab('${tab}')"]`)?.classList.add('active');
+    document.getElementById('wechatMessages').style.display = 'none';
+    document.getElementById('wechatDiscover').style.display = 'none';
+    document.getElementById('wechatProfile').style.display = 'none';
+    
+    const navBar = document.querySelector('#wechatApp .nav-bar');
+    const navTitle = navBar.querySelector('.nav-title');
+    // ↓↓↓ 我们现在获取按钮本身，而不是它的容器 ↓↓↓
+    const addBtn = document.getElementById('addMenuBtn'); 
+    
+    let title = '消息';
+    if (tab === 'discover') { 
+        title = '发现'; 
+        document.getElementById('wechatDiscover').style.display = 'block'; 
+        addBtn.style.display = 'none'; // 隐藏按钮
+    } 
+    else if (tab === 'profile') { 
+        title = '我'; 
+        document.getElementById('wechatProfile').style.display = 'block'; 
+        updateWalletDisplay(); 
+        addBtn.style.display = 'none'; // 隐藏按钮
+    } 
+    else { 
+        document.getElementById('wechatMessages').style.display = 'block'; 
+        addBtn.style.display = 'block'; // 显示按钮
+    }
+    navTitle.textContent = title;
+}
 
 
         // ↓↓↓ 3.1 用这个新函数完整替换旧的 openChat 函数 ↓↓↓
@@ -13644,6 +13653,205 @@ function updateRedEnvelopeCard(messageId) {
     }
 }
 // ↑↑↑ 3.2 在这里结束粘贴 ↑↑↑
+
+// --- [新增] 语音通话功能核心代码 ---
+
+/**
+ * 用户主动发起语音通话
+ */
+function startVoiceCall() {
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (!friend || friend.isGroup) {
+        showAlert("只能与单个好友进行语音通话。");
+        return;
+    }
+
+    voiceCallFriendId = friend.id;
+    isCallActive = true;
+    
+    const callScreen = document.getElementById('voiceCallScreen');
+    const bg = document.getElementById('voiceCallBg');
+    const avatar = document.getElementById('voiceCallAvatar');
+    const name = document.getElementById('voiceCallName');
+    const status = document.getElementById('voiceCallStatus');
+    const log = document.getElementById('voiceCallLog');
+
+    // 设置通话界面信息
+    name.textContent = friend.remark || friend.name;
+    if (friend.avatarImage) {
+        avatar.style.backgroundImage = `url(${friend.avatarImage})`;
+        bg.style.backgroundImage = `url(${friend.avatarImage})`;
+    } else {
+        avatar.style.backgroundImage = '';
+        bg.style.backgroundImage = '';
+        avatar.textContent = friend.avatar || friend.name.substring(0, 1);
+    }
+    
+    status.textContent = "等待对方接听...";
+    log.innerHTML = ''; // 清空通话日志
+    document.getElementById('voiceCallInputArea').style.display = 'none'; // 初始隐藏输入框
+    document.getElementById('voiceCallControls').style.display = 'flex'; // 显示控制按钮
+    
+    setActivePage('voiceCallScreen');
+    hideFunctionMenus();
+
+    // 模拟AI在短暂延迟后接听电话
+    setTimeout(() => {
+        if (isCallActive && voiceCallFriendId === friend.id) {
+            status.textContent = "00:00";
+            callStartTime = new Date();
+            callTimerInterval = setInterval(updateCallTimer, 1000);
+            
+            // AI接听后，可能会说一句话
+            receiveMessage(friend.id, `(你接听了用户的语音通话，请说一句开场白。)`);
+        }
+    }, 2000 + Math.random() * 2000); // 模拟2-4秒的接听延迟
+}
+
+/**
+ * 更新通话计时器
+ */
+function updateCallTimer() {
+    if (!callStartTime) return;
+    const now = new Date();
+    const diff = Math.floor((now - callStartTime) / 1000);
+    const minutes = String(Math.floor(diff / 60)).padStart(2, '0');
+    const seconds = String(diff % 60).padStart(2, '0');
+    document.getElementById('voiceCallStatus').textContent = `${minutes}:${seconds}`;
+}
+
+/**
+ * 结束语音通话
+ */
+async function endVoiceCall() {
+    if (!isCallActive) return;
+
+    const callDuration = document.getElementById('voiceCallStatus').textContent;
+    
+    // 保存一条通话结束的记录到聊天历史
+    const friend = friends.find(f => f.id === voiceCallFriendId);
+    if (friend) {
+        const msgData = await saveChatMessage(voiceCallFriendId, 'sent', callDuration, '', null, 'voice_call');
+        // 如果当前就在这个聊天界面，则实时显示
+        if (currentChatFriendId === voiceCallFriendId) {
+            addMessageToDOM(msgData, friend);
+        }
+    }
+
+    // 重置所有状态
+    isCallActive = false;
+    clearInterval(callTimerInterval);
+    callStartTime = null;
+    voiceCallFriendId = null;
+
+    // 返回到聊天界面
+    setActivePage('chatScreen');
+}
+
+/**
+ * AI主动呼叫时，显示来电界面
+ * @param {string} friendId - 呼叫者的ID
+ */
+function showIncomingCall(friendId) {
+    const friend = friends.find(f => f.id === friendId);
+    if (!friend) return;
+
+    incomingCallData = { friendId: friendId };
+    
+    const incomingScreen = document.getElementById('incomingCallScreen');
+    const bg = document.getElementById('incomingCallBg');
+    const avatar = document.getElementById('incomingCallAvatar');
+    const name = document.getElementById('incomingCallName');
+    
+    name.textContent = friend.remark || friend.name;
+    if (friend.avatarImage) {
+        avatar.style.backgroundImage = `url(${friend.avatarImage})`;
+        bg.style.backgroundImage = `url(${friend.avatarImage})`;
+    } else {
+        avatar.style.backgroundImage = '';
+        bg.style.backgroundImage = '';
+        avatar.textContent = friend.avatar || friend.name.substring(0, 1);
+    }
+    
+    setActivePage('incomingCallScreen');
+}
+
+/**
+ * 用户接听AI的来电
+ */
+function acceptCall() {
+    if (!incomingCallData) return;
+    
+    const friendId = incomingCallData.friendId;
+    
+    // 隐藏来电界面
+    document.getElementById('incomingCallScreen').classList.remove('active');
+    
+    // 打开通话界面
+    startVoiceCallFromAccept(friendId);
+    incomingCallData = null;
+}
+
+/**
+ * 用户拒绝AI的来电
+ */
+async function declineCall() {
+    if (!incomingCallData) return;
+    
+    const friendId = incomingCallData.friendId;
+    const friend = friends.find(f => f.id === friendId);
+
+    // 隐藏来电界面并返回聊天界面
+    setActivePage('chatScreen');
+    
+    // 在聊天记录中添加一条“已拒接”的系统消息
+    const msgData = await saveChatMessage(friendId, 'system', '你已拒接对方的语音通话', '', null, 'system_tip');
+    if (currentChatFriendId === friendId) {
+        addMessageToDOM(msgData, friend);
+    }
+
+    incomingCallData = null;
+}
+
+/**
+ * 这是接听电话后专用的启动函数，与用户主动拨打不同
+ * @param {string} friendId - 呼叫者的ID
+ */
+function startVoiceCallFromAccept(friendId) {
+    const friend = friends.find(f => f.id === friendId);
+    if (!friend) return;
+
+    voiceCallFriendId = friend.id;
+    isCallActive = true;
+    
+    const callScreen = document.getElementById('voiceCallScreen');
+    const bg = document.getElementById('voiceCallBg');
+    const avatar = document.getElementById('voiceCallAvatar');
+    const name = document.getElementById('voiceCallName');
+    const status = document.getElementById('voiceCallStatus');
+    const log = document.getElementById('voiceCallLog');
+    
+    name.textContent = friend.remark || friend.name;
+    if (friend.avatarImage) {
+        avatar.style.backgroundImage = `url(${friend.avatarImage})`;
+        bg.style.backgroundImage = `url(${friend.avatarImage})`;
+    } else {
+        avatar.style.backgroundImage = '';
+        bg.style.backgroundImage = '';
+        avatar.textContent = friend.avatar || friend.name.substring(0, 1);
+    }
+
+    status.textContent = "00:00";
+    log.innerHTML = '';
+    document.getElementById('voiceCallInputArea').style.display = 'none';
+    document.getElementById('voiceCallControls').style.display = 'flex';
+    
+    setActivePage('voiceCallScreen');
+    
+    // 直接开始计时
+    callStartTime = new Date();
+    callTimerInterval = setInterval(updateCallTimer, 1000);
+}
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
