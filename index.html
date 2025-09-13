@@ -6327,13 +6327,29 @@ let memoryGenerationTurns = 20; // 新增：记忆生成轮数，默认20轮
         }
         
 
-// --- 【新增】关闭弹窗并释放Blob URL内存的辅助函数 ---
+// 这是【修改后】的新代码，请用它完整替换上面的旧代码
 function closeAlertModalAndRevoke(urlToRevoke) {
-    closeAlertModal(); // 调用已有的关闭函数
+    closeAlertModal(); // 同样是先关闭弹窗
     if (urlToRevoke) {
         URL.revokeObjectURL(urlToRevoke);
         console.log('Blob URL has been revoked to free up memory.');
     }
+
+    // --- 新增的“恢复”代码从这里开始 ---
+    // 为了防止影响下一次正常的弹窗，我们需要把弹窗的标题和按钮恢复成默认状态
+    const alertModal = document.getElementById('alertModal');
+    const alertTitle = alertModal.querySelector('.modal-title');
+    const alertButtons = alertModal.querySelector('.modal-buttons');
+
+    // 恢复默认标题“提示”
+    if (alertTitle) {
+        alertTitle.textContent = '提示';
+    }
+    // 恢复默认的“确定”按钮
+    if (alertButtons) {
+        alertButtons.innerHTML = `<button class="modal-btn modal-btn-confirm" onclick="closeAlertModal()">确定</button>`;
+    }
+    // --- 新增的“恢复”代码在这里结束 ---
 }
 
         
@@ -11090,7 +11106,7 @@ async function fetchModels() {
             showAlert('API设置已保存');
         }
 
-        // --- 【请用这个全新的函数，完整替换掉您旧的 exportData 函数】 ---
+        // 这是【修改后】的新代码，请用它完整替换上面的旧代码
 async function exportData() {
     const loadingOverlay = document.getElementById('loadingOverlay');
     if (!loadingOverlay) {
@@ -11098,7 +11114,6 @@ async function exportData() {
         return;
     }
 
-    // 步骤 1: 显示“正在加载”的界面
     loadingOverlay.innerHTML = `
         <div class="loading-spinner"></div>
         <p style="color: white; margin-top: 20px;">正在准备数据，请稍候...</p>
@@ -11106,7 +11121,6 @@ async function exportData() {
     loadingOverlay.style.display = 'flex';
 
     try {
-        // 步骤 2: 异步读取所有数据 (这部分与您原来的代码相同)
         const [
             loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
             loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
@@ -11141,12 +11155,10 @@ async function exportData() {
             apiSettings: loadedApiSettings
         };
 
-        // 步骤 3: 创建Blob和下载链接
         const blob = new Blob([JSON.stringify(fullExport, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const filename = `jrsy-data-${new Date().toISOString().slice(0,10)}.json`;
 
-        // 步骤 4: 隐藏加载界面，并显示一个带有【真实、可见的下载按钮】的弹窗
         loadingOverlay.style.display = 'none';
         
         const alertModal = document.getElementById('alertModal');
@@ -11157,16 +11169,16 @@ async function exportData() {
         alertTitle.textContent = '文件已生成';
         alertMessage.innerHTML = `<p style="text-align: center; line-height: 1.6;">您的数据备份文件已准备就绪。<br>点击下方按钮进行下载。</p>`;
         
-        // 创建一个用户可以亲自点击的下载链接和一个关闭按钮
+        // --- 核心修改就在下面这行代码中 ---
         alertButtons.innerHTML = `
-            <a href="${url}" download="${filename}" class="modal-btn modal-btn-confirm" style="flex: 2; text-decoration: none;">点击下载</a>
+            <a href="${url}" download="${filename}" class="modal-btn modal-btn-confirm" style="text-align: center; text-decoration: none;">点击下载</a>
             <button class="modal-btn modal-btn-cancel" onclick="closeAlertModalAndRevoke('${url}')">关闭</button>
         `;
+        // --- 修改结束 ---
         
         alertModal.classList.add('show');
 
     } catch (e) {
-        // 如果出错，也要确保隐藏加载动画
         loadingOverlay.style.display = 'none';
         console.error("Export failed:", e);
         showAlert(`数据导出失败: ${e.message}`);
