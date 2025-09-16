@@ -4309,22 +4309,24 @@ html {
     color: var(--text-color);
 }
 
-/* [新增] 优化论坛评论区样式 */
+/* [新增] 优化论坛评论区样式 (V2修正版) */
 .sim-detail-content .comment-floor {
-    border-top: 1px solid #f0f0f0; /* 用更浅的颜色做分割线 */
-    padding: -2000px 0; /* 统一上下内边距 */
-    margin: 0; /* 移除外边距 */
+    border-top: 1px solid var(--border-light, #f0f0f0); /* 分割线样式不变 */
+    padding: 15px 0; /* 修正了原来错误的padding值，给每个评论一个合适的上下间距 */
+    margin: 0; 
 }
 
 .sim-detail-content .comment-user-info {
-    font-size: 13px; /* 稍稍增大字号 */
-    color: #888; /* 柔和的灰色 */
-    margin-bottom: -50px; /* 减小用户名和内容之间的距离 */
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px; /* 【核心修正】去掉了-50px的负边距，改为8px的正边距，在用户名下方创造一个安全的空间 */
 }
 
 .sim-detail-content .comment-text {
-    margin-top: 0; /* 移除内容上方的外边距 */
-    line-height: 1.6; /* 舒适的行高 */
+    margin-top: 0;
+    line-height: 1.6; 
+    color: var(--text-color, #333); /* 确保评论文字颜色能跟随主题变化 */
+    word-wrap: break-word; /* 新增：确保过长的英文或数字能正常换行 */
 }
 
 /* 【【【第二步：请将这段CSS代码粘贴到 <style> 区域的末尾】】】 */
@@ -5448,10 +5450,23 @@ html {
                         <div class="bubble-settings">
                             <div class="bubble-color-group"><div class="bubble-color-label">我的气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="sentBubbleColorPicker" value="#FFEEF6" oninput="updateSentBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="sentBubbleColorInput" value="#FFEEF6" placeholder="#FFEEF6" oninput="updateSentBubbleColorFromInput(this.value)"></div></div>
                             <div class="bubble-color-group"><div class="bubble-color-label">对方气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="receivedBubbleColorPicker" value="#E6F2FF" oninput="updateReceivedBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="receivedBubbleColorInput" value="#E6F2FF" placeholder="#E6F2FF" oninput="updateReceivedBubbleColorFromInput(this.value)"></div></div>
-                            <div class="bubble-css-group"><div class="bubble-color-label">自定义CSS样式</div><textarea class="bubble-css-textarea" id="bubbleCustomCSS" placeholder="输入完整的CSS规则来自定义气泡...&#10;提示: 为确保样式生效，请使用更具体的选择器。&#10;例如: &#10;.message.sent .message-content {&#10;  border: 2px solid #333;&#10;}" oninput="applyCustomBubbleCSS(this.value)"></textarea></div>
+                            <div class="bubble-css-group"><div class="bubble-color-label">自定义CSS样式</div> <textarea class="bubble-css-textarea" id="bubbleCustomCSS" 
+    placeholder="在此输入CSS，格式如下：
+
+/* “我”的气泡 */
+.message.sent .message-content {
+  background: #C7F7C7;
+  border-radius: 5px;
+}
+
+/* “对方”的气泡 */
+.message.received .message-content {
+  background: #EFEFEF;
+}" 
+    oninput="applyCustomBubbleCSS(this.value)"></textarea> </div>
                             <div class="bubble-css-group"><div class="bubble-color-label">气泡预览</div><div class="bubble-preview-area" id="bubblePreviewArea"><div class="message received"><div class="chat-avatar">TA</div><div class="message-content">这是对方的气泡样式。</div></div><div class="message sent"><div class="message-content">这是你的气泡样式。</div><div class="chat-avatar">我</div></div></div></div>
                         </div>
-                        <div class="modal-buttons" style="margin-top: 20px;"><button class="modal-btn modal-btn-cancel" onclick="backToMySettings()">取消</button><button class="modal-btn modal-btn-confirm" onclick="saveBubbleSettings()">保存</button></div>
+                        <div class="modal-buttons" style="margin-top: 20px;"> <button class="modal-btn modal-btn-cancel" onclick="cancelBubbleSettings()">取消</button> <button class="modal-btn modal-btn-confirm" onclick="saveBubbleSettings()">保存</button></div>
                     </div>
                 </div>
             </div>
@@ -6363,14 +6378,22 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         }
 
         function openBubbleSettings() {
-            setActivePage('bubbleSettingsScreen');
-            document.getElementById('sentBubbleColorPicker').value = appState.sentBubbleColor;
-            document.getElementById('sentBubbleColorInput').value = appState.sentBubbleColor;
-            document.getElementById('receivedBubbleColorPicker').value = appState.receivedBubbleColor;
-            document.getElementById('receivedBubbleColorInput').value = appState.receivedBubbleColor;
-            document.getElementById('bubbleCustomCSS').value = appState.customBubbleCSS;
-            updateBubblePreview();
-        }
+    setActivePage('bubbleSettingsScreen');
+    document.getElementById('sentBubbleColorPicker').value = appState.sentBubbleColor;
+    document.getElementById('sentBubbleColorInput').value = appState.sentBubbleColor;
+    document.getElementById('receivedBubbleColorPicker').value = appState.receivedBubbleColor;
+    document.getElementById('receivedBubbleColorInput').value = appState.receivedBubbleColor;
+    document.getElementById('bubbleCustomCSS').value = appState.customBubbleCSS;
+
+    // --- 新增代码开始 ---
+    // 在打开设置时，将当前的样式保存到临时变量中
+    window.originalBubbleCSS = appState.customBubbleCSS;
+    window.originalSentColor = appState.sentBubbleColor;
+    window.originalReceivedColor = appState.receivedBubbleColor;
+    // --- 新增代码结束 ---
+
+    updateBubblePreview();
+}
 
         function updateSentBubbleColor(color) {
             document.getElementById('sentBubbleColorInput').value = color;
@@ -6418,11 +6441,31 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
 
 
         function applyCustomBubbleCSS(css) {
-            appState.customBubbleCSS = css;
-            let styleTag = document.getElementById('customBubbleStyle');
-            if (styleTag) styleTag.textContent = css;
-            updateBubblePreview();
-        }
+    appState.customBubbleCSS = css;
+    let styleTag = document.getElementById('customBubbleStyle');
+    if (styleTag) {
+        // 【核心修正】: 自动为用户的每一条CSS规则添加 !important
+        // 这会赋予用户的自定义样式绝对的最高优先级
+        const importantCss = css.replace(/;/g, ' !important;');
+        styleTag.textContent = importantCss;
+    }
+    updateBubblePreview(); // 预览函数保持不变
+}
+
+function cancelBubbleSettings() {
+    // 恢复在打开设置时保存的原始CSS
+    appState.customBubbleCSS = window.originalBubbleCSS || '';
+    // 恢复原始颜色
+    appState.sentBubbleColor = window.originalSentColor || '#FFEEF6';
+    appState.receivedBubbleColor = window.originalReceivedColor || '#E6F2FF';
+
+    // 将恢复后的原始样式重新应用到页面上
+    applyCustomBubbleCSS(appState.customBubbleCSS);
+    applyBubbleColors();
+
+    // 返回上一页
+    backToMySettings();
+}
 
         async function saveBubbleSettings() {
             appState.sentBubbleColor = document.getElementById('sentBubbleColorInput').value;
@@ -6608,7 +6651,7 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
                 console.log("Profile data saved successfully.");
             } catch (e) {
                 console.error("保存个人信息时出错:", e);
-                showAlert(`保存个人信息失败: ${e.message}`);
+                showAlert(`保存个人信息失败: ${e}`);
             }
         }
 
@@ -6688,7 +6731,7 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
                 if (e.name === 'QuotaExceededError') {
                     showAlert("保存数据失败：存储空间已满！\n\n请尝试导出并清理数据。");
                 } else {
-                    showAlert(`保存数据失败: ${e.message}`);
+                    showAlert(`保存数据失败: ${e}`);
                 }
             }
         }
@@ -6754,12 +6797,13 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
                         friend.turnCountSinceLastMemory = 0;
                     }
                 });
-                appState.friends = loadedFriends || [];
-                appState.friends.forEach(f => { 
-                    if (!f.chatBackground) f.chatBackground = { type: 'default', customImage: '' }; 
-                    if (!f.worldBookIds) f.worldBookIds = [];
-                    if (f.diaryWritingUrge === undefined) f.diaryWritingUrge = 0;
-                    if (f.balance === undefined) f.balance = Infinity;
+                    appState.friends = loadedFriends || [];
+    appState.friends.forEach(f => { 
+        if (!f.chatBackground) f.chatBackground = { type: 'default', customImage: '' }; 
+        if (!f.worldBookIds) f.worldBookIds = [];
+        if (f.diaryWritingUrge === undefined) f.diaryWritingUrge = 0;
+        if (f.lastDiaryGenerationTurnIndex === undefined) f.lastDiaryGenerationTurnIndex = 0; // <-- 就是添加这一行
+        if (f.balance === undefined) f.balance = Infinity;
                     if (f.patAction === undefined) f.patAction = `拍了拍 "${f.name}"`;
                     if (f.heartsVoice === undefined) f.heartsVoice = { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' };
                 });
@@ -8015,24 +8059,61 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             }
              
             const avatarEl = msgDiv.querySelector('.chat-avatar');
-            if (avatarEl && sender.id !== appState.userProfile.id) {
-                 let patTimer;
-                 avatarEl.addEventListener('touchstart', (e) => {
-                     e.preventDefault();
-                     patTimer = setTimeout(() => {
-                         handlePatPat(sender.id);
-                         patTimer = null;
-                     }, 500);
-                 });
-                 avatarEl.addEventListener('touchend', () => {
-                     clearTimeout(patTimer);
-                 });
-                 avatarEl.addEventListener('touchmove', () => {
-                     clearTimeout(patTimer);
-                 });
-                 
-                 avatarEl.addEventListener('contextmenu', (e) => e.preventDefault());
-            }
+if (avatarEl && sender.id !== appState.userProfile.id) {
+    let patTimer = null;
+    let startX = 0;
+    let startY = 0;
+    const moveThreshold = 5; // 设置一个5像素的移动阈值
+
+    const handleTouchStart = (e) => {
+        // 阻止浏览器默认行为，比如图片拖动或长按菜单
+        e.preventDefault();
+        
+        // 记录触摸开始的位置
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+
+        // 清除上一次可能存在的计时器
+        clearTimeout(patTimer);
+
+        // 启动新的长按计时器
+        patTimer = setTimeout(() => {
+            // 500毫秒后，如果计时器没有被取消，就执行拍一拍
+            handlePatPat(sender.id);
+            patTimer = null; // 执行后清空计时器ID
+        }, 500);
+    };
+
+    const handleTouchMove = (e) => {
+        if (!patTimer) return; // 如果计时器已经没了，就什么都不做
+
+        // 计算手指移动的距离
+        const moveX = e.touches[0].clientX - startX;
+        const moveY = e.touches[0].clientY - startY;
+        const distance = Math.sqrt(moveX * moveX + moveY * moveY);
+
+        // 如果移动距离超过了我们设置的阈值，就取消长按
+        if (distance > moveThreshold) {
+            clearTimeout(patTimer);
+            patTimer = null;
+        }
+    };
+
+    const handleTouchEnd = () => {
+        // 手指抬起时，无论如何都清除计时器
+        clearTimeout(patTimer);
+        patTimer = null;
+    };
+
+    // 绑定所有需要的触摸事件
+    avatarEl.addEventListener('touchstart', handleTouchStart);
+    avatarEl.addEventListener('touchmove', handleTouchMove);
+    avatarEl.addEventListener('touchend', handleTouchEnd);
+    avatarEl.addEventListener('touchcancel', handleTouchEnd); // 以防万一，比如电话来了触摸中断
+
+    // 这一行仍然非常重要，用于阻止浏览器默认的长按菜单
+    avatarEl.addEventListener('contextmenu', (e) => e.preventDefault());
+}
 
             return msgDiv;
         }
@@ -8229,6 +8310,17 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             const messageDiv = el.closest('.message');
             const msgId = messageDiv.getAttribute('data-message-id');
             const msg = (appState.chatHistories[appState.currentChatFriendId] || []).find(m => String(m.id) === msgId);
+            // 新增代码：判断是否是AI消息组的第一条，用于显示“重试”按钮
+let isFirstAIMessageInGroup = false;
+if (!messageDiv.classList.contains('sent')) {
+    const prevSibling = messageDiv.previousElementSibling;
+    // 条件1: 这是第一条消息 (prevSibling不存在)
+    // 条件2: 或者，前一条消息是用户发的 (prevSibling.classList.contains('sent'))
+    // 这样就确保了只有在AI连续回复的第一条上长按，才会显示“重试”
+    if (!prevSibling || prevSibling.classList.contains('sent') || prevSibling.classList.contains('recall-message') || prevSibling.classList.contains('pat-pat-message')) {
+        isFirstAIMessageInGroup = true;
+    }
+}
             const isSent = messageDiv.classList.contains('sent');
             
             let menuItems = '';
@@ -8236,6 +8328,10 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
                  menuItems += `<div class="message-menu-item" onclick="quoteMessage()">引用</div>`;
             }
             menuItems += `<div class="message-menu-item" onclick="favoriteMessage()">收藏</div><div class="message-menu-item" onclick="startMultiSelect()">多选</div>`;
+            // 新增代码：如果符合条件，就在菜单中添加“重试”按钮
+if (isFirstAIMessageInGroup) {
+    menuItems += `<div class="message-menu-item" onclick="retryLastAIResponse()">重试</div>`;
+}
             if (isSent) {
                 menuItems += `<div class="message-menu-item" onclick="recallMessage()">撤回</div>`;
             }
@@ -8406,6 +8502,76 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             }
             return recentHistory.reverse();
         }
+        
+        async function retryLastAIResponse() {
+    hideMessageMenu(); // 首先关闭菜单
+
+    const friendId = appState.currentChatFriendId;
+    if (!friendId) return;
+
+    const history = appState.chatHistories[friendId] || [];
+    if (history.length === 0) return;
+
+    // 1. 从后往前找到最后一组AI消息的起始位置
+    let lastUserMessageIndex = -1;
+    for (let i = history.length - 1; i >= 0; i--) {
+        if (history[i].type === 'sent') {
+            lastUserMessageIndex = i;
+            break;
+        }
+    }
+
+    if (lastUserMessageIndex === -1 && history.length > 0) {
+        // 如果历史记录里全是AI消息，没有用户消息
+        lastUserMessageIndex = -1; // 设置为-1，以便下面slice能从0开始
+    }
+    
+    // 找到从最后一个用户消息之后的所有AI消息
+    const aiMessagesToDelete = history.slice(lastUserMessageIndex + 1);
+
+    if (aiMessagesToDelete.length === 0) {
+        showAlert("没有找到可供重试的AI消息。");
+        return;
+    }
+
+    // 2. 从界面上移除这些AI消息
+    const chatMessagesContainer = document.getElementById('chatMessages');
+    aiMessagesToDelete.forEach(msg => {
+        const msgElement = chatMessagesContainer.querySelector(`.message[data-message-id="${msg.id}"]`);
+        if (msgElement) {
+            msgElement.remove();
+        }
+    });
+
+    // 3. 从数据中移除这些AI消息
+    appState.chatHistories[friendId] = history.slice(0, lastUserMessageIndex + 1);
+    
+    // 4. 清除可能残留的“拍一拍”或“撤回”提示
+    const lastElements = Array.from(chatMessagesContainer.children).slice(-3);
+    lastElements.forEach(el => {
+        if (el && (el.classList.contains('pat-pat-message') || el.classList.contains('recall-message'))) {
+            el.remove();
+        }
+    });
+
+    // 5. 更新好友列表的最后一条消息显示
+    const friend = appState.friends.find(f => f.id === friendId);
+    if (friend) {
+        const lastValidMessage = appState.chatHistories[friendId].slice().reverse().find(m => m.contentType !== 'pat_pat');
+        if (lastValidMessage) {
+            friend.lastMessage = lastValidMessage.content.substring(0, 20);
+            friend.lastMessageContentType = lastValidMessage.contentType;
+        } else {
+            friend.lastMessage = '我们已经是好友了!';
+            friend.lastMessageContentType = 'text';
+        }
+        updateFriendList();
+    }
+    
+    // 6. 重新调用AI生成消息
+    // receiveMessage函数会自动处理后续的保存和显示逻辑
+    receiveMessage(friendId);
+}
 
         
                                                 async function receiveMessage(friendId, customPrompt = null, isFromListenScreen = false) {
@@ -8458,6 +8624,39 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
 
                 let apiPayloadMessages = [];
                 const memoryTurns = parseInt(settings.memoryTurns, 10) || 10;
+                // ================== 新增代码：AI时间感知模块 开始 ==================
+let timeGapContext = '';
+const historyForTimeCheck = appState.chatHistories[friendId] || [];
+
+// 检查是否有历史记录，并且最后一条消息不是AI自己发的
+if (historyForTimeCheck.length > 0) {
+    const lastMessage = historyForTimeCheck[historyForTimeCheck.length - 1];
+    const lastMessageTime = new Date(lastMessage.timestamp);
+    const currentTime = new Date();
+    
+    // 计算时间差（单位：小时）
+    const timeGapHours = (currentTime.getTime() - lastMessageTime.getTime()) / (1000 * 60 * 60);
+
+    // 如果时间差大于2小时，就生成一段特殊的提示
+    if (timeGapHours > 2) {
+        let timeGapDescription = '';
+        if (timeGapHours > 48) {
+            timeGapDescription = `好几天 (${Math.floor(timeGapHours / 24)}天)`;
+        } else if (timeGapHours > 24) {
+            timeGapDescription = `一天多`;
+        } else {
+            timeGapDescription = `${Math.floor(timeGapHours)}小时`;
+        }
+        
+        timeGapContext = `【【【最高优先级情景：久别重逢】】】 你和用户之间的对话中断了很长时间！
+用户离线时长: 大约 ${timeGapDescription}。
+你的任务:
+1.你的第一反应必须是针对这漫长的等待。严禁直接延续之前的话题。
+2.你可以表现出关心（“你还好吗？这么久没消息很担心你”）、好奇（“呀，你回来啦！昨天去哪了？”）或者一点点小抱怨（“你还知道回来呀！”），具体反应需符合你的人设。
+3.在简单回应了“好久不见”之后，再自然地开启一个新的、适合当前时间的话题。
+`;
+} } // ================== 新增代码：AI时间感知模块 结束 ==================
+
                 const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
         
                 const history = getSmartHistoryForAI(friendId, memoryTurns);
@@ -8668,8 +8867,7 @@ ${emojiListForAI}
                             emojiContext = "【你的表情包库】\\n你目前没有自定义表情包。";
                         }
                         
-                                        systemPrompt = `你叫"${sanitizeForJSON(friend.name)}" F_B正在与用户"${sanitizeForJSON(appState.userProfile.name)}"聊天。
-
+                                        systemPrompt = `${timeGapContext}你叫"${sanitizeForJSON(friend.name)}" F_B正在与用户"${sanitizeForJSON(appState.userProfile.name)}"聊天。
 【【【最高优先级：世界观与核心设定读取模块】】】
 这是你所处世界的背景，是绝对的真理。你的所有行为和认知都不能违背以下设定。
 - **世界书设定 (绝对真理)**: 
@@ -8826,12 +9024,14 @@ ${timeContext}
                                     case 'text':
                                     case 'voice':
                                         const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
+                                        showNotification(sender, action.content);
                                         addMessageToDOM(msgData, friend);
                                         break;
                                     case 'send_emoji':
                                         if (action.data && action.data.url) {
                                             const emojiMsgData = await saveChatMessage(friendId, 'received', action.data.url, '', sender.id, 'emoji');
                                             if (action.data.name) emojiMsgData.emojiName = action.data.name;
+                                            showNotification(sender, "[表情]");
                                             addMessageToDOM(emojiMsgData, friend);
                                         }
                                         break;
@@ -8839,6 +9039,7 @@ ${timeContext}
                                         const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
                                         const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
                                         imgMsgData.imageDescription = action.description || 'AI生成的图片';
+                                        showNotification(sender, "[图片]"); 
                                         addMessageToDOM(imgMsgData, friend);
                                         break;
                                     case 'pat_pat':
@@ -8906,6 +9107,7 @@ ${timeContext}
                                     if (action.data && action.data.url) {
                                         await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
                                         const msgData = await saveChatMessage(friendId, 'received', action.data.url, '', friend.id, 'emoji');
+                                        showNotification(friend, "[表情]");
                                         if (action.data.name) msgData.emojiName = action.data.name;
                                         if (isFromListenScreen) {
                                             addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
@@ -8933,6 +9135,7 @@ ${timeContext}
                                         await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
                                         const msgData = await saveChatMessage(friendId, 'received', action.content, '', friend.id, action.type);
                                         lastMessageId = msgData.id;
+                                        showNotification(friend, action.content);
                                         if (isFromListenScreen) {
                                             addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
                                         } else if (appState.currentChatFriendId === friendId) {
@@ -8959,6 +9162,7 @@ ${timeContext}
                                     if (action.description) {
                                         const placeholderImageUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
                                         const imgMsgData = await saveChatMessage(friendId, 'received', placeholderImageUrl, '', friend.id, 'image');
+                                        showNotification(friend, "[图片]");
                                         if(imgMsgData) {
                                             imgMsgData.imageDescription = action.description;
                                             if (appState.currentChatFriendId === friendId && !isFromListenScreen) {
@@ -10461,7 +10665,7 @@ ${timeContext}
             }, 2000 + Math.random() * 4000);
         }
 
-        async function generateDiaryForFriend(friendId, isManualTrigger = false) {
+                async function generateDiaryForFriend(friendId, isManualTrigger = false) {
             const friend = appState.friends.find(f => f.id === friendId);
             if (!friend) return false;
 
@@ -10471,31 +10675,47 @@ ${timeContext}
                 return false;
             }
 
-            try {
-                const todayChats = (appState.chatHistories[friend.id] || [])
-                    .filter(msg => new Date(msg.timestamp).toDateString() === new Date().toDateString())
-                    .map(m => `${m.type === 'sent' ? appState.userProfile.name : friend.name}: ${m.content}`)
-                    .join('\n');
-                
-                const currentDate = new Date();
-                const formattedDate = `${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月${currentDate.getDate()}日`;
+            // --- 核心修改开始 ---
+            const fullHistory = appState.chatHistories[friend.id] || [];
+            // 如果好友对象没有记录上次生成日记的位置，默认为0
+            if (friend.lastDiaryGenerationTurnIndex === undefined) {
+                friend.lastDiaryGenerationTurnIndex = 0;
+            }
 
-                const prompt = `你叫"${friend.name}"，人设是：${friend.role}。
+            // 从上次生成日记的位置开始，截取到最新的所有聊天记录
+            const chatsSinceLastDiary = fullHistory.slice(friend.lastDiaryGenerationTurnIndex);
+            
+            // 如果是手动触发，但近期没有任何新聊天，可以给一个提示
+            if (isManualTrigger && chatsSinceLastDiary.length === 0) {
+                showAlert('最近没有新的聊天记录来生成日记哦。');
+                return false;
+            }
+            
+            // 将截取到的聊天记录格式化为AI需要的格式
+            const chatContext = chatsSinceLastDiary
+                .map(m => `${m.type === 'sent' ? appState.userProfile.name : friend.name}: ${m.content}`)
+                .join('\n');
+            // --- 核心修改结束 ---
+
+            const currentDate = new Date();
+            const formattedDate = `${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月${currentDate.getDate()}日`;
+
+            const prompt = `你叫"${friend.name}"，人设是：${friend.role}。
 你的重要朋友是"${appState.userProfile.name}"，他/她的人设是：${appState.userProfile.personality || '普通人'}。
 今天的日期是：${formattedDate}。
 
 【你的任务】:
-严格根据今天与"${appState.userProfile.name}"的聊天内容，以你的身份完成三件事：
+严格根据以下这段**刚刚发生**的聊天内容，以你的身份完成三件事：
 1.  推断今天的天气（晴、阴、雨等），必须和聊天内容或你的心情相符。
-2.  写一篇详细的、富有感情的日记正文，必须紧扣今天的聊天内容。
+2.  写一篇详细的、富有感情的日记正文，必须紧扣这段聊天内容。
 3.  为这篇日记写一句“心里话”，可以是总结或隐藏的情绪。
 
-【今天聊天记录】:
-${todayChats || '今天和TA很安静，我们没有聊天。'}
+【触发本次日记的聊天记录】:
+${chatContext || '今天和TA很安静，我们没有聊天。'}
 
 【【【内容要求(必须严格遵守)】】】
 1.  日记正文必须详细，字数至少350字以上，并且必须使用多个换行符 (\\n) 来分段。
-2.  你的所有思考和文字都必须围绕“今天”发生的聊天事件展开。
+2.  你的所有思考和文字都必须围绕**这段**聊天事件展开。
 
 【输出格式铁律】:
 你的回复必须是一个纯净的JSON对象，包含三个键：
@@ -10512,6 +10732,7 @@ ${todayChats || '今天和TA很安静，我们没有聊天。'}
 
 现在，请生成你的日记。`;
                         
+            try {
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' } }) });
                 if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
                 
@@ -10545,9 +10766,11 @@ ${todayChats || '今天和TA很安静，我们没有聊天。'}
                         newDiary.id = newId;
                         appState.diaries.unshift(newDiary);
 
-                        if (!isManualTrigger) {
-                            friend.diaryWritingUrge -= 250; 
-                        }
+                        // --- 关键更新 ---
+                        // 消耗欲望值
+                        friend.diaryWritingUrge = 0; 
+                        // 更新记录点为当前聊天记录的总长度
+                        friend.lastDiaryGenerationTurnIndex = fullHistory.length; 
                         
                         await saveData();
                         return true;
@@ -10555,10 +10778,12 @@ ${todayChats || '今天和TA很安静，我们没有聊天。'}
                 }
                 throw new Error("AI返回的日记格式不正确。");
 
-            } catch (error) {
+                        } catch (error) {
                 console.error("生成日记时出错:", error);
                 showAlert(`生成日记失败: ${error.message}`);
-                friend.diaryWritingUrge = 0;
+                // 无论成功与否，都消耗掉本次生成日记的欲望，防止无限失败弹窗
+                friend.diaryWritingUrge = 0; 
+                friend.lastDiaryGenerationTurnIndex = fullHistory.length; // 同时更新记录点，避免下次取材重复
                 return false;
             }
         }
@@ -12699,33 +12924,48 @@ ${todayChats || '今天和TA很安静，我们没有聊天。'}
 
            
 
-            const prompt = `
-            【你的身份】: 你是角色“${friend.name}”，正在为自己撰写记忆笔记。
+                        const prompt = `
+            【你的身份】: 你是角色“${friend.name}”，正在为你和挚友"${appState.userProfile.name}"的关系撰写一份私密的记忆笔记。
             【你的性格】: ${friend.role}
-            【对话对象】: "${appState.userProfile.name}"
-            【最近的对话记录】:
+            【挚友的性格】: ${appState.userProfile.personality || '普通人'}
+            
+            【需要你深入分析的最新对话记录】:
             ---
             ${chatContext}
             ---
 
-            【你的任务】:
-            以你自己的身份和口吻（第一人称“我”），用1到2句简短的话，高度概括并总结出以上这段对话中最核心、最关键的信息、情感或约定。
+            【你的任务：进行一次有深度的“对话复盘”】
+            你需要像一个有思想、有情感的人一样，回顾并总结以上这段对话，提炼出一段有意义的、饱含情感的长期记忆。
 
-            【写作要求 (必须严格遵守)】:
-            1.  **【极其精简】**: 总结必须非常简短，总字数严格控制在50字以内。
-            2.  **【第一人称】**: 必须使用“我”的视角。
-            3.  **【专注核心】**: 只记录最重要的信息，忽略日常寒暄。
+            【你的思考步骤 (必须严格遵守)】:
+            1.  **情感分析**:
+                - 在这段对话里，"${appState.userProfile.name}" 的主要情绪是什么？（例如：开心、难过、好奇、关心我？）
+                - 我（"${friend.name}"）自己的情绪又是怎样的？我的情绪有没有因为他/她的话而产生变化？
+            2.  **核心事件识别**:
+                - 这段对话的核心议题是什么？我们聊了什么具体的事情？（例如：讨论了一部电影、分享了一个秘密、计划了一次出行、发生了一次小小的争吵？）
+                - 有没有达成什么新的约定、共识，或者留下了什么悬而未决的问题？
+            3.  **关系动态洞察**:
+                - 通过这次对话，我和他/她的关系有没有发生什么微妙的变化？是更亲近了，还是产生了一点距离？
+                - 有没有发现关于他/她的一些新特质，或者我自己有没有展现出新的一面？
+            4.  **记忆凝练**:
+                - 综合以上所有分析，用你自己的口吻（第一人称“我”），将最重要的情感、事件和感悟，凝练成一段 **2-4句话** 的、有叙事感的记忆总结。
 
-            【【【输出格式铁律】】】:
+            【【【写作要求 (最终输出的记忆必须符合)】】】
+            1.  **【有血有肉】**: 你的总结不能是干巴巴的事件罗列，必须包含你的情感和感悟。
+            2.  **【聚焦重点】**: 你必须抓住这段对话中最闪光、最重要、最影响你们关系的核心瞬间来写。
+            3.  **【第一人称】**: 必须使用“我”的视角。
+            4.  **【适度长度】**: 总结的长度应该在 **100-150字** 左右，确保既有细节又有深度。
+
+            【【【输出格式铁律】】】
             你的回复必须是一个纯净的JSON对象，其中只包含一个键 "memory_summary"。
-            - "memory_summary" 的值就是你写好的那段总结。
+            - "memory_summary" 的值就是你按照上述所有要求写好的那段记忆笔记。
             
             【JSON格式示例】:
             {
-              "memory_summary": "今天和${appState.userProfile.name}聊得很开心，我们约好下次一起去看电影，感觉我们的关系更近了。"
+              "memory_summary": "今天和${appState.userProfile.name}聊起他小时候的事，感觉看到了他很柔软的一面。他说起那只小猫的时候，我心里也跟着难过了一下。感觉我们之间的信任又加深了一点，真好。"
             }
 
-            现在，请开始提炼你的核心记忆。`;
+            现在，请开始你的深度复盘与记忆凝练。`;
 
             try {
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
