@@ -8665,6 +8665,8 @@ ${longTermMemories}
             } else if (msg.contentType === 'transfer_accepted') {
                 const transfer = JSON.parse(msg.content);
                 content = `(你接收了用户的转账 ¥${parseFloat(transfer.amount).toFixed(2)})`;
+            } else if (msg.contentType === 'listen_invite') {
+                content = `(用户向你发起了“一起听歌”的邀请，这是一个特殊操作卡片，你必须对此作出回应。)`;
             } else if (msg.contentType === 'location') {
                 const loc = JSON.parse(msg.content);
                 content = `(用户分享了一个位置: "${loc.name}", 地址: ${loc.address})`;
@@ -8949,7 +8951,7 @@ ${emojiContext}
                             case 'text':
                             case 'voice':
                                 const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, action.type);
-                                showNotification(sender, action.content);
+                                showNotification(friend, action.content);
                                 addMessageToDOM(msgData, friend);
                                 break;
                                                             case 'send_emoji':
@@ -8958,7 +8960,7 @@ ${emojiContext}
                                     if (action.data.name) {
                                         emojiMsgData.emojiName = action.data.name;
                                     }
-                                    showNotification(sender, "[表情]");
+                                    showNotification(friend, "[表情]");
                                     addMessageToDOM(emojiMsgData, friend);
                                 }
                                 break;
@@ -8966,7 +8968,7 @@ ${emojiContext}
                                 const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
                                 const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
                                 imgMsgData.imageDescription = action.description || 'AI生成的图片';
-                                showNotification(sender, "[图片]");
+                                showNotification(friend, "[图片]");
                                 addMessageToDOM(imgMsgData, friend);
                                 break;
                             case 'image_from_url':
@@ -11272,26 +11274,31 @@ async function fetchModels() {
         
         // --- Listen Together Functions ---
         
-                        async function inviteToListenTogether(friendIdToInvite) {
+                        // --- ↓↓↓ 请从这里开始完整复制，替换旧的 inviteToListenTogether 函数 ↓↓↓ ---
+
+        async function inviteToListenTogether(friendIdToInvite) {
             const friend = friends.find(f => f.id === friendIdToInvite);
             if (!friend) {
                 showAlert("无法邀请好友。");
                 return;
             }
            
+            // 步骤A: 像以前一样，先把邀请卡片发出去，让您能立刻看到
             const inviteMsg = await saveChatMessage(friendIdToInvite, 'sent', '', '', null, 'listen_invite');
             addMessageToDOM(inviteMsg, friend);
             document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
             
             showAlert("已发送邀请，等待对方回应...");
             
+            // --- 核心修改：为AI创建一个“特别任务指令” ---
+            // 这个指令非常简单直接，告诉AI它现在唯一的任务就是回应这个邀请。
             const friendRole = friend.role || '一个友好的朋友';
             const userPersonality = userProfile.personality || '普通人';
             
             const customPrompt = `你叫"${friend.name}"，人设是: "${friendRole}"。用户("${userPersonality}")刚刚向你发起了"一起听歌"的邀请。这是当前最优先的事项，请直接对此邀请作出回应。
             
             【【【输出格式铁律】】】
-            你的回复必须是JSON数组格式。数组中可以包含多个文本消息动作，以及一个可选的 "accept_listen_together" 动作来表示你的决定。
+如果决定接受邀请，你的回复JSON数组中，除了文本消息外，还必须包含一个 "accept_listen_together" 动作。
 
             【JSON格式示例 (接受邀请)】:
             [
@@ -11308,12 +11315,15 @@ async function fetchModels() {
             
             现在，请生成你的回复。`;
             
+            // 步骤B: 模拟一小段延迟后，让AI执行这个“特别任务”
             setTimeout(() => {
                 receiveMessage(friendIdToInvite, customPrompt);
-            }, 1500);
+            }, 1500); // 延迟1.5秒，模拟AI看到邀请后的反应时间
         }
 
-        function acceptListenInvite(friendId) {
+// --- ↑↑↑ 请在这里结束复制 ---
+
+                async function acceptListenInvite(friendId) {
             const friend = friends.find(f => f.id === friendId);
             if (!friend) return;
             listenTogetherFriendId = friendId; 
@@ -11331,13 +11341,12 @@ async function fetchModels() {
             updateListenUI();
             updateFloatingPlayer();
             
-            const msgData = saveChatMessage(friendId, 'received', '', '', null, 'listen_accept');
+            const msgData = await saveChatMessage(friendId, 'received', '', '', null, 'listen_accept');
             if (currentChatFriendId === friendId) {
                 addMessageToDOM(msgData, friend);
                 document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
             }
         }
-
         function openListenTogether() {
             const friend = friends.find(f => f.id === currentChatFriendId);
             if (!friend || friend.isGroup) {
