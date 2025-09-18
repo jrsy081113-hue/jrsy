@@ -9039,11 +9039,32 @@ ${emojiContext}
                 }
             }
         } else {
-            const jsonMatch = responseContentJSON.match(/\[[\s\S]*\]/);
-            if (!jsonMatch) {
-                throw new Error("AI未返回有效的JSON数组格式。收到的内容：" + responseContentJSON);
-            }
-            const responseActions = JSON.parse(jsonMatch[0]);
+            // --- 这是【修正后】的代码，请用它替换上面的旧代码 ---
+let responseActions;
+try {
+    // 步骤1：智能查找JSON的开始和结束位置
+    const firstBracket = responseContentJSON.indexOf('[');
+    const lastBracket = responseContentJSON.lastIndexOf(']');
+
+    if (firstBracket === -1 || lastBracket === -1 || lastBracket < firstBracket) {
+        // 如果连开始或结束的括号都找不到，就抛出错误
+        throw new Error("响应中未找到有效的JSON数组结构。");
+    }
+
+    // 步骤2：精确截取从第一个'['到最后一个']'的字符串
+    const jsonString = responseContentJSON.substring(firstBracket, lastBracket + 1);
+    
+    // 步骤3：尝试解析这个精确截取出来的字符串
+    responseActions = JSON.parse(jsonString);
+
+} catch (e) {
+    // 如果上面的任何一步失败了，就统一抛出最终的错误
+    console.error("解析AI返回的JSON时出错:", e);
+    console.error("收到的原始回复内容:", responseContentJSON);
+    // 把原始回复内容也一并抛出，方便未来调试
+    throw new Error("AI未返回有效的JSON数组格式，或格式损坏。收到的内容: " + responseContentJSON);
+}
+// --- 替换结束 ---
 
             if (Array.isArray(responseActions)) {
                 let lastMessageId = null;
