@@ -4803,6 +4803,50 @@ html {
 
 /* ↑↑↑ 第二步：代码粘贴到此结束 ↑↑↑ */
 
+/* ↓↓↓ 第3步：从这里开始复制所有新增的CSS代码 ↓↓↓ */
+
+/* 人设列表项的激活状态（被选中时） */
+.friend-item.persona-active {
+    background-color: #e3f2fd; /* 淡蓝色背景 */
+    border-left: 4px solid #007aff; /* 左侧蓝色高亮条 */
+    padding-left: 11px; /* 调整内边距以适应边框 */
+}
+
+/* ↑↑↑ CSS代码复制到这里结束 ↑↑↑ */
+
+/* --- 新增：群聊选择弹窗的样式优化 (修正版) --- */
+#groupChatFriendList .multi-select-item {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+}
+
+#groupChatFriendList .friend-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    margin-left: 12px;  /* 这是选择框和头像之间的距离 */
+    margin-right: 12px; /* 这是头像和名字之间的距离 */
+    flex-shrink: 0;
+    font-size: 16px;
+    /* 新增：确保图片头像能正确显示 */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-hover, #f0f0f0);
+    color: var(--text-color, #333);
+}
+
+#groupChatFriendList label {
+    font-size: 16px;
+}
+
+#groupChatFriendList input[type="checkbox"] {
+    /* 我们不再需要给选择框设置右边距了 */
+}
+
     </style>
 </head>
 <body>
@@ -4995,10 +5039,10 @@ html {
                         </div>
                         <div class="profile-section">
                             <div class="profile-menu">
-                                <div class="profile-menu-item" onclick="openPersonalSettings()">
-                                    <span>人设与背景</span>
-                                    <span>></span>
-                                </div>
+                                <div class="profile-menu-item" onclick="openPersonaList()">
+    <span>我的人设</span>
+    <span>></span>
+</div>
                                 <div class="profile-menu-item" onclick="openWallet()">
                                     <span>钱包</span>
                                     <span>></span>
@@ -5308,6 +5352,14 @@ html {
                         <label class="form-label">绑定世界书</label>
                         <div class="form-input" style="cursor: pointer; line-height: 2.5;" onclick="openWorldBookBindingModal()">点击选择</div>
                     </div>
+                    <!-- ↓↓↓ 核心修改：为ID添加后缀 "_Friend" ↓↓↓ -->
+<div class="form-group" id="selectPersonaItemGroup_Friend" style="display: none;">
+    <label class="form-label">选择我的人设</label>
+    <div class="form-input" style="cursor: pointer; line-height: 2.5;" onclick="openPersonaSelectModal()">
+        点击选择
+    </div>
+</div>
+<!-- ↑↑↑ 修改结束 ↑↑↑ -->
                     <div class="settings-buttons">
                         <button class="settings-btn btn-primary" onclick="saveFriendSettings()">保存设置</button>
                     </div>
@@ -5348,7 +5400,17 @@ html {
                         <label class="form-label">绑定世界书</label>
                         <div class="form-input" style="cursor: pointer; line-height: 2.5;" onclick="openWorldBookBindingModal()">点击选择</div>
                     </div>
-                    <!-- 保存按钮 -->
+                   
+                    <!-- ↓↓↓ 核心修改：为ID添加后缀 "_Group" ↓↓↓ -->
+<div class="form-group" id="selectPersonaItemGroup_Group" style="display: none;">
+    <label class="form-label">选择我的人设</label>
+    <div class="form-input" style="cursor: pointer; line-height: 2.5;" onclick="openPersonaSelectModal()">
+        点击选择
+    </div>
+</div>
+<!-- ↑↑↑ 修改结束 ↑↑↑ -->
+
+<!-- 保存按钮 -->
                     <div class="settings-buttons">
                         <button class="settings-btn btn-primary" onclick="saveGroupSettings()">保存设置</button>
                     </div>
@@ -5947,6 +6009,59 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         </div>
     </div>
     
+    <!-- ↓↓↓ 第2步：从这里开始复制所有新增的HTML代码 ↓↓↓ -->
+
+<!-- 新增：人设列表页面 -->
+<div id="personaListScreen" class="page">
+    <div class="nav-bar">
+        <button class="nav-btn" onclick="backToProfile()">←</button>
+        <div class="nav-title">我的人设</div>
+        <button class="nav-btn" onclick="openPersonaEditModal(null)">+</button>
+    </div>
+    <div class="wechat-content">
+        <div id="personaListContainer" class="friend-list">
+            <!-- 人设列表将在这里动态生成 -->
+        </div>
+    </div>
+</div>
+
+<!-- 新增：添加/编辑人设的弹窗 -->
+<div id="personaEditModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" id="personaEditTitle">添加新人设</div>
+        <div class="avatar-upload" id="personaAvatarUpload">
+            <input type="file" accept="image/*" onchange="handlePersonaAvatarUpload(event)">
+            <span id="personaAvatarPreview">+</span>
+        </div>
+        <input type="text" class="modal-input" id="personaNameInput" placeholder="昵称 (必填)">
+        <textarea class="modal-textarea" id="personaPersonalityInput" placeholder="个性、特点、喜好等..."></textarea>
+        <textarea class="modal-textarea" id="personaBackgroundInput" placeholder="背景、经历、职业等..."></textarea>
+        <input type="text" class="modal-input" id="personaPatActionInput" placeholder="“拍了拍”后缀，如：的头说“你好”">
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closePersonaEditModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="savePersona()">保存</button>
+        </div>
+        <div style="margin-top: 20px;">
+             <button class="settings-btn btn-danger" id="deletePersonaBtn" style="display: none;" onclick="deletePersona()">删除这个人设</button>
+        </div>
+    </div>
+</div>
+
+<!-- 新增：为人设选择的弹窗 -->
+<div id="personaSelectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">为当前聊天选择“我”的人设</div>
+        <div id="personaSelectList" class="friend-list" style="max-height: 50vh; overflow-y: auto;">
+            <!-- 可选的人设列表将在这里动态生成 -->
+        </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+             <button class="modal-btn modal-btn-cancel" onclick="closePersonaSelectModal()">取消</button>
+        </div>
+    </div>
+</div>
+
+<!-- ↑↑↑ HTML代码复制到这里结束 ↑↑↑ -->
+    
 
        
 
@@ -6095,6 +6210,8 @@ requestPersistentStorage();
 
 
         // 全局变量
+                let userPersonas = []; // 新增：用于存储所有用户人设的数组
+        let currentEditingPersonaId = null; // 新增：用于记录当前正在编辑的人设ID
         let currentChatFriendId = null;
         let currentlyDisplayedMessageCount = 0; // 新增：记录当前显示了多少条消息
 let isLazyLoading = false; // 新增：防止在加载时重复触发
@@ -6167,19 +6284,21 @@ let memoryGenerationTurns = 20; // 新增：记忆生成轮数，默认20轮
         // NEW: Camera function state
         let tempCameraDescription = '';
 
-        let userProfile = {
-            id: 'user_self',
-            name: '可点击编辑',
-            avatar: '',
-            avatarImage: '',
-            personality: '',
-            background: '',
-            signature: '可点击编辑',
-            location: '可点击编辑',
-            momentsCover: '',
-            balance: 50000,
-            patAction: '拍了拍'
-        };
+                // ↓↓↓ 请用这个代码块替换旧的 userProfile 定义 ↓↓↓
+let userProfile = {
+    id: 'default_user',
+    name: '可点击编辑',         // <-- 改回这里
+    avatar: '',                 // <-- 推荐改为空，程序会自动取名字首字
+    avatarImage: '',
+    personality: '一个普通人',
+    background: '',
+    signature: '可点击编辑',     // <-- 改回这里
+    location: '可点击编辑',       // <-- 改回这里
+    momentsCover: '',
+    balance: 50000,
+    patAction: '拍了拍'
+};
+// ↑↑↑ 替换结束 ↑↑↑
         
         let homeWidgetData = {
             headerText: '(:::[♡]:::)..?',
@@ -6649,6 +6768,7 @@ function updateAppLabelColorFromInput(color) {
                 // 5. 保存应用和API设置
                 const appSettings = {
     id: 'settings',
+    userPersonas: userPersonas,
     userProfile,
     homeWidgetData,
     selectedGlobalChatBg, customGlobalChatBgImage, selectedFont, selectedFontSize,
@@ -6748,6 +6868,16 @@ characterMemories = {};
 
                 // 恢复好友数据
                 friends = loadedFriends || [];
+                                // 【【【新增代码：为旧数据兼容时间戳】】】
+                friends.forEach(friend => {
+                    if (!friend.lastMessageTimestamp) { // 如果这个好友没有时间戳
+                        const history = chatHistories[friend.id] || [];
+                        if (history.length > 0) {
+                            // 就找到他/她聊天记录里的最后一条消息，把那条消息的时间补上
+                            friend.lastMessageTimestamp = history[history.length - 1].timestamp;
+                        }
+                    }
+                });
                 // 确保所有好友（包括旧数据）都有轮数计数器
 (loadedFriends || []).forEach(friend => {
     if (friend.turnCountSinceLastMemory === undefined) {
@@ -6788,12 +6918,22 @@ moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(
                     return song;
                 });
 
-                // 恢复应用设置
-                const settings = loadedAppSettings;
-                userProfile = settings.userProfile || { id: 'user_self', name: '可点击编辑', avatar: '', avatarImage: '', personality: '', background: '', signature: '可点击编辑', location: '可点击编辑', momentsCover: '', balance: 50000, patAction: '拍了拍' };
-                if (!userProfile.id) userProfile.id = 'user_self';
-                if (userProfile.balance === undefined) userProfile.balance = 50000;
-                if (userProfile.patAction === undefined) userProfile.patAction = '拍了拍';
+               
+// 恢复应用设置
+const settings = loadedAppSettings;
+
+if (settings.userPersonas && settings.userPersonas.length > 0) {
+            // 新数据处理方式
+            userPersonas = settings.userPersonas;
+            userProfile = userPersonas.find(p => p.id === 'default_user') || userPersonas[0];
+       
+} else {
+    userProfile = settings.userProfile || { id: 'default_user', name: '可点击编辑', avatar: '', avatarImage: '', personality: '一个普通人', background: '', signature: '可点击编辑', location: '可点击编辑', momentsCover: '', balance: 50000, patAction: '拍了拍' };
+
+    userProfile.id = 'default_user'; 
+    userPersonas = [userProfile];
+}
+
                 homeWidgetData = settings.homeWidgetData || homeWidgetData;
                 selectedGlobalChatBg = settings.selectedGlobalChatBg || 'default';
                 customGlobalChatBgImage = settings.customGlobalChatBgImage || '';
@@ -6852,7 +6992,8 @@ memoryGenerationTurns = settings.memoryGenerationTurns || 20; // <-- 新增：�
             
             // 设置默认值并保存
             friends = [];
-            userProfile = { id: 'user_self', name: '我', avatar: '我', avatarImage: '', personality: '一个普通人', background: '', signature: '编辑个性签名', location: '地球', momentsCover: '', balance: 50000, patAction: '拍了拍' };
+userProfile = { id: 'default_user', name: '可点击编辑', avatar: '', avatarImage: '', personality: '一个普通人', background: '', signature: '可点击编辑', location: '可点击编辑', momentsCover: '', balance: 50000, patAction: '拍了拍' };
+userPersonas = [userProfile];
             worldBooks = [];
             worldBookFolders = [];
             chatHistories = {};
@@ -7557,23 +7698,24 @@ function setChatAreaPadding(isOpen) {
             if (!name) return showAlert('请填写好友昵称');
             const remark = document.getElementById('friendRemarkInput').value.trim();
             const role = document.getElementById('friendRoleInput').value.trim() || '你是一个友好的助手。';
-            const newFriend = { 
-    id: generateUniqueId(), 
-    name, 
-    avatar: name.substring(0, 1), 
-    avatarImage: friendAvatarImage, 
-    remark, 
-    role, 
-    lastMessage: '我们已经是好友了!', 
-    pinned: false, 
-    chatBackground: { type: 'default', customImage: '' }, 
-    worldBookIds: [], 
-    boundFolderIds: [], 
-    diaryWritingUrge: 0, 
-    balance: Infinity, 
-    patAction: '', 
+            const newFriend = {
+    id: generateUniqueId(),
+    name: name,
+    avatar: name.substring(0, 1),
+    avatarImage: friendAvatarImage,
+    remark: remark,
+    role: role,
+    lastMessage: '我们已经是好友了!',
+    pinned: false,
+    chatBackground: { type: 'default', customImage: '' },
+    worldBookIds: [],
+    boundFolderIds: [],
+    diaryWritingUrge: 0,
+    balance: Infinity,
+    patAction: '',
+    activeUserPersonaId: 'default_user', // <--- 核心改动就是增加了这一行！
     heartsVoice: { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' },
-    turnCountSinceLastMemory: 0, // <-- 新增：初始化轮数计数器
+    turnCountSinceLastMemory: 0,
 };
             const newId = await dbManager.set('friends', newFriend);
             newFriend.id = newId;
@@ -7587,14 +7729,26 @@ showAlert('好友添加成功！');
 // ...
         }
         
-        function openGroupChatModal() {
+                        function openGroupChatModal() {
             document.getElementById('addMenu').classList.remove('show');
             const list = document.getElementById('groupChatFriendList');
             list.innerHTML = '';
             friends.filter(f => !f.isGroup).forEach(friend => {
                 const item = document.createElement('div');
                 item.className = 'multi-select-item';
-                item.innerHTML = `<input type="checkbox" id="gc-${friend.id}" value="${friend.id}"><label for="gc-${friend.id}">${friend.remark || friend.name}</label>`;
+
+                const avatarHtml = friend.avatarImage
+                    ? `<div class="friend-avatar" style="background-image: url('${friend.avatarImage}');"></div>`
+                    : `<div class="friend-avatar">${friend.avatar || friend.name.substring(0, 1)}</div>`;
+
+                // 【【【核心修改在这里！】】】
+                // 我们把 <input> 元素放到了最前面，
+                // 然后是头像，最后是名字。
+                item.innerHTML = `
+                    <input type="checkbox" id="gc-${friend.id}" value="${friend.id}">
+                    ${avatarHtml}
+                    <label for="gc-${friend.id}">${friend.remark || friend.name}</label>
+                `;
                 list.appendChild(item);
             });
             document.getElementById('addGroupChatModal').classList.add('show');
@@ -7647,22 +7801,39 @@ const newGroup = {
             showAlert('群聊创建成功！');
         }
 
-                function updateFriendList() {
+                        function updateFriendList() {
             const list = document.getElementById('wechatMessages');
             list.innerHTML = '';
-            [...friends].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)).forEach(friend => {
+
+            // 【【【核心修改：全新的排序逻辑】】】
+            const sortedFriends = [...friends].sort((a, b) => {
+                // 规则1：如果置顶状态不同，置顶的永远排在前面
+                if (a.pinned !== b.pinned) {
+                    return b.pinned - a.pinned; // true(1) > false(0)，所以 b 会排在 a 前面
+                }
+
+                // 规则2：如果两个都是“非置顶”的，就按最新消息时间排序
+                if (!a.pinned && !b.pinned) {
+                    // 确保时间戳存在，防止老数据出错
+                    const timeA = a.lastMessageTimestamp ? new Date(a.lastMessageTimestamp) : new Date(0);
+                    const timeB = b.lastMessageTimestamp ? new Date(b.lastMessageTimestamp) : new Date(0);
+                    return timeB - timeA; // 时间晚的（值更大）排在前面
+                }
+
+                // 规则3：如果两个都是“置顶”的，保持它们的相对位置不变
+                return 0;
+            });
+            
+            sortedFriends.forEach(friend => {
                 const item = document.createElement('div');
                 item.className = 'friend-item' + (friend.pinned ? ' pinned' : '');
                 item.onclick = () => openChat(friend.id);
                 const displayName = friend.remark || friend.name || '未知好友';
                 
-                                // 【核心修改】统一处理好友和群聊的头像逻辑
                 let avatarHtml;
                 if (friend.avatarImage) {
-                    // 如果有图片头像，就用图片，并且用内联样式去掉边框
                     avatarHtml = `<div class="friend-avatar" style="background-image: url(${friend.avatarImage}); border: none;"></div>`;
                 } else {
-                    // 否则，用文字头像（这种情况下我们希望保留边框，所以不需要加style）
                     const avatarText = friend.avatar || (friend.name ? friend.name.substring(0, 1) : '?');
                     avatarHtml = `<div class="friend-avatar">${avatarText}</div>`;
                 }
@@ -7866,14 +8037,31 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
     msgDiv.className = `message ${msg.type}`;
     msgDiv.setAttribute('data-message-id', msg.id);
     
-    let sender = null;
-    if (msg.type === 'sent') {
-        sender = userProfile;
-    } else if (friendOrGroup && friendOrGroup.isGroup) {
-        sender = friends.find(f => f.id === msg.senderId);
-    } else {
-        sender = friendOrGroup;
-    }
+    // ↓↓↓ 请用这个新的代码块，替换旧的 if (msg.type === 'sent') { ... } 代码块 ↓↓↓
+
+let sender = null;
+if (msg.type === 'sent') {
+    // --- 核心修改在这里 ---
+    // 1. 先找到当前聊天的好友/群聊对象
+    const currentChatTarget = friends.find(f => f.id === currentChatFriendId);
+    
+    // 2. 从这个对象上找到我们为他设置的“我的人设ID”
+    const activePersonaId = currentChatTarget ? currentChatTarget.activeUserPersonaId : 'default_user';
+    
+    // 3. 根据这个ID，从人设列表里找出具体的人设信息
+    const activePersona = userPersonas.find(p => p.id === activePersonaId) || userProfile;
+    
+    // 4. 用找到的这个人设作为发送者！
+    sender = activePersona;
+    // --- 修改结束 ---
+    
+} else if (friendOrGroup && friendOrGroup.isGroup) {
+    sender = friends.find(f => f.id === msg.senderId);
+} else {
+    sender = friendOrGroup;
+}
+
+// ↑↑↑ 替换到这里结束 ↑↑↑
 
     if (!sender) sender = { name: '未知', avatar: '?' };
 
@@ -8238,70 +8426,68 @@ function handleChatScroll(event) {
     }
 }
 
-        // 【【【第一步：请用这个修改后的完整函数替换原来的 saveChatMessage 函数】】】
-async function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text') {
-    if (!friendId) {
-        console.error("saveChatMessage called without friendId");
-        return null;
-    }
-    if (!chatHistories[friendId]) chatHistories[friendId] = [];
-    const friend = friends.find(f => f.id === friendId);
+                async function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text') {
+            if (!friendId) {
+                console.error("saveChatMessage called without friendId");
+                return null;
+            }
+            if (!chatHistories[friendId]) chatHistories[friendId] = [];
+            const friend = friends.find(f => f.id === friendId);
 
-    const message = { 
-        id: generateUniqueId(), 
-        type, 
-        content,
-        contentType,
-        quoted, 
-        timestamp: new Date().toISOString(), 
-        recalled: false,
-        senderId: type === 'sent' ? userProfile.id : (senderId || friend.id)
-    };
-    
-    if (contentType === 'transfer_request') {
-        message.transfer_status = 'pending';
-    }
+            const message = { 
+                id: generateUniqueId(), 
+                type, 
+                content,
+                contentType,
+                quoted, 
+                timestamp: new Date().toISOString(), // 我们用这个时间
+                recalled: false,
+                senderId: type === 'sent' ? userProfile.id : (senderId || friend.id)
+            };
+            
+            if (contentType === 'transfer_request') {
+                message.transfer_status = 'pending';
+            }
 
-    chatHistories[friendId].push(message);
-    
-    if (friend && contentType !== 'pat_pat') {
-        let lastMsgPrefix = '';
-        if(friend.isGroup && type === 'received'){
-            const sender = friends.find(f => f.id === senderId);
-            lastMsgPrefix = sender ? `${sender.name}: ` : '';
-        }
-        
-        let lastMessageText;
-        switch(contentType) {
-        case 'group_red_envelope': lastMessageText = '[红包]'; break;
-            case 'image': lastMessageText = '[图片]'; break;
-            case 'emoji': lastMessageText = '[表情]'; break;
-            case 'voice': lastMessageText = '[语音]'; break;
-            case 'location': lastMessageText = '[位置]'; break;
-            case 'listen_invite': lastMessageText = '[邀请你一起听歌]'; break;
-            case 'listen_accept': lastMessageText = '[已加入一起听]'; break;
-            case 'transfer_request': lastMessageText = '[转账]'; break;
-            case 'transfer_accepted': lastMessageText = '[转账]'; break;
-            case 'voice_call': lastMessageText = '[语音通话]'; break;
-            default: lastMessageText = content;
-        }
+            chatHistories[friendId].push(message);
+            
+            if (friend && contentType !== 'pat_pat') {
+                let lastMsgPrefix = '';
+                if(friend.isGroup && type === 'received'){
+                    const sender = friends.find(f => f.id === senderId);
+                    lastMsgPrefix = sender ? `${sender.name}: ` : '';
+                }
+                
+                let lastMessageText;
+                switch(contentType) {
+                    case 'group_red_envelope': lastMessageText = '[红包]'; break;
+                    case 'image': lastMessageText = '[图片]'; break;
+                    case 'emoji': lastMessageText = '[表情]'; break;
+                    case 'voice': lastMessageText = '[语音]'; break;
+                    case 'location': lastMessageText = '[位置]'; break;
+                    case 'listen_invite': lastMessageText = '[邀请你一起听歌]'; break;
+                    case 'listen_accept': lastMessageText = '[已加入一起听]'; break;
+                    case 'transfer_request': lastMessageText = '[转账]'; break;
+                    case 'transfer_accepted': lastMessageText = '[转账]'; break;
+                    case 'voice_call': lastMessageText = '[语音通话]'; break;
+                    default: lastMessageText = content;
+                }
 
-        friend.lastMessage = lastMsgPrefix + (lastMessageText.length > 20 ? lastMessageText.substring(0, 20) + '...' : lastMessageText);
-        friend.lastMessageContentType = contentType;
+                friend.lastMessage = lastMsgPrefix + (lastMessageText.length > 20 ? lastMessageText.substring(0, 20) + '...' : lastMessageText);
+                friend.lastMessageContentType = contentType;
+                
+                // 【【【新增代码：记录最新消息时间】】】
+                // 我们把这条消息的时间，也存到好友自己的数据里。
+                friend.lastMessageTimestamp = message.timestamp;
+            }
 
-       
-         }
 
-
-    // 【【【核心修复与新增：在这里为“写作欲望”充能】】】
-    if (friend && !friend.isGroup && contentType !== 'pat_pat' && contentType !== 'system') {
-        if (friend.diaryWritingUrge === undefined) {
-            friend.diaryWritingUrge = 0;
-        }
-        // 每次聊天（无论谁发），都增加 5 到 14 点的写作欲望
-        friend.diaryWritingUrge += Math.floor(Math.random() * 10) + 5; 
-    }
-    // 【【【新增代码结束】】】
+            if (friend && !friend.isGroup && contentType !== 'pat_pat' && contentType !== 'system') {
+                if (friend.diaryWritingUrge === undefined) {
+                    friend.diaryWritingUrge = 0;
+                }
+                friend.diaryWritingUrge += Math.floor(Math.random() * 10) + 5; 
+            }
 
             await dbManager.set('chatHistories', { friendId, messages: chatHistories[friendId] });
             await dbManager.set('friends', friend);
@@ -8509,7 +8695,7 @@ if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中�
             };
         }
         
-                                        /**
+                                                                                /**
  * 核心消息接收函数 (V2 - 健壮性增强版)
  * 这个函数现在被一个完整的 try...catch...finally 结构包裹，以确保：
  * 1. 无论API请求成功还是失败，程序都不会崩溃。
@@ -8681,9 +8867,26 @@ ${longTermMemories}
                 let emojiContext = '';
                 if (customEmojis && customEmojis.length > 0) {
                     const emojiListForAI = customEmojis.map(e => `- ${e.name}: ${e.url}`).join('\n');
-                    emojiContext = `【你的表情包库 (优先使用)】 这是你拥有的所有表情包，当需要发送表情时，你应该首先从这里寻找： ${emojiListForAI} `; }
+                    emojiContext = `【你的表情包库 (优先使用)】\n这是你拥有的所有表情包，当需要发送表情时，你应该首先从这里寻找：\n${emojiListForAI}\n`;
+}
             const groupMembers = friend.members.map(id => getAuthorById(id)).filter(Boolean);
             const memberInfoForAI = groupMembers.map(m => `- "${m.name}" (人设: ${m.role || (m.id === userProfile.id ? userProfile.personality : '未设定')})`).join('\n');
+            // --- 这是我们新增的核心代码，用于收集投票信息 ---
+let pollContextForAI = '';
+const recentPollMessage = history.slice(-10).find(m => m.contentType === 'poll');
+if (recentPollMessage) {
+    const pollData = JSON.parse(recentPollMessage.content);
+    let pollResults = `【参考信息：最近的群投票 “${pollData.title}”】\n`;
+    pollResults += pollData.options.map((option, index) => {
+        const voterNames = option.votes.map(voterId => {
+            const voter = getAuthorById(voterId);
+            return voter ? voter.name : '未知';
+        }).join(', ');
+        return `- 选项“${option.text}”的投票者: ${voterNames || '无'}`;
+    }).join('\n');
+    pollContextForAI = pollResults + '\n';
+}
+// --- 新增代码结束 ---
             const chatContextForAI = history.map(msg => {
                 const sender = getAuthorById(msg.senderId);
                 const senderName = sender ? sender.name : '未知';
@@ -8704,8 +8907,12 @@ ${longTermMemories}
 ${memberInfoForAI}
 - 最近聊天记录:
 ${chatContextForAI || '无'}
+
+${pollContextForAI}
+
 - 你的表情包库:
 ${emojiContext || "无"}
+
 
 【核心任务】: 续写对话。为【除用户外的所有AI角色】生成下一轮动作。
 【行为铁律】
@@ -8721,7 +8928,13 @@ ${emojiContext || "无"}
 - 数组中每个对象代表一个动作，必须包含 "sender_name", "action", "delay_seconds" 三个键。
 - 可用 action: {"type": "text", "content": "..."} | {"type": "voice", "content": "..."} | {"type": "image", "description": "..."} | {"type": "pat_pat", "target_name": "..."} | {"type": "transfer", "target_name": "...", "amount": 数字, "remark": "..."} | {"type": "accept_transfer", "target_name": "..."} | {"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}
 
-【剧本示例】: [ {"sender_name": "周遇", "action": {"type": "text", "content": "哇，抢到红包了！"}, "delay_seconds": 1.2}, {"sender_name": "谢余年", "action": {"type": "send_emoji", "data": {"name": "开心", "url": "https://..."}}, "delay_seconds": 2.0}, {"sender_name": "谢余年", "action": {"type": "text", "content": "谢谢老板！"}, "delay_seconds": 2.5}, {"sender_name": "周遇", "action": {"type": "text", "content": "我看看我抢了多少..."}, "delay_seconds": 3.0} ]
+【剧本示例】:
+[
+{"sender_name": "周遇", "action": {"type": "text", "content": "哇，抢到红包了！"}, "delay_seconds": 1.2},
+{"sender_name": "谢余年", "action": {"type": "send_emoji", "data": {"name": "开心", "url": "https://..."}}, "delay_seconds": 2.0},
+{"sender_name": "谢余年", "action": {"type": "text", "content": "谢谢老板！"}, "delay_seconds": 2.5},
+{"sender_name": "周遇", "action": {"type": "text", "content": "我看看我抢了多少..."}, "delay_seconds": 3.0}
+]
 
 现在，开始表演。`;
         } else {
@@ -8791,9 +9004,15 @@ ${emojiContext || "无"}
                     let emojiContext = '';
                     if (customEmojis && customEmojis.length > 0) {
                         const emojiListForAI = customEmojis.map(e => `- ${e.name}: ${e.url}`).join('\n');
-                        emojiContext = `【你的表情包库 (优先使用)】 这是你拥有的所有表情包，当需要发送表情时，你应该首先从这里寻找： ${emojiListForAI} ; } else { emojiContext = 【你的表情包库】\n你目前没有自定义表情包。`; }
+                        emojiContext = `【你的表情包库 (优先使用)】\n这是你拥有的所有表情包，当需要发送表情时，你应该首先从这里寻找：\n${emojiListForAI}\n`;
+} else { emojiContext = `【你的表情包库】\n你目前没有自定义表情包。`;
+}
 
-                                systemPrompt = `你叫"${friend.name}"，正在与用户"${userProfile.name}"聊天。
+                                // --- ↓↓↓ 新增：智能选择当前有效的用户人设 ---
+let activeUserPersona = userPersonas.find(p => p.id === friend.activeUserPersonaId) || userPersonas[0];
+// --- 新增代码结束 ---
+
+systemPrompt = `你叫"${friend.name}"，正在与用户"${activeUserPersona.name}"聊天。
 
 ${timeGapContext}
 
@@ -8805,8 +9024,9 @@ ${worldBookContext || "无"}
 
 【【【第二优先级：用户人设读取模块】】】
 这是你的聊天对象，你需要了解他/她。
-- **用户核心人设**: ${userProfile.personality || '普通人'}
-- **用户背景设定**: ${userProfile.background || '无'}
+- **用户昵称**: ${activeUserPersona.name}
+- **用户核心人设**: ${activeUserPersona.personality || '普通人'}
+- **用户背景设定**: ${activeUserPersona.background || '无'}
 ${longTermMemories}
 ${listenContext}
 ${momentsContext}
@@ -9039,32 +9259,53 @@ ${emojiContext}
                 }
             }
         } else {
-            // --- 这是【修正后】的代码，请用它替换上面的旧代码 ---
-let responseActions;
-try {
-    // 步骤1：智能查找JSON的开始和结束位置
-    const firstBracket = responseContentJSON.indexOf('[');
-    const lastBracket = responseContentJSON.lastIndexOf(']');
+            // --- 智能解析与自我修复逻辑 ---
+            let responseActions;
+            try {
+                // 步骤1：智能查找JSON的开始和结束位置
+                const firstBracket = responseContentJSON.indexOf('[');
+                const lastBracket = responseContentJSON.lastIndexOf(']');
 
-    if (firstBracket === -1 || lastBracket === -1 || lastBracket < firstBracket) {
-        // 如果连开始或结束的括号都找不到，就抛出错误
-        throw new Error("响应中未找到有效的JSON数组结构。");
-    }
+                if (firstBracket === -1 || lastBracket === -1 || lastBracket < firstBracket) {
+                    // 如果连开始或结束的括号都找不到，就抛出错误，进入自我修复流程
+                    throw new Error("响应中未找到有效的JSON数组结构。");
+                }
 
-    // 步骤2：精确截取从第一个'['到最后一个']'的字符串
-    const jsonString = responseContentJSON.substring(firstBracket, lastBracket + 1);
-    
-    // 步骤3：尝试解析这个精确截取出来的字符串
-    responseActions = JSON.parse(jsonString);
+                // 步骤2：精确截取从第一个'['到最后一个']'的字符串
+                const jsonString = responseContentJSON.substring(firstBracket, lastBracket + 1);
+                
+                // 步骤3：尝试解析这个精确截取出来的字符串
+                responseActions = JSON.parse(jsonString);
 
-} catch (e) {
-    // 如果上面的任何一步失败了，就统一抛出最终的错误
-    console.error("解析AI返回的JSON时出错:", e);
-    console.error("收到的原始回复内容:", responseContentJSON);
-    // 把原始回复内容也一并抛出，方便未来调试
-    throw new Error("AI未返回有效的JSON数组格式，或格式损坏。收到的内容: " + responseContentJSON);
-}
-// --- 替换结束 ---
+            } catch (e) {
+                // 如果上面的任何一步失败了，就启动“AI自我修复”
+                console.error("初次解析JSON失败，启动AI自我修复:", e);
+                console.error("需要修复的文本:", responseContentJSON);
+                
+                const repairPrompt = `以下是一段损坏的JSON文本，请修复它，并只返回修复后的、纯净的、没有任何额外文字的JSON代码。\n\n损坏的文本：\n\`\`\`json\n${responseContentJSON}\n\`\`\``;
+                
+                const repairResponse = await fetch(`${settings.apiUrl}/chat/completions`, { 
+                    method: 'POST', 
+                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: repairPrompt}], response_format: { type: 'json_object' } }) 
+                });
+
+                if(!repairResponse.ok) throw new Error(`AI修复请求失败: ${repairResponse.status}`);
+                
+                const repairData = await repairResponse.json();
+                const repairedText = repairData.choices[0].message.content;
+                
+                try {
+                    // 再次尝试解析修复后的文本
+                    responseActions = JSON.parse(repairedText);
+                } catch (finalError) {
+                    // 如果修复后还是失败，就彻底放弃，并抛出最终错误
+                    console.error("AI自我修复后，解析依然失败:", finalError);
+                    console.error("AI修复后的文本:", repairedText);
+                    throw new Error("AI未返回有效的JSON数组格式，即使在修复后也是如此。收到的内容: " + responseContentJSON);
+                }
+            }
+            // --- 智能解析与自我修复逻辑结束 ---
 
             if (Array.isArray(responseActions)) {
                 let lastMessageId = null;
@@ -9229,7 +9470,6 @@ try {
         }
     }
 }
-
         
         function showNotification(friend, message) {
             const notif = document.getElementById('message-notification');
@@ -9320,46 +9560,45 @@ try {
         
 
 
-                function openFriendSettings() {
+                        function openFriendSettings() {
+            // 首先，根据当前聊天ID找到对应的朋友对象
             const friend = friends.find(f => f.id === currentChatFriendId);
-            if (friend) {
-                const avatarUpload = document.getElementById('editFriendAvatarUpload');
-                const avatarPreview = document.getElementById('editFriendAvatarPreview');
-                
-                // 【核心修改】无论是不是群聊，都显示头像设置区域
-                document.getElementById('editFriendAvatarGroup').style.display = 'block';
+            // 如果没找到朋友，或者错误地进入了群聊设置，就直接退出，确保安全
+            if (!friend || friend.isGroup) return; 
 
-                // 【核心修改】正确显示当前头像（无论是好友还是群聊）
-                if (friend.avatarImage) {
-                    avatarUpload.style.backgroundImage = `url(${friend.avatarImage})`;
-                    avatarPreview.textContent = '';
-                } else {
-                    avatarUpload.style.backgroundImage = ``;
-                    // 如果是群聊就显示“群”，否则显示好友名字首字
-                    avatarPreview.textContent = friend.isGroup ? '群' : (friend.avatar || '+');
-                }
-                
-                if (friend.isGroup) {
-                    document.getElementById('editFriendNameLabel').textContent = '群聊名称';
-                    document.getElementById('editFriendRemarkGroup').style.display = 'none';
-                    document.getElementById('editFriendRoleGroup').style.display = 'none';
-                    document.getElementById('worldBookBindingGroup').style.display = 'none';
-                    document.getElementById('editFriendPatGroup').style.display = 'none';
-                } else {
-                    document.getElementById('editFriendNameLabel').textContent = '好友昵称';
-                    document.getElementById('editFriendRemarkGroup').style.display = 'block';
-                    document.getElementById('editFriendRoleGroup').style.display = 'block';
-                    document.getElementById('worldBookBindingGroup').style.display = 'block';
-                    document.getElementById('editFriendPatGroup').style.display = 'block';
-                    document.getElementById('editFriendRemark').value = friend.remark || '';
-                    document.getElementById('editFriendPatAction').value = friend.patAction || `拍了拍 "${friend.name}"`;
-                    document.getElementById('editFriendRole').value = friend.role || '';
-                }
-                document.getElementById('editFriendName').value = friend.name || '';
+            // --- 开始将好友信息填写到页面中 ---
+
+            // 1. 设置头像
+            const avatarUpload = document.getElementById('editFriendAvatarUpload');
+            const avatarPreview = document.getElementById('editFriendAvatarPreview');
+            if (friend.avatarImage) {
+                // 如果有图片头像，就显示图片
+                avatarUpload.style.backgroundImage = `url(${friend.avatarImage})`;
+                avatarPreview.textContent = '';
+            } else {
+                // 如果没有，就显示文字头像
+                avatarUpload.style.backgroundImage = '';
+                avatarPreview.textContent = friend.avatar || '+';
             }
+            tempEditingFriendAvatar = ''; // 重置临时的头像更改，防止串用
+
+            // 2. 填充所有的文本输入框
+            document.getElementById('editFriendName').value = friend.name || '';
+            document.getElementById('editFriendRemark').value = friend.remark || '';
+            document.getElementById('editFriendPatAction').value = friend.patAction || '';
+            document.getElementById('editFriendRole').value = friend.role || '';
+            
+            // 3. 确保所有单聊该有的设置项都显示出来
+            document.getElementById('editFriendNameLabel').textContent = '好友昵称';
+            document.getElementById('editFriendRemarkGroup').style.display = 'block';
+            document.getElementById('editFriendRoleGroup').style.display = 'block';
+            document.getElementById('worldBookBindingGroup').style.display = 'block';
+            document.getElementById('editFriendPatGroup').style.display = 'block';
+            document.getElementById('selectPersonaItemGroup_Friend').style.display = 'block';
+
+            // 最后，切换到设置页面
             setActivePage('friendSettingsScreen');
         }
-
         async function togglePinChat() {
     const friend = friends.find(f => f.id === currentChatFriendId);
     if (friend) {
@@ -9537,11 +9776,9 @@ try {
 }
 
         function openPersonalSettings() {
-            setActivePage('personalSettingsScreen');
-            document.getElementById('userPersonality').value = userProfile.personality || '';
-            document.getElementById('userBackground').value = userProfile.background || '';
-            document.getElementById('userPatAction').value = userProfile.patAction || '拍了拍';
-        }
+    // 不再打开旧的人设页面，而是直接跳转到新的人设列表页面
+    openPersonaList();
+}
 
         async function savePersonalSettings() {
             userProfile.personality = document.getElementById('userPersonality').value.trim();
@@ -10235,7 +10472,7 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
             return "刚刚";
         }
         
-                function getAuthorById(authorId) {
+                        function getAuthorById(authorId) {
             if (!authorId) {
                 console.warn(`尝试获取作者信息但 authorId 为空或无效: ${authorId}`);
                 return { id: 'unknown', name: '未知用户', avatar: '?', avatarImage: '' };
@@ -10886,24 +11123,37 @@ ${todayChats || '我们刚刚很安静，没有聊天。'}
         }
 
         
-                                // 【【【这是最终修正版，确保自动生成也调用正确的日记函数】】】
-        async function simulateAiBehavior() {
+                                        async function simulateAiBehavior() {
             const settings = await dbManager.get('apiSettings', 'settings') || {};
             if (!settings.apiUrl || !settings.apiKey || !settings.modelName || friends.filter(f => !f.isGroup).length === 0) return;
         
             for (const friend of friends.filter(f => !f.isGroup)) {
                 try {
-                    // *** 核心修改：现在自动生成日记时，也调用我们功能齐全的 generateDiaryForFriend 函数 ***
+                    // --- 日记部分的逻辑保持不变 ---
                     if (friend.diaryWritingUrge >= 400) { 
-                        const success = await generateDiaryForFriend(friend.id, false); // false表示是自动触发
+                        const success = await generateDiaryForFriend(friend.id, false); 
                         if (success && document.getElementById('diaryScreen').classList.contains('active')) {
-                           // 如果日记界面开着，自动刷新一下
                            showFriendDiary(friend.id); 
                         }
                     }
         
-                    // 朋友圈部分的逻辑保持不变
-                    if (Math.random() < 0.05) {
+                    // --- 【【【核心修改：全新的朋友圈触发逻辑】】】 ---
+                    const now = new Date();
+
+                    // 规则1：检查互动冷却。如果超过3天（72小时）没互动，就直接跳过这个AI。
+                    if (!friend.lastMessageTimestamp || (now - new Date(friend.lastMessageTimestamp)) / (1000 * 60 * 60) > 72) {
+                        continue; // 跳过，处理下一个好友
+                    }
+
+                    // 规则2：检查发言冷却。如果24小时内已经发过朋友圈，也直接跳过。
+                    if (friend.lastMomentTimestamp && (now - new Date(friend.lastMomentTimestamp)) / (1000 * 60 * 60) < 24) {
+                        continue; // 跳过，处理下一个好友
+                    }
+
+                    // 如果通过了以上所有筛选，再进行最终的随机判定
+                    if (Math.random() < 0.03) { // 我们把基础概率也稍微降低了一点
+                        
+                        // --- (下面的代码是原来就有的，保持不变) ---
                         const recentFriendMoments = moments.filter(m => m.authorId === friend.id).slice(0, 3).map(m => `- "${m.content.substring(0, 50)}..."`).join('\n');
                         const chatHistorySummary = (chatHistories[friend.id] || []).slice(-10).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content.substring(0, 20)}...`).join('\n');
                         let timeContext = '';
@@ -10966,6 +11216,12 @@ ${todayChats || '我们刚刚很安静，没有聊天。'}
                                     const newId = await dbManager.set('moments', newMoment);
                                     newMoment.id = newId;
                                     moments.unshift(newMoment);
+
+                                    // 【【【新增代码：记录本次发圈时间】】】
+                                    // 成功发布后，立刻记录下当前时间！
+                                    friend.lastMomentTimestamp = newMoment.timestamp;
+                                    await saveData(); // 保存这个新记录
+
                                     if (document.getElementById('momentsScreen').classList.contains('active')) {
                                         updateMomentsList();
                                     }
@@ -11379,16 +11635,28 @@ async function fetchModels() {
             listenTogetherFriendId = null; 
             hideFunctionMenus();
             
-            setActivePage('listenTogetherScreen');
-             
-            const userAvatarDiv = document.getElementById('listenUserAvatar');
-            if(userProfile.avatarImage) {
-                 userAvatarDiv.style.backgroundImage = `url(${userProfile.avatarImage})`;
-                 userAvatarDiv.textContent = '';
-            } else {
-                 userAvatarDiv.style.backgroundImage = '';
-                 userAvatarDiv.textContent = userProfile.name.substring(0,1) || '我';
-            }
+            // ↓↓↓ 请用这个新的代码块，替换旧的用户头像设置逻辑 ↓↓↓
+
+setActivePage('listenTogetherScreen');
+
+// --- 核心修改在这里 ---
+// 1. 同样，先找到当前聊天的好友，并找出为他设定的“我的人设”
+const currentFriendForListen = friends.find(f => f.id === currentChatFriendId);
+const activePersonaIdForListen = currentFriendForListen ? currentFriendForListen.activeUserPersonaId : 'default_user';
+const activePersonaForListen = userPersonas.find(p => p.id === activePersonaIdForListen) || userProfile;
+
+// 2. 用这个人设的信息来设置“一起听”界面里“我”的头像
+const userAvatarDiv = document.getElementById('listenUserAvatar');
+if (activePersonaForListen.avatarImage) {
+    userAvatarDiv.style.backgroundImage = `url(${activePersonaForListen.avatarImage})`;
+    userAvatarDiv.textContent = '';
+} else {
+    userAvatarDiv.style.backgroundImage = '';
+    userAvatarDiv.textContent = activePersonaForListen.name.substring(0,1) || '我';
+}
+// --- 修改结束 ---
+
+// ↑↑↑ 替换到这里结束 ↑↑↑
 
             const friendAvatarDiv = document.getElementById('listenFriendAvatar');
             friendAvatarDiv.style.backgroundImage = '';
@@ -12624,8 +12892,10 @@ async function sendPoll() {
     triggerAiPollVote(msgData.id);
 }
 
+// ↓↓↓ 请用这个【高效即时版】的函数，替换掉原来的 triggerAiPollVote 函数 ↓↓↓
+
 /**
- * 核心功能：触发所有AI角色进行投票
+ * 核心功能：触发所有AI角色进行投票 (高效即时版)
  * @param {string} messageId - 投票卡片的消息ID
  */
 async function triggerAiPollVote(messageId) {
@@ -12638,15 +12908,23 @@ async function triggerAiPollVote(messageId) {
 
     const pollData = JSON.parse(history[msgIndex].content);
 
-    // 遍历群里除用户外的所有AI成员
+    // 筛选出所有需要投票的AI成员
     const aiMembers = group.members.filter(id => id !== userProfile.id);
-    for (const memberId of aiMembers) {
-        // 设置一个随机延迟，让投票看起来更真实
-        const delay = 1500 + Math.random() * 3000;
-        setTimeout(() => {
-            requestAiVote(messageId, pollData, memberId);
-        }, delay);
-    }
+    
+    // 【【【核心修改在这里】】】
+    // 我们不再使用 setTimeout 来制造延迟，
+    // 而是创建一个任务数组，让所有AI的投票请求同时发出。
+    const votingPromises = aiMembers.map(memberId => {
+        // 直接调用请求函数，不再等待
+        return requestAiVote(messageId, pollData, memberId);
+    });
+
+    // 等待所有的AI投票任务都执行完毕
+    await Promise.all(votingPromises);
+
+    // 在所有AI投完票后，再触发一次总导演的对话，让它们对投票结果进行讨论
+    console.log("[投票系统] 所有AI已完成投票，正在触发后续对话...");
+    receiveMessage(currentChatFriendId);
 }
 
 // ↓↓↓ 第一步：用这个新函数完整替换旧的 requestAiVote 函数 ↓↓↓
@@ -13406,12 +13684,13 @@ document.getElementById('memoryGenerationTurnsInput').addEventListener('change',
 /**
  * 智能判断：打开好友设置还是群聊设置
  */
+
 function openFriendOrGroupSettings() {
     const friend = friends.find(f => f.id === currentChatFriendId);
     if (friend.isGroup) {
-        openGroupSettings(); // 如果是群聊，打开群聊设置
+        openGroupSettings();
     } else {
-        openFriendSettings(); // 否则，打开好友设置
+        openFriendSettings();
     }
 }
 
@@ -13439,9 +13718,11 @@ function openGroupSettings() {
     renderGroupMemberList(group.id);
 
     setActivePage('groupSettingsScreen');
+ 
+document.getElementById('selectPersonaItemGroup_Group').style.display = 'block'; 
 }
 
-// --- ↓↓↓ 请从这里开始复制，完整替换旧函数 ↓↓↓ ---
+                                // --- ↓↓↓ 请从这里开始复制，完整替换旧函数 ↓↓↓ ---
 
 /**
  * 渲染群成员列表 (V2.0 - 群主置顶版)
@@ -14157,6 +14438,268 @@ function startVoiceCallFromAccept(friendId) {
             // 然后再返回上一页
             backToMySettings();
         }
+        
+        // ↓↓↓ 第4步：从这里开始复制所有新增的JavaScript函数 ↓↓↓
+
+// --- 人设管理系统核心函数 ---
+
+/**
+ * 打开“人设列表”页面
+ */
+function openPersonaList() {
+    setActivePage('personaListScreen');
+    renderPersonaList();
+}
+
+/**
+ * 渲染人设列表到页面上
+ */
+function renderPersonaList() {
+    const container = document.getElementById('personaListContainer');
+    container.innerHTML = '';
+    userPersonas.forEach(persona => {
+        const item = document.createElement('div');
+        item.className = 'friend-item';
+        item.onclick = () => openPersonaEditModal(persona.id);
+        
+        const avatarHtml = persona.avatarImage
+            ? `<div class="friend-avatar" style="background-image: url('${persona.avatarImage}');"></div>`
+            : `<div class="friend-avatar">${persona.avatar || persona.name.substring(0, 1)}</div>`;
+
+        item.innerHTML = `
+            ${avatarHtml}
+            <div class="friend-info">
+                <div class="friend-name">${persona.name}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+/**
+ * 打开 添加/编辑人设 的弹窗
+ * @param {string | null} personaId - 如果是编辑，则传入人设ID；如果是新增，则传入null
+ */
+function openPersonaEditModal(personaId) {
+    currentEditingPersonaId = personaId;
+    const modal = document.getElementById('personaEditModal');
+    const title = document.getElementById('personaEditTitle');
+    const deleteBtn = document.getElementById('deletePersonaBtn');
+    
+    const avatarUpload = document.getElementById('personaAvatarUpload');
+    const avatarPreview = document.getElementById('personaAvatarPreview');
+    const nameInput = document.getElementById('personaNameInput');
+    const personalityInput = document.getElementById('personaPersonalityInput');
+    const backgroundInput = document.getElementById('personaBackgroundInput');
+    const patActionInput = document.getElementById('personaPatActionInput');
+
+    if (personaId) {
+        // --- 编辑模式 ---
+        const persona = userPersonas.find(p => p.id === personaId);
+        if (!persona) return;
+        
+        title.textContent = '编辑人设';
+        nameInput.value = persona.name;
+        personalityInput.value = persona.personality || '';
+        backgroundInput.value = persona.background || '';
+        patActionInput.value = persona.patAction || '';
+        
+        if (persona.avatarImage) {
+            avatarUpload.style.backgroundImage = `url(${persona.avatarImage})`;
+            avatarPreview.textContent = '';
+        } else {
+            avatarUpload.style.backgroundImage = '';
+            avatarPreview.textContent = persona.avatar || '+';
+        }
+
+        // 默认人设不允许删除
+        if (persona.id === 'default_user') {
+            deleteBtn.style.display = 'none';
+        } else {
+            deleteBtn.style.display = 'block';
+        }
+
+    } else {
+        // --- 新增模式 ---
+        title.textContent = '添加新人设';
+        nameInput.value = '';
+        personalityInput.value = '';
+        backgroundInput.value = '';
+        patActionInput.value = '';
+        avatarUpload.style.backgroundImage = '';
+        avatarPreview.textContent = '+';
+        deleteBtn.style.display = 'none';
+    }
+    
+    modal.classList.add('show');
+}
+
+/**
+ * 关闭 添加/编辑人设 的弹窗，并重置状态
+ */
+let tempPersonaAvatar = '';
+function closePersonaEditModal() {
+    document.getElementById('personaEditModal').classList.remove('show');
+    currentEditingPersonaId = null;
+    tempPersonaAvatar = ''; // 清空临时头像
+    document.getElementById('personaAvatarUpload').style.backgroundImage = '';
+    document.getElementById('personaAvatarPreview').textContent = '+';
+}
+
+/**
+ * 处理人设头像的本地上传
+ */
+function handlePersonaAvatarUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            tempPersonaAvatar = e.target.result;
+            document.getElementById('personaAvatarUpload').style.backgroundImage = `url(${e.target.result})`;
+            document.getElementById('personaAvatarPreview').textContent = '';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+/**
+ * 保存人设（新增或修改）
+ */
+async function savePersona() {
+    const name = document.getElementById('personaNameInput').value.trim();
+    if (!name) return showAlert('昵称不能为空');
+
+    const personaData = {
+        name: name,
+        avatar: name.substring(0, 1),
+        avatarImage: '', // 稍后处理
+        personality: document.getElementById('personaPersonalityInput').value.trim(),
+        background: document.getElementById('personaBackgroundInput').value.trim(),
+        patAction: document.getElementById('personaPatActionInput').value.trim(),
+    };
+
+    if (currentEditingPersonaId) {
+        // --- 更新现有的人设 ---
+        const personaIndex = userPersonas.findIndex(p => p.id === currentEditingPersonaId);
+        if (personaIndex > -1) {
+            // 合并数据，保留旧ID和可能存在的旧头像
+            userPersonas[personaIndex] = { ...userPersonas[personaIndex], ...personaData };
+            if (tempPersonaAvatar) {
+                userPersonas[personaIndex].avatarImage = tempPersonaAvatar;
+            }
+        }
+    } else {
+        // --- 添加新的人设 ---
+        personaData.id = `user_${generateUniqueId()}`;
+        if (tempPersonaAvatar) {
+            personaData.avatarImage = tempPersonaAvatar;
+        }
+        userPersonas.push(personaData);
+    }
+
+    await saveData();
+    renderPersonaList(); // 刷新列表
+    closePersonaEditModal();
+    showAlert('人设已保存！');
+}
+
+/**
+ * 删除当前正在编辑的人设
+ */
+function deletePersona() {
+    if (!currentEditingPersonaId || currentEditingPersonaId === 'default_user') return;
+
+    showConfirm('确定要删除这个人设吗？此操作不可恢复。', async (confirmed) => {
+        if (!confirmed) return;
+
+        userPersonas = userPersonas.filter(p => p.id !== currentEditingPersonaId);
+        
+        // 检查是否有好友正在使用这个人设，如果有，则重置为默认人设
+        friends.forEach(friend => {
+            if (friend.activeUserPersonaId === currentEditingPersonaId) {
+                friend.activeUserPersonaId = 'default_user';
+            }
+        });
+
+        await saveData();
+        renderPersonaList();
+        closePersonaEditModal();
+        showAlert('人设已删除。');
+    });
+}
+
+// ↓↓↓ 请用这个新版本完整替换旧的 openPersonaSelectModal 函数 ↓↓↓
+/**
+ * 打开为人设选择的弹窗 (修正版)
+ */
+function openPersonaSelectModal() {
+    const modal = document.getElementById('personaSelectModal');
+    if (!modal) return;
+    renderPersonaSelectModal(); // 先把列表内容准备好
+    modal.classList.add('show'); // 正确地用 'show' class来显示弹窗
+}
+// ↑↑↑ 替换结束 ↑↑↑
+
+// ↓↓↓ 请用这个新版本完整替换旧的 closePersonaSelectModal 函数 ↓↓↓
+/**
+ * 关闭人设选择弹窗 (修正版)
+ */
+function closePersonaSelectModal() {
+    const modal = document.getElementById('personaSelectModal');
+    if (modal) {
+        modal.classList.remove('show'); // 正确地用移除 'show' class来隐藏弹窗
+    }
+}
+// ↑↑↑ 替换结束 ↑↑↑
+
+/**
+ * 渲染人设选择列表到弹窗中
+ */
+function renderPersonaSelectModal() {
+    const container = document.getElementById('personaSelectList');
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (!friend) return;
+    
+    container.innerHTML = '';
+    const activePersonaId = friend.activeUserPersonaId || 'default_user';
+
+    userPersonas.forEach(persona => {
+        const item = document.createElement('div');
+        // 如果当前人设是被选中的，就添加一个高亮class
+        item.className = `friend-item ${persona.id === activePersonaId ? 'persona-active' : ''}`;
+        item.onclick = () => confirmPersonaSelection(persona.id);
+        
+        const avatarHtml = persona.avatarImage
+            ? `<div class="friend-avatar" style="background-image: url('${persona.avatarImage}');"></div>`
+            : `<div class="friend-avatar">${persona.avatar || persona.name.substring(0, 1)}</div>`;
+
+        item.innerHTML = `
+            ${avatarHtml}
+            <div class="friend-info">
+                <div class="friend-name">${persona.name}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// ↓↓↓ 请用这个新版本完整替换旧的 confirmPersonaSelection 函数 ↓↓↓
+/**
+ * 确认选择人设并保存 (修正版)
+ * @param {string} personaId - 被选中的人设ID
+ */
+async function confirmPersonaSelection(personaId) {
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (friend) {
+        friend.activeUserPersonaId = personaId;
+        await saveData();
+        showAlert('人设切换成功！');
+        closePersonaSelectModal(); // 确保这里调用的是我们新的关闭函数
+    }
+}
+// ↑↑↑ 替换结束 ↑↑↑
+
+// ↑↑↑ JavaScript函数复制到这里结束 ↑↑↑
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
