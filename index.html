@@ -731,11 +731,12 @@ html {
 
         .friend-message {
             font-size: var(--small-font-size, 13px);
-            color: var(--text-secondary, #999);
+            color: var(--text-color, #000); 
             font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            opacity: 0.8;
         }
         
         /* --- [BUG FIX] White Module Fix START --- */
@@ -965,29 +966,41 @@ html {
             transition: transform 0.2s ease, width 0.2s ease, opacity 0.2s ease;
         }
         
-        .send-btn {
-            background: transparent;
-            border-radius: var(--input-radius, 17px);
-            transition: color 0.3s ease, background-color 0.3s ease, transform 0.2s ease, width 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
-            transform: scale(0.9);
-            opacity: 0;
-            width: 0;
-            padding: 0;
-        }
+       /* ↓↓↓ 请用这个【最终版】的代码块，完整替换你旧的 .send-btn 样式 ↓↓↓ */
+.send-btn {
+    background: transparent;
+    border-radius: var(--input-radius, 17px);
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.2s ease, width 0.2s ease, opacity 0.2s ease, padding 0.2s ease, max-width 0.2s ease; /* 新增了max-width的过渡 */
+    transform: scale(0.9);
+    opacity: 0;
+    
+    /* --- 核心修复在这里 --- */
+    width: 0;
+    padding: 0;
+    max-width: 0; /* 【【【新增】】】 强制规定最大宽度也为0 */
+    overflow: hidden; /* 【【【新增】】】 作为一个保险，隐藏任何可能溢出的部分 */
+    border: none; /* 【【【新增】】】 确保没有边框占据空间 */
+}
         
         #voiceBtn {
             transition: transform 0.2s ease, width 0.2s ease, opacity 0.2s ease;
         }
 
 
-        .send-btn.active {
-            transform: scale(1);
-            opacity: 1;
-            width: 35px;
-            padding: 0;
-            background-color: #007aff;
-            color: white;
-        }
+      /* ↓↓↓ 请用这个【最终修复版】的代码块，完整替换你旧的 .send-btn.active 样式 ↓↓↓ */
+.send-btn.active {
+    transform: scale(1);
+    opacity: 1;
+    width: 35px;
+    
+    /* --- 核心修复在这里 --- */
+    max-width: 40px; /* 【【【新增】】】 恢复最大宽度，让按钮能“撑开” */
+    overflow: visible; /* 【【【新增】】】 恢复内容可见 */
+    
+    padding: 0;
+    background-color: #007aff;
+    color: white;
+}
 
         .chat-btn svg {
             width: 24px;
@@ -4847,6 +4860,186 @@ html {
     /* 我们不再需要给选择框设置右边距了 */
 }
 
+/* --- 【【【第二步：将这段CSS粘贴到 <style> 的末尾】】】 --- */
+
+/* 美化设置列表的样式 */
+#beautificationSettingsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.beautification-group {
+    background: var(--bg-primary, white);
+    border-radius: 12px;
+    padding: 5px 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.beautification-group-title {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+    margin-bottom: 10px;
+}
+
+.beautification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.beautification-group .beautification-item:last-child {
+    border-bottom: none;
+}
+
+.beautification-label {
+    font-size: 15px;
+    color: var(--text-color);
+}
+
+.beautification-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.beautification-preview {
+    width: 32px;
+    height: 32px;
+    background-color: var(--bg-hover, #f0f0f0);
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.beautification-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #007aff;
+    color: #007aff;
+    background: none;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.beautification-btn.reset {
+    border-color: #ff3b30;
+    color: #ff3b30;
+}
+
+/* --- [最终修正版] 微信App全局背景样式 --- */
+
+/* 1. 这是背景图层本身，确保它在最底层 */
+#wechatAppBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* 让它永远在最底层 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* 2. 【【【核心修复】】】当有背景图时，我们把整个 #wechatApp 画板变透明 */
+#wechatApp.has-global-bg {
+    background: transparent !important;
+}
+
+/* 3. 同时，也确保里面的内容区域（画纸）也变透明 */
+#wechatApp.has-global-bg .wechat-content,
+#wechatApp.has-global-bg .friend-list {
+    background: transparent !important;
+}
+
+/* --- 【【【最终纯净透明版】】】针对全局背景的好友列表项透明化 (修正后) --- */
+
+/* 当微信App有全局背景时，修改每一个好友“卡片”的样式 */
+#wechatApp.has-global-bg .friend-item {
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important; 
+}
+
+/* 
+   之前强制设定文字颜色为白色和添加阴影的规则已被完全删除。
+   现在，好友列表的文字颜色将默认继承您在“字体设置”中的选择。
+*/
+
+/* 针对暗色模式下的优化，同样改为完全透明 */
+.wechat-dark-mode#wechatApp.has-global-bg .friend-item {
+    background-color: transparent !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- 【【【最终修复版 - 确保所有页面彻底透明】】】 --- */
+/* 请用这段代码，完整替换掉之前所有关于全局背景透明的CSS代码 */
+
+/* 核心修复：当微信App有全局背景时，让它内部的所有.page“页面容器”本身变得完全透明 */
+#wechatApp.has-global-bg .page {
+    background-color: transparent !important;
+}
+
+/* 并且，确保页面内的主要内容区也是透明的，以防万一 */
+#wechatApp.has-global-bg .wechat-content,
+#wechatApp.has-global-bg .discover-content,
+#wechatApp.has-global-bg .profile-content,
+#wechatApp.has-global-bg .settings-content {
+    background-color: transparent !important;
+}
+
+/* 接下来，处理页面上那些原本有自己白色背景的“卡片”和“列表项” */
+#wechatApp.has-global-bg .profile-section,
+#wechatApp.has-global-bg .profile-header,
+#wechatApp.has-global-bg .discover-menu-item,
+#wechatApp.has-global-bg #walletScreen .balance-display,
+#wechatApp.has-global-bg #walletScreen .wallet-menu-item,
+#wechatApp.has-global-bg .beautification-group,
+#wechatApp.has-global-bg .friend-item {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* 确保卡片内部的子项目也是完全透明的 */
+#wechatApp.has-global-bg .profile-menu-item {
+    background-color: transparent !important;
+}
+
+/* 移除所有文字阴影，让字体样式完全由您控制 */
+#wechatApp.has-global-bg,
+#wechatApp.has-global-bg .friend-name,
+#wechatApp.has-global-bg .friend-message,
+#wechatApp.has-global-bg .profile-section,
+#wechatApp.has-global-bg .discover-menu-item,
+#wechatApp.has-global-bg .wallet-menu-item,
+#wechatApp.has-global-bg .balance-amount,
+#wechatApp.has-global-bg .balance-label {
+    text-shadow: none !important;
+}
+
+/* 调整列表项之间的分割线，使其在透明背景下依然可见但不过于突兀 */
+#wechatApp.has-global-bg .friend-item,
+#wechatApp.has-global-bg .profile-menu-item,
+#wechatApp.has-global-bg #walletScreen .balance-display,
+#wechatApp.has-global-bg .beautification-item {
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 暗色模式下的分割线适配 */
+.wechat-dark-mode#wechatApp.has-global-bg .friend-item,
+.wechat-dark-mode#wechatApp.has-global-bg .profile-menu-item,
+.wechat-dark-mode#wechatApp.has-global-bg #walletScreen .balance-display,
+.wechat-dark-mode#wechatApp.has-global-bg .beautification-item {
+    border-bottom-color: rgba(255, 255, 255, 0.15) !important;
+}
+
     </style>
 </head>
 <body>
@@ -4997,12 +5190,13 @@ html {
             </div>
 
             <div id="wechatApp" class="page">
+            <div id="wechatAppBackground"></div>
                  <div class="nav-bar">
-    <button class="nav-btn" onclick="goHome()">←</button>
+ <button class="nav-btn" id="navBarGoHomeButton" onclick="goHome()">←</button>
     <div class="nav-title">消息</div>
     <!-- ↓↓↓ 修改从这里开始 ↓↓↓ -->
     <div id="navRightButtons">
-        <button class="nav-btn" id="addMenuBtn" onclick="toggleAddMenu()">+</button>
+       <button class="nav-btn nav-right-action-btn" id="addMenuBtn" onclick="toggleAddMenu()">+</button>
     </div>
     <!-- ↑↑↑ 修改到这里结束 ↑↑↑ -->
 </div>
@@ -5083,13 +5277,13 @@ html {
 
             <div id="chatScreen" class="page">
                 <div class="nav-bar">
-                    <button class="nav-btn" onclick="backToWechat()">←</button>
+                    <button class="nav-btn" id="navBarBackButton" onclick="backToWechat()">←</button>
                     <div class="nav-title" id="chatTitle">聊天</div>
                     <div style="display: flex; align-items: center;">
-                        <button class="nav-btn" id="heartsVoiceBtn" onclick="openHeartsVoiceModal()" title="心声">
+                        <button class="nav-btn" id="navBarHeartsVoiceButton" onclick="openHeartsVoiceModal()" title="心声">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                         </button>
-                        <button class="nav-btn" onclick="openChatSettings()">⋯</button>
+                      <button class="nav-btn nav-right-action-btn" id="navBarMoreButton" onclick="openChatSettings()">⋯</button>
                     </div>
                 </div>
                 <div class="wechat-content">
@@ -5103,14 +5297,26 @@ html {
                     </div>
                 </div>
                 <div class="chat-input-area" id="chatInputArea">
-                    <div class="chat-input">
-                        <button class="chat-btn" id="receiveBtn" onclick="requestAIResponse()" title="接收消息"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.567L16.5 21.75l-.398-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.398a2.25 2.25 0 001.423-1.423L16.5 15.75l.398 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.398a2.25 2.25 0 00-1.423 1.423z" /></svg></button>
-                        <button class="chat-btn" id="voiceBtn" onclick="openVoiceModal()" title="语音"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg></button>
-                        <textarea id="messageInput" rows="1" placeholder="输入消息..." onkeypress="handleKeyPress(event)" oninput="toggleSendButtonActive(this)" onclick="hideFunctionMenus()"></textarea>
-                        <button class="chat-btn" id="emojiBtn" onclick="toggleEmojiPicker()" title="表情"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M15.5,8A1.5,1.5 0 0,1 17,9.5A1.5,1.5 0 0,1 15.5,11A1.5,1.5 0 0,1 14,9.5A1.5,1.5 0 0,1 15.5,8M8.5,8A1.5,1.5 0 0,1 10,9.5A1.5,1.5 0 0,1 8.5,11A1.5,1.5 0 0,1 7,9.5A1.5,1.5 0 0,1 8.5,8M12,17.23C10.25,17.23 8.71,16.5 7.81,15.42L9.23,14C9.68,14.72 10.75,15.23 12,15.23C13.25,15.23 14.32,14.72 14.77,14L16.19,15.42C15.29,16.5 13.75,17.23 12,17.23Z"/></svg></button>
-                        <button class="chat-btn plus-btn" onclick="toggleChatFunctions()" title="更多"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-                        <button class="chat-btn send-btn" id="sendBtn" onclick="sendMessage()" title="发送消息"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.4-8.4c.8-.4.8-1.6 0-2L3.4 1.6c-.8-.4-1.6.4-1.4 1.2l3.6 7.2c.2.4.2 1 0 1.4L2 19.2c-.2.8.6 1.6 1.4 1.2z"/></svg></button>
-                    </div>
+                   <!-- ↓↓↓ 这是新的代码，请用它来替换上面的旧代码 ↓↓↓ -->
+<div class="chat-input">
+    <!-- 我们用这个新的div把四个默认按钮包了起来，并给了它一个ID -->
+    <div id="chatDefaultButtons" style="display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
+        <button class="chat-btn" id="chatInputReceiveButton" onclick="requestAIResponse()" title="接收消息"> <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.567L16.5 21.75l-.398-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.398a2.25 2.25 0 001.423-1.423L16.5 15.75l.398 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.398a2.25 2.25 0 00-1.423 1.423z" /></svg></button>
+        <button class="chat-btn" id="chatInputVoiceButton" onclick="openVoiceModal()" title="语音"> <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg></button>
+    </div>
+    
+    <textarea id="messageInput" rows="1" placeholder="输入消息..." onkeypress="handleKeyPress(event)" oninput="toggleSendButtonActive(this)" onclick="hideFunctionMenus()"></textarea>
+    
+    <!-- 我们也给右边的按钮们一个“家” -->
+    <div id="chatRightButtons" style="display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
+         <button class="chat-btn" id="chatInputEmojiButton" onclick="toggleEmojiPicker()" title="表情"> <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M15.5,8A1.5,1.5 0 0,1 17,9.5A1.5,1.5 0 0,1 15.5,11A1.5,1.5 0 0,1 14,9.5A1.5,1.5 0 0,1 15.5,8M8.5,8A1.5,1.5 0 0,1 10,9.5A1.5,1.5 0 0,1 8.5,11A1.5,1.5 0 0,1 7,9.5A1.5,1.5 0 0,1 8.5,8M12,17.23C10.25,17.23 8.71,16.5 7.81,15.42L9.23,14C9.68,14.72 10.75,15.23 12,15.23C13.25,15.23 14.32,14.72 14.77,14L16.19,15.42C15.29,16.5 13.75,17.23 12,17.23Z"/></svg></button>
+         <button class="chat-btn plus-btn" id="chatInputPlusButton" onclick="toggleChatFunctions()" title="更多"> <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+    </div>
+    
+    <!-- 发送按钮单独放在外面 -->
+    <button class="chat-btn send-btn" id="chatInputSendButton" onclick="sendMessage()" title="发送消息"> <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.4-8.4c.8-.4.8-1.6 0-2L3.4 1.6c-.8-.4-1.6.4-1.4 1.2l3.6 7.2c.2.4.2 1 0 1.4L2 19.2c-.2.8.6 1.6 1.4 1.2z"/></svg></button>
+</div>
+<!-- ↑↑↑ 新代码到此结束 ↑↑↑ -->
                     <div class="chat-functions" id="chatFunctions">
                         <div class="function-menu">
                             <div class="function-item" onclick="selectPhoto()"><div class="function-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg></div><div class="function-label">照片</div></div>
@@ -5461,6 +5667,14 @@ html {
                 </div>
                 <div class="discover-content">
                     <div class="discover-menu">
+                    <!-- 【【【第一步 A：将这段代码粘贴到“我的设置”页面的 discover-menu 中】】】 -->
+<div class="discover-menu-item" onclick="openBeautificationSettings()">
+    <div class="discover-menu-left">
+        <svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,18C8.69,18 6,15.31 6,12C6,8.69 8.69,6 12,6C15.31,6 18,8.69 18,12C18,15.31 15.31,18 12,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/></svg>
+        <div class="discover-menu-title">美化设置</div>
+    </div>
+    <span>></span>
+</div>
                         <div class="discover-menu-item" onclick="openGlobalChatBg()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z"/></svg><div class="discover-menu-title">全局聊天背景</div></div><span>></span></div>
                         <div class="discover-menu-item" onclick="openBubbleSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M15.04,7.5L15.5,8.96L16.96,9.5L15.5,10.04L15.04,11.5L14.5,10.04L13.04,9.5L14.5,8.96L15.04,7.5M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"/></svg><div class="discover-menu-title">气泡设置</div></div><span>></span></div>
                         <div class="discover-menu-item"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg><div class="discover-menu-title">圆角模式</div></div><label class="toggle-switch"><input type="checkbox" id="roundedToggle" onchange="toggleRoundedCorners()"><span class="toggle-slider"></span></label></div>
@@ -5520,8 +5734,8 @@ html {
 
             <div id="walletScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToProfile()">←</button><div class="nav-title">钱包</div><div></div></div><div class="settings-content"><div class="balance-display"><div class="balance-amount" id="balanceAmount">¥ 0.00</div><div class="balance-label">余额</div></div><div class="wallet-menu"><div class="wallet-menu-item" onclick="rechargeWallet()"><span>💳 充值</span><span>></span></div><div class="wallet-menu-item" onclick="withdrawWallet()"><span>💰 提现</span><span>></span></div><div class="wallet-menu-item" onclick="transferWallet()"><span>💸 转账</span><span>></span></div><div class="wallet-menu-item" onclick="walletHistory()"><span>📋 账单</span><span>></span></div></div></div></div>
             <div id="favoritesScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToProfile()">←</button><div class="nav-title">收藏</div><button class="nav-btn" onclick="toggleSelectMode()">选择</button></div><div class="select-mode" id="selectMode"><span id="selectedCount">已选择 0 项</span><button class="select-btn" onclick="deleteSelectedFavorites()">删除</button></div><div class="wechat-content"><div class="favorite-list" id="favoriteList"></div></div></div>
-            <div id="worldBookScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="goHome()">←</button><div class="nav-title">世界书</div><div style="display: flex; align-items: center;"><button class="nav-btn" onclick="openAddWorldBookFolderModal()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg></button><button class="nav-btn" onclick="openAddWorldBook()">+</button></div></div><div class="wechat-content"><div class="worldbook-list" id="worldBookList"></div></div></div>
-            <div id="momentsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToDiscover()">←</button><div class="nav-title">朋友圈</div><button class="nav-btn" onclick="openAddMoment()">+</button></div><div class="wechat-content"><div id="momentsList"></div></div></div>
+            <div id="worldBookScreen" class="page"><div class="nav-bar"> <button class="nav-btn" id="navBarGoHomeButton" onclick="goHome()">←</button> <div class="nav-title">世界书</div><div style="display: flex; align-items: center;"><button class="nav-btn" onclick="openAddWorldBookFolderModal()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg></button><button class="nav-btn" onclick="openAddWorldBook()">+</button></div></div><div class="wechat-content"><div class="worldbook-list" id="worldBookList"></div></div></div>
+            <div id="momentsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToDiscover()">←</button><div class="nav-title">朋友圈</div> <button class="nav-btn nav-right-action-btn" onclick="openAddMoment()">+</button> </div><div class="wechat-content"><div id="momentsList"></div></div></div>
             
             <div id="diaryScreen" class="page">
                 <div class="nav-bar">
@@ -5537,7 +5751,7 @@ html {
 
             <div id="themeApp" class="page">
                 <div class="nav-bar">
-                    <button class="nav-btn" onclick="goHome()">←</button>
+                   <button class="nav-btn" id="navBarGoHomeButton" onclick="goHome()">←</button>
                     <div class="nav-title">主题设置</div>
                     <div></div>
                 </div>
@@ -5592,7 +5806,7 @@ html {
             
             <div id="settingsApp" class="page">
                 <div class="nav-bar">
-                    <button class="nav-btn" onclick="goHome()">←</button>
+                    <button class="nav-btn" id="navBarGoHomeButton" onclick="goHome()">←</button>
                     <div class="nav-title">设置</div>
                     <div></div>
                 </div>
@@ -5679,11 +5893,25 @@ html {
                 </div>
             </div>
             
+            <!-- 【【【第一步 B：将这个全新的页面代码块粘贴到 apiSettingsScreen 页面之后】】】 -->
+<div id="beautificationSettingsScreen" class="page">
+    <div class="nav-bar">
+        <button class="nav-btn" onclick="backToMySettings()">←</button>
+        <div class="nav-title">美化设置</div>
+        <div></div>
+    </div>
+    <div class="discover-content" id="beautificationSettingsList">
+        <!-- 所有美化选项将由JavaScript动态生成在这里 -->
+    </div>
+</div>
+
+<!-- ↑↑↑ HTML代码复制到这里结束 ↑↑↑ -->
+            
             <!-- MODIFIED: Phone App Page -->
             <!-- 用这段新代码替换 -->
 <div id="phoneApp" class="page">
     <div class="nav-bar" id="phoneAppNavBar">
-        <button class="nav-btn" onclick="goHome()">←</button>
+        <button class="nav-btn" id="navBarGoHomeButton" onclick="goHome()">←</button>
         <div class="nav-title">手机</div>
         <!-- 新增了一个重新生成按钮，并给予了ID和点击事件 -->
         <div>
@@ -6060,7 +6288,6 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
-<!-- ↑↑↑ HTML代码复制到这里结束 ↑↑↑ -->
     
 
        
@@ -6213,6 +6440,8 @@ requestPersistentStorage();
                 let userPersonas = []; // 新增：用于存储所有用户人设的数组
         let currentEditingPersonaId = null; // 新增：用于记录当前正在编辑的人设ID
         let currentChatFriendId = null;
+        // 【【【第三步 A：添加这个新的全局变量】】】
+let beautificationSettings = {}; // 用来存放所有自定义图片
         let currentlyDisplayedMessageCount = 0; // 新增：记录当前显示了多少条消息
 let isLazyLoading = false; // 新增：防止在加载时重复触发
 const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
@@ -6262,6 +6491,8 @@ const aiReplyingSet = new Set();
         let aiTimePerceptionEnabled = true;
         let selectedAppLabelColor = '#333333';
         // 【【【第三步 A：添加新的全局变量】】】
+        
+        let wechatAppGlobalBgImage = ''; // 新增：用于存储微信App的全局背景图
 
 let npcFriends = []; // 新增：用来存放为用户动态生成的NPC朋友列表
 
@@ -6768,6 +6999,7 @@ function updateAppLabelColorFromInput(color) {
                 // 5. 保存应用和API设置
                 const appSettings = {
     id: 'settings',
+   beautificationSettings: beautificationSettings, // <-- 新增的就是这一行！
     userPersonas: userPersonas,
     userProfile,
     homeWidgetData,
@@ -6779,6 +7011,7 @@ function updateAppLabelColorFromInput(color) {
     customListenBg, persistentVinylCover, profileWidgetTransparent,
     smallWidgetTransparent, simPhoneContentCache, 
     memoryGenerationTurns: memoryGenerationTurns, // <-- 新增：保存记忆轮数设置
+    wechatAppGlobalBgImage,
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
@@ -6935,6 +7168,8 @@ if (settings.userPersonas && settings.userPersonas.length > 0) {
 }
 
                 homeWidgetData = settings.homeWidgetData || homeWidgetData;
+                // 【【【第三步 C：在 loadData 函数中添加这一行】】】
+beautificationSettings = settings.beautificationSettings || {};
                 selectedGlobalChatBg = settings.selectedGlobalChatBg || 'default';
                 customGlobalChatBgImage = settings.customGlobalChatBgImage || '';
                 selectedFont = settings.selectedFont || 'system';
@@ -6956,6 +7191,7 @@ if (settings.userPersonas && settings.userPersonas.length > 0) {
                 persistentVinylCover = settings.persistentVinylCover || '';
                 profileWidgetTransparent = settings.profileWidgetTransparent || false;
                 smallWidgetTransparent = settings.smallWidgetTransparent || false;
+                wechatAppGlobalBgImage = settings.wechatAppGlobalBgImage || '';
                 simPhoneContentCache = settings.simPhoneContentCache || {};
 memoryGenerationTurns = settings.memoryGenerationTurns || 20; // <-- 新增：加载记忆轮数设置
                
@@ -7202,12 +7438,26 @@ userPersonas = [userProfile];
             }
         }
 
-        function setActivePage(pageId) {
+                function setActivePage(pageId) {
+            // 【核心修改1】我们在这里定义一个“微信家族”的名单
+            const wechatPageIds = [
+                'wechatApp', 'chatScreen', 'chatSettingsScreen', 'friendSettingsScreen',
+                'groupSettingsScreen', 'backgroundSettingsScreen', 'chatSearchScreen',
+                'momentsScreen', 'diaryScreen', 'diaryViewScreen', 'walletScreen',
+                'favoritesScreen', 'mySettingsScreen', 'bubbleSettingsScreen',
+                'globalChatBgScreen', 'listenTogetherScreen', 'voiceCallScreen',
+                'incomingCallScreen', 'memoryScreen', 'personaListScreen',
+                'beautificationSettingsScreen' // 把所有属于微信的页面ID都加进来
+            ];
+            
+            // 【核心修改2】判断当前页面是不是“微信家族”的一员
+            const isInWechat = wechatPageIds.includes(pageId);
+            document.querySelector('.phone').classList.toggle('in-wechat-app', isInWechat);
+
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId)?.classList.add('active');
             updateStatusBar(pageId);
         }
-
         function openApp(appName) {
     const appMap = { 
         'wechat': 'wechatApp', 
@@ -7888,7 +8138,7 @@ const newGroup = {
 }
 
 
-        // ↓↓↓ 3.1 用这个新函数完整替换旧的 openChat 函数 ↓↓↓
+        // ↓↓↓ 请从这里开始复制，完整替换旧的 openChat 函数 ↓↓↓
 function openChat(friendId) {
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
@@ -7897,20 +8147,23 @@ function openChat(friendId) {
     setActivePage('chatScreen');
     const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
     document.getElementById('chatTitle').textContent = chatTitle;
-    document.getElementById('heartsVoiceBtn').style.display = friend.isGroup ? 'none' : 'flex';
     
-    // --- 核心修改在这里 ---
+    // --- 【核心修改】: 我们现在获取的是按钮的容器，而不是按钮本身 ---
+    const heartsVoiceBtn = document.getElementById('navBarHeartsVoiceButton');
+    if(heartsVoiceBtn) {
+        heartsVoiceBtn.style.display = friend.isGroup ? 'none' : 'flex';
+    }
+    
     const functionMenu = document.getElementById('chatFunctions').querySelector('.function-menu');
     const listenTogetherButton = functionMenu.querySelector('.function-item[onclick="openListenTogether()"]');
     let redEnvelopeButton = functionMenu.querySelector('.function-item[onclick="openRedEnvelopeModal()"]');
-    // 新增：获取或创建投票按钮
     let pollButton = functionMenu.querySelector('.function-item[onclick="openPollModal()"]');
 
     if (friend.isGroup) {
         // 如果是群聊
         if (listenTogetherButton) listenTogetherButton.style.display = 'none'; 
         
-        // 红包按钮逻辑 (保持不变)
+        // 红包按钮逻辑
         if (!redEnvelopeButton) {
             redEnvelopeButton = document.createElement('div');
             redEnvelopeButton.className = 'function-item';
@@ -7923,35 +8176,38 @@ function openChat(friendId) {
                 functionMenu.appendChild(redEnvelopeButton);
             }
         }
-        redEnvelopeButton.style.display = 'flex';
+        // 【安全检查】确保按钮存在后再操作
+        if (redEnvelopeButton) redEnvelopeButton.style.display = 'flex';
 
-        // 新增：投票按钮逻辑
+        // 投票按钮逻辑
         if (!pollButton) {
             pollButton = document.createElement('div');
             pollButton.className = 'function-item';
             pollButton.setAttribute('onclick', 'openPollModal()');
             pollButton.innerHTML = `<div class="function-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-4h2v4zm4 0h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg></div><div class="function-label">投票</div>`;
             const transferButton = functionMenu.querySelector('.function-item[onclick="openTransferModal()"]');
-            // 把投票按钮放在转账按钮后面
             if (transferButton) {
                  transferButton.insertAdjacentElement('afterend', pollButton);
             } else {
                 functionMenu.appendChild(pollButton);
             }
         }
-        pollButton.style.display = 'flex'; // 显示投票按钮
+        // 【安全检查】确保按钮存在后再操作
+        if (pollButton) pollButton.style.display = 'flex';
 
     } else {
         // 如果是私聊
         if (listenTogetherButton) listenTogetherButton.style.display = 'flex';
+        // 【安全检查】确保按钮存在后再操作
         if (redEnvelopeButton) redEnvelopeButton.style.display = 'none';
-        if (pollButton) pollButton.style.display = 'none'; // 隐藏投票按钮
+        // 【安全检查】确保按钮存在后再操作
+        if (pollButton) pollButton.style.display = 'none';
     }
-    // --- 核心修改结束 ---
 
     renderInitialMessages();
     document.getElementById('chatMessages').onscroll = handleChatScroll;
 }
+// ↑↑↑ 请在这里结束复制 ---
         
         function getAvatarHtml(sender) {
     if (!sender) return `<div class="chat-avatar">?</div>`;
@@ -9490,41 +9746,57 @@ ${emojiContext}
 
         function handleKeyPress(event) { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } }
         
-        function toggleSendButtonActive(textarea) {
-            // Auto-resize textarea
-            textarea.style.height = 'auto';
-            textarea.style.height = (textarea.scrollHeight) + 'px';
+        // --- ↓↓↓ 请从这里开始复制，完整替换你的旧函数 ↓↓↓ ---
 
-            const sendBtn = document.getElementById('sendBtn');
-            const voiceBtn = document.getElementById('voiceBtn');
-            const otherBtns = [document.getElementById('receiveBtn'), document.querySelector('.plus-btn'), document.getElementById('emojiBtn')];
-            
-            const hasText = textarea.value.trim().length > 0;
-            
-            if (hasText) {
-                sendBtn.classList.add('active');
-                otherBtns.forEach(btn => {
-                    btn.style.transform = 'scale(0)';
-                    btn.style.width = '0';
-                    btn.style.opacity = '0';
-                });
-                 voiceBtn.style.transform = 'scale(0)';
-                 voiceBtn.style.width = '0';
-                 voiceBtn.style.opacity = '0';
+// --- ↓↓↓ 请从这里开始复制，完整替换你的旧函数 ↓↓↓ ---
 
-            } else {
-                sendBtn.classList.remove('active');
-                 otherBtns.forEach(btn => {
-                    btn.style.transform = '';
-                    btn.style.width = '';
-                    btn.style.opacity = '';
-                });
-                voiceBtn.style.transform = '';
-                voiceBtn.style.width = '';
-                voiceBtn.style.opacity = '';
+// --- ↓↓↓ 请从这里开始复制，完整替换你的旧函数 ↓↓↓ ---
 
-            }
+function toggleSendButtonActive(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = (textarea.scrollHeight) + 'px';
+
+    const sendBtn = document.getElementById('chatInputSendButton');
+    
+    // --- 【【【核心修改在这里！】】】 ---
+    // 我们不再寻找单个按钮，而是直接找到那两个“箱子”
+    const leftButtonsContainer = document.getElementById('chatDefaultButtons');
+    const rightButtonsContainer = document.getElementById('chatRightButtons');
+    
+    const hasText = textarea.value.trim().length > 0;
+    
+    if (hasText) {
+        // 当有文字时，显示发送按钮，隐藏两个“箱子”
+        sendBtn.classList.add('active');
+        
+        if (leftButtonsContainer) {
+            leftButtonsContainer.style.transform = 'scale(0)';
+            leftButtonsContainer.style.width = '0';
+            leftButtonsContainer.style.opacity = '0';
         }
+        if (rightButtonsContainer) {
+            rightButtonsContainer.style.transform = 'scale(0)';
+            rightButtonsContainer.style.width = '0';
+            rightButtonsContainer.style.opacity = '0';
+        }
+
+    } else {
+        // 当没有文字时，隐藏发送按钮，恢复显示两个“箱子”
+        sendBtn.classList.remove('active');
+        
+        if (leftButtonsContainer) {
+            leftButtonsContainer.style.transform = '';
+            leftButtonsContainer.style.width = '';
+            leftButtonsContainer.style.opacity = '';
+        }
+        if (rightButtonsContainer) {
+            rightButtonsContainer.style.transform = '';
+            rightButtonsContainer.style.width = '';
+            rightButtonsContainer.style.opacity = '';
+        }
+    }
+}
+// --- ↑↑↑ 请在这里结束复制 ---
 
         function openChatSettings() {
             const friend = friends.find(f => f.id === currentChatFriendId);
@@ -10121,7 +10393,7 @@ ${emojiContext}
             // *** 核心修改1：把导航栏右侧区域的内容，从纯文本换成一个按钮 ***
             const navRightSide = document.getElementById('diaryNavFriendName');
             navRightSide.innerHTML = `
-                <button class="generate-diary-btn" id="manualGenerateBtn" onclick="forceGenerateDiary('${friend.id}')">
+                <button class="generate-diary-btn nav-right-action-btn" id="manualGenerateBtn" onclick="forceGenerateDiary('${friend.id}')">
                     <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" /></svg>
                 </button>
             `;
@@ -12288,48 +12560,57 @@ const confirmationMsg = await saveChatMessage(currentChatFriendId, 'received', J
 
         // --- MODIFIED & REFACTORED: Phone App Logic ---
         function initPhoneApp() {
-            document.getElementById('simulatedPhoneScreen').style.display = 'none';
-            document.getElementById('phoneCharacterListScreen').style.display = 'block';
+    document.getElementById('simulatedPhoneScreen').style.display = 'none';
+    document.getElementById('phoneCharacterListScreen').style.display = 'block';
 
-            const navBar = document.getElementById('phoneAppNavBar');
-            const navTitle = navBar.querySelector('.nav-title');
-            navTitle.textContent = '手机';
-            navBar.querySelector('*:first-child').innerHTML = `<button class="nav-btn" onclick="goHome()">←</button>`;
-            
-            const listContainer = document.getElementById('phoneCharacterListScreen');
-            listContainer.innerHTML = '';
-            const availableFriends = friends.filter(f => !f.isGroup);
+    const navBar = document.getElementById('phoneAppNavBar');
+    const navTitle = navBar.querySelector('.nav-title');
+    navTitle.textContent = '手机';
+    
+    // --- 核心修复：直接找到按钮并修改其点击事件，不再破坏HTML结构 ---
+    const backBtn = navBar.querySelector('#navBarGoHomeButton');
+    if (backBtn) {
+        backBtn.setAttribute('onclick', 'goHome()');
+    }
+    // --- 修复结束 ---
+    
+    const listContainer = document.getElementById('phoneCharacterListScreen');
+    listContainer.innerHTML = '';
+    const availableFriends = friends.filter(f => !f.isGroup);
 
-            if (availableFriends.length === 0) {
-                listContainer.innerHTML = '<div style="text-align: center ; padding: 50px; color: #999;">暂无好友手机可查看</div>';
-                return;
-            }
+    if (availableFriends.length === 0) {
+        listContainer.innerHTML = '<div style="text-align: center ; padding: 50px; color: #999;">暂无好友手机可查看</div>';
+        return;
+    }
 
-            availableFriends.forEach(friend => {
-                const item = document.createElement('div');
-                item.className = 'friend-item';
-                item.onclick = () => openSimulatedPhone(friend.id);
-                const avatarHtml = friend.avatarImage 
-                    ? `<div class="friend-avatar" style="background-image: url(${friend.avatarImage});"></div>` 
-                    : `<div class="friend-avatar">${friend.avatar}</div>`;
-                item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${friend.remark || friend.name}</div><div class="friend-message">点击查看Ta的手机</div></div>`;
-                listContainer.appendChild(item);
-            });
-        }
-
-        // [修改后] 的函数
-function openSimulatedPhone(characterId) {
+    availableFriends.forEach(friend => {
+        const item = document.createElement('div');
+        item.className = 'friend-item';
+        item.onclick = () => openSimulatedPhone(friend.id);
+        const avatarHtml = friend.avatarImage 
+            ? `<div class="friend-avatar" style="background-image: url(${friend.avatarImage});"></div>` 
+            : `<div class="friend-avatar">${friend.avatar}</div>`;
+        item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${friend.remark || friend.name}</div><div class="friend-message">点击查看Ta的手机</div></div>`;
+        listContainer.appendChild(item);
+    });
+}
+        function openSimulatedPhone(characterId) {
     currentSimPhoneCharacterId = characterId;
     document.getElementById('phoneCharacterListScreen').style.display = 'none';
     document.getElementById('simulatedPhoneScreen').style.display = 'flex';
     
-    // [新增] 显示重新生成按钮
     document.getElementById('regenerateSimContentBtn').style.display = 'flex';
     
     const character = friends.find(f => f.id === characterId);
     const navBar = document.getElementById('phoneAppNavBar');
     navBar.querySelector('.nav-title').textContent = `${character.name}的手机`;
-    navBar.querySelector('*:first-child').innerHTML = `<button class="nav-btn" onclick="backToPhoneAppHome()">←</button>`;
+
+    // --- 核心修复：同样，直接找到按钮并修改其点击事件 ---
+    const backBtn = navBar.querySelector('#navBarGoHomeButton');
+    if (backBtn) {
+        backBtn.setAttribute('onclick', 'backToPhoneAppHome()');
+    }
+    // --- 修复结束 ---
     
     backToSimHomeScreen();
 }
@@ -13460,20 +13741,380 @@ function formatTimestampForAI(isoString) {
                 document.getElementById('smallWidgetBgToggle').checked = smallWidgetTransparent;
             }
         }
+        
+        // --- 【【【第三步 E：将下面所有新函数粘贴到 <script> 的末尾】】】 ---
 
-        // --- [新增] 应用所有设置的函数 ---
-        function applyAllSettings() {
-            applyFont();
-            applyAppLabelColor();
-            applyDarkMode();
-            applyRoundedCorners();
-            applyWallpaper();
-            applyGlobalChatBackground();
-            applyCustomIcons();
-            applyBubbleColors();
-            applyCustomBubbleCSS(customBubbleCSS);
-            applyListenTogetherCustomImages();
-            applyComponentTransparency();
+// --- 美化设置核心功能 ---
+
+// --- 【【【这是修复问题的核心代码块，请完整复制】】】 ---
+
+// --- 美化设置核心功能 ---
+
+/**
+ * 打开美化设置页面
+ */
+function openBeautificationSettings() {
+    setActivePage('beautificationSettingsScreen');
+    renderBeautificationSettings();
+}
+
+/**
+ * 渲染美化设置页面的所有选项
+ */
+function renderBeautificationSettings() {
+    const container = document.getElementById('beautificationSettingsList');
+    container.innerHTML = ''; // 清空旧内容
+
+    // 定义所有可设置的项
+    const settingsMap = [
+        {
+            groupTitle: "导航与状态栏",
+            items: [
+                { key: 'topNavBarBg', label: '顶部导航背景' },
+                { key: 'navBarBackButton', label: '返回按钮' },
+                { key: 'navBarHeartsVoiceButton', label: '心声按钮' },
+                { key: 'navBarMoreButton', label: '更多按钮(…)' },
+            ]
+        },
+        {
+            groupTitle: "聊天输入区域",
+            items: [
+                { key: 'chatInputAreaBg', label: '输入区域背景' },
+                { key: 'chatInputReceiveButton', label: '接收按钮' },
+                { key: 'chatInputVoiceButton', label: '语音按钮' },
+                { key: 'chatInputEmojiButton', label: '表情按钮' },
+                { key: 'chatInputPlusButton', label: '加号按钮' },
+                { key: 'chatInputSendButton', label: '发送按钮' },
+            ]
+        },
+        {
+            groupTitle: "“更多”菜单图标",
+            items: [
+                { key: 'plusMenuPhoto', label: '照片图标' },
+                { key: 'plusMenuCamera', label: '拍摄图标' },
+                { key: 'plusMenuVoiceCall', label: '语音通话图标' },
+                { key: 'plusMenuTransfer', label: '转账图标' },
+                { key: 'plusMenuListen', label: '一起听图标' },
+                { key: 'plusMenuLocation', label: '位置图标' },
+                { key: 'plusMenuMemory', label: '记忆图标' },
+                { key: 'plusMenuPoll', label: '投票图标' },
+            ]
+        }
+        , // <--- 注意这个小小的逗号！
+{
+    groupTitle: "底部导航栏",
+    items: [
+        { key: 'bottomNavBarBg', label: '导航栏背景' },
+        { key: 'bottomNavIconMessages', label: '“消息”图标' },
+        { key: 'bottomNavIconDiscover', label: '“发现”图标' },
+        { key: 'bottomNavIconMe', label: '“我”图标' },
+    ]
+} , // <--- 注意这个小小的逗号！
+{
+    groupTitle: "微信App全局背景",
+    items: [
+        { key: 'wechatAppGlobalBg', label: '界面背景图' }
+    ]
+}
+    ];
+
+    // 循环创建每个设置组
+    settingsMap.forEach(group => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'beautification-group';
+        
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'beautification-group-title';
+        titleDiv.textContent = group.groupTitle;
+        groupDiv.appendChild(titleDiv);
+
+        group.items.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'beautification-item';
+
+            const imageUrl = beautificationSettings[item.key] || '';
+
+            itemDiv.innerHTML = `
+                <span class="beautification-label">${item.label}</span>
+                <div class="beautification-actions">
+                    <div class="beautification-preview" style="background-image: url('${imageUrl}')"></div>
+                    <button class="beautification-btn" onclick="handleImageUpload('${item.key}')">上传</button>
+                    <button class="beautification-btn reset" onclick="resetImage('${item.key}')">重置</button>
+                </div>
+            `;
+            groupDiv.appendChild(itemDiv);
+        });
+        container.appendChild(groupDiv);
+    });
+}
+
+        async function handleImageUpload(settingKey) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async event => {
+                const dataUrl = event.target.result;
+                beautificationSettings[settingKey] = dataUrl;
+
+                // --- ↓↓↓ 新增的核心修复代码从这里开始 ↓↓↓ ---
+                // 我们在这里加一个判断，如果上传的是“界面背景图”
+                if (settingKey === 'wechatAppGlobalBg') {
+                    // 1. 就立刻更新那个负责显示的“专用变量”
+                    wechatAppGlobalBgImage = dataUrl;
+                    // 2. 并且，立刻调用一次负责显示的函数，让背景马上生效！
+                    applyWechatAppGlobalBg();
+                }
+                // --- ↑↑↑ 修复代码到这里结束 ↑↑↑ ---
+
+                await saveData();
+                applyBeautificationSettings();
+                renderBeautificationSettings(); // 重新渲染以更新预览
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+async function resetImage(settingKey) {
+    if (beautificationSettings[settingKey]) {
+        delete beautificationSettings[settingKey];
+
+        // --- ↓↓↓ 新增的核心修复代码从这里开始 ↓↓↓ ---
+        if (settingKey === 'wechatAppGlobalBg') {
+            wechatAppGlobalBgImage = ''; // 清空专用变量
+            applyWechatAppGlobalBg(); // 立刻应用更改，恢复白色背景
+        }
+        // --- ↑↑↑ 修复代码到这里结束 ↑↑↑ ---
+
+        await saveData();
+        applyBeautificationSettings();
+        renderBeautificationSettings();
+    }
+}
+
+// --- 【【【这是最终黄金尺寸版，请用它完整替换】】】 ---
+/**
+ * 将保存的图片应用到界面上 (微信App生态限定版)
+ */
+function applyBeautificationSettings() {
+    let styleTag = document.getElementById('beautification-styles');
+    if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'beautification-styles';
+        document.head.appendChild(styleTag);
+    }
+
+    let cssString = '';
+
+    const iconKeys = [
+        'navBarGoHomeButton', 'navBarBackButton', 'navBarHeartsVoiceButton', 'navBarMoreButton',
+        'chatInputReceiveButton', 'chatInputVoiceButton', 'chatInputEmojiButton',
+        'chatInputPlusButton', 'chatInputSendButton', 'plusMenuPhoto', 'plusMenuCamera',
+        'plusMenuVoiceCall', 'plusMenuTransfer', 'plusMenuListen', 'plusMenuLocation',
+        'plusMenuMemory', 'plusMenuPoll', 
+        'bottomNavIconMessages', 'bottomNavIconDiscover', 'bottomNavIconMe'
+    ];
+
+    for (const key in beautificationSettings) {
+        const imageUrl = beautificationSettings[key];
+        if (!imageUrl) continue;
+
+        const originalSelector = getSelectorForKey(key);
+        if (!originalSelector) continue;
+
+        // --- 请用这个【最终修正版】的代码块进行替换 ---
+if (key === 'topNavBarBg') {
+    cssString += `
+        /* 背景图设置 (这部分保持不变) */
+        .phone.in-wechat-app .status-bar,
+        .phone.in-wechat-app .nav-bar {
+            background-image: url('${imageUrl}') !important;
+            background-attachment: fixed !important;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+            background-color: transparent !important;
+        }
+        .phone.in-wechat-app .status-bar {
+            background-position: center top !important;
+        }
+        .phone.in-wechat-app .nav-bar {
+            background-position: center calc(0px - 30px - env(safe-area-inset-top, 0px)) !important;
+            border-bottom: none !important;
+        }
+
+        /* --- 核心修改：让所有字体和图标颜色跟随主题 --- */
+        
+        /* 1. 应用于所有文字元素，只保留阴影，不改变颜色 */
+        .phone.in-wechat-app .status-bar,
+        .phone.in-wechat-app .status-bar .network-icon,
+        .phone.in-wechat-app .nav-bar .nav-title,
+        .phone.in-wechat-app .nav-bar .nav-btn {
+            /* 关键！这里不再有 color: white !important; */
+            
+        }
+        
+        /* 2. 应用于状态栏的图标，让它们的颜色也使用主题的字体颜色变量 */
+        .phone.in-wechat-app .status-bar .signal-bar,
+        .phone.in-wechat-app .status-bar .battery-level,
+        .phone.in-wechat-app .status-bar .battery-tip {
+            background: var(--text-color) !important; /* 使用主题颜色 */
+        }
+        .phone.in-wechat-app .status-bar .battery-icon {
+            border-color: var(--text-color) !important; /* 使用主题颜色 */
+        }
+    `;
+} else {
+            const scopedSelectors = originalSelector.split(',')
+                .map(s => `.phone.in-wechat-app ${s.trim()}`)
+                .join(', ');
+
+            const isIcon = iconKeys.includes(key);
+            const backgroundSizeType = isIcon ? 'contain' : 'cover';
+
+            cssString += `
+                ${scopedSelectors} {
+                    background-image: url('${imageUrl}') !important;
+                    background-size: ${backgroundSizeType} !important;
+                    background-repeat: no-repeat !important;
+                    background-position: center !important;
+                    background-color: transparent !important;
+                    border: none !important;
+                }
+            `;
+            
+            if (isIcon) {
+                cssString += `
+                    /* --- 核心修改就在这里！ --- */
+                    /* 步骤1：我们将按钮的固定大小从30px扩大到了35px，让图片有更大的显示空间 */
+                    ${scopedSelectors} {
+                        width: 40px !important;   /* <-- 从 30px 改为 35px */
+                        height: 40px !important;  /* <-- 从 30px 改为 35px */
+                        padding: 0 !important;
+                    }
+                    /* 步骤2和3保持不变，确保清除按钮里的旧内容 */
+                    ${scopedSelectors} {
+                        font-size: 0 !important;
+                    }
+                    ${scopedSelectors} svg {
+                        display: none !important;
+                    }
+                `;
+            }
+            // 特殊处理底部导航图标
+if (key.startsWith('bottomNavIcon')) {
+    // 第1步：调整图标容器的尺寸，和之前一样
+    cssString += `
+        ${scopedSelectors} {
+            width: 40px !important;
+            height: 40px !important;
+        }
+    `;
+
+    // 第2步：【新增功能】找到图标下方的文字并隐藏它
+    const textSelector = originalSelector.replace(' .wechat-tab-icon', ' > div:last-child');
+    const scopedTextSelector = `.phone.in-wechat-app ${textSelector}`;
+    cssString += `
+        ${scopedTextSelector} {
+            font-size: 0 !important; /* 把字号变成0 */
+            opacity: 0 !important;   /* 把文字变透明 */
+            margin: 0 !important;     /* 移除文字的所有边距 */
+            padding: 0 !important;    /* 移除文字的所有内边距 */
+        }
+    `;
+
+    // 第3步：【新增优化】让图标在垂直方向上居中
+    const iconParentSelector = originalSelector.replace(' .wechat-tab-icon', '');
+    const scopedIconParentSelector = `.phone.in-wechat-app ${iconParentSelector}`;
+    cssString += `
+         ${scopedIconParentSelector} {
+             padding-top: 5px !important; /* 稍微增加一点顶部空间，让图标看起来更居中 */
+         }
+    `;
+}
+        }
+    }
+    
+    styleTag.textContent = cssString;
+}
+
+// ↑↑↑ 请在这里结束复制 ↑↑↑
+
+// ↓↓↓ 请从这里开始完整复制，替换旧的 getSelectorForKey 函数 ↓↓↓
+
+/**
+ * 根据设置的键名，返回对应的CSS选择器 (V3 - 最终通用版)
+ * @param {string} key - 键名
+ * @returns {string} - CSS选择器
+ */
+function getSelectorForKey(key) {
+    const selectors = {
+    'bottomNavBarBg': '.wechat-bottom-nav',
+'bottomNavIconMessages': '.wechat-bottom-nav .wechat-tab:nth-child(1) .wechat-tab-icon',
+'bottomNavIconDiscover': '.wechat-bottom-nav .wechat-tab:nth-child(2) .wechat-tab-icon',
+'bottomNavIconMe': '.wechat-bottom-nav .wechat-tab:nth-child(3) .wechat-tab-icon',
+        // --- 【【【核心修改就在这里！】】】 ---
+        // 我们把原来依赖ID的写法，换成了更通用、更聪明的写法。
+
+        // 导航栏背景 (这个保持不变)
+        'topNavBarBg': '.status-bar, .nav-bar',
+        
+        // 导航栏按钮 (这里是关键修改)
+        'navBarBackButton': '.nav-bar > .nav-btn:first-child', // 目标：导航栏里最左边的那个按钮
+        'navBarGoHomeButton': '.nav-bar > .nav-btn:first-child', // 目标：同样是导航栏里最左边的那个按钮
+        'navBarHeartsVoiceButton': '#navBarHeartsVoiceButton', // 目标：心声按钮 (这个ID是唯一的，可以保留)
+        
+        // 目标：导航栏右侧的 “更多(...)” 或 “加号(+)” 按钮
+      // 这是【修改后】的代码行
+'navBarMoreButton': '.nav-right-action-btn',
+        
+        // --- 【【【下面的部分保持不变】】】 ---
+        
+        // 输入框区域
+        'chatInputAreaBg': '.chat-input',
+        'chatInputReceiveButton': '#chatInputReceiveButton',
+        'chatInputVoiceButton': '#chatInputVoiceButton',
+        'chatInputEmojiButton': '#chatInputEmojiButton',
+        'chatInputPlusButton': '#chatInputPlusButton',
+        'chatInputSendButton': '#chatInputSendButton',
+        // “更多”菜单
+        'plusMenuPhoto': '.function-item[onclick="selectPhoto()"] .function-icon',
+        'plusMenuCamera': '.function-item[onclick="openCameraModal()"] .function-icon',
+        'plusMenuVoiceCall': '.function-item[onclick="startVoiceCall()"] .function-icon',
+        'plusMenuTransfer': '.function-item[onclick="openTransferModal()"] .function-icon',
+        'plusMenuListen': '.function-item[onclick="openListenTogether()"] .function-icon',
+        'plusMenuLocation': '.function-item[onclick="openLocationModal()"] .function-icon',
+        'plusMenuMemory': '.function-item[onclick="openMemoryScreen()"] .function-icon',
+        'plusMenuPoll': '.function-item[onclick="openPollModal()"] .function-icon',
+    };
+    return selectors[key] || null;
+}
+
+                function applyAllSettings() {
+            // 【核心修改1：调整执行顺序和逻辑】
+            // 下面这些是基础设置，无论在什么模式下都应该首先被应用。
+            applyDarkMode(); // 1. 首先确定是白天还是黑夜，这是所有样式的基础。
+            applyFont(); // 2. 应用您选择的字体和颜色。
+            applyAppLabelColor(); // 3. 应用您设置的App标签颜色。
+            applyRoundedCorners(); // 4. 应用圆角模式。
+            applyCustomIcons(); // 5. 应用您的自定义图标。
+            applyComponentTransparency(); // 6. 应用组件透明度设置。
+
+            // 【核心修改2：只对冲突的美化项进行判断】
+            // 只有在夜间模式关闭时（即白天模式），才应用下面这些会与深色背景冲突的美化。
+            if (!darkModeEnabled) {
+                applyWallpaper(); // 主屏幕壁纸
+                applyGlobalChatBackground(); // 微信聊天背景
+                applyBubbleColors(); // 自定义气泡颜色
+                applyCustomBubbleCSS(customBubbleCSS); // 自定义气泡CSS
+                applyListenTogetherCustomImages(); // 一起听背景
+                applyBeautificationSettings(); // 其他美化（按钮、导航栏等）
+                applyWechatAppGlobalBg(); // 微信App全局背景
+            }
         }
         
         // --- 新增：记忆功能相关函数 ---
@@ -14699,7 +15340,29 @@ async function confirmPersonaSelection(personaId) {
 }
 // ↑↑↑ 替换结束 ↑↑↑
 
-// ↑↑↑ JavaScript函数复制到这里结束 ↑↑↑
+        /**
+         * [最终修正版] 将保存的全局背景图应用到界面上，并切换透明模式
+         */
+        function applyWechatAppGlobalBg() {
+            const bgDiv = document.getElementById('wechatAppBackground');
+            const wechatAppDiv = document.getElementById('wechatApp');
+
+            if (bgDiv && wechatAppDiv) {
+                if (wechatAppGlobalBgImage) {
+                    // 如果有背景图
+                    // 1. 在“一楼”显示壁纸
+                    bgDiv.style.backgroundImage = `url('${wechatAppGlobalBgImage}')`;
+                    // 2. 给微信App这个大容器贴上“有背景”的标记，触发CSS透明规则
+                    wechatAppDiv.classList.add('has-global-bg');
+                } else {
+                    // 如果没有背景图 (比如被重置了)
+                    // 1. 把“一楼”的壁纸撕掉
+                    bgDiv.style.backgroundImage = 'none';
+                    // 2. 把“有背景”的标记也撕掉，让CSS恢复原来的白色背景
+                    wechatAppDiv.classList.remove('has-global-bg');
+                }
+            }
+        }
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
