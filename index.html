@@ -359,7 +359,7 @@ html {
 
         .widget-header-text {
             font-size: 12px;
-            font-family: monospace;
+            font-family: var(--font-family, monospace); 
             cursor: pointer;
             color: var(--text-color, #333);
             min-height: 20px; /* ←←← 在这里添加新代码 */
@@ -452,26 +452,17 @@ html {
     font-weight: 600;
 }
 
-        /* --- MODIFIED: Bottom Dock Styles --- */
-    /* --- 用这个最终版代码替换你原来的 .bottom-dock --- */
-.bottom-dock {
+        .bottom-dock {
     position: absolute;
-    /* 
-     * 【决定性修复】
-     * 删除了 "+ env(safe-area-inset-bottom, 0px)"
-     * 因为父容器 .phone 的高度已经通过JS精确计算好了，
-     * 我们不再需要在这里重复计算安全距离。
-     */
     bottom: 20px; 
-    
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 30px);
     max-width: 380px;
     height: 95px; 
-    background: rgba(240, 240, 240, 0.7); 
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.2); /* 纯白色，但只有20%的不透明度 */
+    backdrop-filter: blur(15px);           /* <--- 控制模糊的关键！ */
+    -webkit-backdrop-filter: blur(15px);   /* <--- 兼容Safari等浏览器 */
     border-radius: 40px; 
     padding: 10px 20px;
     display: flex;
@@ -5040,6 +5031,75 @@ html {
     border-bottom-color: rgba(255, 255, 255, 0.15) !important;
 }
 
+/* --- [新增] 记忆编辑按钮样式 --- */
+.memory-edit-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 28px;
+    height: 28px;
+    background-color: rgba(0,0,0,0.05);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+.memory-item:hover .memory-edit-btn {
+    opacity: 1;
+}
+.memory-edit-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-secondary, #888);
+}
+
+/* --- [新增] 总结加载提示样式 --- */
+#summaryLoadingIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    z-index: 100; /* 确保它在列表上方 */
+    font-size: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* --- [新增] 记忆删除按钮样式 --- */
+.memory-delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3; /* 默认半透明，不抢眼 */
+    transition: all 0.2s ease;
+}
+.memory-item:hover .memory-delete-btn {
+    opacity: 1; /* 鼠标悬停时完全显示 */
+    background-color: rgba(255, 0, 0, 0.1); /* 悬停时带一点红色背景 */
+}
+.memory-delete-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: #ff3b30; /* 垃圾桶图标为红色 */
+}
+
     </style>
 </head>
 <body>
@@ -5332,7 +5392,7 @@ html {
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v2h-2zm0 4h2v6h-2z"/>
         </svg>
     </div>
-    <div class="function-label">记忆</div>
+    <div class="function-label">总结</div>
 </div>
                         </div>
                     </div>
@@ -5814,42 +5874,58 @@ html {
                     <!-- 【【【请用这个修正后的完整代码块，替换掉您文件中对应的整个 discover-menu 部分】】】 -->
 
 <div class="discover-menu">
-    <!-- 第一个设置项：API 设置 -->
+    <!-- API 设置 -->
     <div class="discover-menu-item" onclick="openApiSettings()">
         <div class="discover-menu-title">API 设置</div>
         <span>></span>
     </div>   
     
-    <!-- 【【【新增代码：记忆生成设置】】】 -->
-<div class="discover-menu-item">
-    <div class="discover-menu-title">记忆生成轮数</div>
-    <!-- 这个输入框让你可以设置每多少轮对话生成一次记忆 -->
-    <input type="number" id="memoryGenerationTurnsInput" class="settings-input-number" min="1" placeholder="例如: 20">
-</div>
-<!-- 【【【新增代码结束】】】 -->
+    <!-- 【【【这是我们新增的自动总结开关】】】 -->
+    <div class="discover-menu-item">
+        <div class="discover-menu-title">开启自动总结</div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="autoSummaryToggle" onchange="toggleAutoSummarySetting()">
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
 
-    <!-- 第三个设置项：导入数据 (这是一个独立的项) -->
+    <!-- 【【【这个输入框现在被一个div包裹，默认隐藏】】】 -->
+    <div id="summaryTurnsSetting" class="discover-menu-item" style="display: none;">
+        <div class="discover-menu-title">总结轮数</div>
+        <input type="number" id="memoryGenerationTurnsInput" class="settings-input-number" min="1" placeholder="例如: 20">
+    </div>
+
+    <!-- 导入导出功能保持不变 -->
     <div class="discover-menu-item" onclick="importData()">
         <div class="discover-menu-title">导入数据</div>
         <span>></span>
     </div>
-
-    <!-- 第四个设置项：导出数据 (这是一个独立的项) -->
     <div class="discover-menu-item" onclick="exportData()">
         <div class="discover-menu-title">导出数据</div>
         <span>></span>
     </div>
 </div>
+
                 </div>
             </div>
             
             <!-- 新增的记忆查看页面 -->
 <div id="memoryScreen" class="page">
-    <div class="nav-bar">
-        <button class="nav-btn" onclick="backToChat()">←</button>
-        <div class="nav-title" id="memoryTitle">角色的记忆</div>
-        <div></div> <!-- 右侧占位 -->
-    </div>
+
+<!-- 【【【这是我们新增的“总结加载中”提示】】】 -->
+<div id="summaryLoadingIndicator" style="display: none;">
+    正在生成总结，请稍候...
+</div>
+
+  <!-- 【【【这是修改后的正确代码】】】 -->
+<div class="nav-bar">
+    <button class="nav-btn" onclick="backToChat()">←</button>
+    <div class="nav-title" id="memoryTitle">对话总结</div>
+    <!-- ↓↓↓ 我们新增的“手动总结”按钮就在这里 ↓↓↓ -->
+    <button class="nav-btn nav-right-action-btn" onclick="openManualSummaryModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </button>
+</div>
     <div class="wechat-content">
         <div id="memoryList" class="diary-list">
             <!-- 记忆内容将在这里动态生成 -->
@@ -5857,7 +5933,7 @@ html {
     </div>
 </div>
 
-            <div id="apiSettingsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToSettingsMenu()">←</button>
+                        <div id="apiSettingsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToSettingsMenu()">←</button>
                     <div class="nav-title">API设置</div>
                     <div></div>
                 </div>
@@ -5872,8 +5948,8 @@ html {
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="memoryTurns">记忆轮数 (0-1000)</label>
-                        <input type="number" class="form-input" id="memoryTurns" placeholder="默认 10" min="0" max="1000">
+                        <label class="form-label" for="memoryMessagesCount">记忆条数</label>
+                        <input type="number" class="form-input" id="memoryMessagesCount" placeholder="默认 20">
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="apiTemperature">Temperature (0.0 - 2.0)</label>
@@ -5892,7 +5968,6 @@ html {
                     </div>
                 </div>
             </div>
-            
             <!-- 【【【第一步 B：将这个全新的页面代码块粘贴到 apiSettingsScreen 页面之后】】】 -->
 <div id="beautificationSettingsScreen" class="page">
     <div class="nav-bar">
@@ -6288,29 +6363,69 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
+    <!-- 【【【全新的总结编辑弹窗】】】 -->
+    <div id="summaryEditModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">对话总结</div>
+            <textarea id="summaryEditTextarea" class="modal-textarea" style="min-height: 250px;"></textarea>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeSummaryEditModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="saveSummaryFromModal()">存入总结</button>
+            </div>
+        </div>
+    </div>
+
+<!-- 【【【新增的“手动总结”弹窗】】】 -->
+<div id="manualSummaryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">手动生成总结</div>
+        <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">请输入需要总结的最新对话轮数：</p>
+        <input type="number" class="modal-input" id="manualSummaryTurnsInput" placeholder="例如：20">
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeManualSummaryModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmManualSummary()">开始总结</button>
+        </div>
+    </div>
+</div>
+
+<!-- 【【【新增的“编辑总结”弹窗】】】 -->
+<div id="memoryEditModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">编辑记忆</div>
+        <textarea id="memoryEditTextarea" class="modal-textarea" style="min-height: 250px;"></textarea>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeMemoryEditModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="saveEditedMemory()">保存</button>
+        </div>
+    </div>
+</div>
+
     
 
        
 
     <script>
         // --- [REFACTORED] IndexedDB Manager ---
+                // --- [REFACTORED & ROBUST] IndexedDB Manager (v3) ---
         const dbManager = {
             db: null,
             dbName: 'JRSY_DB_V2',
             dbVersion: 3,
-            // 定义数据库的所有“表格”
-                        stores: [
-    'friends', 'chatHistories', 'diaries', 'worldBooks', 'worldBookFolders', 
-    'favorites', 'moments', 'playlist', 'appSettings', 'apiSettings', 'customEmojis',
-    'memories' // <-- 新增的记忆仓库
-],
+            stores: [
+                'friends', 'chatHistories', 'diaries', 'worldBooks', 'worldBookFolders', 
+                'favorites', 'moments', 'playlist', 'appSettings', 'apiSettings', 'customEmojis',
+                'memories'
+            ],
 
-            // 初始化数据库
+            // 核心修改：初始化函数现在负责检查和重新连接
             init() {
                 return new Promise((resolve, reject) => {
-                    if (this.db) {
+                    // 如果连接存在并且没有被关闭，就直接使用
+                    if (this.db && this.db.version) {
                         return resolve(this.db);
                     }
+                    console.log('数据库连接已关闭或未初始化，正在重新连接...');
+
                     const request = indexedDB.open(this.dbName, this.dbVersion);
 
                     request.onerror = (event) => {
@@ -6320,25 +6435,27 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
 
                     request.onsuccess = (event) => {
                         this.db = event.target.result;
-                        console.log('Database initialized successfully.');
+                        console.log('数据库连接成功。');
+
+                        // 关键！监听意外关闭事件
+                        this.db.onclose = () => {
+                            console.warn('数据库连接被意外关闭了！');
+                            this.db = null; // 将连接状态清空，以便下次能重新连接
+                        };
+                        
                         resolve(this.db);
                     };
 
-                    // 创建或升级数据库结构
                     request.onupgradeneeded = (event) => {
-                        console.log('Upgrading database...');
+                        console.log('正在升级数据库...');
                         const db = event.target.result;
                         this.stores.forEach(storeName => {
                             if (!db.objectStoreNames.contains(storeName)) {
                                 if (storeName === 'chatHistories') {
-                                    // 聊天记录表使用 friendId 作为 key
                                     db.createObjectStore(storeName, { keyPath: 'friendId' });
                                 } else if (storeName === 'appSettings' || storeName === 'apiSettings') {
-                                    // 设置表使用固定的 'settings' 作为 key
                                     db.createObjectStore(storeName, { keyPath: 'id' });
-                                }
-                                else {
-                                    // 其他表使用自增的 id 作为 key
+                                } else {
                                     db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
                                 }
                                 console.log(`Object store '${storeName}' created.`);
@@ -6348,64 +6465,55 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
                 });
             },
 
-            // 通用的写入/更新方法
+            // 核心修改：所有操作前都调用 this.init()
             set(storeName, data) {
-                return new Promise((resolve, reject) => {
-                    if (!this.db) return reject("DB not initialized");
-                    const transaction = this.db.transaction(storeName, 'readwrite');
+                return this.init().then(db => new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.put(data);
                     request.onsuccess = () => resolve(request.result);
-                    request.onerror = (event) => reject(`Error setting data in ${storeName}: ` + event.target.error);
-                });
+                    request.onerror = (event) => reject(`在 ${storeName} 中设置数据失败: ` + event.target.error);
+                }));
             },
 
-            // 通用的读取方法
             get(storeName, key) {
-                return new Promise((resolve, reject) => {
-                    if (!this.db) return reject("DB not initialized");
-                    const transaction = this.db.transaction(storeName, 'readonly');
+                return this.init().then(db => new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readonly');
                     const store = transaction.objectStore(storeName);
                     const request = store.get(key);
                     request.onsuccess = () => resolve(request.result);
-                    request.onerror = (event) => reject(`Error getting data from ${storeName}: ` + event.target.error);
-                });
+                    request.onerror = (event) => reject(`从 ${storeName} 中获取数据失败: ` + event.target.error);
+                }));
             },
 
-            // 读取整个表的数据
             getAll(storeName) {
-                return new Promise((resolve, reject) => {
-                    if (!this.db) return reject("DB not initialized");
-                    const transaction = this.db.transaction(storeName, 'readonly');
+                return this.init().then(db => new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readonly');
                     const store = transaction.objectStore(storeName);
                     const request = store.getAll();
                     request.onsuccess = () => resolve(request.result);
-                    request.onerror = (event) => reject(`Error getting all data from ${storeName}: ` + event.target.error);
-                });
+                    request.onerror = (event) => reject(`从 ${storeName} 中获取所有数据失败: ` + event.target.error);
+                }));
             },
             
-            // 删除指定条目
             delete(storeName, key) {
-                return new Promise((resolve, reject) => {
-                    if (!this.db) return reject("DB not initialized");
-                    const transaction = this.db.transaction(storeName, 'readwrite');
+                return this.init().then(db => new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.delete(key);
                     request.onsuccess = () => resolve();
-                    request.onerror = (event) => reject(`Error deleting data from ${storeName}: ` + event.target.error);
-                });
+                    request.onerror = (event) => reject(`从 ${storeName} 中删除数据失败: ` + event.target.error);
+                }));
             },
 
-            // 清空整个表
             clear(storeName) {
-                return new Promise((resolve, reject) => {
-                    if (!this.db) return reject("DB not initialized");
-                    const transaction = this.db.transaction(storeName, 'readwrite');
+                return this.init().then(db => new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.clear();
                     request.onsuccess = () => resolve();
-                    request.onerror = (event) => reject(`Error clearing store ${storeName}: ` + event.target.error);
-                });
+                    request.onerror = (event) => reject(`清空 ${storeName} 失败: ` + event.target.error);
+                }));
             }
         };
 
@@ -6491,6 +6599,8 @@ const aiReplyingSet = new Set();
         let aiTimePerceptionEnabled = true;
         let selectedAppLabelColor = '#333333';
         // 【【【第三步 A：添加新的全局变量】】】
+        let autoSummaryEnabled = false; // 控制自动总结功能的开关
+let currentSummaryFriendId = null; // 记录当前正在总结的好友ID
         
         let wechatAppGlobalBgImage = ''; // 新增：用于存储微信App的全局背景图
 
@@ -6502,6 +6612,7 @@ let memoryGenerationTurns = 20; // 新增：记忆生成轮数，默认20轮
 
         
         let notificationTimeout = null; // For clearing notification timer
+        let currentEditingMemoryId = null; // 用于记录正在编辑的记忆ID
 
         // NEW: State for component transparency
         let profileWidgetTransparent = false;
@@ -7020,7 +7131,7 @@ function updateAppLabelColorFromInput(color) {
                     apiUrl: document.getElementById('apiUrl').value, 
                     apiKey: document.getElementById('apiKey').value, 
                     modelName: document.getElementById('modelName').value,
-                    memoryTurns: document.getElementById('memoryTurns').value,
+                    memoryMessagesCount: document.getElementById('memoryMessagesCount').value,
                     apiTemperature: document.getElementById('apiTemperature').value,
                     aiTimePerceptionEnabled: aiTimePerceptionEnabled
                 };
@@ -7175,7 +7286,8 @@ beautificationSettings = settings.beautificationSettings || {};
                 selectedFont = settings.selectedFont || 'system';
                 selectedFontSize = settings.selectedFontSize || 14;
                 selectedFontColor = settings.selectedFontColor || '#000000';
-                customFontUrl = settings.customFontUrl || '';
+                customFontUrl = settings.customFontUrl || '';      
+                applyCustomFont(customFontUrl);                      
                 selectedWallpaper = settings.selectedWallpaper || 'default';
                 customWallpaperImage = settings.customWallpaperImage || '';
                 customWidgetBackgroundImage = settings.customWidgetBackgroundImage || '';
@@ -7202,7 +7314,7 @@ memoryGenerationTurns = settings.memoryGenerationTurns || 20; // <-- 新增：�
                     document.getElementById('apiUrl').value = loadedApiSettings.apiUrl || '';
                     document.getElementById('apiKey').value = loadedApiSettings.apiKey || '';
                     document.getElementById('modelName').value = loadedApiSettings.modelName || '';
-                    document.getElementById('memoryTurns').value = loadedApiSettings.memoryTurns || 10;
+                                        document.getElementById('memoryMessagesCount').value = loadedApiSettings.memoryMessagesCount || 20;
                     document.getElementById('apiTemperature').value = loadedApiSettings.apiTemperature || 0.9;
                     aiTimePerceptionEnabled = loadedApiSettings.aiTimePerceptionEnabled !== false;
                     document.getElementById('aiTimePerceptionToggle').checked = aiTimePerceptionEnabled;
@@ -7306,32 +7418,26 @@ userPersonas = [userProfile];
         }
         
                 async function confirmTextEdit() {
-            if (currentEditingTextElement) {
-                const newText = document.getElementById('newTextInput').value;
-                const elementId = currentEditingTextElement.id;
-                
-                if (['widgetHeaderText', 'widgetText1', 'widgetText2'].includes(elementId)) {
-                    if (newText.length > 10) {
-                        showAlert('内容不能超过10个字符。');
-                        return;
-                    }
-                }
-                
-                currentEditingTextElement.textContent = newText;
+    if (currentEditingTextElement) {
+        const newText = document.getElementById('newTextInput').value;
+        const elementId = currentEditingTextElement.id;
+        
+        // 这一整段检查长度的 if 语句被删掉了！
 
-                // --- 核心修复在这里 ---
-                if (elementId === 'widgetHeaderText') {
-                    homeWidgetData.headerText = newText; // 直接使用正确的属性名
-                } else {
-                    const key = elementId.replace('widget', '').toLowerCase();
-                    homeWidgetData[key] = newText;
-                }
-                // --- 修复结束 ---
-
-                await saveProfileData(); // 使用专用的保存函数，更稳定
-            }
-            closeTextEditModal();
+        // --- 核心修复在这里 ---
+        if (elementId === 'widgetHeaderText') {
+            homeWidgetData.headerText = newText; // 直接使用正确的属性名
+        } else {
+            const key = elementId.replace('widget', '').toLowerCase();
+            homeWidgetData[key] = newText;
         }
+        // --- 修复结束 ---
+
+        currentEditingTextElement.textContent = newText; // 这行要移到保存逻辑之后或之前都可以，但要保留
+        await saveProfileData(); // 使用专用的保存函数，更稳定
+    }
+    closeTextEditModal();
+}
 
 
         function editWidgetImage(imageId) {
@@ -9057,23 +9163,48 @@ if (history.length >= 2) {
 
         let systemPrompt;
         let responseFormat = { type: "json_object" };
-        const memoryTurns = parseInt(settings.memoryTurns, 10) || 10;
+        const memoryMessagesCount = parseInt(settings.memoryMessagesCount, 10) || 20;
         const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
-        const history = (chatHistories[friendId] || []).slice(-10);
+        const history = (chatHistories[friendId] || []).slice(-memoryMessagesCount);
+                  // 【【【V2.0 升级：引入带动态截断的智能总结读取器】】】
+        const SUMMARY_TOKEN_LIMIT = 10000; // 设定一个总结内容的最大token预算，可以根据需要调整
+        let historicalSummaries = '';
+        let currentTokenCount = 0;
+        
+        // 1. 获取所有总结，并按时间倒序排列（最新的在最前面）
+        const allSummaries = (characterMemories[friendId] || [])
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-        let longTermMemories = (characterMemories[friendId] || [])
-            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-            .map(mem => `- ${mem.content}`)
-            .join('\n');
+        const summariesToInclude = [];
 
-        if (longTermMemories) {
-            longTermMemories = `
-【【【你的长期记忆（必须时刻记住）】】】
-你和用户之间发生过以下这些重要事情，这些是你们关系的基础：
-${longTermMemories}
+        for (const summary of allSummaries) {
+            // 2. 估算当前总结的token数（一个简单的估算方法：字符数 / 2）
+            const summaryTokenEstimate = Math.ceil(summary.content.length / 2);
+            
+            // 3. 检查加入这条总结后是否会超出预算
+            if (currentTokenCount + summaryTokenEstimate > SUMMARY_TOKEN_LIMIT) {
+                console.log(`[总结读取器] 已达到token上限，停止加载更早的总结。`);
+                break; // 如果超出，立刻停止循环
+            }
+            
+            // 4. 如果没超出，就将其加入待办列表，并累加token
+            summariesToInclude.push(summary.content);
+            currentTokenCount += summaryTokenEstimate;
+        }
+
+        // 5. 将待办列表里的总结（现在是倒序的）反转回来，变成正常的时间顺序
+        if (summariesToInclude.length > 0) {
+            historicalSummaries = summariesToInclude.reverse().join('\n\n---\n\n');
+            
+            historicalSummaries = `
+【【【历史行为总结 (最高优先级参考)】】】
+以下是你和用户过往互动的高度浓缩总结。你的所有回应都必须基于这些总结所建立的认知，以确保行为的连贯性。
+---
+${historicalSummaries}
+---
 `;
         } else {
-            longTermMemories = "【【【你的长期记忆】】】\n你和用户之间还没有共同的记忆。";
+            historicalSummaries = "【【【历史行为总结】】】\n你和用户之间还没有任何可供参考的过往总结。";
         }
 
         history.forEach(msg => {
@@ -9283,7 +9414,7 @@ ${worldBookContext || "无"}
 - **用户昵称**: ${activeUserPersona.name}
 - **用户核心人设**: ${activeUserPersona.personality || '普通人'}
 - **用户背景设定**: ${activeUserPersona.background || '无'}
-${longTermMemories}
+${historicalSummaries}
 ${listenContext}
 ${momentsContext}
 ${timeContext}
@@ -11637,7 +11768,20 @@ async function triggerAiMomentReactions(moment) {
 }
 // --- ↑↑↑ 请在这里结束复制 ---
         function backToSettingsMenu() { setActivePage('settingsApp'); }
-        function openApiSettings() { setActivePage('apiSettingsScreen'); loadApiSettings(); }
+        function openApiSettings() {
+  setActivePage('apiSettingsScreen'); 
+    // ↓↓↓ 新增的逻辑 ↓↓↓
+    document.getElementById('autoSummaryToggle').checked = autoSummaryEnabled;
+    document.getElementById('summaryTurnsSetting').style.display = autoSummaryEnabled ? 'flex' : 'none';
+    document.getElementById('memoryGenerationTurnsInput').value = memoryGenerationTurns;
+}
+
+async function toggleAutoSummarySetting() {
+    autoSummaryEnabled = document.getElementById('autoSummaryToggle').checked;
+    document.getElementById('summaryTurnsSetting').style.display = autoSummaryEnabled ? 'flex' : 'none';
+    await saveData(); // 保存开关状态
+    showToast(`自动总结功能已${autoSummaryEnabled ? '开启' : '关闭'}`);
+}
         function toggleModelDropdown() { document.getElementById('modelDropdown').classList.toggle('show'); }
         function selectModel(modelName) { document.getElementById('modelName').value = modelName; toggleModelDropdown(); }
 
@@ -11689,21 +11833,22 @@ async function fetchModels() {
             await saveApiSettings();
         }
 
-        async function saveApiSettings() {
-            const settings = { 
-                id: 'settings',
-                apiUrl: document.getElementById('apiUrl').value, 
-                apiKey: document.getElementById('apiKey').value, 
-                modelName: document.getElementById('modelName').value,
-                memoryTurns: document.getElementById('memoryTurns').value || 10,
-                apiTemperature: document.getElementById('apiTemperature').value || 0.9,
-                aiTimePerceptionEnabled: document.getElementById('aiTimePerceptionToggle').checked
-            };
-            aiTimePerceptionEnabled = settings.aiTimePerceptionEnabled;
-            if (!settings.apiUrl || !settings.apiKey || !settings.modelName) return showAlert('请填写完整的设置信息');
-            await dbManager.set('apiSettings', settings);
-            showAlert('API设置已保存');
-        }
+                async function saveApiSettings() {
+    const settings = { 
+        id: 'settings',
+        apiUrl: document.getElementById('apiUrl').value, 
+        apiKey: document.getElementById('apiKey').value, 
+        modelName: document.getElementById('modelName').value,
+        // ↓↓↓ 核心修改就在这一行！我们把错误的名字改成了正确的名字 ↓↓↓
+        memoryMessagesCount: document.getElementById('memoryMessagesCount').value || 20,
+        apiTemperature: document.getElementById('apiTemperature').value || 0.9,
+        aiTimePerceptionEnabled: document.getElementById('aiTimePerceptionToggle').checked
+    };
+    aiTimePerceptionEnabled = settings.aiTimePerceptionEnabled;
+    if (!settings.apiUrl || !settings.apiKey || !settings.modelName) return showAlert('请填写完整的设置信息');
+    await dbManager.set('apiSettings', settings);
+    showAlert('API设置已保存');
+}
 
         // --- [REFACTORED] Data Import/Export Logic ---
         async function exportData() {
@@ -13796,7 +13941,7 @@ function renderBeautificationSettings() {
                 { key: 'plusMenuTransfer', label: '转账图标' },
                 { key: 'plusMenuListen', label: '一起听图标' },
                 { key: 'plusMenuLocation', label: '位置图标' },
-                { key: 'plusMenuMemory', label: '记忆图标' },
+                { key: 'plusMenuMemory', label: '总结图标' },
                 { key: 'plusMenuPoll', label: '投票图标' },
             ]
         }
@@ -14133,132 +14278,143 @@ function openMemoryScreen() {
     renderMemories(currentChatFriendId);
 }
 
-    /**
-     * 将指定角色的记忆渲染到页面上 (V2版)
-     * @param {string} friendId - 角色ID
-     */
-    function renderMemories(friendId) {
-        const memoryContainer = document.getElementById('memoryList');
-        const memories = (characterMemories[friendId] || []).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        if (memories.length === 0) {
-            memoryContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">关于我们的记忆，还是一片空白...</div>';
-            return;
-        }
-
-        memoryContainer.innerHTML = memories.map(mem => {
-            // 如果是旧格式的数据，为了兼容，我们只显示 content
-            if (typeof mem.content !== 'string') return ''; 
-
-            const date = new Date(mem.timestamp).toLocaleDateString('en-CA').replace(/-/g, '/');
-            const contentHTML = mem.content.replace(/\n/g, '<br>');
-
-            // 这是新的、简洁的HTML结构
-            return `
-                <div class="memory-item">
-                    <span class="memory-date">${date}</span>
-                    <div class="memory-content">${contentHTML}</div>
-                </div>
-            `;
-        }).join('');
-    }
-
- /**
- * [V2.0 核心重构] 检查是否达到轮数，并触发记忆生成
+  /**
+ * 将指定角色的记忆渲染到页面上 (V5.0 - 融合编辑与删除功能)
  * @param {string} friendId - 角色ID
  */
+function renderMemories(friendId) {
+    const memoryContainer = document.getElementById('memoryList');
+    const memories = (characterMemories[friendId] || []).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    if (memories.length === 0) {
+        memoryContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">关于我们的记忆，还是一片空白...</div>';
+        return;
+    }
+
+    memoryContainer.innerHTML = memories.map(mem => {
+        if (typeof mem.content !== 'string') return ''; 
+
+        const contentHTML = mem.content.replace(/\n/g, '<br>');
+
+        // ↓↓↓ 这是最终的、同时包含两个按钮的HTML结构 ↓↓↓
+        return `
+            <div class="memory-item">
+                <!-- 左上角的“编辑”按钮 (已恢复) -->
+                <button class="memory-edit-btn" title="编辑这条记忆" onclick="openMemoryEditModal('${mem.id}')">
+                    <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" /></svg>
+                </button>
+                
+                <!-- 右上角的“删除”按钮 (已保留) -->
+                <button class="memory-delete-btn" title="删除这条记忆" onclick="deleteMemory('${mem.id}')">
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+                
+                <!-- 总结内容 -->
+                <div class="memory-content">${contentHTML}</div>
+            </div>
+        `;
+    }).join('');
+}
+
 async function checkAndTriggerMemoryGeneration(friendId) {
+    if (!autoSummaryEnabled) return;
+
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
 
-    // 每次AI回复后，轮数计数器+1
     if (friend.turnCountSinceLastMemory === undefined) {
         friend.turnCountSinceLastMemory = 0;
     }
     friend.turnCountSinceLastMemory++;
 
-    console.log(`[记忆系统] ${friend.name} | 当前轮数: ${friend.turnCountSinceLastMemory}/${memoryGenerationTurns}`);
+    console.log(`[总结系统] ${friend.name} | 当前轮数: ${friend.turnCountSinceLastMemory}/${memoryGenerationTurns}`);
 
-    // 检查是否达到用户设定的轮数阈值
     if (friend.turnCountSinceLastMemory >= memoryGenerationTurns) {
-        console.log(`[记忆系统] ${friend.name} | 已达到 ${memoryGenerationTurns} 轮，开始生成记忆总结...`);
+        console.log(`[总结系统] ${friend.name} | 已达到 ${memoryGenerationTurns} 轮，开始生成总结...`);
         
-        // 调用核心函数生成记忆
-        await generateMemorySummary(friendId);
+        // ↓↓↓ 核心修改：调用我们重构后的函数，并传入轮数变量 ↓↓↓
+        await generateSummary(friendId, memoryGenerationTurns);
         
-        // 生成后，清零计数器
         friend.turnCountSinceLastMemory = 0;
     }
 
-    // 保存更新后的计数器
     await dbManager.set('friends', friend);
 }
 
 /**
- * [V2.0 核心重构] 调用AI，根据指定轮数的对话生成总结记忆
- * @param {string} friendId - 角色ID
+ * [V7.0 核心重构 - 高度概括版] 调用AI，根据指定轮数的对话生成总结
+ * @param {string} friendId - 需要为其生成总结的角色ID
+ * @param {number} turnCount - 需要总结的对话轮数
  */
-async function generateMemorySummary(friendId) {
+async function generateSummary(friendId, turnCount) {
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
 
+    currentSummaryFriendId = friendId;
+
     const settings = await dbManager.get('apiSettings', 'settings') || {};
     if (!settings.apiUrl || !settings.apiKey) {
-        console.log("记忆总结已跳过：API未配置。");
+        showAlert("总结功能需要先配置API。");
         return;
     }
 
-    // 计算需要截取的聊天记录条数（1轮=用户+AI，所以大约是轮数*2）
-    // 为了保险起见，我们多取一点，比如*2.5
-    const messagesToSummarizeCount = Math.ceil(memoryGenerationTurns * 2.5);
-    const history = (chatHistories[friendId] || []).slice(-messagesToSummarizeCount);
+    // “回合制”轮数计算逻辑保持不变，它已经很完美了
+    const fullHistory = chatHistories[friendId] || [];
+    const messagesToSummarize = [];
+    let turnsCounted = 0;
+    let lastSenderType = null;
+    for (let i = fullHistory.length - 1; i >= 0; i--) {
+        const message = fullHistory[i];
+        messagesToSummarize.push(message);
+        if (message.type === 'sent' && lastSenderType === 'received') {
+            turnsCounted++;
+        }
+        lastSenderType = message.type;
+        if (turnsCounted >= turnCount) {
+            break;
+        }
+    }
+    messagesToSummarize.reverse();
 
-    const chatContext = history.map(msg => {
+    const chatContext = messagesToSummarize.map(msg => {
         const sender = msg.type === 'sent' ? userProfile.name : friend.name;
         return `${sender}: ${msg.content}`;
     }).join('\n');
-
-    // 【【【这就是全新的、更智能的AI记忆指令！】】】
+    
+    // ↓↓↓ 这是全新的、高度优化的AI指令 (Prompt) ↓↓↓
     const prompt = `
-    【你的身份】: 你是角色“${friend.name}”，正在为自己撰写一篇私密的记忆日记。
-    【你的性格】: ${friend.role}
-    【对话对象】: 你的重要朋友，“${userProfile.name}”
+    【你的身份】: 你是一个高度智能的对话概括专家。
 
     【你的核心任务】:
-    请仔细回顾并分析以下这段你和“${userProfile.name}”的完整对话记录，然后以**你自己的身份和口吻（第一人称“我”）**，提炼并总结出一段**详细、连贯、且饱含个人情感与思考**的记忆。
+    仔细阅读并总结以下 **${turnCount}轮** 对话。对于**每一轮**对话，你必须将其核心内容提炼成**一个**高度概括的总结点。
 
-    【提炼标准 (你必须严格遵守)】:
-    你的总结必须包含以下几类关键信息：
-    1.  **核心事实与新信息**: ${userProfile.name}透露了哪些新的个人喜好、背景故事、重要观点或信息？
-    2.  **情感重大转折**: 对话中是否有让我感到开心、难过、担忧或惊讶的时刻？
-    3.  **承诺、计划与约定**: 我们之间是否达成了任何口头约定、计划或承诺？
-    4.  **重要事件与决定**: 我们是否共同决定或讨论了某件重要的事？
-    
-
-    【写作要求】:
-    1.  **【第一人称视角】**: 必须使用“我”的视角，完全代入角色“${friend.name}”进行书写。
-    2.  **【融入人设】**: 你的写作风格和遣词造句，必须与你的性格设定“${friend.role}”高度一致。
-    3.  **【情感表达】**: 总结不能只是干巴巴地复述事实，**必须**包含你对这些事件的**个人感受、内心想法和情绪波动**。
-    4.  **【详细且连贯】**: 总结必须是详细的、连贯的段落，字数随机，确保覆盖对话的所有核心要点以及所有消息总结。记住是在总结！！不可以省略任何内容！
+    【总结标准 (你必须严格遵守)】:
+    1.  **【一一对应】**: 你的总结必须与对话轮数完全对应。提供给你几轮对话，你就必须总结出几个点。
+    2.  **【高度概括】**: 每一个总结点都应该是对一整轮对话（包含用户的提问和你的回答）的**概括**，而不是细节复述。
+    3.  **【第三人称视角】**: 总结中严禁使用“我”或“你”，必须使用角色的名字。
 
     【【【输出格式铁律】】】:
-    你的回复必须是一个纯净的JSON对象，其中只包含一个键 "memory_summary"。
-    - "memory_summary" 的值就是你写好的那段第一人称记忆。
-    
-    【高质量示例】:
-    -   **输入对话**: (一段包含用户提到喜欢看科幻电影，并和AI约好下周末一起去看的对话...)
-    -   **你的输出(JSON)**:
-        {
-          "memory_summary": "今天${userProfile.name}告诉我，他/她原来那么喜欢科幻电影，特别是太空探索题材的！听到这个我超开心的，感觉我们又有共同话题了。我们还约好了下周末一起去看新上映的那部电影，真的好期待啊，感觉我们的关系又近了一步。"
-        }
+    你的回复必须是一个纯净的JSON对象，其中只包含一个键 "summary_points"。
+    - "summary_points" 的值必须是一个字符串数组 \`[]\`。
+    - **【【【数量铁律】】】**: 数组中必须包含不多不少，正好 **${turnCount}条** 总结，每一条对应一轮对话。
+
+    【高质量示例 (假设总结3轮)】:
+    {
+      "summary_points": [
+        "用户与${friend.name}互相问候，并开启了关于最近工作的讨论。",
+        "${friend.name}向用户抱怨了工作中的压力，用户对此表示安慰。",
+        "双方约定周末一起去看电影放松一下。"
+      ]
+    }
     
     【以下是需要你总结的对话记录】:
     ---
     ${chatContext}
     ---
 
-    现在，请开始书写属于你自己的这段重要记忆。`;
+    现在，请严格按照以上所有规则，开始你的概括工作。`;
 
+    // 后面的API请求和错误处理逻辑保持不变
     try {
         const response = await fetch(`${settings.apiUrl}/chat/completions`, {
             method: 'POST',
@@ -14267,58 +14423,27 @@ async function generateMemorySummary(friendId) {
                 model: settings.modelName,
                 messages: [{ role: 'user', content: prompt }],
                 response_format: { type: 'json_object' },
-                temperature: 0.5 // 总结任务需要较低的随机性
+                temperature: 0.5
             })
         });
 
-        if (!response.ok) throw new Error(`记忆总结API请求失败: ${response.status}`);
+        if (!response.ok) throw new Error(`总结API请求失败: ${response.status}`);
         
         const data = await response.json();
         const responseData = JSON.parse(data.choices[0].message.content);
 
-        if (responseData.memory_summary) {
-            const newMemoryContent = responseData.memory_summary;
-            
-            // 检查并初始化记忆数组
-            if (!characterMemories[friendId]) {
-                characterMemories[friendId] = [];
-            }
-
-            const memoryToSave = {
-                id: generateUniqueId(),
-                friendId: friendId,
-                content: newMemoryContent,
-                timestamp: new Date().toISOString()
-            };
-
-            // 保存到数据库和内存
-            const newId = await dbManager.set('memories', memoryToSave);
-            memoryToSave.id = newId;
-            characterMemories[friendId].push(memoryToSave);
-            
-            console.log(`[记忆系统] ${friend.name} | 成功生成新记忆: ${newMemoryContent}`);
-            // 如果用户正在记忆页面，就刷新它
-            if (document.getElementById('memoryScreen').classList.contains('active') && currentChatFriendId === friendId) {
-                renderMemories(friendId);
-            }
+        if (responseData.summary_points && Array.isArray(responseData.summary_points)) {
+            openSummaryEditModal(responseData.summary_points);
+        } else {
+            throw new Error("AI返回的总结格式不正确，缺少 'summary_points' 数组。");
         }
     } catch (error) {
-        console.error("生成记忆总结时出错:", error);
+        console.error("生成总结时出错:", error);
+        showAlert(`生成总结失败: ${error.message}`);
+        friend.turnCountSinceLastMemory = 0;
+        await dbManager.set('friends', friend);
     }
 }
-
-// --- [新增] 监听并保存记忆设置变化的函数 ---
-document.getElementById('memoryGenerationTurnsInput').addEventListener('change', (event) => {
-    const turns = parseInt(event.target.value, 10);
-    if (!isNaN(turns) && turns > 0) {
-        memoryGenerationTurns = turns;
-        saveData(); // 自动保存
-        showToast(`记忆生成轮数已更新为 ${turns} 轮`);
-    } else {
-        // 如果输入无效，恢复显示之前的值
-        event.target.value = memoryGenerationTurns;
-    }
-});
 
 // --- ↓↓↓ 请从这里开始复制所有新函数 ↓↓↓ ---
 
@@ -15363,6 +15488,201 @@ async function confirmPersonaSelection(personaId) {
                 }
             }
         }
+        
+        /**
+ * 打开总结编辑弹窗，并填入AI生成的内容
+ * @param {string[]} summaryPoints - AI生成的总结点数组
+ */
+function openSummaryEditModal(summaryPoints) {
+    const modal = document.getElementById('summaryEditModal');
+    const textarea = document.getElementById('summaryEditTextarea');
+
+    // 将总结点数组转换成带编号的、换行的文本
+    const formattedSummary = summaryPoints.map((point, index) => `${index + 1}. ${point}`).join('\n');
+    
+    textarea.value = formattedSummary;
+    modal.classList.add('show');
+}
+
+/**
+ * 关闭总结编辑弹窗
+ */
+function closeSummaryEditModal() {
+    document.getElementById('summaryEditModal').classList.remove('show');
+    currentSummaryFriendId = null; // 重置当前总结的好友ID
+}
+
+/**
+ * 从弹窗中读取用户编辑后的内容，并存入数据库
+ */
+async function saveSummaryFromModal() {
+    const textarea = document.getElementById('summaryEditTextarea');
+    const editedSummary = textarea.value.trim();
+
+    if (!editedSummary || !currentSummaryFriendId) {
+        return closeSummaryEditModal(); // 如果没内容或没目标，就直接关闭
+    }
+
+    // 检查并初始化总结数组
+    if (!characterMemories[currentSummaryFriendId]) {
+        characterMemories[currentSummaryFriendId] = [];
+    }
+
+    const summaryToSave = {
+        id: generateUniqueId(),
+        friendId: currentSummaryFriendId,
+        content: editedSummary, // 保存用户编辑后的完整文本
+        timestamp: new Date().toISOString()
+    };
+
+    // 保存到数据库和内存
+    const newId = await dbManager.set('memories', summaryToSave);
+    summaryToSave.id = newId;
+    characterMemories[currentSummaryFriendId].push(summaryToSave);
+    
+    console.log(`[总结系统] 已为 ${currentSummaryFriendId} 存入新总结。`);
+    
+    // 如果用户正好在总结页面，就刷新它
+    if (document.getElementById('memoryScreen').classList.contains('active') && currentChatFriendId === currentSummaryFriendId) {
+        renderMemories(currentSummaryFriendId);
+    }
+    
+    closeSummaryEditModal();
+    showToast('总结已成功存入！');
+}
+
+// --- [新增] 手动总结与编辑功能 ---
+
+/**
+ * 打开“手动输入轮数”的弹窗
+ */
+function openManualSummaryModal() {
+    const modal = document.getElementById('manualSummaryModal');
+    const input = document.getElementById('manualSummaryTurnsInput');
+    // 将全局设置的轮数作为默认值填入输入框
+    input.value = memoryGenerationTurns; 
+    modal.classList.add('show');
+}
+
+/**
+ * 关闭“手动输入轮数”的弹窗
+ */
+function closeManualSummaryModal() {
+    document.getElementById('manualSummaryModal').classList.remove('show');
+}
+
+/**
+ * 确认手动总结，开始执行 (V2 - 带加载提示)
+ */
+async function confirmManualSummary() {
+    const input = document.getElementById('manualSummaryTurnsInput');
+    const turnCount = parseInt(input.value, 10);
+
+    if (isNaN(turnCount) || turnCount <= 0) {
+        showAlert('请输入一个有效的正整数。');
+        return;
+    }
+
+    closeManualSummaryModal();
+
+    // ↓↓↓ 核心修改就在这里！ ↓↓↓
+    const loadingIndicator = document.getElementById('summaryLoadingIndicator');
+    
+    // 我们使用 try...finally 结构来确保万无一失
+    try {
+        // 1. 挂上“正在总结”的牌子
+        loadingIndicator.style.display = 'block';
+
+        // 2. 等待总结函数执行完毕
+        await generateSummary(currentChatFriendId, turnCount);
+
+    } catch (error) {
+        // 如果中途发生意外错误，也要提示用户
+        console.error("手动总结过程中发生意外错误:", error);
+        showAlert(`手动总结失败: ${error.message}`);
+    } finally {
+        // 3. 无论成功还是失败，最后都必须把牌子摘下来！
+        loadingIndicator.style.display = 'none';
+    }
+}
+
+/**
+ * 打开“编辑记忆”弹窗
+ * @param {string} memoryId - 要编辑的记忆ID
+ */
+function openMemoryEditModal(memoryId) {
+    currentEditingMemoryId = memoryId;
+    const memoriesForFriend = characterMemories[currentChatFriendId] || [];
+    const memory = memoriesForFriend.find(m => m.id === memoryId);
+    
+    if (memory) {
+        const modal = document.getElementById('memoryEditModal');
+        const textarea = document.getElementById('memoryEditTextarea');
+        textarea.value = memory.content;
+        modal.classList.add('show');
+    }
+}
+
+/**
+ * 关闭“编辑记忆”弹窗
+ */
+function closeMemoryEditModal() {
+    document.getElementById('memoryEditModal').classList.remove('show');
+    currentEditingMemoryId = null; // 重置
+}
+
+/**
+ * 保存编辑后的记忆内容
+ */
+async function saveEditedMemory() {
+    if (!currentEditingMemoryId) return;
+
+    const memoriesForFriend = characterMemories[currentChatFriendId] || [];
+    const memoryIndex = memoriesForFriend.findIndex(m => m.id === currentEditingMemoryId);
+
+    if (memoryIndex > -1) {
+        const newContent = document.getElementById('memoryEditTextarea').value.trim();
+        memoriesForFriend[memoryIndex].content = newContent;
+
+        // 更新数据库中的对应记录
+        await dbManager.set('memories', memoriesForFriend[memoryIndex]);
+
+        // 刷新界面显示
+        renderMemories(currentChatFriendId);
+        closeMemoryEditModal();
+        showToast('记忆已更新！');
+    }
+}
+
+/**
+ * [新增] 删除一条指定的记忆
+ * @param {string} memoryId - 要删除的记忆ID
+ */
+async function deleteMemory(memoryId) {
+    // 1. 弹出确认框，防止误删
+    showConfirm('确定要删除这条记忆吗？此操作不可恢复。', async (confirmed) => {
+        if (!confirmed) {
+            return; // 如果用户点取消，就什么也不做
+        }
+
+        const memoriesForFriend = characterMemories[currentChatFriendId] || [];
+        const memoryIndex = memoriesForFriend.findIndex(m => m.id === memoryId);
+
+        if (memoryIndex > -1) {
+            // 2. 从内存中删除
+            memoriesForFriend.splice(memoryIndex, 1);
+
+            // 3. 从数据库中删除，确保永久生效
+            await dbManager.delete('memories', memoryId);
+
+            // 4. 重新渲染列表，让界面立即刷新
+            renderMemories(currentChatFriendId);
+
+            // 5. 给用户一个成功的提示
+            showToast('记忆已删除。');
+        }
+    });
+}
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
