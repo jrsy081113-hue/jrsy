@@ -14299,7 +14299,7 @@ async function checkAndTriggerMemoryGeneration(friendId) {
 
             现在，请严格按照以上所有规则，开始你的概括工作。`;
 
-            // 后面的API请求和错误处理逻辑保持不变
+                        // 【【【请用这个新的代码块，完整替换上面的旧代码块】】】
             try {
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
@@ -14315,14 +14315,33 @@ async function checkAndTriggerMemoryGeneration(friendId) {
                 if (!response.ok) throw new Error(`总结API请求失败: ${response.status}`);
                 
                 const data = await response.json();
-                const responseData = JSON.parse(data.choices[0].message.content);
-
-                if (responseData.summary_points && Array.isArray(responseData.summary_points)) {
-                    openSummaryEditModal(responseData.summary_points);
-                } else {
-                    throw new Error("AI返回的总结格式不正确，缺少 'summary_points' 数组。");
+                // --- 核心修复从这里开始 ---
+                const responseText = data.choices?.[0]?.message?.content;
+                
+                // 1. 先检查AI是否有返回内容
+                if (!responseText || typeof responseText !== 'string') {
+                    throw new Error("AI返回的内容为空或格式不正确，无法生成总结。");
                 }
+
+                // 2. 智能地从返回的文本中找出被 {} 包裹的JSON部分
+                const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+                
+                if (jsonMatch) {
+                    // 3. 只解析我们成功匹配到的JSON字符串
+                    const responseData = JSON.parse(jsonMatch[0]);
+                    if(responseData.summary_points && Array.isArray(responseData.summary_points)){
+                        openSummaryEditModal(responseData.summary_points);
+                    } else {
+                         throw new Error("AI返回的总结格式不正确，缺少 'summary_points' 数组。");
+                    }
+                } else {
+                    // 4. 如果连 {} 都找不到，就说明格式完全错误
+                    throw new Error("AI返回的内容中未找到有效的JSON对象。");
+                }
+                // --- 核心修复到这里结束 ---
+                
             } catch (error) {
+             
                 console.error("生成总结时出错:", error);
                 showAlert(`生成总结失败: ${error.message}`);
                 friend.turnCountSinceLastMemory = 0;
