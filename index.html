@@ -5753,6 +5753,11 @@ html {
                         <div class="bubble-settings">
                             <div class="bubble-color-group"><div class="bubble-color-label">我的气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="sentBubbleColorPicker" value="#FFEEF6" oninput="updateSentBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="sentBubbleColorInput" value="#FFEEF6" placeholder="#FFEEF6" oninput="updateSentBubbleColorFromInput(this.value)"></div></div>
                             <div class="bubble-color-group"><div class="bubble-color-label">对方气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="receivedBubbleColorPicker" value="#E6F2FF" oninput="updateReceivedBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="receivedBubbleColorInput" value="#E6F2FF" placeholder="#E6F2FF" oninput="updateReceivedBubbleColorFromInput(this.value)"></div></div>
+                            <!-- ↓↓↓ 第一步：把下面这段代码，粘贴到 “自定义CSS样式” 的标题上面 ↓↓↓ -->
+<div class="bubble-css-group" style="padding: 10px; text-align: center; background: var(--bg-hover, #f0f0f0); cursor: pointer; margin-bottom: 15px;" onclick="copyBubbleFormat()">
+    <span style="font-weight: 500; color: #007aff;">一键复制示例格式</span>
+</div>
+<!-- ↑↑↑ 代码粘贴到这里结束 ↑↑↑ -->
                             <div class="bubble-css-group"><div class="bubble-color-label">自定义CSS样式</div> <textarea class="bubble-css-textarea" id="bubbleCustomCSS" 
     placeholder="在此输入CSS，格式如下：
 
@@ -15713,6 +15718,36 @@ async function deleteMemory(memoryId) {
         }
     });
 }
+
+// --- ↓↓↓ 第二步：把下面这个新函数，粘贴到 <script> 区域的最末尾 ↓↓↓ ---
+
+/**
+ * 新增：一键复制气泡格式的函数
+ */
+function copyBubbleFormat() {
+    const cssFormat = `/* “我”的气泡 */
+.message.sent .message-content {
+  background: #C7F7C7;
+  border-radius: 5px;
+}
+
+/* “对方”的气泡 */
+.message.received .message-content {
+  background: #EFEFEF;
+} `;
+
+    // 使用现代的剪贴板API
+    navigator.clipboard.writeText(cssFormat).then(() => {
+        // 复制成功后给用户一个提示
+        showAlert('示例格式已复制到剪贴板！');
+    }).catch(err => {
+        // 如果失败了，也告诉用户
+        console.error('复制失败: ', err);
+        showAlert('复制失败，请检查浏览器权限或手动复制。');
+    });
+}
+
+
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
