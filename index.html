@@ -872,7 +872,6 @@ html {
         .quoted-message {
             background: rgba(0,0,0,0.05);
             padding: 8px 10px;
-            border-left: 3px solid #07c160;
             margin-bottom: 8px;
             border-radius: var(--small-radius, 4px);
             font-size: var(--small-font-size, 13px);
@@ -884,17 +883,17 @@ html {
         }
         
         .message.sent .quoted-message {
-            border-left-color: var(--sent-quote-border-color, #d9b8c7);
+           
         }
         .message.received .quoted-message {
-            border-left-color: var(--received-quote-border-color, #c0d9ff);
+          
         }
         .wechat-dark-mode .message.sent .quoted-message {
-             border-left-color: var(--sent-quote-border-color, #0056b3);
+            
              background: rgba(255,255,255,0.1);
         }
         .wechat-dark-mode .message.received .quoted-message {
-            border-left-color: var(--received-quote-border-color, #555);
+           
             background: rgba(255,255,255,0.1);
         }
 
@@ -5904,6 +5903,10 @@ html {
         <div class="discover-menu-title">导出数据</div>
         <span>></span>
     </div>
+    <div class="discover-menu-item" onclick="openClearDataConfirm()">
+    <div class="discover-menu-title">清空数据</div>
+    <span>></span>
+</div>
 </div>
 
                 </div>
@@ -9458,7 +9461,7 @@ ${emojiContext}
 - **发送语音**: \`{"type": "voice", "content": "语音的文字内容"}\`
 - **更新心声**: \`{"type": "hearts_voice", "data": {"favorability": "数值/100 (描述)", "dressing": "...", "action": "...", "thought": "...", "emoji": "颜文字"}}\`
 - **发送图片**: \`{"type": "image", "description": "详细的图片描述"}\`
-- **引用回复**: \`{"type": "quote_and_reply", "content": "你的回复内容"}\`
+- **引用回复**: \`{"type": "quote_and_reply", "data": {"quote_content": "被引用的原文内容", "reply_content": "你的回复内容"}}\`
 - **发起转账**: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
 - **接收转账**: \`{"type": "accept_transfer"}\`
 - **分享位置**: \`{"type": "location", "data": {"name": "地点名", "address": "地址"}}\`
@@ -9743,18 +9746,25 @@ ${emojiContext}
                                 }
                                 break;
                         case 'quote_and_reply':
-                            if (action.content) {
-                                await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
-                                const lastUserMsg = history.slice().reverse().find(m => m.type === 'sent');
-                                const quoteContent = lastUserMsg ? (lastUserMsg.content.length > 50 ? lastUserMsg.content.substring(0, 50) + '...' : lastUserMsg.content) : '';
-                                const msgData = await saveChatMessage(friendId, 'received', action.content, quoteContent, friend.id, 'text');
-                                lastMessageId = msgData.id;
-                                if (currentChatFriendId === friendId) {
-                                    addMessageToDOM(msgData, friend);
-                                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-                                }
-                            }
-                            break;
+    // 检查AI是否使用了我们教给它的新格式
+    if (action.data && action.data.reply_content && action.data.quote_content) {
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
+
+        // 直接从AI的回复中获取回复内容和引用内容，不再自己去猜
+        const replyContent = action.data.reply_content;
+        const quoteContent = action.data.quote_content;
+        
+        // 将这两部分内容保存到聊天记录中
+        const msgData = await saveChatMessage(friendId, 'received', replyContent, quoteContent, friend.id, 'text');
+        lastMessageId = msgData.id;
+
+        // 在界面上显示出来
+        if (currentChatFriendId === friendId) {
+            addMessageToDOM(msgData, friend);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+    }
+    break;
                         case 'image':
                             if (action.description) {
                                 const placeholderImageUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
@@ -11966,6 +11976,23 @@ async function fetchModels() {
             });
         }
         
+        
+        /**
+ * 【【【这是我们新增的函数】】】
+ * 打开“清空数据”的确认弹窗
+ */
+function openClearDataConfirm() {
+    showConfirm("您确定要清空所有数据吗？此操作将删除所有好友、聊天记录和设置，且无法恢复。", async (confirmed) => {
+        if (confirmed) {
+            // 如果用户点击了“确定”
+            showAlert('正在清空数据，应用即将刷新...');
+            await initDefaultData(); // 调用已有的数据重置函数
+            setTimeout(() => {
+                window.location.reload(); // 刷新页面以应用更改
+            }, 1500); // 延迟1.5秒，让用户看到提示
+        }
+    });
+}
         // --- Listen Together Functions ---
         
                         // --- ↓↓↓ 请从这里开始完整复制，替换旧的 inviteToListenTogether 函数 ↓↓↓ ---
@@ -14341,109 +14368,112 @@ async function checkAndTriggerMemoryGeneration(friendId) {
     await dbManager.set('friends', friend);
 }
 
-/**
- * [V7.0 核心重构 - 高度概括版] 调用AI，根据指定轮数的对话生成总结
- * @param {string} friendId - 需要为其生成总结的角色ID
- * @param {number} turnCount - 需要总结的对话轮数
- */
-async function generateSummary(friendId, turnCount) {
-    const friend = friends.find(f => f.id === friendId);
-    if (!friend) return;
+        /**
+         * [V7.0 核心重构 - 高度概括版] 调用AI，根据指定轮数的对话生成总结
+         * @param {string} friendId - 需要为其生成总结的角色ID
+         * @param {number} turnCount - 需要总结的对话轮数
+         */
+        async function generateSummary(friendId, turnCount) {
+            const friend = friends.find(f => f.id === friendId);
+            if (!friend) return;
 
-    currentSummaryFriendId = friendId;
+            currentSummaryFriendId = friendId;
 
-    const settings = await dbManager.get('apiSettings', 'settings') || {};
-    if (!settings.apiUrl || !settings.apiKey) {
-        showAlert("总结功能需要先配置API。");
-        return;
-    }
+            const settings = await dbManager.get('apiSettings', 'settings') || {};
+            if (!settings.apiUrl || !settings.apiKey) {
+                showAlert("总结功能需要先配置API。");
+                return;
+            }
 
-    // “回合制”轮数计算逻辑保持不变，它已经很完美了
-    const fullHistory = chatHistories[friendId] || [];
-    const messagesToSummarize = [];
-    let turnsCounted = 0;
-    let lastSenderType = null;
-    for (let i = fullHistory.length - 1; i >= 0; i--) {
-        const message = fullHistory[i];
-        messagesToSummarize.push(message);
-        if (message.type === 'sent' && lastSenderType === 'received') {
-            turnsCounted++;
+            // 【【【核心修改 1：引入了一个小小的计算】】】
+            // 我们在这里计算出，如果要总结 turnCount 轮对话，按“每两轮一个点”的规则，应该生成多少个总结点。
+            // Math.ceil() 是为了处理奇数轮的情况，比如总结21轮，就会生成11个点。
+            const summaryPointCount = Math.ceil(turnCount / 2);
+
+            const fullHistory = chatHistories[friendId] || [];
+            const messagesToSummarize = [];
+            let turnsCounted = 0;
+            let lastSenderType = null;
+            for (let i = fullHistory.length - 1; i >= 0; i--) {
+                const message = fullHistory[i];
+                messagesToSummarize.push(message);
+                if (message.type === 'sent' && lastSenderType === 'received') {
+                    turnsCounted++;
+                }
+                lastSenderType = message.type;
+                if (turnsCounted >= turnCount) {
+                    break;
+                }
+            }
+            messagesToSummarize.reverse();
+
+            const chatContext = messagesToSummarize.map(msg => {
+                const sender = msg.type === 'sent' ? userProfile.name : friend.name;
+                return `${sender}: ${msg.content}`;
+            }).join('\n');
+            
+            // 【【【核心修改 2：更新了给AI的指令】】】
+            const prompt = `
+            【你的身份】: 你是一个高度智能的对话概括专家。
+
+            【你的核心任务】:
+            仔细阅读并总结以下 **${turnCount}轮** 对话。对于**每两轮**对话，你必须将其核心内容提炼成**一个**高度概括的总结点。
+
+            【总结标准 (你必须严格遵守)】:
+            1.  **【二合一原则】**: 你的总结必须遵循“两轮对话，一个总结点”的原则。
+            2.  **【高度概括】**: 每一个总结点都应该是对连续两轮对话的**概括**，而不是细节复述。
+            3.  **【第三人称视角】**: 总结中严禁使用“我”或“你”，必须使用角色的名字。
+
+            【【【输出格式铁律】】】:
+            你的回复必须是一个纯净的JSON对象，其中只包含一个键 "summary_points"。
+            - "summary_points" 的值必须是一个字符串数组 \`[]\`。
+            - **【【【数量铁律】】**: 数组中必须包含不多不少，正好 **${summaryPointCount}条** 总结。
+
+            【高质量示例 (假设总结4轮)】:
+            {
+              "summary_points": [
+                "用户与${friend.name}讨论了工作上的烦恼，并互相安慰。",
+                "双方从工作话题转移到了周末计划，并约定一起去看电影。"
+              ]
+            }
+            
+            【以下是需要你总结的对话记录】:
+            ---
+            ${chatContext}
+            ---
+
+            现在，请严格按照以上所有规则，开始你的概括工作。`;
+
+            // 后面的API请求和错误处理逻辑保持不变
+            try {
+                const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: settings.modelName,
+                        messages: [{ role: 'user', content: prompt }],
+                        response_format: { type: 'json_object' },
+                        temperature: 0.5
+                    })
+                });
+
+                if (!response.ok) throw new Error(`总结API请求失败: ${response.status}`);
+                
+                const data = await response.json();
+                const responseData = JSON.parse(data.choices[0].message.content);
+
+                if (responseData.summary_points && Array.isArray(responseData.summary_points)) {
+                    openSummaryEditModal(responseData.summary_points);
+                } else {
+                    throw new Error("AI返回的总结格式不正确，缺少 'summary_points' 数组。");
+                }
+            } catch (error) {
+                console.error("生成总结时出错:", error);
+                showAlert(`生成总结失败: ${error.message}`);
+                friend.turnCountSinceLastMemory = 0;
+                await dbManager.set('friends', friend);
+            }
         }
-        lastSenderType = message.type;
-        if (turnsCounted >= turnCount) {
-            break;
-        }
-    }
-    messagesToSummarize.reverse();
-
-    const chatContext = messagesToSummarize.map(msg => {
-        const sender = msg.type === 'sent' ? userProfile.name : friend.name;
-        return `${sender}: ${msg.content}`;
-    }).join('\n');
-    
-    // ↓↓↓ 这是全新的、高度优化的AI指令 (Prompt) ↓↓↓
-    const prompt = `
-    【你的身份】: 你是一个高度智能的对话概括专家。
-
-    【你的核心任务】:
-    仔细阅读并总结以下 **${turnCount}轮** 对话。对于**每一轮**对话，你必须将其核心内容提炼成**一个**高度概括的总结点。
-
-    【总结标准 (你必须严格遵守)】:
-    1.  **【一一对应】**: 你的总结必须与对话轮数完全对应。提供给你几轮对话，你就必须总结出几个点。
-    2.  **【高度概括】**: 每一个总结点都应该是对一整轮对话（包含用户的提问和你的回答）的**概括**，而不是细节复述。
-    3.  **【第三人称视角】**: 总结中严禁使用“我”或“你”，必须使用角色的名字。
-
-    【【【输出格式铁律】】】:
-    你的回复必须是一个纯净的JSON对象，其中只包含一个键 "summary_points"。
-    - "summary_points" 的值必须是一个字符串数组 \`[]\`。
-    - **【【【数量铁律】】】**: 数组中必须包含不多不少，正好 **${turnCount}条** 总结，每一条对应一轮对话。
-
-    【高质量示例 (假设总结3轮)】:
-    {
-      "summary_points": [
-        "用户与${friend.name}互相问候，并开启了关于最近工作的讨论。",
-        "${friend.name}向用户抱怨了工作中的压力，用户对此表示安慰。",
-        "双方约定周末一起去看电影放松一下。"
-      ]
-    }
-    
-    【以下是需要你总结的对话记录】:
-    ---
-    ${chatContext}
-    ---
-
-    现在，请严格按照以上所有规则，开始你的概括工作。`;
-
-    // 后面的API请求和错误处理逻辑保持不变
-    try {
-        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: settings.modelName,
-                messages: [{ role: 'user', content: prompt }],
-                response_format: { type: 'json_object' },
-                temperature: 0.5
-            })
-        });
-
-        if (!response.ok) throw new Error(`总结API请求失败: ${response.status}`);
-        
-        const data = await response.json();
-        const responseData = JSON.parse(data.choices[0].message.content);
-
-        if (responseData.summary_points && Array.isArray(responseData.summary_points)) {
-            openSummaryEditModal(responseData.summary_points);
-        } else {
-            throw new Error("AI返回的总结格式不正确，缺少 'summary_points' 数组。");
-        }
-    } catch (error) {
-        console.error("生成总结时出错:", error);
-        showAlert(`生成总结失败: ${error.message}`);
-        friend.turnCountSinceLastMemory = 0;
-        await dbManager.set('friends', friend);
-    }
-}
 
 // --- ↓↓↓ 请从这里开始复制所有新函数 ↓↓↓ ---
 
