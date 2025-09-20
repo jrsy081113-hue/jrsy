@@ -6612,8 +6612,6 @@ let currentSummaryFriendId = null; // 记录当前正在总结的好友ID
         
         let wechatAppGlobalBgImage = ''; // 新增：用于存储微信App的全局背景图
 
-let npcFriends = []; // 新增：用来存放为用户动态生成的NPC朋友列表
-
 let characterMemories = {}; // <-- 新增：用来存放所有角色的记忆
 
 let memoryGenerationTurns = 20; // 新增：记忆生成轮数，默认20轮
@@ -10840,7 +10838,7 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
     
     // --- [核心修改] 在这里触发AI好友和NPC的反应 ---
     triggerAiMomentReactions(newMoment); // 触发AI好友的反应（点赞+评论）
-    generateNpcFriends(newMoment);      // 触发生成NPC并让他们进行评论
+   
     // --- 修改结束 ---
     
     closeAddMomentModal(); 
@@ -10879,43 +10877,7 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
             return "刚刚";
         }
         
-                        function getAuthorById(authorId) {
-            if (!authorId) {
-                console.warn(`尝试获取作者信息但 authorId 为空或无效: ${authorId}`);
-                return { id: 'unknown', name: '未知用户', avatar: '?', avatarImage: '' };
-            }
-            if (authorId === userProfile.id) {
-                return userProfile;
-            }
-            // 优先从当前群聊成员中查找，确保信息最准确
-            const currentGroup = friends.find(f => f.id === currentChatFriendId && f.isGroup);
-            if (currentGroup) {
-                const memberInGroup = friends.find(f => f.id === authorId && currentGroup.members.includes(f.id));
-                if (memberInGroup) return memberInGroup;
-            }
-            // 如果不在当前群聊或不是群聊模式，则从总好友列表查找
-            const foundFriend = friends.find(f => f.id === authorId);
-            if (foundFriend) {
-                return foundFriend;
-            }
-
-            if (typeof authorId === 'string' && authorId.startsWith('npc_')) {
-                const npcName = authorId.replace('npc_', '');
-                const foundNpc = npcFriends.find(npc => npc.name === npcName);
-                if (foundNpc) {
-                     return { id: authorId, name: foundNpc.name, avatar: foundNpc.name.substring(0, 1), avatarImage: '' };
-                }
-                for (const moment of moments) {
-                    const foundComment = moment.comments.find(c => c.authorId === authorId);
-                    if (foundComment && foundComment.name) {
-                        return { id: authorId, name: foundComment.name, avatar: foundComment.name.substring(0, 1), avatarImage: '' };
-                    }
-                }
-            }
-            
-            console.warn(`未找到ID为 ${authorId} 的好友信息。`);
-            return { id: authorId, name: '未知用户', avatar: '?', avatarImage: '' };
-        }
+                       
 
         function viewMomentImage(momentId) {
             const moment = moments.find(m => m.id === momentId);
@@ -13587,165 +13549,6 @@ function setRealViewportHeight() {
 }
 setRealViewportHeight();
 
-// --- [新增] NPC朋友圈互动核心功能 ---
-
-/**
- * 核心功能1：根据用户人设，动态生成一组NPC朋友
- * @param {object} moment - 用户刚刚发布的朋友圈对象
- */
-async function generateNpcFriends(moment) {
-    const settings = await dbManager.get('apiSettings', 'settings') || {};
-    if (!settings.apiUrl || !settings.apiKey) {
-        console.error("无法生成NPC：API未配置。");
-        return; // 如果API没配置，直接退出
-    }
-
-    // 格式化用户人设和背景，使其更易于AI理解
-    const userPersonaFormatted = `个性: ${userProfile.personality || '未设置'}\n背景: ${userProfile.background || '未设置'}`;
-
-    const prompt = `
-    【任务】: 基于用户的“人设背景”，为他/她生成3到5个符合其社交圈的、风格各异的虚拟朋友（NPC）。
-
-    【用户信息】:
-    - 用户昵称: "${userProfile.name}"
-    - 用户人设背景: 
-    \`\`\`
-    ${userPersonaFormatted}
-    \`\`\`
-
-    【输出要求】:
-    1.  严格以JSON数组的格式返回。
-    2.  数组中每个对象代表一个NPC，包含 "name" (姓名) 和 "persona" (一句话性格简介) 两个键。
-    3.  NPC的姓名和人设必须非常生活化、多样化，并且与用户的社交圈子高度相关。例如，如果用户是学生，NPC可以是同学、老师；如果用户是职场人士，NPC可以是同事、客户等。
-    4.  绝对不要在回复中包含任何JSON格式之外的解释性文字。
-
-    【JSON格式示例】:
-    [
-      {"name": "王老师", "persona": "一位严格但很关心学生的年长教师。"},
-      {"name": "小方", "persona": "一个性格活泼开朗的同班同学，喜欢开玩笑。"},
-      {"name": "落落", "persona": "一个有点内向但内心细腻的学姐。"}
-    ]
-    `;
-
-    try {
-        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: settings.modelName,
-                messages: [{ role: 'user', content: prompt }],
-                response_format: { type: 'json_object' }
-            })
-        });
-
-        if (!response.ok) throw new Error(`API请求失败: ${response.status}`);
-        
-        const data = await response.json();
-        const responseText = data.choices[0].message.content;
-        
-        // 增加兼容性，处理AI可能返回的多种JSON格式
-        const jsonMatch = responseText.match(/\[[\s\S]*\]/); 
-        if (jsonMatch) {
-            npcFriends = JSON.parse(jsonMatch[0]);
-            console.log("成功生成NPC列表:", npcFriends);
-            // 生成NPC后，立即触发他们的评论行为
-            triggerNpcMomentReactions(moment, npcFriends);
-        } else {
-             throw new Error("AI返回的NPC数据不是有效的JSON数组。");
-        }
-
-    } catch (error) {
-        console.error("生成NPC朋友列表时出错:", error);
-    }
-}
-
-
-/**
-
-/**
- * 核心功能2：让NPC们有间隔地对朋友圈进行评论
- * @param {object} moment - 用户刚刚发布的朋友圈对象
- * @param {Array} npcs - 生成的NPC对象数组
- */
-async function triggerNpcMomentReactions(moment, npcs) {
-    const settings = await dbManager.get('apiSettings', 'settings') || {};
-    if (!settings.apiUrl || !settings.apiKey) return;
-
-    // 为每个NPC创建一个带随机延迟的评论任务
-    npcs.forEach((npc, index) => {
-        // 随机延迟：第一个评论在2-4秒后，之后每个评论再延迟3-6秒
-        const delay = (index === 0) ? (2000 + Math.random() * 2000) : ((index * (3000 + Math.random() * 3000)) + 2000);
-        
-        setTimeout(async () => {
-            try {
-                // 【【【核心修正】】】 在这里正确地定义只包含有限信息的新变量
-                const userPersonaForNpc = `职业/身份: ${userProfile.background || '未设置'}\n性格特点: ${userProfile.personality || '未设置'}`;
-                const sanitizedMomentContent = moment.content.replace(/"/g, "'");
-
-                const prompt = `
-                【你的身份】: 你是 "${npc.name}"，你的性格是：“${npc.persona}”。
-
-                【当前情景】: 你的朋友 "${userProfile.name}" 刚刚发了一条朋友圈。你只知道朋友的这些信息：
-                - ${userPersonaForNpc}
-
-                【朋友圈内容】: "${sanitizedMomentContent}"
-
-                【你的任务】:
-                1.  严格以你的身份（“${npc.name}”）和性格（“${npc.persona}”），针对这条朋友圈，写一句非常口语化、生活化的评论。
-                2.  你的评论必须与朋友圈内容和你的身份高度相关。
-                3.  **【【【隐私铁律】】】** 你绝对不知道任何关于用户更私密的信息（例如生理期、非常私人的喜好等），在你的评论中也绝对不能提及或猜测这些。
-                4.  **【【【输出铁律】】】** 你的回复**必须且只能**是纯文本的评论本身。绝对不要包含任何多余的解释、引号或JSON标记。
-                `;
-
-                const response = await fetch(`${settings.apiUrl}/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: settings.modelName,
-                        messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.9 // 提高一点随机性，让评论更多样
-                    })
-                });
-
-                if (!response.ok) throw new Error(`API请求失败: ${response.status}`);
-
-                const data = await response.json();
-                const commentContent = data.choices[0].message.content.trim().replace(/^"|"$/g, ''); // 清理AI可能返回的多余引号
-
-                if (commentContent) {
-                    // 找到需要更新的朋友圈对象
-                    const targetMoment = moments.find(m => m.id === moment.id);
-                    if (targetMoment) {
-                        const newNpcComment = {
-                            id: generateUniqueId(),
-                            authorId: `npc_${npc.name}`,
-                            name: npc.name,
-                            content: commentContent,
-                            timestamp: new Date().toISOString(),
-                            replyToCommentId: null,
-                            replyToAuthorId: null
-                        };
-                        
-                        // 让NPC在评论的同时也进行点赞
-                        if (!targetMoment.likes.includes(newNpcComment.authorId)) {
-                            targetMoment.likes.push(newNpcComment.authorId);
-                        }
-                        
-                        targetMoment.comments.push(newNpcComment);
-                        await saveData();
-                        
-                        if (document.getElementById('momentsScreen').classList.contains('active')) {
-                            updateMomentsList();
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error(`NPC "${npc.name}" 评论时出错:`, error);
-            }
-        }, delay);
-    });
-}
-
 
 /**
  * 辅助功能：重写getAuthorById，让它可以处理NPC
@@ -13762,23 +13565,7 @@ function getAuthorById(authorId) {
     if (foundFriend) {
         return foundFriend;
     }
-    // 【【【新增逻辑】】】 如果在好友列表找不到，就检查是不是NPC
-    if (typeof authorId === 'string' && authorId.startsWith('npc_')) {
-        const npcName = authorId.replace('npc_', '');
-        // 查找内存中本次生成的NPC列表
-        const foundNpc = npcFriends.find(npc => npc.name === npcName);
-        if (foundNpc) {
-             return { id: authorId, name: foundNpc.name, avatar: foundNpc.name.substring(0, 1), avatarImage: '' };
-        }
-        // 如果内存里没有（可能是刷新页面后），就从评论区反向查找
-        for (const moment of moments) {
-            const foundComment = moment.comments.find(c => c.authorId === authorId);
-            if (foundComment && foundComment.name) {
-                return { id: authorId, name: foundComment.name, avatar: foundComment.name.substring(0, 1), avatarImage: '' };
-            }
-        }
-    }
-    
+
     // 如果都找不到，返回一个“已删除用户”的占位符
     return { id: authorId, name: '未知用户', avatar: '?', avatarImage: '' };
 }
