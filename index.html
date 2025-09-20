@@ -45,8 +45,9 @@ html {
 
         .phone {
     width: 100vw;
-    /* 【默认】PWA模式使用vh */
-    height: 100vh;
+    /* 【关键修改】PWA和浏览器模式都使用100%，继承一个固定的父级高度 */
+    height: 100%; 
+    
     /* 其他样式保持不变... */
     background: var(--theme-bg, #f7f7f7);
     position: relative;
