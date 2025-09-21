@@ -5752,14 +5752,16 @@ html {
                             <div class="bubble-css-group"><div class="bubble-color-label">自定义CSS样式</div> <textarea class="bubble-css-textarea" id="bubbleCustomCSS" 
     placeholder="在此输入CSS，格式如下：
 
-/* “我”的气泡 */
-.message.sent .message-content {
+/* “我”的气泡 (同时适配语音条) */
+.message.sent .message-content,
+.message.sent .voice-message-bar {
   background: #C7F7C7;
   border-radius: 5px;
 }
 
-/* “对方”的气泡 */
-.message.received .message-content {
+/* “对方”的气泡 (同时适配语音条) */
+.message.received .message-content,
+.message.received .voice-message-bar {
   background: #EFEFEF;
 }" 
     oninput="applyCustomBubbleCSS(this.value)"></textarea> </div>
@@ -12854,18 +12856,32 @@ async function openSimApp(appName) {
 async function generateSimAppContent(characterId, appName) {
     const character = friends.find(f => f.id === characterId);
     if (!character) return;
+    const roleSummary = await getOrGenerateRoleSummary(character);
 
-    // --- 指令准备部分 (与上次相同，保持简化) ---
-    const recentChatHistory = (chatHistories[characterId] || []).slice(-20).map(m => `[${formatTimestampForAI(m.timestamp)}] ${m.type === 'sent' ? userProfile.name : character.name}: ${m.content}`).join('\n');
-    const recentMoments = moments.slice(0, 3).map(m => {
+
+// 这是新代码
+const recentChatHistory = (chatHistories[characterId] || [])
+    .slice(-20) // 仍然只取最近20条
+    .map(m => {
+        const senderName = m.type === 'sent' ? userProfile.name : character.name;
+        
+        // ==> 核心修改在这里 <==
+        // 我们不再直接使用 m.content，而是调用新函数来生成摘要
+        const summarizedContent = summarizeMessageContentForAI(m);
+        
+        return `[${formatTimestampForAI(m.timestamp)}] ${senderName}: ${summarizedContent}`;
+    })
+    .join('\n');
+
+    const recentMoments = moments.slice(0, 1).map(m => {
         const author = getAuthorById(m.authorId);
         return `[${author.name} 在 ${m.timestamp.slice(0,10)} 发布的朋友圈]: ${m.content}`;
     }).join('\n');
     const currentDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
     
     let prompt = `你正在深度模拟角色"${character.name}"的手机，你需要生成手机中某个应用的内容。
-    【角色核心人设】: ${character.role}
-    【核心记忆库 (最近20条聊天记录 & 最近3条朋友圈)】:
+    【角色核心人设】: ${roleSummary} 
+    【核心记忆库 (最近20条聊天记录 & 最近1条朋友圈)】:
     --- 聊天记录开始 ---
     ${recentChatHistory || '无聊天记录。'}
     --- 聊天记录结束 ---
@@ -15585,16 +15601,18 @@ async function deleteMemory(memoryId) {
  * 新增：一键复制气泡格式的函数
  */
 function copyBubbleFormat() {
-    const cssFormat = `/* “我”的气泡 */
-.message.sent .message-content {
+    const cssFormat = `/* “我”的气泡 (同时适配语音条) */
+.message.sent .message-content,
+.message.sent .voice-message-bar {
   background: #C7F7C7;
   border-radius: 5px;
 }
 
-/* “对方”的气泡 */
-.message.received .message-content {
+/* “对方”的气泡 (同时适配语音条) */
+.message.received .message-content,
+.message.received .voice-message-bar {
   background: #EFEFEF;
-} `;
+}  `;
 
     // 使用现代的剪贴板API
     navigator.clipboard.writeText(cssFormat).then(() => {
@@ -15682,7 +15700,135 @@ async function saveHtmlCardEdit() {
     }
 }
 
+/**
+ * [新增] 核心工具函数：将各种类型的消息内容，转换为AI能理解的、简洁的文本描述。
+ * @param {object} msg - 消息对象
+ * @returns {string} - 格式化后的、供AI阅读的文本摘要
+ */
+function summarizeMessageContentForAI(msg) {
+    // 使用 switch 语句来处理不同类型的消息
+    switch (msg.contentType) {
+        case 'text':
+            // 普通文本直接返回，但截断以防万一
+            return msg.content.substring(0, 200);
 
+        case 'image':
+            // 告诉AI这里有一张图片
+            return "[图片]";
+
+        case 'emoji':
+            // 告诉AI这里有一个表情，如果知道名字就带上名字
+            return `[表情: ${msg.emojiName || '未知'}]`;
+
+        case 'voice':
+            // 告诉AI这是一条语音，并附上文字内容
+            return `[语音消息]: ${msg.content.substring(0, 200)}`;
+
+        case 'transfer_request':
+            try {
+                const data = JSON.parse(msg.content);
+                const senderName = msg.type === 'sent' ? '你' : '对方';
+                const receiverName = msg.type === 'sent' ? '对方' : '你';
+                return `[转账]: ${senderName}向${receiverName}转账 ¥${parseFloat(data.amount).toFixed(2)} (备注: ${data.remark || '无'})`;
+            } catch (e) {
+                return "[一条转账消息]";
+            }
+
+        case 'transfer_accepted':
+             return "[转账已被接收]";
+
+        case 'location':
+            try {
+                const data = JSON.parse(msg.content);
+                return `[位置分享]: ${data.name}`;
+            } catch (e) {
+                return "[一个位置分享]";
+            }
+        
+        case 'poll':
+            try {
+                const data = JSON.parse(msg.content);
+                return `[发起投票]: ${data.title}`;
+            } catch (e) {
+                return "[一个群投票]";
+            }
+
+        case 'group_red_envelope':
+            try {
+                const data = JSON.parse(msg.content);
+                return `[发红包]: ${data.remark}`;
+            } catch (e) {
+                return "[一个红包]";
+            }
+        
+        case 'system_tip':
+             return `[系统提示]: ${msg.content}`;
+
+        // 还可以根据需要添加更多case，比如语音通话、拍一拍等
+        
+        default:
+            // 对于任何未知的或新的类型，返回一个通用的提示
+            return "[一条特殊类型的消息]";
+    }
+}
+
+/**
+ * [新增] 获取或生成角色的“人设摘要”。
+ * 它会先检查角色数据中是否已有摘要，如果没有，则调用AI生成并保存。
+ * @param {object} friend - 角色对象
+ * @returns {Promise<string>} - 返回人设摘要文本
+ */
+async function getOrGenerateRoleSummary(friend) {
+    // 1. 检查缓存：如果这个角色已经有摘要了，就直接返回，避免重复生成
+    if (friend.roleSummary) {
+        return friend.roleSummary;
+    }
+
+    // 2. 如果没有摘要，就准备调用AI来生成
+    console.log(`[人设总结器] 正在为 "${friend.name}" 生成人设摘要...`);
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings.apiUrl || !settings.apiKey || !friend.role) {
+        // 如果API未设置或人设为空，就返回一个默认值
+        return "一个普通人。";
+    }
+
+    // 3. 创建专门用于“总结人设”的AI指令
+    const prompt = `请将以下角色设定，浓缩成一段不超过150字的、最能体现其核心性格与特点的简介。
+    
+    【原始设定】：
+    ${friend.role}
+    
+    【你的任务】：
+    只返回浓缩后的简介文本，不要添加任何额外的解释或标题。`;
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.3 // 使用较低的温度以确保总结的准确性
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const summary = data.choices[0].message.content.trim();
+
+        // 4. 将生成好的摘要，存回角色数据中，以便下次直接使用
+        friend.roleSummary = summary;
+        await dbManager.set('friends', friend); // 保存到数据库
+
+        return summary;
+
+    } catch (error) {
+        console.error(`为 "${friend.name}" 生成人设摘要失败:`, error);
+        // 即使失败，也返回一个安全的默认值，而不是让整个程序崩溃
+        return (friend.role || '').substring(0, 200); // 截断原始人设作为备用
+    }
+}
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
