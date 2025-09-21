@@ -5744,11 +5744,19 @@ html {
                         <div class="bubble-settings">
                             <div class="bubble-color-group"><div class="bubble-color-label">我的气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="sentBubbleColorPicker" value="#FFEEF6" oninput="updateSentBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="sentBubbleColorInput" value="#FFEEF6" placeholder="#FFEEF6" oninput="updateSentBubbleColorFromInput(this.value)"></div></div>
                             <div class="bubble-color-group"><div class="bubble-color-label">对方气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="receivedBubbleColorPicker" value="#E6F2FF" oninput="updateReceivedBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="receivedBubbleColorInput" value="#E6F2FF" placeholder="#E6F2FF" oninput="updateReceivedBubbleColorFromInput(this.value)"></div></div>
-                            <!-- ↓↓↓ 第一步：把下面这段代码，粘贴到 “自定义CSS样式” 的标题上面 ↓↓↓ -->
-<div class="bubble-css-group" style="padding: 10px; text-align: center; background: var(--bg-hover, #f0f0f0); cursor: pointer; margin-bottom: 15px;" onclick="copyBubbleFormat()">
-    <span style="font-weight: 500; color: #007aff;">一键复制示例格式</span>
+                            <!-- ↓↓↓ 这是修改后的代码，请用它来替换上面的旧代码块 ↓↓↓ -->
+<div class="bubble-css-group" style="padding: 10px; text-align: center; background: transparent; border: none; margin-bottom: 5px;">
+    <span style="font-weight: 500; color: var(--text-secondary, #666);">一键复制示例格式</span>
 </div>
-<!-- ↑↑↑ 代码粘贴到这里结束 ↑↑↑ -->
+<div style="display: flex; gap: 10px; margin-bottom: 15px;">
+    <div class="bubble-css-group" style="flex: 1; padding: 10px; text-align: center; background: var(--bg-hover, #f0f0f0); cursor: pointer;" onclick="copyBubbleFormat('bubble_only')">
+        <span style="font-weight: 500; color: #007aff;">气泡格式</span>
+    </div>
+    <div class="bubble-css-group" style="flex: 1; padding: 10px; text-align: center; background: var(--bg-hover, #f0f0f0); cursor: pointer;" onclick="copyBubbleFormat('bubble_and_avatar')">
+        <span style="font-weight: 500; color: #007aff;">气泡+头像格式</span>
+    </div>
+</div>
+<!-- ↑↑↑ 替换到这里结束 ↑↑↑ -->
                             <div class="bubble-css-group"><div class="bubble-color-label">自定义CSS样式</div> <textarea class="bubble-css-textarea" id="bubbleCustomCSS" 
     placeholder="在此输入CSS，格式如下：
 
@@ -8326,16 +8334,19 @@ function openChat(friendId) {
 }
 // ↑↑↑ 请在这里结束复制 ---
         
-        function getAvatarHtml(sender) {
+        // --- 这是【修改后】的代码，请用它来替换 ---
+
+function getAvatarHtml(sender) {
     if (!sender) return `<div class="chat-avatar">?</div>`;
     const name = sender.name || '', avatarImage = sender.avatarImage || '';
     const avatarText = sender.avatar || (name ? name.substring(0, 1) : '?');
     
-    // ↓↓↓ 核心修改就在下面这一行 ↓↓↓
+    // --- ↓↓↓ 核心修改就在下面这一行 ↓↓↓ ---
+    // 我们从 style 属性中删除了 "border: none;"
     return avatarImage 
-        ? `<div class="chat-avatar" data-sender-id="${sender.id}" style="background-image: url('${avatarImage}'); border: none;"></div>` 
+        ? `<div class="chat-avatar" data-sender-id="${sender.id}" style="background-image: url('${avatarImage}');"></div>` 
         : `<div class="chat-avatar" data-sender-id="${sender.id}">${avatarText}</div>`;
-    // ↑↑↑ 当有图片时，我们用内联样式强制移除边框 ↑↑↑
+    // --- ↑↑↑ 修改结束 ↑↑↑ ---
 }
         // --- 【这是修改后的代码】 ---
 async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
@@ -15595,13 +15606,17 @@ async function deleteMemory(memoryId) {
     });
 }
 
-// --- ↓↓↓ 第二步：把下面这个新函数，粘贴到 <script> 区域的最末尾 ↓↓↓ ---
-
 /**
- * 新增：一键复制气泡格式的函数
+ * 新增：一键复制气泡格式的函数 (V2 - 多格式版)
+ * @param {string} formatType - 'bubble_only' 或 'bubble_and_avatar'
  */
-function copyBubbleFormat() {
-    const cssFormat = `/* “我”的气泡 (同时适配语音条) */
+function copyBubbleFormat(formatType) {
+    let cssFormat = '';
+    let successMessage = '';
+
+    if (formatType === 'bubble_only') {
+        successMessage = '气泡格式已复制到剪贴板！';
+        cssFormat = `/* “我”的气泡 (同时适配语音条) */
 .message.sent .message-content,
 .message.sent .voice-message-bar {
   background: #C7F7C7;
@@ -15613,16 +15628,51 @@ function copyBubbleFormat() {
 .message.received .voice-message-bar {
   background: #EFEFEF;
 }  `;
+    } else if (formatType === 'bubble_and_avatar') {
+        successMessage = '气泡+头像格式已复制到剪贴板！';
+        cssFormat = `/* “我”的气泡样式 */
+/* 关键：同时为普通气泡和语音条应用样式 */
+.message.sent .message-content,
+.message.sent .voice-message-bar {
+  background-color: #D6EFFF; /* 气泡背景色: 淡蓝色 */
+  border-radius: 18px;       /* 气泡圆角 */
+  color: #333333;           /* 气泡内的文字颜色 */
+}
 
-    // 使用现代的剪贴板API
-    navigator.clipboard.writeText(cssFormat).then(() => {
-        // 复制成功后给用户一个提示
-        showAlert('示例格式已复制到剪贴板！');
-    }).catch(err => {
-        // 如果失败了，也告诉用户
-        console.error('复制失败: ', err);
-        showAlert('复制失败，请检查浏览器权限或手动复制。');
-    });
+/* “我”的头像框样式 */
+.message.sent .chat-avatar {
+  border: 3px solid #007AFF; /* 边框颜色: 与气泡搭配的蓝色 */
+  border-radius: 12px;       /* 头像框圆角 */
+  padding: 2px;
+  background-color: white;
+}
+
+/* 好友的气泡样式 */
+/* 关键：同时为普通气泡和语音条应用样式 */
+.message.received .message-content,
+.message.received .voice-message-bar {
+  background-color: #F1F1F1; /* 气泡背景色: 浅灰色 */
+  border-radius: 18px;       /* 气泡圆角 */
+  color: #333333;           /* 气泡内的文字颜色 */
+}
+
+/* 好友的头像框样式 */
+.message.received .chat-avatar {
+  border: 3px solid #DCDCDC; /* 边框颜色: 比气泡稍深的灰色 */
+  border-radius: 12px;       /* 头像框圆角 */
+  padding: 2px;
+  background-color: white;
+} `;
+    }
+
+    if (cssFormat) {
+        navigator.clipboard.writeText(cssFormat).then(() => {
+            showAlert(successMessage);
+        }).catch(err => {
+            console.error('复制失败: ', err);
+            showAlert('复制失败，请检查浏览器权限或手动复制。');
+        });
+    }
 }
 
 // --- 新增：HTML卡片编辑功能 ---
