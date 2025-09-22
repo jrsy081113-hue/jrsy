@@ -997,24 +997,63 @@ html {
              fill: white;
         }
 
-        .chat-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: var(--chat-avatar-radius, 8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-color, #333);
-            font-weight: bold;
-            font-size: var(--small-font-size, 14px);
-            margin: 0 8px 0 0;
-            flex-shrink: 0;
-            background-size: cover;
-            background-position: center;
-            background-color: var(--bg-primary, white);
-            border: 1px solid var(--border-color, #e0e0e0);
-            transition: all 0.3s ease;
-        }
+        /* ↓↓↓ 用这段代码替换旧的 .chat-avatar 样式 ↓↓↓ */
+.chat-avatar {
+    /* 核心改变：让头像本身成为一个定位的“锚点” */
+    position: relative; 
+
+    /* 这些依然由滑块控制，保持不变 */
+    width: var(--chat-avatar-size, 45px);
+    height: var(--chat-avatar-size, 45px);
+    border-radius: var(--chat-avatar-radius, 8px);
+
+    /* 移除所有边框相关的属性，因为我们将用“伪元素”来做边框 */
+    border: 1px solid var(--border-color, #e0e0e0);
+
+    /* 以下是原有的样式，保持不变 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color, #333);
+    font-weight: bold;
+    font-size: var(--small-font-size, 14px);
+    margin: 0 8px 0 0;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--bg-primary, white);
+    transition: all 0.3s ease;
+}
+/* ↑↑↑ 替换到这里结束 ↑↑↑ */
+
+/* ↓↓↓ 在 .chat-avatar 下方添加这段新代码 ↓↓↓ */
+.chat-avatar::after {
+    content: ''; /* 伪元素必须有 content */
+    position: absolute; /* 让它浮动在头像之上 */
+    
+    /* 核心！用CSS变量来控制它的大小，负值会让它比头像大 */
+    top: var(--chat-avatar-frame-offset, -3px);
+    left: var(--chat-avatar-frame-offset, -3px);
+    right: var(--chat-avatar-frame-offset, -3px);
+    bottom: var(--chat-avatar-frame-offset, -3px);
+
+    /* 将头像框图片作为背景 */
+    background-image: var(--chat-avatar-frame-url, none);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    
+    /* 确保它不会遮挡住头像的圆角 */
+    border-radius: 0px; 
+
+    /* 确保它不响应鼠标事件，以免挡住头像的点击 */
+    pointer-events: none;
+    
+    /* 在 .chat-avatar::after 的末尾添加这一行 */
+/* ↓↓↓ 添加这一行新代码 ↓↓↓ */
+transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-frame-offset-y, 0px));
+/* ↑↑↑ 添加结束 ↑↑↑ */
+}
+/* ↑↑↑ 添加结束 ↑↑↑ */
 
         .message.sent .chat-avatar {
             margin: 0 0 0 8px;
@@ -1966,6 +2005,7 @@ html {
             transition: all 0.3s ease;
             background: var(--bg-primary, white);
             color: var(--text-color, #000);
+            text-align: left; 
         }
 
         .modal-textarea {
@@ -5090,6 +5130,8 @@ html {
     fill: #ff3b30; /* 垃圾桶图标为红色 */
 }
 
+
+
     </style>
 </head>
 <body>
@@ -5742,6 +5784,67 @@ html {
                 <div class="modal-content-container">
                     <div class="modal-content">
                         <div class="bubble-settings">
+                        <!-- ↓↓↓ 从这里开始复制 ↓↓↓ -->
+
+<div class="bubble-color-group">
+    <div class="bubble-color-label">头像样式</div>
+    
+    <!-- 头像大小滑块 -->
+    <div class="font-size-control" style="margin: 10px 0; padding: 10px; border: none;">
+        <span>头像大小:</span>
+        <input type="range" class="font-size-slider" id="avatarSizeSlider" min="20" max="60" value="45" oninput="updateAvatarSettings('size', this.value)">
+        <span id="avatarSizeValue">45px</span>
+    </div>
+
+    <!-- 头像圆角滑块 -->
+    <div class="font-size-control" style="margin: 10px 0; padding: 10px; border: none;">
+        <span>头像圆角:</span>
+        <input type="range" class="font-size-slider" id="avatarRadiusSlider" min="0" max="50" value="8" oninput="updateAvatarSettings('radius', this.value)">
+        <span id="avatarRadiusValue">8px</span>
+    </div>
+
+    <!-- 头像框设置 -->
+    <div class="form-group" style="margin-top: 15px;">
+        <label class="form-label" style="margin-bottom: 5px;">头像框</label>
+        <div style="display: flex; gap: 10px;">
+            <button class="modal-btn modal-btn-confirm" style="flex: 1;" onclick="document.getElementById('avatarFrameInput').click()">本地上传</button>
+            <button class="modal-btn modal-btn-cancel" style="flex: 1;" onclick="openAvatarFrameUrlModal()">输入URL</button>
+            <button class="modal-btn modal-btn-cancel" style="flex: 0.5;" onclick="resetAvatarFrame()">重置</button>
+            <input type="file" id="avatarFrameInput" accept="image/*" style="display: none;" onchange="handleAvatarFrameUpload(event)">
+        </div>
+    </div>
+
+    <!-- 头像框边框大小滑块 -->
+    <div class="font-size-control" style="margin: 10px 0; padding: 10px; border: none;">
+        <span>边框大小:</span>
+        <input type="range" class="font-size-slider" id="avatarFrameSizeSlider" min="0" max="10" value="3" oninput="updateAvatarSettings('frameSize', this.value)">
+        <span id="avatarFrameSizeValue">3px</span>
+    </div>
+</div>
+
+<!-- ↑↑↑ 粘贴到这里结束 ↑↑↑ -->
+
+<!-- 在“边框大小”滑块的下方，添加这两个新的滑-块 -->
+<!-- ↓↓↓ 从这里开始复制 ↓↓↓ -->
+
+<!-- 头像框左右位置滑块 -->
+<div class="font-size-control" style="margin: 10px 0; padding: 10px; border: none;">
+    <span>左右位置:</span>
+    <input type="range" class="font-size-slider" id="avatarFrameOffsetXSlider" min="-20" max="20" value="0" oninput="updateAvatarSettings('frameOffsetX', this.value)">
+    <span id="avatarFrameOffsetXValue">0px</span>
+</div>
+
+<!-- 头像框上下位置滑块 -->
+<div class="font-size-control" style="margin: 10px 0; padding: 10px; border: none;">
+    <span>上下位置:</span>
+    <input type="range" class="font-size-slider" id="avatarFrameOffsetYSlider" min="-20" max="20" value="0" oninput="updateAvatarSettings('frameOffsetY', this.value)">
+    <span id="avatarFrameOffsetYValue">0px</span>
+</div>
+
+<!-- ↑↑↑ 粘贴到这里结束 ↑↑↑ -->
+
+ <div class="bubble-css-group"><div class="bubble-color-label">气泡预览</div><div class="bubble-preview-area" id="bubblePreviewArea"><div class="message received"><div class="chat-avatar">TA</div><div class="message-content">这是对方的气泡样式。</div></div><div class="message sent"><div class="message-content">这是你的气泡样式。</div><div class="chat-avatar">我</div></div></div></div>
+
                             <div class="bubble-color-group"><div class="bubble-color-label">我的气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="sentBubbleColorPicker" value="#FFEEF6" oninput="updateSentBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="sentBubbleColorInput" value="#FFEEF6" placeholder="#FFEEF6" oninput="updateSentBubbleColorFromInput(this.value)"></div></div>
                             <div class="bubble-color-group"><div class="bubble-color-label">对方气泡颜色</div><div class="bubble-color-row"><input type="color" class="bubble-color-picker" id="receivedBubbleColorPicker" value="#E6F2FF" oninput="updateReceivedBubbleColor(this.value)"><input type="text" class="bubble-color-input" id="receivedBubbleColorInput" value="#E6F2FF" placeholder="#E6F2FF" oninput="updateReceivedBubbleColorFromInput(this.value)"></div></div>
                             <!-- ↓↓↓ 这是修改后的代码，请用它来替换上面的旧代码块 ↓↓↓ -->
@@ -5773,7 +5876,7 @@ html {
   background: #EFEFEF;
 }" 
     oninput="applyCustomBubbleCSS(this.value)"></textarea> </div>
-                            <div class="bubble-css-group"><div class="bubble-color-label">气泡预览</div><div class="bubble-preview-area" id="bubblePreviewArea"><div class="message received"><div class="chat-avatar">TA</div><div class="message-content">这是对方的气泡样式。</div></div><div class="message sent"><div class="message-content">这是你的气泡样式。</div><div class="chat-avatar">我</div></div></div></div>
+                          
                         </div>
                         <div class="modal-buttons" style="margin-top: 20px;"> <button class="modal-btn modal-btn-cancel" onclick="cancelBubbleSettings()">取消</button> <button class="modal-btn modal-btn-confirm" onclick="saveBubbleSettings()">保存</button></div>
                     </div>
@@ -6421,6 +6524,17 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
+<div id="avatarFrameUrlModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">输入头像框URL</div>
+        <input type="text" class="modal-input" id="avatarFrameUrlInput" placeholder="请粘贴图片URL链接...">
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeAvatarFrameUrlModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmAvatarFrameUrl()">确定</button>
+        </div>
+    </div>
+</div>
+
     
 
        
@@ -6574,6 +6688,18 @@ let beautificationSettings = {}; // 用来存放所有自定义图片
         let currentlyDisplayedMessageCount = 0; // 新增：记录当前显示了多少条消息
 let isLazyLoading = false; // 新增：防止在加载时重复触发
 const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
+
+// ↓↓↓ 添加这些新的全局变量 ↓↓↓
+let chatAvatarSize = 45;
+let chatAvatarRadius = 8;
+let chatAvatarFrameUrl = '';
+let chatAvatarFrameSize = 3;
+// ↑↑↑ 添加结束 ↑↑↑
+
+// ↓↓↓ 添加这两个新的全局变量 ↓↓↓
+let chatAvatarFrameOffsetX = 0;
+let chatAvatarFrameOffsetY = 0;
+// ↑↑↑ 添加结束 ↑↑↑
 
         let currentMessageElement = null;
         // 把“是不是在回复”的开关，换成“正在回复的角色列表”
@@ -6841,6 +6967,26 @@ let userProfile = {
             document.getElementById('bubbleCustomCSS').value = customBubbleCSS;
             
             updateBubblePreview(); // 确保预览是正确的
+        // 在 openBubbleSettings 函数的末尾（ `}` 之前）添加以下代码
+// ↓↓↓ 从这里开始复制 ↓↓↓
+document.getElementById('avatarSizeSlider').value = chatAvatarSize;
+document.getElementById('avatarSizeValue').textContent = `${chatAvatarSize}px`;
+document.getElementById('avatarRadiusSlider').value = chatAvatarRadius;
+document.getElementById('avatarRadiusValue').textContent = `${chatAvatarRadius}px`;
+document.getElementById('avatarFrameSizeSlider').value = chatAvatarFrameSize;
+document.getElementById('avatarFrameSizeValue').textContent = `${chatAvatarFrameSize}px`;
+applyAvatarSettings(); // 确保预览区立即更新
+// ↑↑↑ 粘贴到这里结束 ↑↑↑
+
+// 在 openBubbleSettings 函数的末尾（ `}` 之前）添加以下代码
+// ↓↓↓ 从这里开始复制 ↓↓↓
+document.getElementById('avatarFrameOffsetXSlider').value = chatAvatarFrameOffsetX;
+document.getElementById('avatarFrameOffsetXValue').textContent = `${chatAvatarFrameOffsetX}px`;
+document.getElementById('avatarFrameOffsetYSlider').value = chatAvatarFrameOffsetY;
+document.getElementById('avatarFrameOffsetYValue').textContent = `${chatAvatarFrameOffsetY}px`;
+// ↑↑↑ 粘贴到这里结束 ↑↑↑
+
+        
         }
         function updateSentBubbleColor(color) {
             document.getElementById('sentBubbleColorInput').value = color;
@@ -7142,6 +7288,12 @@ function updateAppLabelColorFromInput(color) {
     smallWidgetTransparent, simPhoneContentCache, 
     memoryGenerationTurns: memoryGenerationTurns, // <-- 新增：保存记忆轮数设置
     wechatAppGlobalBgImage,
+    // 在 saveData 函数的 appSettings 对象里添加
+chatAvatarSize, chatAvatarRadius, chatAvatarFrameUrl, chatAvatarFrameSize,
+
+// 在 saveData 函数的 appSettings 对象里添加
+chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
+
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
@@ -7284,6 +7436,16 @@ moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(
                
 // 恢复应用设置
 const settings = loadedAppSettings;
+
+// 在 loadData 函数里，settings 变量赋值的下方添加
+chatAvatarSize = settings.chatAvatarSize || 45;
+chatAvatarRadius = settings.chatAvatarRadius || 8;
+chatAvatarFrameUrl = settings.chatAvatarFrameUrl || '';
+chatAvatarFrameSize = settings.chatAvatarFrameSize || 3;
+
+// 在 loadData 函数里，settings 变量赋值的下方添加
+chatAvatarFrameOffsetX = settings.chatAvatarFrameOffsetX || 0;
+chatAvatarFrameOffsetY = settings.chatAvatarFrameOffsetY || 0;
 
 if (settings.userPersonas && settings.userPersonas.length > 0) {
             // 新数据处理方式
@@ -9361,7 +9523,7 @@ ${pollContextForAI}
 【输出格式】(严格遵守)
 - 你的回复必须是纯净的JSON数组 []。
 - 数组中每个对象代表一个动作，必须包含 "sender_name", "action", "delay_seconds" 三个键。
-- 可用 action: {"type": "text", "content": "..."} | {"type": "voice", "content": "..."} | {"type": "image", "description": "..."} | {"type": "pat_pat", "target_name": "..."} | {"type": "transfer", "target_name": "...", "amount": 数字, "remark": "..."} | {"type": "accept_transfer", "target_name": "..."} | {"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}
+- 可用 action: {"type": "text", "content": "..."} | {"type": "voice", "content": "..."} | {"type": "image", "description": "..."} | {"type": "pat_pat", "target_name": "..."} | {"type": "transfer", "target_name": "...", "amount": 数字, "remark": "..."} | {"type": "accept_transfer", "target_name": "..."} | {"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}} | {"type": "html_card", "content": "卡片的完整HTML代码"}
 
 【剧本示例】:
 [
@@ -9634,6 +9796,12 @@ ${timeContext}
                                     addMessageToDOM(emojiMsgData, friend);
                                 }
                                 break;
+                                case 'html_card':
+    if (action.content) {
+        const msgData = await saveChatMessage(friendId, 'received', action.content, '', sender.id, 'html_card');
+        addMessageToDOM(msgData, friend);
+    }
+    break;
                             case 'image':
                                 const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
                                 const imgMsgData = await saveChatMessage(friendId, 'received', placeholderUrl, '', sender.id, 'image');
@@ -14159,6 +14327,8 @@ function getSelectorForKey(key) {
                 applyListenTogetherCustomImages(); // 一起听背景
                 applyBeautificationSettings(); // 其他美化（按钮、导航栏等）
                 applyWechatAppGlobalBg(); // 微信App全局背景
+                // 在 applyAllSettings 函数末尾添加
+applyAvatarSettings();
             }
         }
         
@@ -15068,57 +15238,64 @@ function startVoiceCallFromAccept(friendId) {
 }
 
                 /**
-         * 【【【这是我们新增的核心函数】】】
-         * 重新生成AI的回复
-         * @param {string} startMessageId - AI在这一轮回复的第一条消息的ID
-         */
-        async function regenerateAiResponse(startMessageId) {
-            hideMessageMenu(); // 首先隐藏长按菜单
+ * 【【【这是最终修复版，请用它完整替换】】】
+ * 重新生成AI的回复 (兼容单聊与群聊)
+ * @param {string} startMessageId - 用户长按的那条消息的ID，作为查找的“锚点”
+ */
+async function regenerateAiResponse(startMessageId) {
+    hideMessageMenu(); // 隐藏长按菜单
 
-            const history = chatHistories[currentChatFriendId] || [];
-            const startIndex = history.findIndex(m => m.id === startMessageId);
+    const history = chatHistories[currentChatFriendId] || [];
+    const startIndex = history.findIndex(m => m.id === startMessageId);
 
-            if (startIndex === -1) {
-                showAlert('发生错误，找不到要重试的消息。');
-                return;
-            }
+    if (startIndex === -1) {
+        showAlert('发生错误，找不到要重试的消息。');
+        return;
+    }
 
-            // 1. 找出这一轮AI回复的所有消息
-            const messagesToDeleteIds = [];
-            for (let i = startIndex; i < history.length; i++) {
-                const msg = history[i];
-                // 如果消息是AI发的，就把它加入待删除列表
-                if (msg.type === 'received') {
-                    messagesToDeleteIds.push(msg.id);
-                } else {
-                    // 一旦遇到不是AI发的消息（比如用户自己发的），就说明这一轮结束了，停止查找
-                    break;
-                }
-            }
+    // 1. 找到“锚点”，并准备一个集合来存放所有需要删除的消息ID
+    const messagesToDeleteIds = new Set();
+    messagesToDeleteIds.add(startMessageId);
 
-            if (messagesToDeleteIds.length === 0) return;
-
-            // 2. 从聊天界面上移除这些消息的HTML元素
-            messagesToDeleteIds.forEach(id => {
-                const element = document.querySelector(`.message[data-message-id="${id}"]`);
-                if (element) {
-                    element.remove();
-                }
-            });
-
-            // 3. 从聊天记录数据中删除这些消息
-            chatHistories[currentChatFriendId] = history.filter(msg => !messagesToDeleteIds.includes(msg.id));
-            
-            // 4. 保存被修改后的（变短了的）聊天记录
-            await saveData();
-
-            // 5. 再次调用核心的 receiveMessage 函数，它会读取最新的聊天记录（也就是用户发完话的状态），并让AI重新生成一次回复
-            
-            // 【【【核心修改：我们把下面这行代码删掉了！】】】
-            // showAlert('正在重新生成回复...'); 
-            
-            receiveMessage(currentChatFriendId);
+    // 2. 从“锚点”开始，【向后查找】所有连续的AI回复
+    for (let i = startIndex - 1; i >= 0; i--) {
+        const msg = history[i];
+        if (msg.type === 'received') {
+            messagesToDeleteIds.add(msg.id); // 如果是AI的消息，加入待删除集合
+        } else {
+            break; // 遇到用户的消息，说明AI的这一轮回复到此为止
         }
+    }
+
+    // 3. 从“锚点”开始，【向前查找】所有连续的AI回复
+    for (let i = startIndex + 1; i < history.length; i++) {
+        const msg = history[i];
+        if (msg.type === 'received') {
+            messagesToDeleteIds.add(msg.id); // 如果是AI的消息，加入待删除集合
+        } else {
+            break; // 遇到用户的消息，说明AI的这一轮回复到此为止
+        }
+    }
+
+    if (messagesToDeleteIds.size === 0) return;
+
+    // 4. 从聊天界面上移除这些消息的HTML元素
+    messagesToDeleteIds.forEach(id => {
+        const element = document.querySelector(`.message[data-message-id="${id}"]`);
+        if (element) {
+            element.remove();
+        }
+    });
+
+    // 5. 从聊天记录数据中删除这些消息
+    chatHistories[currentChatFriendId] = history.filter(msg => !messagesToDeleteIds.has(msg.id));
+    
+    // 6. 保存被修改后的聊天记录
+    await saveData();
+
+    // 7. 重新调用核心的 receiveMessage 函数，让AI生成全新的回复
+    receiveMessage(currentChatFriendId);
+}
         
                 function cancelBubbleSettings() {
             // 核心功能：用之前保存的 customBubbleCSS 变量，恢复样式
@@ -15879,6 +16056,128 @@ async function getOrGenerateRoleSummary(friend) {
         return (friend.role || '').substring(0, 200); // 截断原始人设作为备用
     }
 }
+
+// ↓↓↓ 用这个新函数替换旧的 applyAvatarSettings 函数 ↓↓↓
+/**
+ * 核心功能：将头像设置应用为CSS变量 (V2 - 伪元素版)
+ */
+function applyAvatarSettings() {
+    const root = document.documentElement;
+    
+    // 控制头像本身的大小和圆角 (这部分不变)
+    root.style.setProperty('--chat-avatar-size', `${chatAvatarSize}px`);
+    root.style.setProperty('--chat-avatar-radius', `${chatAvatarRadius}px`);
+    
+    // --- 核心修改在这里 ---
+    // 1. 将滑块的值（例如 5px）变成负数（-5px），用于向外“撑开”头像框
+    const frameOffset = -parseInt(chatAvatarFrameSize); 
+    root.style.setProperty('--chat-avatar-frame-offset', `${frameOffset}px`);
+
+    // 2. 设置头像框的图片URL (这部分不变)
+    root.style.setProperty('--chat-avatar-frame-url', chatAvatarFrameUrl ? `url(${chatAvatarFrameUrl})` : 'none');
+    
+    // 3. 当有头像框时，把头像本身的边框去掉，避免重叠
+    const allAvatars = document.querySelectorAll('.chat-avatar');
+    allAvatars.forEach(avatar => {
+        if (chatAvatarFrameUrl) {
+            avatar.style.border = 'none';
+        } else {
+            // 如果没有头像框，恢复默认边框
+            avatar.style.border = ''; 
+        }
+    });
+
+// 在 applyAvatarSettings 函数的末尾（`}` 之前）添加以下代码
+// ↓↓↓ 从这里开始复制 ↓↓↓
+root.style.setProperty('--chat-avatar-frame-offset-x', `${chatAvatarFrameOffsetX}px`);
+root.style.setProperty('--chat-avatar-frame-offset-y', `${chatAvatarFrameOffsetY}px`);
+// ↑↑↑ 粘贴到这里结束 ↑↑↑
+}
+
+/**
+ * 更新头像设置的通用函数，由滑块调用
+ * @param {string} type - 'size', 'radius', 或 'frameSize'
+ * @param {string} value - 滑块的当前值
+ */
+function updateAvatarSettings(type, value) {
+    if (type === 'size') {
+        chatAvatarSize = value;
+        document.getElementById('avatarSizeValue').textContent = `${value}px`;
+    } else if (type === 'radius') {
+        chatAvatarRadius = value;
+        // 当圆角值超过大小的一半时，显示为“圆形”
+        const displayValue = value >= chatAvatarSize / 2 ? '圆形' : `${value}px`;
+        document.getElementById('avatarRadiusValue').textContent = displayValue;
+    } else if (type === 'frameSize') {
+        chatAvatarFrameSize = value;
+        document.getElementById('avatarFrameSizeValue').textContent = `${value}px`;
+    }
+    
+    // 找到 updateAvatarSettings 函数，并在最后一个 `else if` 的下方添加以下代码
+// ↓↓↓ 从这里开始复制 ↓↓↓
+else if (type === 'frameOffsetX') {
+    chatAvatarFrameOffsetX = value;
+    document.getElementById('avatarFrameOffsetXValue').textContent = `${value}px`;
+} else if (type === 'frameOffsetY') {
+    chatAvatarFrameOffsetY = value;
+    document.getElementById('avatarFrameOffsetYValue').textContent = `${value}px`;
+}
+// ↑↑↑ 粘贴到这里结束 ↑↑↑
+    applyAvatarSettings(); // 实时应用到预览和聊天界面
+}
+
+/**
+ * 处理本地头像框图片上传
+ */
+function handleAvatarFrameUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            chatAvatarFrameUrl = e.target.result;
+            applyAvatarSettings(); // 立即应用预览
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+/**
+     * 打开“输入头像框URL”的自定义弹窗
+     */
+    function openAvatarFrameUrlModal() {
+        const modal = document.getElementById('avatarFrameUrlModal');
+        // 将当前设置的URL填入输入框，方便用户查看或修改
+        document.getElementById('avatarFrameUrlInput').value = chatAvatarFrameUrl;
+        modal.classList.add('show');
+    }
+
+    /**
+     * 关闭“输入头像框URL”的自定义弹窗
+     */
+    function closeAvatarFrameUrlModal() {
+        document.getElementById('avatarFrameUrlModal').classList.remove('show');
+    }
+
+    /**
+     * 确认从URL设置头像框
+     */
+    function confirmAvatarFrameUrl() {
+        const url = document.getElementById('avatarFrameUrlInput').value.trim();
+        // 即使URL为空（用户清空了输入），也进行更新，相当于重置
+        chatAvatarFrameUrl = url;
+        applyAvatarSettings(); // 应用新的URL（或清空）
+        closeAvatarFrameUrlModal(); // 关闭弹窗
+    }
+
+/**
+ * 重置头像框
+ */
+function resetAvatarFrame() {
+    chatAvatarFrameUrl = '';
+    applyAvatarSettings(); // 立即移除头像框
+}
+
+// ↑↑↑ 粘贴到这里结束 ↑↑↑
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
