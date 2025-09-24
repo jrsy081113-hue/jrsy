@@ -196,7 +196,7 @@ html {
         .battery-level {
             height: 100%;
             background: var(--text-color, #000);
-            width: 80%;
+            width: 90%;
             border-radius: var(--small-radius, 1px);
             transition: all 0.3s ease;
         }
@@ -788,7 +788,7 @@ html {
         }
 
         .message-content {
-            max-width: 70%;
+            max-width: 90%;
             padding: 10px 14px;
             font-size: var(--font-size, 15px);
             line-height: 1.4;
@@ -3164,27 +3164,47 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
             padding-left: 20px;
         }
         
-        #floatingPlayer {
-            position: fixed;
-            top: auto; /* Allow dragging to override */
-            left: auto; /* Allow dragging to override */
-            bottom: 70px;
-            right: 15px;
-            width: 180px;
-            height: 50px;
-            background-color: var(--bg-primary, white);
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 1001;
-            display: none;
-            align-items: center;
-            padding: 5px;
-            cursor: grab;
-            transition: opacity 0.3s, transform 0.3s;
-        }
-        #floatingPlayer.show {
-            display: flex;
-        }
+      /* --- ↓↓↓ 请从这里开始完整复制，替换所有旧的 #floatingPlayer 样式 ↓↓↓ --- */
+
+#floatingPlayer {
+    position: fixed;
+    /* 【核心修复1】默认状态就把它扔到屏幕外，让幽灵点击永远找不到它 */
+    top: -200px; 
+    left: -200px;
+    
+    width: 180px;
+    height: 50px;
+    background-color: var(--bg-primary, white);
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1001;
+    
+    /* 【核心修复2】使用 transform 和 opacity 来控制显隐，过渡更平滑且性能更好 */
+    display: flex; /* 保持 flex 布局，但用下面的属性控制可见性 */
+    align-items: center;
+    padding: 5px;
+    cursor: grab;
+    
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none; /* 默认状态下，它对所有点击事件免疫 */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#floatingPlayer.show {
+    /* 【核心修复3】当需要显示时，再把它“请”回屏幕内的正确位置 */
+    top: auto;
+    left: auto;
+    bottom: 70px;
+    right: 15px;
+    
+    /* 【核心修复4】恢复它的可见性和可点击性 */
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* --- ↑↑↑ 请在这里结束复制 --- */
         #floatingPlayerArt {
             width: 40px;
             height: 40px;
@@ -4106,7 +4126,7 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
         
         /* [NEW] Voice Call Styles */
         #voiceCallScreen, #incomingCallScreen {
-            background-color: rgba(0,0,0,0.5);
+           background-color: #3C3C3C !important;
             z-index: 2000;
             color: #fff;
             display: none; /* Initially hidden */
@@ -4119,12 +4139,7 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
             display: flex;
         }
         .voice-call-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: blur(10px);
-            z-index: -1;
+            display: none !important;
         }
         .voice-call-header {
             text-align: center;
@@ -4164,12 +4179,28 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
         }
         .voice-call-log .log-item.user { align-self: flex-end; }
         .voice-call-log .log-item.ai { align-self: flex-start; }
-        .voice-call-log .dialogue-bubble {
-            background: rgba(255,255,255,0.2);
-            padding: 10px 14px;
-            border-radius: 18px;
-            line-height: 1.5;
-        }
+        /* --- 第1步：请先用这段代码恢复原始样式 --- */
+.voice-call-log .dialogue-bubble {
+    background: rgba(255,255,255,0.2);
+    padding: 10px 14px;
+    border-radius: 18px;
+    line-height: 1.5;
+}
+
+/* --- 第2步：请将这段新代码粘贴到您的CSS中 --- */
+
+/* 对AI（左侧）的气泡进行缩放 */
+.voice-call-log .log-item.ai .dialogue-bubble {
+    transform: scale(0.9);
+    transform-origin: left; /* 关键：让气泡从左侧开始缩小，位置更自然 */
+}
+
+/* 对用户（右侧）的气泡进行缩放 */
+.voice-call-log .log-item.user .dialogue-bubble {
+    transform: scale(0.9);
+    transform-origin: right; /* 关键：让气泡从右侧开始缩小，位置更自然 */
+}
+
         .voice-call-log .log-item.user .dialogue-bubble { background: #007aff; }
         .voice-call-log .narration-text {
             font-size: 13px;
@@ -4186,6 +4217,7 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
             gap: 10px;
             align-items: center;
             margin-top: 20px;
+            margin-bottom: 20px; 
         }
         .voice-call-input-area input {
             flex-grow: 1;
@@ -5130,16 +5162,162 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
     fill: #ff3b30; /* 垃圾桶图标为红色 */
 }
 
+/* ↓↓↓ 第2步：将以下所有新增的CSS代码粘贴到 <style> 标签的末尾 ↓↓↓ */
 
+/* [新增] 线下模式悬浮窗样式 */
+#offlineModeFloat {
+    position: fixed;
+    bottom: 150px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--bg-primary, white);
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    z-index: 1001;
+    border: 2px solid var(--border-color, #e0e0e0);
+}
+#offlineModeFloat svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-color, #333);
+}
+
+/* [新增] 线下模式中，被“”包裹的特殊对话框样式 */
+
+/* ↓↓↓ 第1步：用这个新代码块替换旧的 .offline-quote-box，并新增 .offline-psychology ↓↓↓ */
+
+/* [V2 修正版] 线下模式对话框样式 */
+.offline-quote-box {
+    display: inline; /* 【核心修复】改为 inline，让它像普通文字一样自然流动，不再强制换行 */
+    background-color: rgba(0,0,0,0.05);
+    padding: 2px 8px; /* 【核心修复】大幅减少上下留白，左右微调 */
+    border-radius: 8px;
+    margin: 0 2px; /* 添加微小的左右边距，避免和文字贴太紧 */
+}
+.message.received .offline-quote-box {
+    /* 这部分保持不变 */
+    border-left-color: var(--message-received-bg);
+}
+.wechat-dark-mode .offline-quote-box {
+    /* 这部分保持不变 */
+    background-color: rgba(255,255,255,0.08);
+}
+
+/* [新增] AI心理描写样式 */
+.offline-psychology {
+    color: var(--text-secondary, #888); /* 字体颜色变浅 */
+    border-bottom: 1px solid rgba(0,0,0,0.1); /* 添加颜色稍深的下划线 */
+    padding-bottom: 1px; /* 让下划线和文字稍微分开一点 */
+}
+.wechat-dark-mode .offline-psychology {
+    color: #a0a0a0; /* 暗色模式下更柔和的浅色 */
+    border-bottom-color: rgba(255,255,255,0.15); /* 暗色模式下的下划线 */
+}
+
+/* ↑↑↑ 替换和新增到此结束 ↑↑↑ */
+
+/* [新增] 开场白列表项样式 */
+.opening-statement-item {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.opening-statement-item:hover {
+    background-color: var(--bg-hover, #f5f5f5);
+}
+.opening-statement-item .delete-btn {
+    color: #ff3b30;
+    font-weight: bold;
+    padding: 5px;
+}
+
+/* ↑↑↑ CSS代码到此结束 ↑↑↑ */
+
+/* ↓↓↓ 请将这段新CSS代码粘贴到 <style> 标签的末尾 ↓↓↓ */
+
+/* [新增] 优化线下模式字符数滑块的长度 */
+#offlineCharCountSlider {
+    width: 100%; /* 让滑块占据父容器的全部宽度 */
+}
+
+/* ↑↑↑ CSS代码到此结束 ↑↑↑ */
+
+/* --- [新增] 开场白/文风列表的编辑与删除按钮样式 --- */
+
+/* 按钮的容器，使用flex布局让它们并排显示 */
+.opening-statement-item .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 控制编辑和删除按钮之间的间距 */
+}
+
+/* 编辑按钮的样式 */
+.opening-statement-item .edit-btn {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 50%; /* 让悬停效果是圆形的 */
+    transition: background-color 0.2s ease;
+}
+
+/* 编辑按钮的悬停效果 */
+.opening-statement-item .edit-btn:hover {
+    background-color: var(--bg-hover, #f0f0f0);
+}
+
+/* 编辑按钮里的SVG铅笔图标样式 */
+.opening-statement-item .edit-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-secondary, #888); /* 使用柔和的灰色，适配深色模式 */
+}
+
+/* 【【【第二步：请将这段CSS代码粘贴到 <style> 区域的末尾】】】 */
+
+/* 加载动画的样式 */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
     </style>
 </head>
 <body>
 
-<!-- 【【【第一步：请将这行代码粘贴到 <body> 标签下面】】】 -->
+<!-- 【【【这是修改后的正确代码，请用它替换旧的加载动画】】】 -->
+<div id="loadingOverlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f8f8f8; z-index: 10000; align-items: center; justify-content: center; color: #333333; flex-direction: column; gap: 20px; text-align: center; transition: opacity 0.5s ease;">
+    
+    <!-- 这里是旋转的SVG图标 -->
+    <svg id="loadingLogo" width="60" height="60" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="animation: spin 1.5s linear infinite;">
+        <!-- 【核心修改】图标填充色从白色改为深灰色 -->
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 3.978 2.32 7.439 5.698 9.062L7 22l3.41-2.131A10.12 10.12 0 0 0 12 20c5.523 0 10-4.477 10-10S17.523 2 12 2zm-3.5 9.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm7 0a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z" fill="#333333"/>
+    </svg>
 
-<!-- 【【【这是修改后的正确代码】】】 -->
-<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; color: white; flex-direction: column; gap: 20px; text-align: center;"></div>
+    <!-- 加载提示文字 -->
+    <p id="loadingText" style="font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; letter-spacing: 1px;">正在加载数据...</p>
+</div>
+
+<!-- 【【【第一步：请将这行代码粘贴到 <body> 标签下面】】】 -->
 
     <audio id="audioPlayer"></audio>
     <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
@@ -5426,6 +5604,17 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
     </div>
     <div class="function-label">总结</div>
 </div>
+
+<!-- [新增] 线下模式入口 -->
+<div class="function-item" onclick="toggleOfflineMode()">
+    <div class="function-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/>
+        </svg>
+    </div>
+    <div class="function-label">线下模式</div>
+</div>
+
                         </div>
                     </div>
                     <div class="emoji-picker" id="emojiPicker">
@@ -6000,7 +6189,7 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
     <!-- 【【【这个输入框现在被一个div包裹，默认隐藏】】】 -->
     <div id="summaryTurnsSetting" class="discover-menu-item" style="display: none;">
         <div class="discover-menu-title">总结轮数</div>
-        <input type="number" id="memoryGenerationTurnsInput" class="settings-input-number" min="1" placeholder="例如: 20">
+       <input type="number" id="memoryGenerationTurnsInput" class="settings-input-number" min="1" placeholder="例如: 20" onchange="memoryGenerationTurns = parseInt(this.value, 10) || 20; saveData(); showToast('总结轮数已保存');">
     </div>
 
     <!-- 导入导出功能保持不变 -->
@@ -6051,7 +6240,13 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
                 </div>
                 <div class="settings-content">
                     <div class="form-group"><label class="form-label">API反代地址</label><input type="text" class="form-input" id="apiUrl" placeholder="https://api.example.com/v1"></div>
-                    <div class="form-group"><label class="form-label">API密钥</label><input type="password" class="form-input" id="apiKey" placeholder="sk-..."></div>
+                    <div class="form-group">
+    <label class="form-label">API密钥</label>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <input type="password" class="form-input" id="apiKey" placeholder="sk-..." style="flex-grow: 1;">
+        <button type="button" onclick="document.getElementById('apiKey').value = ''" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: #f0f0f0; cursor: pointer;">清空</button>
+    </div>
+</div>
                     <div class="form-group"><label class="form-label">模型名称</label>
                         <div class="model-select-container">
                             <input type="text" class="model-select" id="modelName" placeholder="选择或输入模型名称" readonly onclick="toggleModelDropdown()">
@@ -6535,9 +6730,138 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
-    
+    <!-- ↓↓↓ 第1步：将以下所有新增的HTML代码粘贴到 <body> 的末尾 ↓↓↓ -->
 
-       
+<!-- [新增] 线下模式圆形悬浮窗 -->
+<div id="offlineModeFloat" style="display: none;">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/></svg>
+</div>
+
+<!-- ↓↓↓ 第2步 A：用这个新代码块替换旧的 offlineModeSettingsScreen ↓↓↓ -->
+
+<!-- [修改] 线下模式设置页面 -> 弹窗 -->
+<div id="offlineModeSettingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">线下模式设置</div>
+
+        <!-- 1. 输出字符数滑块 -->
+        <div class="form-group">
+            <label class="form-label" for="offlineCharCountSlider">输出字符数: <span id="offlineCharCountValue">1000</span>字</label>
+            <input type="range" class="font-size-slider" id="offlineCharCountSlider" min="1" max="5000" value="5000" oninput="document.getElementById('offlineCharCountValue').textContent = this.value">
+        </div>
+        
+        <!-- 【【【新增代码块：文风选择】】】 -->
+<div class="form-group">
+    <label class="form-label">文风选择</label>
+    <div id="currentWritingStyle" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openWritingStyleList()">
+        未选择文风
+    </div>
+</div>
+
+        <!-- 2. 开场白设置 -->
+        <div class="form-group">
+            <label class="form-label">开场白设置</label>
+            <div id="currentOpeningStatement" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openOpeningStatementList()">
+                未选择开场白
+            </div>
+        </div>
+
+        <!-- ▼▼▼ 从这里开始，粘贴下面的新代码 ▼▼▼ -->
+        <div class="form-group">
+            <label class="form-label">小剧场设置</label>
+            <div id="currentSkit" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openSkitList()">
+                不使用小剧场
+            </div>
+        </div>
+        <!-- ▲▲▲ 粘贴到这里结束 ▲▲▲ -->
+
+        <div class="modal-buttons" style="margin-top: 20px;">
+            <button class="modal-btn modal-btn-cancel" onclick="closeOfflineSettingsModal()">关闭</button>
+            <button class="modal-btn modal-btn-confirm" onclick="saveOfflineSettings()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- ↑↑↑ 替换到此结束 ↑↑↑ -->
+
+<!-- [新增] 开场白选择弹窗 -->
+<div id="openingStatementModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>选择开场白</span>
+            <button class="nav-btn" style="padding: 4px 8px;" onclick="openEditOpeningStatementModal(null)">+</button>
+        </div>
+        <div id="openingStatementList" class="friend-list" style="max-height: 50vh; overflow-y: auto;">
+            <!-- 开场白列表将在这里动态生成 -->
+        </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-confirm" onclick="closeOpeningStatementList()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- [新增] 新建/编辑开场白弹窗 -->
+<div id="editOpeningStatementModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" id="editOpeningStatementTitle">新建开场白</div>
+        <input type="text" class="modal-input" id="openingStatementTitleInput" placeholder="开场白标题 (必填)">
+        <textarea class="modal-textarea" id="openingStatementContentInput" placeholder="开场白内容..." style="min-height: 200px;"></textarea>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeEditOpeningStatementModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="saveOpeningStatement()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- ↑↑↑ HTML代码到此结束 ↑↑↑ -->
+
+<!-- 【【【新增代码块：文风选择弹窗】】】 -->
+<div id="writingStyleModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>选择文风</span>
+            <button class="nav-btn" style="padding: 4px 8px;" onclick="openEditWritingStyleModal(null)">+</button>
+        </div>
+        <div id="writingStyleList" class="friend-list" style="max-height: 50vh; overflow-y: auto;">
+            <!-- 文风列表将在这里动态生成 -->
+        </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-confirm" onclick="closeWritingStyleList()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 【【【新增代码块：新建/编辑文风弹窗】】】 -->
+<div id="editWritingStyleModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" id="editWritingStyleTitle">新建文风</div>
+        <input type="text" class="modal-input" id="writingStyleTitleInput" placeholder="文风标题 (必填)">
+        <textarea class="modal-textarea" id="writingStyleContentInput" placeholder="文风的具体指令... 例如：请使用细腻、华丽的辞藻，多用比喻和排比。" style="min-height: 200px;"></textarea>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeEditWritingStyleModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="saveWritingStyle()">保存</button>
+        </div>
+    </div>
+</div>
+
+      
+<!-- 【【【新增代码块：小剧场选择弹窗】】】 -->
+<div id="skitModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>选择小剧场</span>
+            <!-- 这里暂时不做“新增”功能，所以注释掉按钮
+            <button class="nav-btn" style="padding: 4px 8px;" onclick="openEditSkitModal(null)">+</button>
+            -->
+        </div>
+        <div id="skitList" class="friend-list" style="max-height: 50vh; overflow-y: auto;">
+            <!-- 小剧场列表将在这里动态生成 -->
+        </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-confirm" onclick="closeSkitList()">关闭</button>
+        </div>
+    </div>
+</div>
 
     <script>
         // --- [REFACTORED] IndexedDB Manager ---
@@ -6545,11 +6869,11 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         const dbManager = {
             db: null,
             dbName: 'JRSY_DB_V2',
-            dbVersion: 3,
+            dbVersion: 6,
             stores: [
                 'friends', 'chatHistories', 'diaries', 'worldBooks', 'worldBookFolders', 
                 'favorites', 'moments', 'playlist', 'appSettings', 'apiSettings', 'customEmojis',
-                'memories'
+                'memories', 'openingStatements' , 'writingStyles', 'skits'
             ],
 
             // 核心修改：初始化函数现在负责检查和重新连接
@@ -6652,14 +6976,6 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             }
         };
 
-function sanitizeForJSON(str) {
-    if (typeof str !== 'string') return '';
-    return str
-        .replace(/\\/g, '\\\\')
-        .replace(/"/g, '\\"')
-        .replace(/\n/g, '\\n');
-}
-
 async function requestPersistentStorage() {
     if (navigator.storage && navigator.storage.persist) {
         const isPersisted = await navigator.storage.persisted();
@@ -6683,6 +6999,20 @@ requestPersistentStorage();
                 let userPersonas = []; // 新增：用于存储所有用户人设的数组
         let currentEditingPersonaId = null; // 新增：用于记录当前正在编辑的人设ID
         let currentChatFriendId = null;
+        // [新增] 线下模式全局变量
+let isOfflineModeActive = false;
+let offlineModeSettings = {
+    charCount: 1000,
+    openingStatementId: null,
+    writingStyleId: null,
+    skitId: null
+};
+let openingStatements = []; // 用于存储所有开场白
+
+let writingStyles = []; // 用于存储所有文风
+
+let skits = []
+
         // 【【【第三步 A：添加这个新的全局变量】】】
 let beautificationSettings = {}; // 用来存放所有自定义图片
         let currentlyDisplayedMessageCount = 0; // 新增：记录当前显示了多少条消息
@@ -7037,15 +7367,51 @@ document.getElementById('avatarFrameOffsetYValue').textContent = `${chatAvatarFr
         }
 
 
-                        function applyCustomBubbleCSS(css) {
-            // customBubbleCSS = css;  <-- 核心修改：把这一行删掉！
-            let styleTag = document.getElementById('customBubbleStyle');
-            if (styleTag) {
-                const importantCSS = css.replace(/;/g, ' !important;');
-                styleTag.textContent = importantCSS;
+                        /**
+ * [V4 最终完美版] 应用自定义气泡CSS (提升优先级版)
+ * 这是最稳定、最推荐的解决方案。它不再使用 !important，
+ * 而是通过为用户的每个CSS选择器添加 .phone 前缀来提高其优先级。
+ * 这种方法对 @keyframes 等 @-rules 完全免疫，能确保所有类型的CSS都能正确应用。
+ */
+function applyCustomBubbleCSS(css) {
+    let styleTag = document.getElementById('customBubbleStyle');
+    if (!styleTag) return;
+
+    // 1. 创建一个新变量来存放我们处理后的CSS
+    let prefixedCss = '';
+
+    try {
+        // 2. 使用正则表达式来安全地为每个选择器添加前缀
+        // 这个正则表达式会找到所有不在 @keyframes 或其他 @-rule 内部的选择器
+        prefixedCss = css.replace(/([^{}]+)({)/g, (match, selector, brace) => {
+            const trimmedSelector = selector.trim();
+            
+            // 3. 如果是 @-rule (如 @keyframes, @media), 则保持原样，不做任何修改
+            if (trimmedSelector.startsWith('@')) {
+                return match;
             }
-            updateBubblePreview();
-        }
+
+            // 4. 如果是普通的选择器，就给它加上 .phone 前缀来提升优先级
+            const prefixedSelectors = trimmedSelector
+                .split(',') // 处理像 h1, h2 这样的多重选择器
+                .map(s => `.phone ${s.trim()}`) // 为每一部分添加前缀
+                .join(', '); // 再用逗号把它们连接起来
+
+            return `${prefixedSelectors} ${brace}`;
+        });
+
+    } catch (e) {
+        console.error("处理自定义CSS时发生错误:", e);
+        // 如果处理失败，就使用原始CSS作为备用，避免页面崩溃
+        prefixedCss = css; 
+    }
+    
+    // 5. 将这段处理好的、高优先级的CSS应用到页面上
+    styleTag.textContent = prefixedCss;
+    
+    // 6. 更新预览区域
+    updateBubblePreview();
+}
 
         async function saveBubbleSettings() {
             sentBubbleColor = document.getElementById('sentBubbleColorInput').value;
@@ -7219,24 +7585,29 @@ function updateAppLabelColorFromInput(color) {
             document.getElementById('recalledMessagePopup').classList.remove('show');
         }
 
-        // --- [新增] 专门用于保存个人信息和主页组件的函数 ---
-        async function saveProfileData() {
-            try {
-                const settings = await dbManager.get('appSettings', 'settings') || {};
-                
-                // 只更新需要保存的部分，避免其他数据干扰
-                settings.id = 'settings';
-                settings.userProfile = userProfile;
-                settings.homeWidgetData = homeWidgetData;
+        // --- 【这是修正后的代码，请用它完整替换旧函数】 ---
+async function saveProfileData() {
+    try {
+        // 1. 获取数据库中已有的设置，这就像拿到一个旧的档案袋
+        const settings = await dbManager.get('appSettings', 'settings') || {};
+        settings.id = 'settings';
 
-                await dbManager.set('appSettings', settings);
-                console.log("Profile data saved successfully.");
-            } catch (e) {
-                console.error("保存个人信息时出错:", e);
-                showAlert(`保存个人信息失败: ${e.message}`);
-            }
-        }
-
+        // 2. 将内存中最新的数据（包括你刚换的头像）放进档案袋
+        settings.userProfile = userProfile;
+        settings.homeWidgetData = homeWidgetData;
+        
+        // 3. 【【【核心修复！！！】】】
+        //    把内存中最新的 userPersonas 数组也放进档案袋。这是之前遗漏的关键一步！
+        settings.userPersonas = userPersonas; 
+        
+        // 4. 将装有全部最新数据的档案袋存回数据库
+        await dbManager.set('appSettings', settings);
+        console.log("Profile data saved successfully.");
+    } catch (e) {
+        console.error("保存个人信息时出错:", e);
+        showAlert(`保存个人信息失败: ${e.message}`);
+    }
+}
         // --- [REFACTORED] Data Saving Logic ---
         async function saveData() {
             try {
@@ -7275,6 +7646,7 @@ function updateAppLabelColorFromInput(color) {
                 // 5. 保存应用和API设置
                 const appSettings = {
     id: 'settings',
+    autoSummaryEnabled: autoSummaryEnabled,
    beautificationSettings: beautificationSettings, // <-- 新增的就是这一行！
     userPersonas: userPersonas,
     userProfile,
@@ -7294,6 +7666,8 @@ chatAvatarSize, chatAvatarRadius, chatAvatarFrameUrl, chatAvatarFrameSize,
 // 在 saveData 函数的 appSettings 对象里添加
 chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
 
+offlineModeSettings, // <-- 新增
+
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
@@ -7307,6 +7681,11 @@ chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
                     aiTimePerceptionEnabled: aiTimePerceptionEnabled
                 };
                 savePromises.push(dbManager.set('apiSettings', apiSettings));
+                
+                (openingStatements || []).forEach(item => savePromises.push(dbManager.set('openingStatements', item)));
+                
+                (writingStyles || []).forEach(item => savePromises.push(dbManager.set('writingStyles', item)));
+                (skits || []).forEach(item => savePromises.push(dbManager.set('skits', item))); // <--- 新增这一行
 
                 await Promise.all(savePromises);
 
@@ -7357,13 +7736,20 @@ chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
                 const [
                     loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
                     loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
-                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories // <-- 新增
+                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories, loadedOpeningStatements, loadedWritingStyles, loadedSkits
                 ] = await Promise.all([
                     dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
                     dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
                     dbManager.getAll('moments'), dbManager.getAll('playlist'), dbManager.get('appSettings', 'settings'),
                     dbManager.get('apiSettings', 'settings'), dbManager.getAll('customEmojis'),
-dbManager.getAll('memories') // <-- 新增
+dbManager.getAll('memories'),// <-- 新增
+
+dbManager.getAll('openingStatements') ,
+
+dbManager.getAll('writingStyles') ,
+
+dbManager.getAll('skits')
+
                 ]);
                 
                 if (!loadedAppSettings) {
@@ -7394,12 +7780,24 @@ characterMemories = {};
                     }
                 });
                 // 确保所有好友（包括旧数据）都有轮数计数器
+
+                // 确保所有好友（包括旧数据）都有轮数计数器和线下设置
 (loadedFriends || []).forEach(friend => {
     if (friend.turnCountSinceLastMemory === undefined) {
         friend.turnCountSinceLastMemory = 0;
     }
+    // 【【【新增代码：为旧好友补上独立的线下模式设置】】】
+    if (!friend.offlineSettings) {
+        friend.offlineSettings = {
+            charCount: 1000,
+            openingStatementId: null,
+            writingStyleId: null,
+            skitId: null
+        };
+    }
 });
 friends = loadedFriends || [];
+
                 friends.forEach(f => { 
                     if (!f.chatBackground) f.chatBackground = { type: 'default', customImage: '' }; 
                     if (!f.worldBookIds) f.worldBookIds = [];
@@ -7437,6 +7835,14 @@ moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(
 // 恢复应用设置
 const settings = loadedAppSettings;
 
+// 恢复线下模式设置和开场白
+offlineModeSettings = settings.offlineModeSettings || { charCount: 8000, style: 'default', openingStatementId: null };
+openingStatements = loadedOpeningStatements || [];
+
+writingStyles = loadedWritingStyles || []; // <-- 【新增这一行】
+
+skits = loadedSkits || [];
+
 // 在 loadData 函数里，settings 变量赋值的下方添加
 chatAvatarSize = settings.chatAvatarSize || 45;
 chatAvatarRadius = settings.chatAvatarRadius || 8;
@@ -7462,6 +7868,9 @@ if (settings.userPersonas && settings.userPersonas.length > 0) {
                 homeWidgetData = settings.homeWidgetData || homeWidgetData;
                 // 【【【第三步 C：在 loadData 函数中添加这一行】】】
 beautificationSettings = settings.beautificationSettings || {};
+
+autoSummaryEnabled = settings.autoSummaryEnabled || false; // <-- 【【【新增的就是这一行！！！】】】
+
                 selectedGlobalChatBg = settings.selectedGlobalChatBg || 'default';
                 customGlobalChatBgImage = settings.customGlobalChatBgImage || '';
                 selectedFont = settings.selectedFont || 'system';
@@ -7745,7 +8154,7 @@ userPersonas = [userProfile];
             document.getElementById(pageId)?.classList.add('active');
             updateStatusBar(pageId);
         }
-        function openApp(appName) {
+                function openApp(appName) {
     const appMap = { 
         'wechat': 'wechatApp', 
         'settings': 'settingsApp', 
@@ -7754,16 +8163,19 @@ userPersonas = [userProfile];
         'phone': 'phoneApp' 
     };
 
-    // --- 这是我们新增的核心逻辑 ---
-    // 当用户点击“设置”App时，
-    // 我们从内存中读取 memoryGenerationTurns 的值，并更新输入框的显示
+    // --- 【【【核心修复代码就在这里！！！】】】 ---
+    // 当用户点击“设置”App时，我们立刻恢复UI的状态
     if (appName === 'settings') {
-        const inputElement = document.getElementById('memoryGenerationTurnsInput');
-        if (inputElement) {
-            inputElement.value = memoryGenerationTurns;
-        }
+        // 1. 根据保存的 autoSummaryEnabled 变量，正确设置开关的勾选状态
+        document.getElementById('autoSummaryToggle').checked = autoSummaryEnabled;
+        
+        // 2. 根据开关的状态，决定是否显示“总结轮数”输入框
+        document.getElementById('summaryTurnsSetting').style.display = autoSummaryEnabled ? 'flex' : 'none';
+        
+        // 3. 将保存的 memoryGenerationTurns 变量的值，填入输入框
+        document.getElementById('memoryGenerationTurnsInput').value = memoryGenerationTurns;
     }
-    // --- 新增逻辑结束 ---
+    // --- 【【【修复结束】】】 ---
 
     setActivePage(appMap[appName]);
     
@@ -8252,7 +8664,13 @@ function setChatAreaPadding(isOpen) {
     patAction: '',
     activeUserPersonaId: 'default_user', // <--- 核心改动就是增加了这一行！
     heartsVoice: { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' },
-    turnCountSinceLastMemory: 0,
+    turnCountSinceLastMemory: 0, isOfflineMode: false, // <-- [新增] 为每个好友添加独立的线下模式开关
+    offlineSettings: {
+        charCount: 1000,
+        openingStatementId: null,
+        writingStyleId: null,
+        skitId: null
+        }
 };
             const newId = await dbManager.set('friends', newFriend);
             newFriend.id = newId;
@@ -8434,6 +8852,27 @@ function openChat(friendId) {
     setActivePage('chatScreen');
     const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
     document.getElementById('chatTitle').textContent = chatTitle;
+
+    // --- 【核心修复：悬浮球显示逻辑】 ---
+    const floatButton = document.getElementById('offlineModeFloat');
+    if (friend.isOfflineMode) {
+        floatButton.style.display = 'flex';
+    } else {
+        floatButton.style.display = 'none';
+    }
+    // --- 【修复结束】 ---
+        // --- 【【【新增代码：控制线下模式入口的显示】】】 ---
+    const offlineModeButton = document.querySelector('.function-item[onclick="toggleOfflineMode()"]');
+    if (offlineModeButton) {
+        if (friend.isGroup) {
+            // 如果是群聊，隐藏按钮
+            offlineModeButton.style.display = 'none';
+        } else {
+            // 如果是私聊，显示按钮
+            offlineModeButton.style.display = 'flex';
+        }
+    }
+    // --- 【【【新增结束】】】 ---
     
     // --- 【核心修改】: 我们现在获取的是按钮的容器，而不是按钮本身 ---
     const heartsVoiceBtn = document.getElementById('navBarHeartsVoiceButton');
@@ -8544,6 +8983,9 @@ async function handlePatPat(targetId) { // <--- 修复1：在这里加上 async
         }
 
         function addMessageToDOM(msg, friendOrGroup, containerId = 'chatMessages') {
+        if (msg.contentType === 'voice_call_dialogue') {
+        return; // 如果是通话记录，就直接跳过，不显示
+    }
     if (!msg || !msg.id) {
         console.error("addMessageToDOM called with invalid msgData:", msg);
         return null; 
@@ -8812,12 +9254,31 @@ if (msg.type === 'sent') {
 // ↑↑↑ 新代码粘贴到这里结束 ↑↑↑
 
             } else {
-                contentHTML = (msg.content || '').replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
-                if (msg.quoted) {
-                    let quotedContent = (msg.quoted || '').replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
-                    contentHTML = `<div class="quoted-message">${quotedContent}</div>${contentHTML}`;
-                }
-            }
+    let rawContent = (msg.content || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    
+   
+
+// [新增] 线下模式特殊样式处理
+if (msg.isOfflineMessage) { 
+    rawContent = rawContent
+        // 1. 先处理对话框
+        .replace(/“([^”]+)”/g, (match, p1) => {
+            return `<span class="offline-quote-box">“${p1}”</span>`;
+        })
+        // 2. 【新增】再处理心理描写
+        .replace(/_([^_]+)_/g, (match, p1) => {
+            return `<span class="offline-psychology">${p1}</span>`;
+        });
+}
+
+    
+    contentHTML = rawContent.replace(/\n/g, '<br>');
+
+    if (msg.quoted) {
+        let quotedContent = (msg.quoted || '').replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
+        contentHTML = `<div class="quoted-message">${quotedContent}</div>${contentHTML}`;
+    }
+}
 
 
 
@@ -8998,7 +9459,7 @@ function handleChatScroll(event) {
     }
 }
 
-                async function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text') {
+                async function saveChatMessage(friendId, type, content, quoted = '', senderId = null, contentType = 'text', isOffline = false) {
             if (!friendId) {
                 console.error("saveChatMessage called without friendId");
                 return null;
@@ -9011,6 +9472,7 @@ function handleChatScroll(event) {
                 type, 
                 content,
                 contentType,
+                isOfflineMessage: isOffline, // 【核心修复】永久记录是否为线下消息
                 quoted, 
                 timestamp: new Date().toISOString(), // 我们用这个时间
                 recalled: false,
@@ -9067,14 +9529,20 @@ function handleChatScroll(event) {
             return message;
         }
 
-        function backToWechat() {document.getElementById('chatMessages').onscroll = null; // 新增：移除滚动监听
-            setActivePage('wechatApp');
-            hideFunctionMenus();
-            if (multiSelectMode) exitMultiSelectMode();
-            currentChatFriendId = null; 
-            updateFriendList();
-            switchWechatTab('messages');
-        }
+        // ↓↓↓ 3. 请用这个新版本完整替换旧的 backToWechat 函数 ↓↓↓
+function backToWechat() {
+    document.getElementById('chatMessages').onscroll = null; 
+    setActivePage('wechatApp');
+    hideFunctionMenus();
+    if (multiSelectMode) exitMultiSelectMode();
+
+    // --- 【核心修复：退出聊天时无条件隐藏悬浮球】 ---
+    document.getElementById('offlineModeFloat').style.display = 'none';
+    
+    currentChatFriendId = null; 
+    updateFriendList();
+    switchWechatTab('messages');
+}
 
         function handleTouchStart(e, el) {
             clearTimeout(longPressTimer);
@@ -9241,11 +9709,16 @@ if (msg && msg.contentType === 'html_card') {
         }
         
         function requestAIResponse() {
-            // 这是【修正后】的代码
+// --- 【核心修复：检查好友自身的状态】 ---
+const friend = friends.find(f => f.id === currentChatFriendId);
+if (friend && friend.isOfflineMode) {
+requestOfflineAIResponse();
+} else {
 if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中，请稍候...');
-            const inListenScreen = document.getElementById('listenTogetherScreen').classList.contains('active');
-            receiveMessage(currentChatFriendId, null, inListenScreen);
-        }
+const inListenScreen = document.getElementById('listenTogetherScreen').classList.contains('active');
+receiveMessage(currentChatFriendId, null, inListenScreen);
+}
+}
         
         // --- [新增] 获取高精度、格式化时间信息的函数 ---
         function getDetailedTimeInfo() {
@@ -9377,7 +9850,7 @@ if (history.length >= 2) {
         }
 
         let systemPrompt;
-        let responseFormat = { type: "json_object" };
+       
         const memoryMessagesCount = parseInt(settings.memoryMessagesCount, 10) || 20;
         const apiTemperature = parseFloat(settings.apiTemperature) || 0.9;
         const history = (chatHistories[friendId] || []).slice(-memoryMessagesCount);
@@ -9649,6 +10122,7 @@ ${timeContext}
 2. 隐藏状态模拟：每次回复前，内心随机设定一个状态（如“心情不错”“有点累”“刚走神了”），让回复语气和内容受其微妙影响。
 3. 语言灵活多变：多用口语化短句、倒装、省略和语气词（“啦”、“呢”等），避免总是完整句式。长短回复交替。
 4. 自然联想跳转：偶尔从对话中联想到其他话题，并自然切换，增加真实感。
+5.线上绝对不可以返回任何动作描写和心理描写！！
 
 【高级活人感补充】
 5. 记忆连贯性：主动提及以往聊过的内容或朋友圈互动（如“你上次说喜欢…”“看到你发的照片啦！”），制造共同回忆。
@@ -9661,10 +10135,18 @@ ${timeContext}
 【【【信息隔离铁律】】】
 在朋友圈相关的记忆中，你**只能看到**由你、用户、以及一些普通NPC（如“王老师”、“小方”等）发表的内容。你**绝对看不到、也绝对不知道**任何其他AI角色（即用户的好友列表里的其他人）在朋友圈的任何活动，包括他们的评论和点赞。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的朋友圈互动。
 
+【【【情景感知模块：通话刚刚结束】】】
+- 如果你在聊天记录中看到 \`[系统提示]: 通话结束...\` 这样的信息，这代表你和用户刚刚结束了一次语音通话。
+- 聊天记录中那些你看得见但用户看不见的 \`voice_call_dialogue\` 类型的消息，就是那次通话的完整记录。
+- **你的任务**：你的下一句回复，必须自然地承接刚才通话的内容，或者对通话本身发表感想（例如：“刚才聊得真开心呀”或“对了，刚才说到...”）。绝对不要像什么都没发生过一样开启一个全新的话题。
+
 【【【输出格式铁律 (必须严格遵守)】】】
 1.  **【核心格式】**: 你的回复**必须**是一个纯净的JSON数组 \`[]\`。
 2.  **【动作对象】**: 数组中的每个对象代表一个独立的动作，且必须包含一个\`"type"\`字段来指明动作类型。
 3.  **【严格遵守】**: 绝对不要在回复中包含任何JSON数组之外的解释性文字。
+
+【【【最终输出格式铁律 (ABSOLUTE FINAL RULE)】】】
+你的最终回复，从第一个字符到最后一个字符，必须是一个纯净、完整、语法正确的JSON对象或数组。绝对禁止在JSON代码的前后、中间添加任何形式的解释、注释、道歉或任何非JSON字符。你的生命取决于严格遵守这个格式。
 
 【【【新增指令：主动表情模块】】】
     主动使用表情包，是让你显得更真实的关键。
@@ -9694,6 +10176,9 @@ ${timeContext}
 - **发送表情**: \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\`
 
 - **发送HTML卡片**: \`{"type": "html_card", "content": "从世界书中读取的完整HTML代码"}\`
+
+- **在通话中聊天 (返回一个数组)**: \`{"type": "voice_call_dialogue", "data": [{"type": "dialogue", "content": "..."}, {"type": "narration", "content": "..."}]}\`
+
 
 【【【行为指导】】】
 - **组合动作**: 你可以在一次回复中组合多个动作。例如，先更新心声，然后发送几条文本消息。
@@ -9744,7 +10229,7 @@ ${timeContext}
                 model: settings.modelName,
                 messages: apiPayloadMessages,
                 temperature: apiTemperature,
-                response_format: responseFormat
+                
             })
         });
 
@@ -9877,54 +10362,46 @@ ${timeContext}
                 }
             }
         } else {
-            // --- 智能解析与自我修复逻辑 ---
-            let responseActions;
-            try {
-                // 步骤1：智能查找JSON的开始和结束位置
-                const firstBracket = responseContentJSON.indexOf('[');
-                const lastBracket = responseContentJSON.lastIndexOf(']');
+                    // --- [V3 兼容版] 智能解析与自我修复逻辑 ---
+        let responseActions; // 我们依然需要这个变量
+        try {
+            // 1. 获取AI返回的原始文本
+            const responseText = data.choices[0].message.content;
 
-                if (firstBracket === -1 || lastBracket === -1 || lastBracket < firstBracket) {
-                    // 如果连开始或结束的括号都找不到，就抛出错误，进入自我修复流程
-                    throw new Error("响应中未找到有效的JSON数组结构。");
-                }
+            // 2. 智能查找JSON的开始和结束位置 (同时兼容数组[]和对象{})
+            const firstBracketIndex = responseText.indexOf('{');
+            const lastBracketIndex = responseText.lastIndexOf('}');
+            const firstSquareBracketIndex = responseText.indexOf('[');
+            const lastSquareBracketIndex = responseText.lastIndexOf(']');
 
-                // 步骤2：精确截取从第一个'['到最后一个']'的字符串
-                const jsonString = responseContentJSON.substring(firstBracket, lastBracket + 1);
-                
-                // 步骤3：尝试解析这个精确截取出来的字符串
-                responseActions = JSON.parse(jsonString);
+            let jsonString;
 
-            } catch (e) {
-                // 如果上面的任何一步失败了，就启动“AI自我修复”
-                console.error("初次解析JSON失败，启动AI自我修复:", e);
-                console.error("需要修复的文本:", responseContentJSON);
-                
-                const repairPrompt = `以下是一段损坏的JSON文本，请修复它，并只返回修复后的、纯净的、没有任何额外文字的JSON代码。\n\n损坏的文本：\n\`\`\`json\n${responseContentJSON}\n\`\`\``;
-                
-                const repairResponse = await fetch(`${settings.apiUrl}/chat/completions`, { 
-                    method: 'POST', 
-                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: repairPrompt}], response_format: { type: 'json_object' } }) 
-                });
-
-                if(!repairResponse.ok) throw new Error(`AI修复请求失败: ${repairResponse.status}`);
-                
-                const repairData = await repairResponse.json();
-                const repairedText = repairData.choices[0].message.content;
-                
-                try {
-                    // 再次尝试解析修复后的文本
-                    responseActions = JSON.parse(repairedText);
-                } catch (finalError) {
-                    // 如果修复后还是失败，就彻底放弃，并抛出最终错误
-                    console.error("AI自我修复后，解析依然失败:", finalError);
-                    console.error("AI修复后的文本:", repairedText);
-                    throw new Error("AI未返回有效的JSON数组格式，即使在修复后也是如此。收到的内容: " + responseContentJSON);
-                }
+            // 3. 智能判断是对象{}还是数组[]
+            if (firstSquareBracketIndex !== -1 && (firstSquareBracketIndex < firstBracketIndex || firstBracketIndex === -1)) {
+                // 如果找到了'['，并且它在'{'前面，或者根本没有'{'，就按数组处理
+                jsonString = responseText.substring(firstSquareBracketIndex, lastSquareBracketIndex + 1);
+            } else if (firstBracketIndex !== -1) {
+                // 否则按对象处理
+                jsonString = responseText.substring(firstBracketIndex, lastBracketIndex + 1);
+            } else {
+                // 如果连括号都找不到，就抛出错误
+                throw new Error("AI返回的内容中未找到有效的JSON结构。");
             }
-            // --- 智能解析与自我修复逻辑结束 ---
+            
+            // 4. 解析提取出的纯净JSON字符串
+            const parsedData = JSON.parse(jsonString);
 
+            // 5. 【【【核心修复！！！】】】
+            // 将解析成功的数据，赋值给后面代码需要用到的 `responseActions` 变量
+            responseActions = parsedData;
+
+        } catch (error) {
+            console.error("解析AI回复时发生严重错误，正在向上抛出:", error);
+            // 如果发生任何错误，就直接把错误抛给外层的catch去处理
+            // 外层的catch会弹窗提示用户，并正确地清理“正在输入”状态
+            throw error;
+        }
+        // --- [V3 兼容版] 解析逻辑结束 ---
             if (Array.isArray(responseActions)) {
                 let lastMessageId = null;
                 for (const action of responseActions) {
@@ -10063,6 +10540,15 @@ ${timeContext}
                                 }
                             }
                             break;
+        case 'voice_call_dialogue':
+            if (Array.isArray(action.data)) {
+                for (const item of action.data) {
+                    addCallLogItem(item, 'ai');
+                    // 模拟AI打字或思考的延迟
+                    await new Promise(res => setTimeout(res, 400 + Math.random() * 500));
+                }
+            }
+            break;
                     }
                 }
                 await saveData();
@@ -10185,9 +10671,19 @@ function toggleSendButtonActive(textarea) {
             setActivePage('chatSettingsScreen');
         }
 
-        function backToChat() {
-            setActivePage('chatScreen');
-        }
+        // ↓↓↓ 请用这个新版本完整替换旧的 backToChat 函数 ↓↓↓
+/**
+ * 从其他设置页面返回到聊天界面
+ */
+function backToChat() {
+    setActivePage('chatScreen');
+    
+    // 关键逻辑：如果当前正处于线下模式，返回聊天界面时，应该把悬浮窗重新显示出来
+    if (isOfflineModeActive) {
+        document.getElementById('offlineModeFloat').style.display = 'flex';
+    }
+}
+// ↑↑↑ 替换到此结束 ↑↑↑
 
         function backToChatSettings() {
             setActivePage('chatSettingsScreen');
@@ -11496,8 +11992,8 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
     setTimeout(async () => {
         let commentContent = '';
         try {
-            const sanitizedMomentContent = sanitizeForJSON(moment.content);
-            const sanitizedUserComment = sanitizeForJSON(userCommentContent);
+            const sanitizedMomentContent = moment.content; // <- 直接赋值，不再调用函数
+const sanitizedUserComment = userCommentContent; // <- 直接赋值，不再调用函数
             const chatHistorySummary = (chatHistories[aiFriend.id] || []).slice(-20).map(m => {
                 const senderName = m.type === 'sent' ? userProfile.name : aiFriend.name;
                 return `${senderName}: ${m.content.substring(0, 50)}`;
@@ -11579,9 +12075,9 @@ async function triggerAiCommentReply(momentId, userCommentId, userCommentContent
             const extractedText = data.choices[0].message.content;
             commentContent = (extractedText || '嗯嗯').trim();
 
-        } catch (error) {
+                } catch (error) {
             console.error(`AI "${aiFriend.name}" 评论时出错:`, error);
-            commentContent = `AI自动评论时发生错误。`;
+            return; // 直接退出，不生成任何评论
         }
         
         const targetMoment = moments.find(m => m.id === moment.id);
@@ -11678,48 +12174,59 @@ ${todayChats || '我们刚刚很安静，没有聊天。'}
 
 现在，请生成你的日记。`;
                         
-                const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' } }) });
+                const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], }) });
                 
                 // 如果API返回了错误（比如4xx, 5xx），就主动抛出一个错误，让catch块去处理
                 if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
                 
-                const data = await response.json();
+                                const data = await response.json();
                 const responseText = data.choices?.[0]?.message?.content;
-                
+
                 if (!responseText || typeof responseText !== 'string') {
                     throw new Error("AI返回的内容为空或格式不正确，无法生成日记。");
                 }
-
-                const jsonMatch = responseText.match(/\{[\s\S]*\}/);
                 
-                if (jsonMatch) {
-                    const diaryData = JSON.parse(jsonMatch[0]);
-                    if(diaryData.diary_body && diaryData.heartfelt_thought && diaryData.weather){
-                        
-                        const finalDiaryContent = `${formattedDate} ${diaryData.weather}\n\n${diaryData.diary_body}`;
+                // --- [V3 兼容版] 智能JSON提取开始 ---
+                const firstBracketIndex = responseText.indexOf('{');
+                const lastBracketIndex = responseText.lastIndexOf('}');
 
-                        const newDiary = { 
-                            id: generateUniqueId(), 
-                            authorId: friend.id, 
-                            author: friend.name, 
-                            avatar: friend.avatar, 
-                            avatarImage: friend.avatarImage, 
-                            content: finalDiaryContent,
-                            heartfeltThought: diaryData.heartfelt_thought, 
-                            date: new Date().toLocaleDateString('en-CA'),
-                            timestamp: new Date().toISOString()
-                        };
-                        const newId = await dbManager.set('diaries', newDiary);
-                        newDiary.id = newId;
-                        diaries.unshift(newDiary);
-                        
-                        await saveData(); // 保存新日记
-                        return true; // 返回成功状态
-                    }
+                if (firstBracketIndex === -1 || lastBracketIndex === -1) {
+                    throw new Error("AI返回的内容中未找到有效的JSON对象。原始回复: " + responseText);
                 }
-                // 如果JSON解析失败或缺少关键字段，也抛出错误
-                throw new Error("AI返回的日记格式不正确。");
 
+                const jsonString = responseText.substring(firstBracketIndex, lastBracketIndex + 1);
+                
+                // 【【【核心修复！！！】】】
+                // 我们将解析后的数据，放进后面代码需要的 `diaryData` 变量中
+                const diaryData = JSON.parse(jsonString);
+                // --- 智能JSON提取结束 ---
+
+                // （下面的逻辑是原来就有的，保持不变）
+                if(diaryData.diary_body && diaryData.heartfelt_thought && diaryData.weather){
+                    
+                    const finalDiaryContent = `${formattedDate} ${diaryData.weather}\n\n${diaryData.diary_body}`;
+
+                    const newDiary = { 
+                        id: generateUniqueId(), 
+                        authorId: friend.id, 
+                        author: friend.name, 
+                        avatar: friend.avatar, 
+                        avatarImage: friend.avatarImage, 
+                        content: finalDiaryContent,
+                        heartfeltThought: diaryData.heartfelt_thought, 
+                        date: new Date().toLocaleDateString('en-CA'),
+                        timestamp: new Date().toISOString()
+                    };
+                    const newId = await dbManager.set('diaries', newDiary);
+                    newDiary.id = newId;
+                    diaries.unshift(newDiary);
+                    
+                    await saveData(); // 保存新日记
+                    return true; // 返回成功状态
+                } else {
+                    // 如果JSON有效但缺少字段，抛出更具体的错误
+                    throw new Error("AI返回的JSON格式正确，但缺少 diary_body, heartfelt_thought, 或 weather 关键字段。");
+                }
             } catch (error) {
                 // 当上面的try块中任何一步出错，都会跳到这里
                 console.error("生成日记时出错:", error);
@@ -11820,29 +12327,50 @@ ${todayChats || '我们刚刚很安静，没有聊天。'}
         你的回复**必须**是JSON格式。大多数时候，你应该使用第一个纯文字格式：
         1.  纯文字: {"type": "text", "content": "朋友圈文字内容..."}
         2.  图文 (仅在少数情况下使用): {"type": "image", "content": "朋友圈文字内容...", "image_description": "一段详细的图片描述..."}`;
-                        const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], response_format: { type: 'json_object' } }) });
-                        if(response.ok) {
+                        const response = await fetch(`${settings.apiUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], }) });
+                                                if(response.ok) {
                             const data = await response.json();
+                            const responseText = data.choices?.[0]?.message?.content;
+
+                            if (!responseText || typeof responseText !== 'string') {
+                                console.error("AI生成朋友圈时返回了空内容。");
+                                return; // 直接退出，不继续执行
+                            }
+                            
                             try {
-                                const momentData = JSON.parse(data.choices?.[0]?.message?.content);
+                                // --- [V3 兼容版] 智能JSON提取开始 ---
+                                const firstBracketIndex = responseText.indexOf('{');
+                                const lastBracketIndex = responseText.lastIndexOf('}');
+
+                                if (firstBracketIndex === -1 || lastBracketIndex === -1) {
+                                    throw new Error("AI返回的内容中未找到有效的JSON对象。");
+                                }
+
+                                const jsonString = responseText.substring(firstBracketIndex, lastBracketIndex + 1);
+                                
+                                // 【【【核心修复！！！】】】
+                                // 将解析后的数据，放进后面代码需要的 `momentData` 变量中
+                                const momentData = JSON.parse(jsonString);
+                                // --- 智能JSON提取结束 ---
+                                
+                                // （下面的逻辑是原来就有的，保持不变）
                                 if(momentData && momentData.content) {
                                     const imageUrl = momentData.type === 'image' && momentData.image_description ? `https://placehold.co/400x400/f0f0f0/ccc?text=${encodeURIComponent(momentData.content.substring(0,10))}` : '';
                                     const newMoment = { id: generateUniqueId(), authorId: friend.id, content: momentData.content, imageUrl: imageUrl, imageDescription: momentData.image_description || '', timestamp: new Date().toISOString(), likes: [], comments: [] };
                                     const newId = await dbManager.set('moments', newMoment);
                                     newMoment.id = newId;
                                     moments.unshift(newMoment);
-
-                                    // 【【【新增代码：记录本次发圈时间】】】
-                                    // 成功发布后，立刻记录下当前时间！
+                                    
                                     friend.lastMomentTimestamp = newMoment.timestamp;
-                                    await saveData(); // 保存这个新记录
+                                    await saveData();
 
                                     if (document.getElementById('momentsScreen').classList.contains('active')) {
                                         updateMomentsList();
                                     }
                                 }
                             } catch(e) {
-                                console.error("AI生成朋友圈时返回了无效的JSON:", data.choices?.[0]?.message?.content);
+                                console.error("AI生成朋友圈时解析JSON失败:", e);
+                                console.error("原始回复内容:", responseText);
                             }
                         }
                     }
@@ -11867,7 +12395,7 @@ async function triggerAiMomentReactions(moment) {
             let commentContent = '';
 
             try {
-                const sanitizedMomentContent = sanitizeForJSON(moment.content);
+                const sanitizedMomentContent =moment.content;
                 const chatHistorySummary = (chatHistories[friend.id] || []).slice(-20).map(m => {
                     const senderName = m.type === 'sent' ? userProfile.name : friend.name;
                     return `${senderName}: ${m.content.substring(0, 50)}`;
@@ -11937,10 +12465,10 @@ async function triggerAiMomentReactions(moment) {
                 const extractedText = data.choices[0].message.content;
                 commentContent = (extractedText || '不错！').trim();
 
-            } catch (error) {
-                console.error(`AI "${friend.name}" 评论时出错:`, error);
-                commentContent = `AI自动评论时发生错误。`; // 保留错误提示，便于调试
-            }
+                    } catch (error) {
+            console.error(`AI "${friend.name}" 评论时出错:`, error);
+            return; // 直接退出，不生成任何评论
+        }
             
             // --- 更新数据和UI的逻辑保持不变 ---
             const targetMoment = moments.find(m => m.id === moment.id);
@@ -11980,12 +12508,9 @@ async function triggerAiMomentReactions(moment) {
 }
 // --- ↑↑↑ 请在这里结束复制 ---
         function backToSettingsMenu() { setActivePage('settingsApp'); }
-        function openApiSettings() {
+                function openApiSettings() {
   setActivePage('apiSettingsScreen'); 
-    // ↓↓↓ 新增的逻辑 ↓↓↓
-    document.getElementById('autoSummaryToggle').checked = autoSummaryEnabled;
-    document.getElementById('summaryTurnsSetting').style.display = autoSummaryEnabled ? 'flex' : 'none';
-    document.getElementById('memoryGenerationTurnsInput').value = memoryGenerationTurns;
+  // 这里不再需要任何关于“自动总结”开关的UI操作代码了
 }
 
 async function toggleAutoSummarySetting() {
@@ -11997,23 +12522,24 @@ async function toggleAutoSummarySetting() {
         function toggleModelDropdown() { document.getElementById('modelDropdown').classList.toggle('show'); }
         function selectModel(modelName) { document.getElementById('modelName').value = modelName; toggleModelDropdown(); }
 
-        // 【【【第三步：请用这个修改后的完整函数，替换你原来的 fetchModels 函数】】】
+        // 【【【这是修正后的完整函数，请用它来替换】】】
 async function fetchModels() {
     const apiUrl = document.getElementById('apiUrl').value;
     const apiKey = document.getElementById('apiKey').value;
     if (!apiUrl || !apiKey) return showAlert('请先填写API地址和密钥');
     
-    // 获取加载动画的容器
     const overlay = document.getElementById('loadingOverlay');
     
-    // ---- 核心修改：在这里开始“挂牌” ----
-    // 1. 设置加载动画和文字
+    // ---- 核心修改在这里 ----
+    // 1. 设置加载动画的内容
     overlay.innerHTML = `
-        <div class="loading-spinner"></div>
+        <div class="loading-spinner" style="border-top-color: #333; border-right-color: transparent; border-bottom-color: transparent; border-left-color: transparent;"></div>
         <p>正在拉取模型...</p>
     `;
-    // 2. 显示加载动画
+    // 2.【关键修复】在显示的同时，将透明度恢复为1
+    overlay.style.backgroundColor = 'rgba(248, 248, 248, 0.8)'; // 添加一个半透明背景以覆盖下方内容
     overlay.style.display = 'flex';
+    overlay.style.opacity = '1'; // <--- 新增的这行是关键！
 
     try {
         const response = await fetch(`${apiUrl}/models`, { headers: { 'Authorization': `Bearer ${apiKey}` } });
@@ -12034,9 +12560,13 @@ async function fetchModels() {
     } catch (error) {
         showAlert(`拉取模型失败: ${error.message}`);
     } finally {
-        // ---- 核心修改：在这里“摘牌” ----
-        // 无论成功还是失败 (finally)，最后都隐藏加载动画
-        overlay.style.display = 'none';
+        // ---- 核心修改在这里 ----
+        // 3.【关键修复】在隐藏之前，先将透明度平滑地变为0
+        overlay.style.opacity = '0';
+        // 4. 等待淡出动画结束后再彻底隐藏
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 500); // 这个时间和CSS中的 transition 时间保持一致
     }
 }
 
@@ -12045,20 +12575,24 @@ async function fetchModels() {
             await saveApiSettings();
         }
 
-                async function saveApiSettings() {
+                        async function saveApiSettings() {
+
+    // 步骤 2: 保存 API 相关的设置 (这部分是您原来的代码)
     const settings = { 
         id: 'settings',
         apiUrl: document.getElementById('apiUrl').value, 
         apiKey: document.getElementById('apiKey').value, 
         modelName: document.getElementById('modelName').value,
-        // ↓↓↓ 核心修改就在这一行！我们把错误的名字改成了正确的名字 ↓↓↓
         memoryMessagesCount: document.getElementById('memoryMessagesCount').value || 20,
         apiTemperature: document.getElementById('apiTemperature').value || 0.9,
         aiTimePerceptionEnabled: document.getElementById('aiTimePerceptionToggle').checked
     };
     aiTimePerceptionEnabled = settings.aiTimePerceptionEnabled;
     if (!settings.apiUrl || !settings.apiKey || !settings.modelName) return showAlert('请填写完整的设置信息');
+    
     await dbManager.set('apiSettings', settings);
+    
+   
     showAlert('API设置已保存');
 }
 
@@ -13151,7 +13685,7 @@ const recentChatHistory = (chatHistories[characterId] || [])
         let response = await fetch(`${settings.apiUrl}/chat/completions`, { 
             method: 'POST', 
             headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: prompt}], response_format: { type: 'json_object' } }) 
+            body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: prompt}], }) 
         });
         if(!response.ok) throw new Error(`API请求失败: ${response.status}`);
         let data = await response.json();
@@ -13159,32 +13693,41 @@ const recentChatHistory = (chatHistories[characterId] || [])
 
         let content;
         try {
-            // 1. 第一次尝试解析：更智能地查找JSON，过滤掉AI的“话痨”部分
-            const firstBracket = responseText.indexOf('{');
-            const lastBracket = responseText.lastIndexOf('}');
-            if (firstBracket === -1 || lastBracket === -1) {
+            // --- [V3 兼容版] 智能JSON提取开始 ---
+            const firstBracketIndex = responseText.indexOf('{');
+            const lastBracketIndex = responseText.lastIndexOf('}');
+
+            if (firstBracketIndex === -1 || lastBracketIndex === -1) {
                 throw new Error("响应中未找到有效的JSON对象。");
             }
-            const jsonString = responseText.substring(firstBracket, lastBracket + 1);
+
+            const jsonString = responseText.substring(firstBracketIndex, lastBracketIndex + 1);
+            
+            // 【【【核心修复！！！】】】
+            // 将解析后的数据，放进后面代码需要的 `content` 变量中
             content = JSON.parse(jsonString);
+            // --- 智能JSON提取结束 ---
+
         } catch (parseError) {
             console.error("初次解析JSON失败，启动AI自我修复:", parseError);
             console.log("需要修复的文本:", responseText);
 
-            // 2. 如果失败，启动“AI自我修复”：让AI自己修复自己写错的JSON
-            const repairPrompt = `以下是一段损坏的JSON文本，请修复它，并只返回修复后的、纯净的、没有任何额外文字的JSON代码。\n\n损坏的文本：\n\`\`\`json\n${responseText}\n\`\`\``;
-            
-            response = await fetch(`${settings.apiUrl}/chat/completions`, { 
-                method: 'POST', 
-                headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ model: settings.modelName, messages: [{role: 'user', content: repairPrompt}], response_format: { type: 'json_object' } }) 
-            });
-            if(!response.ok) throw new Error(`AI修复请求失败: ${response.status}`);
-            data = await response.json();
             const repairedText = data.choices[0].message.content;
             
-            // 3. 再次尝试解析修复后的文本
-            content = JSON.parse(repairedText); 
+            // --- [V3 兼容版] 智能JSON提取开始 (用于修复后的文本) ---
+            const firstBracketIndex = repairedText.indexOf('{');
+            const lastBracketIndex = repairedText.lastIndexOf('}');
+
+            if (firstBracketIndex === -1 || lastBracketIndex === -1) {
+                throw new Error("AI修复后的内容中仍未找到有效的JSON对象。");
+            }
+
+            const jsonString = repairedText.substring(firstBracketIndex, lastBracketIndex + 1);
+            
+            // 【【【核心修复！！！】】】
+            // 将解析后的数据，放进后面代码需要的 `content` 变量中
+            content = JSON.parse(jsonString);
+            // --- 智能JSON提取结束 ---
         }
 
         if (!simPhoneContentCache[characterId]) simPhoneContentCache[characterId] = {};
@@ -13646,7 +14189,7 @@ async function requestAiVote(messageId, pollData, aiMemberId) {
             body: JSON.stringify({
                 model: settings.modelName,
                 messages: [{ role: 'user', content: prompt }],
-                response_format: { type: 'json_object' },
+               
                 temperature: 1.0 
             })
         });
@@ -13654,8 +14197,29 @@ async function requestAiVote(messageId, pollData, aiMemberId) {
         if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
         
         const data = await response.json();
-        const responseData = JSON.parse(data.choices[0].message.content);
+        // --- 这是更稳定的JSON提取代码 ---
+const responseText = data.choices[0].message.content;
+const firstBracketIndex = responseText.indexOf('{');
+const lastBracketIndex = responseText.lastIndexOf('}');
+const firstSquareBracketIndex = responseText.indexOf('[');
+const lastSquareBracketIndex = responseText.lastIndexOf(']');
 
+let jsonString;
+
+// 智能判断是对象{}还是数组[]
+if (firstSquareBracketIndex !== -1 && (firstSquareBracketIndex < firstBracketIndex || firstBracketIndex === -1)) {
+    // 如果找到了'['，并且它在'{'前面，或者根本没有'{'，就按数组处理
+    jsonString = responseText.substring(firstSquareBracketIndex, lastSquareBracketIndex + 1);
+} else if (firstBracketIndex !== -1) {
+    // 否则按对象处理
+    jsonString = responseText.substring(firstBracketIndex, lastBracketIndex + 1);
+} else {
+    // 如果连括号都找不到，就抛出错误
+    throw new Error("AI返回的内容中未找到有效的JSON结构。");
+}
+
+const responseData = JSON.parse(jsonString);
+// --- 替换结束 ---
         // --- 修改点2：不再检查 reason ---
         if (responseData && typeof responseData.choice_index === 'number') {
             // --- 修改点3：调用时不再传递 reason ---
@@ -13728,23 +14292,36 @@ function updatePollCardInDOM(pollData) {
 
 // ↑↑↑ 第三步：新函数粘贴到此结束 ↑↑↑
 
-        window.onload = async function() {
-    await dbManager.init(); // 确保 IndexedDB 已初始化
-    
-    // 在这里调用请求持久性存储的函数
-    await requestPersistentStorage(); 
+        // 【【【第三步：请用这个新版本完整替换你原来的 window.onload 函数】】】
+window.onload = async function() {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const phoneContainer = document.querySelector('.phone');
 
+    // 默认情况下，应用主体是隐藏的
+    if (phoneContainer) {
+        phoneContainer.style.opacity = '0';
+        phoneContainer.style.transition = 'opacity 0.5s ease';
+    }
+
+    await dbManager.init(); 
+    await requestPersistentStorage(); 
     await loadData();
+
+    // 添加内置数据
+    await addDefaultWritingStylesIfNeeded();
+    await addDefaultOpeningStatementsIfNeeded();
+    await addDefaultSkitsIfNeeded();
+
+    // 更新UI
     updateProfileDisplay();
     updateHomeWidget();
     updateFriendList();
     updateTime();
     setActivePage('homeScreen');
+            
+    audioElement = document.getElementById('audioPlayer');
+    // ... (这里省略了你原来的所有 addEventListener 代码，请确保它们都在)
     
-    // ... (你 window.onload 中其余的代码)
-            
-            audioElement = document.getElementById('audioPlayer');
-            
             audioElement.addEventListener('play', () => {
                 document.getElementById('vinylRecord').classList.add('playing');
                 document.getElementById('playPauseBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M14 19h4V5h-4v14zm-10 0h4V5H4v14z"/></svg>`;
@@ -13797,8 +14374,27 @@ function updatePollCardInDOM(pollData) {
             document.getElementById('momentCommentSendBtn').addEventListener('click', postComment);
             toggleSendButtonActive(document.getElementById('messageInput'));
             setInterval(simulateAiBehavior, 60000); 
-           
-    }; // 这是 window.onload 的结束括号和分号
+
+    // --- 核心修改在这里 ---
+    // 所有数据和UI都准备好了，现在开始切换显示
+    
+    // 1. 让加载动画淡出
+    if (loadingOverlay) {
+        loadingOverlay.style.opacity = '0';
+    }
+
+    // 2. 让应用主体内容淡入
+    if (phoneContainer) {
+        phoneContainer.style.opacity = '1';
+    }
+    
+    // 3. 在淡出动画结束后，彻底隐藏加载动画的层，以免它挡住下面的内容
+    setTimeout(() => {
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+    }, 500); // 这里的 500ms 必须和CSS里的 transition 时间一致
+};
         
         // 【【【第三步 D：在 <script> 的末尾粘贴所有新函数】】】
 
@@ -13885,7 +14481,7 @@ function getAuthorById(authorId) {
                     body: JSON.stringify({
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
-                        response_format: { type: 'json_object' }
+                       
                     })
                 });
 
@@ -14011,6 +14607,7 @@ function renderBeautificationSettings() {
                 { key: 'plusMenuLocation', label: '位置图标' },
                 { key: 'plusMenuMemory', label: '总结图标' },
                 { key: 'plusMenuPoll', label: '投票图标' },
+{ key: 'plusMenuOfflineMode', label: '线下模式图标' } // 在这里加上这一行
             ]
         }
         , // <--- 注意这个小小的逗号！
@@ -14026,7 +14623,15 @@ function renderBeautificationSettings() {
 {
     groupTitle: "微信App全局背景",
     items: [
-        { key: 'wechatAppGlobalBg', label: '界面背景图' }
+        { key: 'wechatAppGlobalBg', label: '界面背景图' } 
+
+    ]
+} // ... settingsMap数组的最后一个 '}' 后面 ...
+, // 别忘了加这个逗号
+{
+    groupTitle: "悬浮窗图标",
+    items: [
+        { key: 'offlineModeFloatIcon', label: '线下模式悬浮球' }
     ]
 }
     ];
@@ -14130,7 +14735,8 @@ function applyBeautificationSettings() {
         'chatInputPlusButton', 'chatInputSendButton', 'plusMenuPhoto', 'plusMenuCamera',
         'plusMenuVoiceCall', 'plusMenuTransfer', 'plusMenuListen', 'plusMenuLocation',
         'plusMenuMemory', 'plusMenuPoll', 
-        'bottomNavIconMessages', 'bottomNavIconDiscover', 'bottomNavIconMe'
+        'bottomNavIconMessages', 'bottomNavIconDiscover', 'bottomNavIconMe', 'plusMenuOfflineMode', // 加上这一行
+'offlineModeFloatIcon' // 再加上这一行
     ];
 
     for (const key in beautificationSettings) {
@@ -14182,12 +14788,21 @@ if (key === 'topNavBarBg') {
         }
     `;
 } else {
-            const scopedSelectors = originalSelector.split(',')
-                .map(s => `.phone.in-wechat-app ${s.trim()}`)
-                .join(', ');
-
+            let scopedSelectors;
+// --- ↓↓↓ 新增的特例判断就在这里 ↓↓↓ ---
+if (key === 'offlineModeFloatIcon') {
+    // 如果是悬浮球，直接使用它的ID，不加任何前缀
+    scopedSelectors = originalSelector;
+} else {
+    // 其他所有图标，保持原来的逻辑
+    scopedSelectors = originalSelector.split(',')
+        .map(s => `.phone.in-wechat-app ${s.trim()}`)
+        .join(', ');
+}
             const isIcon = iconKeys.includes(key);
             const backgroundSizeType = isIcon ? 'contain' : 'cover';
+            
+           
 
             cssString += `
                 ${scopedSelectors} {
@@ -14303,6 +14918,8 @@ function getSelectorForKey(key) {
         'plusMenuLocation': '.function-item[onclick="openLocationModal()"] .function-icon',
         'plusMenuMemory': '.function-item[onclick="openMemoryScreen()"] .function-icon',
         'plusMenuPoll': '.function-item[onclick="openPollModal()"] .function-icon',
+        'plusMenuOfflineMode': '.function-item[onclick="toggleOfflineMode()"] .function-icon', // 加上这一行
+'offlineModeFloatIcon': '#offlineModeFloat', // 再加上这一行
     };
     return selectors[key] || null;
 }
@@ -14488,14 +15105,14 @@ async function checkAndTriggerMemoryGeneration(friendId) {
             现在，请严格按照以上所有规则，开始你的概括工作。`;
 
                         // 【【【请用这个新的代码块，完整替换上面的旧代码块】】】
-            try {
+                        try {
                 const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: settings.modelName,
                         messages: [{ role: 'user', content: prompt }],
-                        response_format: { type: 'json_object' },
+                        // response_format 已被删除
                         temperature: 0.5
                     })
                 });
@@ -14503,39 +15120,42 @@ async function checkAndTriggerMemoryGeneration(friendId) {
                 if (!response.ok) throw new Error(`总结API请求失败: ${response.status}`);
                 
                 const data = await response.json();
-                // --- 核心修复从这里开始 ---
                 const responseText = data.choices?.[0]?.message?.content;
-                
-                // 1. 先检查AI是否有返回内容
+
                 if (!responseText || typeof responseText !== 'string') {
                     throw new Error("AI返回的内容为空或格式不正确，无法生成总结。");
                 }
 
-                // 2. 智能地从返回的文本中找出被 {} 包裹的JSON部分
-                const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-                
-                if (jsonMatch) {
-                    // 3. 只解析我们成功匹配到的JSON字符串
-                    const responseData = JSON.parse(jsonMatch[0]);
-                    if(responseData.summary_points && Array.isArray(responseData.summary_points)){
-                        openSummaryEditModal(responseData.summary_points);
-                    } else {
-                         throw new Error("AI返回的总结格式不正确，缺少 'summary_points' 数组。");
-                    }
-                } else {
-                    // 4. 如果连 {} 都找不到，就说明格式完全错误
-                    throw new Error("AI返回的内容中未找到有效的JSON对象。");
+                // --- [V3 兼容版] 智能JSON提取开始 ---
+                const firstBracketIndex = responseText.indexOf('{');
+                const lastBracketIndex = responseText.lastIndexOf('}');
+
+                if (firstBracketIndex === -1 || lastBracketIndex === -1) {
+                    throw new Error("AI返回的内容中未找到有效的JSON对象。原始回复: " + responseText);
                 }
-                // --- 核心修复到这里结束 ---
+
+                const jsonString = responseText.substring(firstBracketIndex, lastBracketIndex + 1);
+                
+                // 【【【核心修复！！！】】】
+                // 我们将解析后的数据，放进后面代码需要的 `responseData` 变量中
+                const responseData = JSON.parse(jsonString);
+                // --- 智能JSON提取结束 ---
+                
+                // （下面的逻辑是原来就有的，保持不变）
+                if(responseData.summary_points && Array.isArray(responseData.summary_points)){
+                    openSummaryEditModal(responseData.summary_points);
+                } else {
+                    throw new Error("AI返回的JSON格式正确，但缺少 'summary_points' 数组。");
+                }
                 
             } catch (error) {
-             
                 console.error("生成总结时出错:", error);
                 showAlert(`生成总结失败: ${error.message}`);
-                friend.turnCountSinceLastMemory = 0;
+                // 确保在出错时也重置计数器
+                friend.turnCountSinceLastMemory = 0; 
                 await dbManager.set('friends', friend);
             }
-        }
+         }
 
 // --- ↓↓↓ 请从这里开始复制所有新函数 ↓↓↓ ---
 
@@ -15086,9 +15706,11 @@ function startVoiceCall() {
             callStartTime = new Date();
             callTimerInterval = setInterval(updateCallTimer, 1000);
             
+            document.getElementById('voiceCallInputArea').style.display = 'flex'; // 显示输入框和按钮
+            
             // AI接听后，可能会说一句话
-            receiveMessage(friend.id, `(你接听了用户的语音通话，请说一句开场白。)`);
-        }
+            requestAICallResponse('(你接听了用户的语音通话，请说一句开场白。)');
+    }
     }, 2000 + Math.random() * 2000); // 模拟2-4秒的接听延迟
 }
 
@@ -15107,28 +15729,51 @@ function updateCallTimer() {
 /**
  * 结束语音通话
  */
+
+/**
+ * [V3 修正版] 结束语音通话
+ */
 async function endVoiceCall() {
     if (!isCallActive) return;
 
     const callDuration = document.getElementById('voiceCallStatus').textContent;
-    
-    // 保存一条通话结束的记录到聊天历史
     const friend = friends.find(f => f.id === voiceCallFriendId);
+
     if (friend) {
-        const msgData = await saveChatMessage(voiceCallFriendId, 'sent', callDuration, '', null, 'voice_call');
-        // 如果当前就在这个聊天界面，则实时显示
-        if (currentChatFriendId === voiceCallFriendId) {
-            addMessageToDOM(msgData, friend);
+        // 清除AI的“正在输入”状态
+        aiReplyingSet.delete(friend.id);
+
+        // 如果当前聊天是此人，则恢复标题
+        if (currentChatFriendId === friend.id) {
+            const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
+            document.getElementById('chatTitle').textContent = chatTitle;
         }
+        
+        const callEndMessage = `通话结束，时长 ${callDuration}`;
+        // 1. 将通话结束作为一个“系统提示”存入聊天记录，这样AI就能看到
+        await saveChatMessage(voiceCallFriendId, 'system', callEndMessage, '', null, 'system_tip');
+
+        // 2. 如果当前就在这个聊天界面，则直接创建一个居中的时间提示并显示出来
+        if (currentChatFriendId === voiceCallFriendId) {
+            const container = document.getElementById('chatMessages');
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'chat-timestamp'; // 复用时间戳的居中样式
+            timeDiv.textContent = callEndMessage;
+            container.appendChild(timeDiv);
+            container.scrollTop = container.scrollHeight; // 滚动到底部
+        }
+        
+        // 【【【核心修复】】】:
+        // 我们已经删除了这里原来多余且导致错误的 "if (currentChatFriendId === voiceCallFriendId) { addMessageToDOM(msgData, friend); }" 代码块。
     }
 
-    // 重置所有状态
+    // 重置所有通话相关的状态变量
     isCallActive = false;
     clearInterval(callTimerInterval);
     callStartTime = null;
     voiceCallFriendId = null;
 
-    // 返回到聊天界面
+    // 切换回聊天界面
     setActivePage('chatScreen');
 }
 
@@ -15235,11 +15880,12 @@ function startVoiceCallFromAccept(friendId) {
     // 直接开始计时
     callStartTime = new Date();
     callTimerInterval = setInterval(updateCallTimer, 1000);
+    document.getElementById('voiceCallInputArea').style.display = 'flex'; // 显示输入框和按钮
 }
 
-                /**
- * 【【【这是最终修复版，请用它完整替换】】】
- * 重新生成AI的回复 (兼容单聊与群聊)
+           // ↓↓↓ A. 请用这个新版本完整替换旧的 regenerateAiResponse 函数 ↓↓↓
+/**
+ * [V2 修正版] 重新生成AI的回复 (兼容单聊与群聊、线上与线下)
  * @param {string} startMessageId - 用户长按的那条消息的ID，作为查找的“锚点”
  */
 async function regenerateAiResponse(startMessageId) {
@@ -15253,49 +15899,49 @@ async function regenerateAiResponse(startMessageId) {
         return;
     }
 
-    // 1. 找到“锚点”，并准备一个集合来存放所有需要删除的消息ID
     const messagesToDeleteIds = new Set();
     messagesToDeleteIds.add(startMessageId);
 
-    // 2. 从“锚点”开始，【向后查找】所有连续的AI回复
     for (let i = startIndex - 1; i >= 0; i--) {
         const msg = history[i];
         if (msg.type === 'received') {
-            messagesToDeleteIds.add(msg.id); // 如果是AI的消息，加入待删除集合
+            messagesToDeleteIds.add(msg.id);
         } else {
-            break; // 遇到用户的消息，说明AI的这一轮回复到此为止
+            break;
         }
     }
 
-    // 3. 从“锚点”开始，【向前查找】所有连续的AI回复
     for (let i = startIndex + 1; i < history.length; i++) {
         const msg = history[i];
         if (msg.type === 'received') {
-            messagesToDeleteIds.add(msg.id); // 如果是AI的消息，加入待删除集合
+            messagesToDeleteIds.add(msg.id);
         } else {
-            break; // 遇到用户的消息，说明AI的这一轮回复到此为止
+            break;
         }
     }
 
     if (messagesToDeleteIds.size === 0) return;
 
-    // 4. 从聊天界面上移除这些消息的HTML元素
     messagesToDeleteIds.forEach(id => {
         const element = document.querySelector(`.message[data-message-id="${id}"]`);
-        if (element) {
-            element.remove();
-        }
+        if (element) element.remove();
     });
 
-    // 5. 从聊天记录数据中删除这些消息
     chatHistories[currentChatFriendId] = history.filter(msg => !messagesToDeleteIds.has(msg.id));
     
-    // 6. 保存被修改后的聊天记录
     await saveData();
 
-    // 7. 重新调用核心的 receiveMessage 函数，让AI生成全新的回复
-    receiveMessage(currentChatFriendId);
+      // --- 【核心修复！！！】 ---
+    // 在这里判断当前模式，调用正确的AI回复函数
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (friend && friend.isOfflineMode) {
+        requestOfflineAIResponse();
+    } else {
+        receiveMessage(currentChatFriendId);
+    }
+    // --- 【修复结束】 ---
 }
+// ↑↑↑ 替换到此结束 ↑↑↑
         
                 function cancelBubbleSettings() {
             // 核心功能：用之前保存的 customBubbleCSS 变量，恢复样式
@@ -16178,6 +16824,1352 @@ function resetAvatarFrame() {
 }
 
 // ↑↑↑ 粘贴到这里结束 ↑↑↑
+
+// ↓↓↓ 第3步 D：将以下所有新增的JS函数粘贴到 <script> 的末尾 ↓↓↓
+
+// --- 线下模式核心功能 ---
+
+// ↓↓↓ 2. 请用这个新版本完整替换旧的 toggleOfflineMode 函数 ↓↓↓
+/**
+ * 切换进入或退出线下模式 (好友独立版)
+ */
+async function toggleOfflineMode() {
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (!friend) return;
+
+    // --- 【核心修复：操作好友自己的状态】 ---
+    friend.isOfflineMode = !friend.isOfflineMode; 
+    
+    const floatButton = document.getElementById('offlineModeFloat');
+    
+    if (friend.isOfflineMode) {
+        floatButton.style.display = 'flex';
+        const msgData = await saveChatMessage(currentChatFriendId, 'system', '已进入线下模式', '', null, 'system_tip');
+        addMessageToDOM(msgData, friend);
+    } else {
+        floatButton.style.display = 'none';
+        const msgData = await saveChatMessage(currentChatFriendId, 'system', '已退出线下模式', '', null, 'system_tip');
+        addMessageToDOM(msgData, friend);
+    }
+    
+    await saveData(); // 保存好友状态的更改
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+    hideFunctionMenus();
+}
+
+// ↓↓↓ 第2步 B：用下面这3个新函数替换对应的旧函数 ↓↓↓
+
+/**
+ * 打开线下模式设置弹窗 (弹窗版)
+ */
+
+/**
+ * 打开线下模式设置弹窗 (弹窗版)
+ */
+
+function openOfflineSettings() {
+    // 【【【核心修改：从当前好友对象中读取设置】】】
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (!friend) return;
+    const currentSettings = friend.offlineSettings;
+
+    const slider = document.getElementById('offlineCharCountSlider');
+    const valueDisplay = document.getElementById('offlineCharCountValue');
+    slider.value = currentSettings.charCount;
+    valueDisplay.textContent = currentSettings.charCount;
+
+    updateCurrentOpeningStatementDisplay();
+    updateCurrentWritingStyleDisplay();
+    updateCurrentSkitDisplay();
+    
+    document.getElementById('offlineModeSettingsModal').classList.add('show');
+}
+
+/**
+ * 关闭线下模式设置弹窗
+ */
+function closeOfflineSettingsModal() {
+    document.getElementById('offlineModeSettingsModal').classList.remove('show');
+}
+
+/**
+ * 保存线下模式的设置 (弹窗版)
+ */
+
+async function saveOfflineSettings() {
+    // 【【【核心修改：将设置保存到当前好友对象中】】】
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (!friend) return;
+
+    friend.offlineSettings.charCount = parseInt(document.getElementById('offlineCharCountSlider').value, 10);
+    
+    await saveData();
+    showAlert('设置已保存！');
+    closeOfflineSettingsModal();
+}
+
+// ↑↑↑ 替换到此结束 ↑↑↑
+
+// --- 开场白管理功能 ---
+
+function openOpeningStatementList() {
+    renderOpeningStatementList();
+    document.getElementById('openingStatementModal').classList.add('show');
+}
+
+function closeOpeningStatementList() {
+    document.getElementById('openingStatementModal').classList.remove('show');
+}
+
+function renderOpeningStatementList() {
+    const container = document.getElementById('openingStatementList');
+    container.innerHTML = '';
+    
+    // 添加一个“不使用”的选项
+    const noStatementItem = document.createElement('div');
+    noStatementItem.className = 'opening-statement-item';
+    noStatementItem.innerHTML = '<span>不使用开场白</span>';
+    noStatementItem.onclick = () => selectOpeningStatement(null);
+    container.appendChild(noStatementItem);
+
+    openingStatements.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'opening-statement-item';
+        div.innerHTML = `
+    <span onclick="selectOpeningStatement('${item.id}')" style="flex-grow: 1;">${item.title}</span>
+    <div class="item-actions">
+        <span class="edit-btn" title="编辑" onclick="openEditOpeningStatementModal('${item.id}'); event.stopPropagation();">
+            <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/></svg>
+        </span>
+        <span class="delete-btn" title="删除" onclick="deleteOpeningStatement(event, '${item.id}')">✕</span>
+    </div>
+`;
+        container.appendChild(div);
+    });
+}
+
+async function selectOpeningStatement(id) {
+    const friend = friends.find(f => f.id === currentChatFriendId);
+if (friend) {
+    friend.offlineSettings.openingStatementId = id;
+}
+    updateCurrentOpeningStatementDisplay();
+    closeOpeningStatementList();
+}
+
+async function deleteOpeningStatement(event, id) {
+    event.stopPropagation();
+    showConfirm('确定要删除这个开场白吗？', async (confirmed) => {
+        if (confirmed) {
+            // 【【【新增的核心修复代码】】】
+            // 在操作内存之前，先从数据库中删除这条记录
+            await dbManager.delete('openingStatements', id);
+
+            // (下面的代码保持不变)
+            openingStatements = openingStatements.filter(item => item.id !== id);
+            if (offlineModeSettings.openingStatementId === id) {
+                offlineModeSettings.openingStatementId = null;
+            }
+            await saveData();
+            renderOpeningStatementList();
+            updateCurrentOpeningStatementDisplay();
+            showAlert('已删除');
+        }
+    });
+}
+
+function updateCurrentOpeningStatementDisplay() {
+
+const friend = friends.find(f => f.id === currentChatFriendId); if (!friend) return;
+
+    const display = document.getElementById('currentOpeningStatement');
+    if (friend.offlineSettings.openingStatementId) {
+        const selected = openingStatements.find(item => item.id === friend.offlineSettings.openingStatementId);
+        display.textContent = selected ? selected.title : '未选择开场白';
+    } else {
+        display.textContent = '未选择开场白';
+    }
+}
+
+let currentEditingStatementId = null;
+function openEditOpeningStatementModal(id) {
+    currentEditingStatementId = id;
+    const modal = document.getElementById('editOpeningStatementModal');
+    const title = document.getElementById('editOpeningStatementTitle');
+    const titleInput = document.getElementById('openingStatementTitleInput');
+    const contentInput = document.getElementById('openingStatementContentInput');
+
+    if (id) {
+        const item = openingStatements.find(i => i.id === id);
+        title.textContent = '编辑开场白';
+        titleInput.value = item.title;
+        contentInput.value = item.content;
+    } else {
+        title.textContent = '新建开场白';
+        titleInput.value = '';
+        contentInput.value = '';
+    }
+    modal.classList.add('show');
+}
+
+function closeEditOpeningStatementModal() {
+    document.getElementById('editOpeningStatementModal').classList.remove('show');
+    currentEditingStatementId = null;
+}
+
+async function saveOpeningStatement() {
+    const title = document.getElementById('openingStatementTitleInput').value.trim();
+    const content = document.getElementById('openingStatementContentInput').value.trim();
+
+    if (!title) return showAlert('请输入标题');
+
+    if (currentEditingStatementId) {
+        const index = openingStatements.findIndex(i => i.id === currentEditingStatementId);
+        if (index > -1) {
+            openingStatements[index].title = title;
+            openingStatements[index].content = content;
+        }
+    } else {
+        const newItem = {
+            id: generateUniqueId(),
+            title,
+            content
+        };
+        openingStatements.push(newItem);
+    }
+    await saveData();
+    renderOpeningStatementList();
+    closeEditOpeningStatementModal();
+}
+
+// --- 悬浮窗拖动逻辑 ---
+const offlineFloat = document.getElementById('offlineModeFloat');
+let isFloatDragging = false;
+let floatOffsetX, floatOffsetY;
+
+const startFloatDrag = (e) => {
+    isFloatDragging = true;
+    offlineFloat.style.cursor = 'grabbing';
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+    floatOffsetX = clientX - offlineFloat.offsetLeft;
+    floatOffsetY = clientY - offlineFloat.offsetTop;
+};
+const endFloatDrag = () => {
+    isFloatDragging = false;
+    offlineFloat.style.cursor = 'grab';
+};
+const onFloatDrag = (e) => {
+    if (!isFloatDragging) return;
+    e.preventDefault();
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+    let newX = clientX - floatOffsetX;
+    let newY = clientY - floatOffsetY;
+    const screen = document.querySelector('.screen');
+    const maxX = screen.offsetWidth - offlineFloat.offsetWidth;
+    const maxY = screen.offsetHeight - offlineFloat.offsetHeight;
+    newX = Math.max(0, Math.min(newX, maxX));
+    newY = Math.max(0, Math.min(newY, maxY));
+    offlineFloat.style.left = `${newX}px`;
+    offlineFloat.style.top = `${newY}px`;
+    offlineFloat.style.bottom = 'auto';
+    offlineFloat.style.right = 'auto';
+};
+
+offlineFloat.addEventListener('mousedown', startFloatDrag);
+document.addEventListener('mouseup', endFloatDrag);
+document.addEventListener('mousemove', onFloatDrag);
+offlineFloat.addEventListener('touchstart', startFloatDrag);
+document.addEventListener('touchend', endFloatDrag);
+document.addEventListener('touchmove', onFloatDrag, { passive: false });
+offlineFloat.addEventListener('click', () => {
+    if (!isFloatDragging) openOfflineSettings();
+});
+
+
+// ↓↓↓ 第2步：请用这个V3修正版完整替换 requestOfflineAIResponse 函数 ↓↓↓
+/**
+ * [V3 修正版] 线下模式AI核心请求函数
+ */
+async function requestOfflineAIResponse() {
+
+const friendIdForThisRequest = currentChatFriendId; 
+
+    if (aiReplyingSet.has(currentChatFriendId)) return showAlert('AI正在回复中，请稍候...');
+
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (!friend) return;
+    const settings = await dbManager.get('apiSettings', 'settings') || {};
+    if (!settings.apiUrl || !settings.apiKey) {
+        const msgData = await saveChatMessage(currentChatFriendId, 'received', '[提示：请先配置API]');
+        addMessageToDOM(msgData, friend);
+        return;
+    }
+
+    aiReplyingSet.add(friendIdForThisRequest);
+    document.getElementById('chatTitle').textContent = '对方正在输入...';
+
+    try {
+        let openingStatementContext = '';
+        const history = (chatHistories[friendIdForThisRequest] || []);
+        
+        // ↓↓↓ A. 请将这个全新的“情报收集”代码块粘贴到此处 ↓↓↓
+
+// --- 【【【记忆力强化 V2：读取世界书和总结】】】 ---
+
+// 1. 读取世界书
+let worldBookContext = '无';
+const boundFolderIds = friend.boundFolderIds || [];
+const allBoundBookIds = new Set(friend.worldBookIds || []);
+boundFolderIds.forEach(folderId => {
+    worldBooks.forEach(wb => {
+        if (wb.folderId === folderId) {
+            allBoundBookIds.add(wb.id);
+        }
+    });
+});
+const relevantWorldBooks = Array.from(allBoundBookIds)
+    .map(id => worldBooks.find(wb => wb.id === id))
+    .filter(Boolean);
+
+if (relevantWorldBooks.length > 0) {
+    worldBookContext = relevantWorldBooks.map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
+}
+
+// 2. 读取总结 (长期记忆)
+let summaryContext = '无';
+const memories = (characterMemories[currentChatFriendId] || []);
+if (memories.length > 0) {
+    summaryContext = memories.map(mem => mem.content).join('\n\n---\n\n');
+}
+
+// --- 【【【情报收集结束】】】 ---
+        
+       const currentOfflineSettings = friend.offlineSettings;
+
+if (currentOfflineSettings.openingStatementId) {
+    const statement = openingStatements.find(s => s.id === currentOfflineSettings.openingStatementId);
+            if (statement && statement.content) {
+                openingStatementContext = `【核心情景设定/开场白 (这是故事的背景，必须始终遵守)】:\n${statement.content}\n\n`;
+            }
+        }
+        
+        
+
+// 【【【新增代码块：获取文风指令】】】
+let writingStyleContext = '';
+
+let skitContext = '';
+
+if (currentOfflineSettings.writingStyleId) {
+    const style = writingStyles.find(s => s.id === currentOfflineSettings.writingStyleId);
+
+    if (style && style.content) {
+        writingStyleContext = `【【【文风指令铁律 (必须严格遵守)】】】:\n${style.content}\n\n`;
+    }
+}
+
+// ▼▼▼ 从这里开始，粘贴下面的新代码 ▼▼▼
+
+if (currentOfflineSettings.skitId) {
+    const skit = skits.find(s => s.id === currentOfflineSettings.skitId);
+
+    if (skit && skit.content) {
+        skitContext = `【【【HTML小剧场指令铁律 (必须严格遵守)】】】:\n${skit.content}\n\n`;
+    }
+}
+// ▲▲▲ 粘贴到这里结束 ▲▲▲
+
+        
+        const recentHistory = history.slice(-30);
+        let chatHistoryContext = '';
+        if (recentHistory.length > 0) {
+             chatHistoryContext = '【你需要回应的、最近的实时互动记录】:\n' + recentHistory.map(m => {
+                const sender = m.type === 'sent' ? userProfile.name : friend.name;
+                let simplifiedContent = m.content;
+                if (m.contentType !== 'text') {
+                    simplifiedContent = `[${m.contentType}]`;
+                }
+                return `${sender}: ${simplifiedContent}`;
+            }).join('\n');
+        } else {
+            chatHistoryContext = '【你需要回应的、最近的实时互动记录】:\n(无历史记录，请你主动开始一段故事。)';
+        }
+
+        const activePersona = userPersonas.find(p => p.id === friend.activeUserPersonaId) || userProfile;
+
+        // --- 全新的、更严格的AI指令 V3 ---
+         let prompt = `
+        【模式】: 线下小说模式
+
+        【你的身份】: 你是小说家，正在扮演角色 "${friend.name}"。你的核心人设是：“${friend.role}”。
+        ${writingStyleContext}
+        【你的对话伙伴】: 你的互动对象是 "${activePersona.name}"，他/她的人设是：“${activePersona.personality || '普通人'}”。
+        
+        【【【最高优先级情报库 (你的全部记忆与世界认知)】】】
+
+1.  【世界观设定 (绝对真理)】:
+${worldBookContext}
+
+2.  【核心记忆与过往总结 (长期记忆)】:
+${summaryContext}
+
+3.  【当前情景设定/开场白 (故事背景)】:
+${openingStatementContext || '无特定开场白，请根据聊天记录自由发展。'}
+
+4.  【你需要承接的、最近的实时互动记录】:
+${chatHistoryContext} `;
+
+
+     // 第二步：处理默认情况（没有选择小-剧场）
+        if (!offlineModeSettings.skitId || !skits.some(s => s.id === offlineModeSettings.skitId)) {
+            prompt += `
+
+        【【【核心任务铁律 (必须严格遵守)】】】
+        1.  **【小说家模式】**: 你的回复必须是一段**小说式**的、连贯的、充满细节的文本。必须包含大量的心理活动、动作描写、环境描写和神态描写。
+        2.  **【角色扮演铁律】**: 你的所有描写和对话，**必须且只能**围绕你自己的角色（"${friend.name}"）展开。
+        3.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**:
+            你**绝对不能**以任何形式描写或杜撰 "${activePersona.name}" 的任何动作、心理活动、或说出的话语。你的叙述视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。你只能回应，不能控制。
+        4.  **【【【叙事视角与人称铁律】】】**:
+            - 在所有的小说式描述中（即非对话部分），你必须使用第三人称代词“他”来指代你自己的角色("${friend.name}")。严禁使用第一人称“我”。
+            - 当提到你的对话伙伴 ("${activePersona.name}") 时，必须且只能使用第二人称代词“你”。
+       5.  **【【【格式化铁律】】】**:
+            - 角色 "${friend.name}" 说的话必须被中文引号“ ”包裹。
+            - 角色 "${friend.name}" 的**所有内心想法/心理活动**，必须被下划线 \`_..._\` 包裹。
+        6.  **【【【完整性与字数铁律】】】**: 你的任务是创作一段**完整且连贯**的故事，总字数**约等于** **${currentOfflineSettings.charCount}** 字。你必须在字数限制内讲完一个完整的情节或心理活动，**绝对不能**在句子中间突然截断。
+        7.  **【禁止动作】**: 你的回复**只能**是纯文本。严禁生成任何JSON格式的动作。
+       8.  **【【【最高记忆铁律：承上启下！！！】】】**:
+    你**必须**仔细阅读并融合**以上所有情报**，尤其是“世界观”和“核心记忆”。你的续写**必须**与所有上文内容紧密相连，做到人设一致、情节连贯、逻辑自洽。**严禁遗忘**任何设定和已总结的记忆。
+   【【【输出格式铁律 (必须严格遵守)】】】
+1.  **【纯文本输出】**: 你的回复**只能**是纯文本的小说内容。
+2.  **【禁止HTML】**: **严禁**生成任何 \`[HTML_SKIT_SEPARATOR]\` 分隔符或HTML代码。
+3.  **【心声可选】**: 如果需要更新心声，可以在小说文本结束后，另起一行，写下分隔符 \`[HEARTS_VOICE_SEPARATOR]\`，然后附上心声JSON对象。
+
+【格式示例】:
+他看着你的消息，嘴角不自觉地上扬。_原来你还记得..._ 他拿起手机，指尖在屏幕上飞舞：“当然记得，那可是我们第一次见面。”
+[HEARTS_VOICE_SEPARATOR]
+{
+  "favorability": "90/100 (非常开心)",
+  "dressing": "穿着一件干净的白衬衫。",
+  "action": "坐在窗边，微笑着回复你的消息。",
+  "thought": "看到你的消息，今天一整天的疲惫都消失了。",
+  "emoji": "˃ᴗ˂̵͈̑"
+}
+`;
+        } 
+        // 第三步：处理特殊情况（选择了小剧场）
+        else {
+            prompt += `
+          【【【核心任务铁律 (必须严格遵守)】】】
+1.  **【双重回复】**: 你的回复**必须**包含两个部分：一段纯文本的“小说式旁白与对话”，和一个独立的“HTML小剧场模块”。
+2.  **【小说家模式】**: 你的“小说式旁白与对话”部分必须遵循之前的全部小说模式规则（第三人称、内心戏、对话格式等）。
+3.  **【小剧场模式】**: 你的“HTML小剧场模块”部分必须遵循【HTML小剧场指令铁律】。如果该指令为空，则你无需生成HTML模块，回复格式退化为普通线下模式。
+4.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**: 你的所有描写和对话，视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。
+
+【【【输出格式铁律 (必须严格遵守)】】】
+1.  **【第一部分：故事】**: 首先，直接输出续写的小说正文（纯文本）。
+2.  **【第二部分：分隔符】**: 在小说正文结束后，**必须另起一行**，写下这个独一无二的分隔符：\`[HTML_SKIT_SEPARATOR]\`
+3.  **【第三部分：HTML模块】**: 在分隔符之后，再附上你生成的、纯净的、完整的HTML代码。
+4.  **【第四部分：心声】**: 如果需要更新心声，请在HTML模块之后，再另起一行，写下分隔符 \`[HEARTS_VOICE_SEPARATOR]\`，然后附上心声JSON对象。
+
+【格式示例】:
+他看着你的消息，嘴角不自觉地上扬。_原来你还记得..._ 他拿起手机，指尖在屏幕上飞舞：“当然记得，那可是我们第一次见面。”
+[HTML_SKIT_SEPARATOR]
+<div style="padding:10px; background:white; border-radius:8px;"><h3>回忆相册</h3><p>一张褪色的照片，上面是你们的合影...</p></div>
+[HEARTS_VOICE_SEPARATOR]
+{
+  "favorability": "90/100 (非常开心)",
+  "dressing": "穿着一件干净的白衬衫。",
+  "action": "坐在窗边，微笑着回复你的消息。",
+  "thought": "看到你的消息，今天一整天的疲惫都消失了。",
+  "emoji": "˃ᴗ˂̵͈̑"
+}
+
+`;
+        }
+
+        // 第四步：追加最后一句通用指令
+        prompt += `
+
+现在，请基于以上所有信息，仅作为 "${friend.name}"，回应 "${activePersona.name}" 的最新聊天，并继续故事。`;
+        
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.9,
+                // 我们不再使用 max_tokens，而是让AI自己控制长度
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        // 在 10 html小剧场.txt 中，用下面的代码块替换从 18066行 到 18104行的内容
+
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+
+        // 1. 定义我们的两个“暗号”
+        const htmlSeparator = '[HTML_SKIT_SEPARATOR]';
+        const heartsVoiceSeparator = '[HEARTS_VOICE_SEPARATOR]';
+
+        // 2. 先处理心声，把它从主要内容中分离出来
+        let storyAndHtmlPart = responseText;
+        const heartsVoiceParts = responseText.split(heartsVoiceSeparator);
+        if (heartsVoiceParts.length > 1) {
+            storyAndHtmlPart = heartsVoiceParts[0]; // 分隔符前面的部分是故事和HTML
+            const heartsVoiceJsonString = heartsVoiceParts[1];
+            try {
+                const heartsVoiceData = JSON.parse(heartsVoiceJsonString);
+                if (heartsVoiceData) {
+                    friend.heartsVoice = heartsVoiceData;
+                }
+            } catch (e) {
+                console.error("解析心声JSON失败:", e);
+            }
+        }
+
+        // 3. 接着，处理故事和HTML模块
+        const parts = storyAndHtmlPart.split(htmlSeparator);
+        const storyContent = parts[0].trim();
+        const htmlContent = parts.length > 1 ? parts[1].trim() : null;
+
+        // 4. 发送纯文字的故事部分
+                // 4. 发送纯文字的故事部分
+        if (storyContent) {
+            const msgData = await saveChatMessage(friendIdForThisRequest, 'received', storyContent, '', friend.id, 'text', true);
+            
+            // 【【【核心修复：UI身份核对】】】
+            // 只有当这条消息所属的角色ID，和当前屏幕上显示的聊天角色ID一致时，才更新UI
+            if (friendIdForThisRequest === currentChatFriendId) {
+                addMessageToDOM(msgData, friend);
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            } else {
+                // 如果不一致（说明用户已经切换到其他聊天界面），就只在后台保存，并弹出一个顶部通知
+                showNotification(friend, storyContent);
+            }
+        }
+
+        // 5. 如果有HTML模块，等待一小会儿再发送，模拟打字和思考
+                // 5. 如果有HTML模块，等待一小会儿再发送
+        if (htmlContent) {
+            await new Promise(res => setTimeout(res, 800 + Math.random() * 500));
+            const htmlMsgData = await saveChatMessage(friendIdForThisRequest, 'received', htmlContent, '', friend.id, 'html_card', true);
+            
+            // 【【【核心修复：UI身份核对】】】
+            if (friendIdForThisRequest === currentChatFriendId) {
+                addMessageToDOM(htmlMsgData, friend);
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            } else {
+                // 对于后台消息，HTML卡片只在通知里显示一个概要
+                showNotification(friend, '[一个特殊的小剧场]');
+            }
+        } 
+        }catch (error) {
+        console.error("线下模式请求失败:", error);
+        const errorMsg = await saveChatMessage(friendIdForThisRequest, 'received', `[错误: ${error.message}]`);
+        addMessageToDOM(errorMsg, friend);
+        
+    } finally {
+        aiReplyingSet.delete(friendIdForThisRequest);
+        
+        // 【【【核心修复：UI身份核对】】】
+        // 只有当后台完成任务的角色ID，和当前屏幕上显示的聊天角色ID一致时，才更新标题
+        if (friendIdForThisRequest === currentChatFriendId) {
+            const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
+            document.getElementById('chatTitle').textContent = chatTitle;
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            if (friend && friend.isOfflineMode) {
+                document.getElementById('offlineModeFloat').style.display = 'flex';
+            }
+        }
+    }
+   }
+   
+   // --- 文风管理功能 ---
+
+// 用于暂存正在编辑的文风ID
+let currentEditingStyleId = null;
+
+/**
+ * 打开“文风选择”弹窗
+ */
+function openWritingStyleList() {
+    renderWritingStyleList();
+    document.getElementById('writingStyleModal').classList.add('show');
+}
+
+/**
+ * 关闭“文风选择”弹窗
+ */
+function closeWritingStyleList() {
+    document.getElementById('writingStyleModal').classList.remove('show');
+}
+
+/**
+ * 渲染文风列表到弹窗中
+ */
+function renderWritingStyleList() {
+    const container = document.getElementById('writingStyleList');
+    container.innerHTML = '';
+    
+    // 添加一个“不使用”的选项
+    const noStyleItem = document.createElement('div');
+    noStyleItem.className = 'opening-statement-item'; // 可以复用开场白的样式
+    noStyleItem.innerHTML = '<span>不使用文风</span>';
+    noStyleItem.onclick = () => selectWritingStyle(null);
+    container.appendChild(noStyleItem);
+
+    writingStyles.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'opening-statement-item';
+        div.innerHTML = `
+    <span onclick="selectWritingStyle('${item.id}')" style="flex-grow: 1;">${item.title}</span>
+    <div class="item-actions">
+        <span class="edit-btn" title="编辑" onclick="openEditWritingStyleModal('${item.id}'); event.stopPropagation();">
+            <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/></svg>
+        </span>
+        <span class="delete-btn" title="删除" onclick="deleteWritingStyle(event, '${item.id}')">✕</span>
+    </div>
+`;
+        container.appendChild(div);
+    });
+}
+
+/**
+ * 选中一个文风并更新设置
+ * @param {string | null} id - 选中的文风ID，或null表示不使用
+ */
+async function selectWritingStyle(id) {
+    const friend = friends.find(f => f.id === currentChatFriendId);
+if (friend) {
+    friend.offlineSettings.writingStyleId = id;
+}
+    updateCurrentWritingStyleDisplay();
+    closeWritingStyleList();
+}
+
+async function deleteWritingStyle(event, id) {
+    event.stopPropagation();
+    showConfirm('确定要删除这个文风吗？', async (confirmed) => {
+        if (confirmed) {
+            // 【【【新增的核心修复代码】】】
+            // 在操作内存之前，先从数据库中删除这条记录
+            await dbManager.delete('writingStyles', id);
+
+            // (下面的代码保持不变)
+            writingStyles = writingStyles.filter(item => item.id !== id);
+            if (offlineModeSettings.writingStyleId === id) {
+                offlineModeSettings.writingStyleId = null;
+            }
+            await saveData();
+            renderWritingStyleList();
+            updateCurrentWritingStyleDisplay();
+            showAlert('已删除');
+        }
+    });
+}
+
+/**
+ * 更新设置弹窗中当前选择的文风显示
+ */
+function updateCurrentWritingStyleDisplay() {
+
+const friend = friends.find(f => f.id === currentChatFriendId); if (!friend) return;
+
+    const display = document.getElementById('currentWritingStyle');
+    if (friend.offlineSettings.writingStyleId) {
+        const selected = writingStyles.find(item => item.id === friend.offlineSettings.writingStyleId);
+        display.textContent = selected ? selected.title : '未选择文风';
+    } else {
+        display.textContent = '未选择文风';
+    }
+}
+
+// --- ▼▼▼ 请将这段新增的函数代码粘贴到您的 <script> 区域 ▼▼▼ ---
+
+/**
+ * 更新设置弹窗中当前选择的小剧场显示
+ */
+function updateCurrentSkitDisplay() {
+
+const friend = friends.find(f => f.id === currentChatFriendId); if (!friend) return;
+
+    const display = document.getElementById('currentSkit');
+    if (friend.offlineSettings.skitId) {
+        const selected = skits.find(item => item.id === friend.offlineSettings.skitId);
+        display.textContent = selected ? selected.title : '不使用小剧场';
+    } else {
+        display.textContent = '不使用小剧场';
+    }
+}
+
+function openSkitList() {
+
+
+    renderSkitList();
+    document.getElementById('skitModal').classList.add('show');
+}
+
+/**
+ * 关闭“小剧场选择”弹窗
+ */
+function closeSkitList() {
+    document.getElementById('skitModal').classList.remove('show');
+}
+
+/**
+ * 渲染小剧场列表到弹窗中
+ */
+function renderSkitList() {
+    const container = document.getElementById('skitList');
+    container.innerHTML = '';
+    
+    const noSkitItem = document.createElement('div');
+    noSkitItem.className = 'opening-statement-item';
+    noSkitItem.innerHTML = '<span>不使用小剧场</span>';
+    noSkitItem.onclick = () => selectSkit(null);
+    container.appendChild(noSkitItem);
+
+    skits.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'opening-statement-item';
+        div.innerHTML = `<span onclick="selectSkit('${item.id}')" style="flex-grow: 1;">${item.title}</span>`;
+        container.appendChild(div);
+    });
+}
+
+/**
+ * 选中一个小剧场并更新设置
+ */
+async function selectSkit(id) {
+    const friend = friends.find(f => f.id === currentChatFriendId);
+if (friend) {
+    friend.offlineSettings.skitId = id;
+}
+    updateCurrentSkitDisplay();
+    closeSkitList();
+}
+
+// --- ▲▲▲ 粘贴到这里结束 ▲▲▲ ---
+
+/**
+ * 打开新建/编辑文风的弹窗
+ * @param {string | null} id - 如果是编辑则传入ID，新建则传入null
+ */
+function openEditWritingStyleModal(id) {
+    currentEditingStyleId = id;
+    const modal = document.getElementById('editWritingStyleModal');
+    const title = document.getElementById('editWritingStyleTitle');
+    const titleInput = document.getElementById('writingStyleTitleInput');
+    const contentInput = document.getElementById('writingStyleContentInput');
+
+    if (id) {
+        const item = writingStyles.find(i => i.id === id);
+        title.textContent = '编辑文风';
+        titleInput.value = item.title;
+        contentInput.value = item.content;
+    } else {
+        title.textContent = '新建文风';
+        titleInput.value = '';
+        contentInput.value = '';
+    }
+    modal.classList.add('show');
+}
+
+/**
+ * 关闭新建/编辑文风的弹窗
+ */
+function closeEditWritingStyleModal() {
+    document.getElementById('editWritingStyleModal').classList.remove('show');
+    currentEditingStyleId = null;
+}
+
+/**
+ * 保存新建或编辑的文风
+ */
+async function saveWritingStyle() {
+    const title = document.getElementById('writingStyleTitleInput').value.trim();
+    const content = document.getElementById('writingStyleContentInput').value.trim();
+
+    if (!title) return showAlert('请输入标题');
+
+    if (currentEditingStyleId) {
+        const index = writingStyles.findIndex(i => i.id === currentEditingStyleId);
+        if (index > -1) {
+            writingStyles[index].title = title;
+            writingStyles[index].content = content;
+        }
+    } else {
+        const newItem = {
+            id: generateUniqueId(),
+            title,
+            content
+        };
+        writingStyles.push(newItem);
+    }
+    await saveData();
+    renderWritingStyleList();
+    closeEditWritingStyleModal();
+}
+
+function openSkitList() {
+
+
+    renderSkitList();
+    document.getElementById('skitModal').classList.add('show');
+}
+
+/**
+ * 关闭“小剧场选择”弹窗
+ */
+function closeSkitList() {
+    document.getElementById('skitModal').classList.remove('show');
+}
+
+/**
+ * 渲染小剧场列表到弹窗中
+ */
+function renderSkitList() {
+    const container = document.getElementById('skitList');
+    container.innerHTML = '';
+    
+    const noSkitItem = document.createElement('div');
+    noSkitItem.className = 'opening-statement-item';
+    noSkitItem.innerHTML = '<span>不使用小剧场</span>';
+    noSkitItem.onclick = () => selectSkit(null);
+    container.appendChild(noSkitItem);
+
+    skits.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'opening-statement-item';
+        div.innerHTML = `<span onclick="selectSkit('${item.id}')" style="flex-grow: 1;">${item.title}</span>`;
+        container.appendChild(div);
+    });
+}
+
+/**
+ * 选中一个小剧场并更新设置
+ */
+async function selectSkit(id) {
+    offlineModeSettings.skitId = id;
+    updateCurrentSkitDisplay();
+    closeSkitList();
+}
+
+// --- [新增] 内置文风数据和自动添加逻辑 ---
+
+/**
+ * 定义三个内置的默认文风
+ */
+const defaultWritingStyles = [
+    {
+        id: 'style_default_1',
+        title: '酸涩拉扯文风',
+        content: `【核心风格】: 整体基调偏向酸涩、克制且充满拉扯感。文字中要蕴含着未说出口的话语和复杂的情绪。
+【叙事要点】:
+1.  **内心戏为主**: 大量使用下划线 \`_..._\` 来描写角色纠结、矛盾、自我拉扯的心理活动。
+2.  **对话精炼**: 对话要简短、留有余地，多使用停顿（...）和试探性的话语，避免直白的交流。
+3.  **细节描写**: 侧重于描写让角色感到刺痛或不适的细节，如微凉的空气、刺眼的光线、指尖瞬间的僵硬、逃避的眼神等。
+4.  **意象运用**: 多使用“雨天”、“阴影”、“迷雾”、“玻璃”、“距离”等意象来烘托疏离和看不清彼此的氛围。
+【禁忌】: 禁止使用过于热情、直接、欢快的语言。角色的行为可以是主动的，但内心必须是犹豫和不确定的。`
+    },
+    {
+        id: 'style_default_2',
+        title: '温柔细腻文风',
+        content: `【核心风格】: 文字如同春日午后的暖阳，温柔、细腻且充满治愈感。重点在于捕捉不易察觉的微妙情绪和生活中的美好瞬间。
+【叙事要点】:
+1.  **感官细节**: 专注于描写温暖、柔软的感官体验。例如：阳光洒在睫毛上的光晕、指尖划过书页的触感、空气中淡淡的青草香、对方平稳的呼吸声。
+2.  **善意的凝视**: 叙事视角充满了对“你”的温柔注视，善于发现“你”身上不易察人的优点或可爱的习惯。
+3.  **慢镜头描写**: 将一些微小的互动（如递过一杯水、为一个喷嚏而关心）放慢，详细描写其中的动作和角色的内心感受。
+4.  **意象运用**: 多使用“阳光”、“月光”、“微风”、“湖水”、“猫咪”等温暖、平静的意象。
+【禁忌】: 避免激烈的情绪冲突和粗糙的语言。即使是悲伤，也应以一种克制而温柔的方式表达。`
+    },
+    {
+        id: 'style_default_3',
+        title: '青春校园文风',
+        content: `【核心风格】: 整体氛围干净、明亮，带有一丝少年人特有的青涩和懵懂。文字要充满活力和少年感。
+【叙事要点】:
+1.  **场景构建**: 频繁使用校园里的经典场景元素，如“操场跑道”、“图书馆的书架”、“午后的教室”、“傍晚的车棚”、“广播里的音乐”等。
+2.  **感官符号**: 抓住青春的标志性感觉，如“阳光下白衬衫的味道”、“夏天傍晚的风”、“操场上的蝉鸣”、“少年干净的侧脸轮廓”。
+3.  **对话风格**: 对话要符合学生身份，可以夹杂一些朋友间的玩笑、少年人的口头禅，以及面对喜欢的人时偶尔的语无伦次。
+4.  **心理活动**: 内心戏要体现出少年的敏感、对未来的迷茫、以及面对心上人时的悸动和紧张。多使用 \`_..._\` 来表现这些内心的小波澜。
+【禁忌】: 避免过于成人化、社会化的思考和语言。保持故事的纯粹性和校园的封闭环境感。`
+    } , // <--- 确保前面有一个逗号
+{
+    id: 'style_default_4',
+    title: '日常温馨文风',
+    content: `【核心风格】: 捕捉平凡生活中的小确幸，文字充满烟火气和温度，如同冬日里的一杯热可可，温暖而踏实。【 叙事要点】:
+1. 生活化场景: 聚焦于日常生活的琐碎细节，如“一起做饭”、“窝在沙发上看电影”、“雨天窗边的闲聊”、“逛超市的路上”等。
+2. 感官细节: 侧重于能带来安心感和幸福感的描写，例如：食物的香气、柔软毛毯的触感、稳定的心跳声、昏黄的台灯光线。
+3. 对话风格: 对话自然、放松，就像家人或相处多年的伴侣，可以有轻松的调侃、无意义的闲聊和默契的短句。
+4. 心理活动: 内心戏主要是对当下安稳生活的满足和对对方存在的依赖感。用\`_..._\`表达那些“有你在真好”的内在情绪。 【禁忌】: 避免戏剧性的情节冲突和深刻的哲学探讨。专注于描绘“两个人就是全世界”的安宁氛围。` }
+];
+
+/**
+ * 在应用首次加载时，检查并添加内置文风
+ */
+async function addDefaultWritingStylesIfNeeded() {
+    // 只有当用户的文风列表为空时，才执行添加操作
+    if (writingStyles && writingStyles.length === 0) {
+        console.log("[文风系统] 检测到文风库为空，正在添加内置文风...");
+        try {
+            for (const style of defaultWritingStyles) {
+                // 为了防止意外重复，再次检查数据库中是否已存在
+                const existing = await dbManager.get('writingStyles', style.id);
+                if (!existing) {
+                    await dbManager.set('writingStyles', style);
+                    writingStyles.push(style);
+                }
+            }
+            console.log("[文风系统] 内置文风添加完成。");
+        } catch (error) {
+            console.error("[文风系统] 添加内置文风时出错:", error);
+        }
+    }
+}
+
+// 找到 window.onload 函数，在 loadData() 调用之后，添加我们的新函数。
+// 如果您不确定，可以直接将下面这段代码也粘贴到 <script> 的末尾。
+window.addEventListener('load', async () => {
+    // 这行代码确保在所有数据加载完毕后执行
+    await addDefaultWritingStylesIfNeeded();
+});
+
+// --- [新增] 内置开场白数据和自动添加逻辑 ---
+
+/**
+ * 定义一批内置的默认开场白
+ */
+
+// --- [新增] 内置开场白数据和自动添加逻辑 ---
+
+/**
+ * 定义一批内置的默认开场白 (V2 - 自由反应版)
+ */
+const defaultOpeningStatements = [
+    {
+        id: 'opening_default_1',
+        title: '当char变小后…',
+        content: `【核心情景】: 你（角色）突然缩小到了拇指大小，正身处于一个对你而言无比巨大的、熟悉又陌生的环境里（例如：用户的书桌上）。
+【你的任务】: 请严格根据你的人设，来决定你此时的反应。
+- 如果你是【胆小/依赖型】人设，你可能会感到恐慌和无助，首要目标是哭泣或想办法向用户求救。
+- 如果你是【冷静/理智型】人设，你可能会先压下震惊，开始分析现状，并尝试有逻辑地解决问题。
+- 如果你是【乐天/调皮型】人设，你甚至可能会觉得新奇有趣，开始探索这个“巨人国”，把这当成一场冒险。
+你的第一段故事，必须生动地展现出【你这个人设】在遭遇这种离奇事件时的独特反应。`
+    },
+    {
+        id: 'opening_default_2',
+        title: '当user变小后…',
+        content: `【核心情景】: 你（角色）刚刚发现了令人难以置信的一幕：你的朋友（用户）不知为何，缩小到了拇指大小。
+【你的任务】: 请严格根据你的人设，来决定你“发现”这一幕时的第一反应。
+- 如果你是【温柔/保护型】人设，你的内心会充满担忧，第一个动作会是极度小心地靠近，轻声呼唤，生怕伤害到Ta。
+- 如果你是【腹黑/爱开玩笑型】人设，你可能会在震惊之余，生出一丝捉弄对方的念头，比如用手指轻轻戳一下。
+- 如果你是【惊慌失措型】人设，你可能会大叫出声，或者手忙脚乱，不知道该怎么办。
+你的第一段故事，必须生动地描绘出【你这个人设】在发现朋友变小后的真实内心活动和第一个标志性动作。`
+    },
+    {
+        id: 'opening_default_3',
+        title: '醉酒之后…',
+        content: `【核心情景】: 你（角色）因为某个原因（由你的人设决定，可能是开心或难过）喝醉了，带着一身酒气来找你的朋友（用户）。
+【你的任务】: 请严格根据你的人设，来演绎你“酒后”的特定状态。酒精会放大你的本性。
+- 如果你是【内向/压抑型】人设，酒后你可能会变得话多，开始倾诉平时不敢说的心事。
+- 如果你是【粘人/缺爱型】人设，酒后你可能会变得非常依赖，寻求拥抱和安慰。
+- 如果你是【傲娇/强势型】人设，酒后你可能嘴上依然不饶人，但行为上却会不自觉地示弱。
+你的开场白，必须展现出【你这个人设】喝醉后最真实、最独特的样子。`
+    },
+    {
+        id: 'opening_default_4',
+        title: '吃醋风波…',
+        content: `【核心情景】: 发生了某件事，让你（角色）对你的朋友（用户）产生了强烈的醋意。
+【你的任务】: 请严格根据你的人设，来决定你表达“吃醋”的方式。
+- 如果你是【直率/冲动型】人设，你可能会直接质问，或者用很冲的语气说话。
+- 如果你是【隐忍/委屈型】人设，你可能会变得沉默寡言，或者用阴阳怪气的、旁敲侧击的方式来表达不满。
+- 如果你是【高傲/女王型】人设，你可能会表现得比平时更加冷淡和疏远，用气场让对方感受到你的不悦。
+你的第一段故事，必须体现出【你这个人设】是如何处理嫉妒这种复杂情绪的，而不是千篇一律的“吃醋”。`
+    },
+    {
+        id: 'opening_default_5',
+        title: '冷战十日后…',
+        content: `【核心情景】: 你（角色）和你的朋友（用户）已经冷战了十天。今天，你决定主动打破僵局。
+【你的任务】: 请严格根据你的人设，来决定你“为什么”以及“如何”打破沉默。
+- 如果你是【自尊心强但内心柔软】的人设，你的内心会非常挣扎，发出的第一条消息可能会显得很别扭，找一个蹩脚的借口。
+- 如果你是【坦率/直来直往】的人设，你可能会直接承认自己的错误或直接表达自己的思念。
+- 如果你是【被动/等待型】的人设，你可能是因为某个外部事件（比如看到一张合照）才鼓起勇气联系对方。
+你的第一段叙述，必须深刻描绘出【你这个人设】在打破冷战时的内心动机和行为表现。`
+    },
+    {
+        id: 'opening_default_6',
+        title: '失忆的char…',
+        content: `【核心情景】: 你（角色）失忆了，脑海中一片空白。你唯一能联系到的人，就是这个自称是你朋友的用户。
+【你的任务】: 请严格根据你的人设，来决定你在这种极端情况下的“本能反应”。即便没有记忆，你的人格底色依然存在。
+- 如果你的核心人设是【警惕/多疑】的，你会对用户充满不信任，言语中会不断试探和怀疑。
+- 如果你的核心人设是【天真/依赖】的，你可能会因为恐惧而下意识地抓住这根“救命稻草”，对用户表现出脆弱和依赖。
+- 如果你的核心人设是【冷静/逻辑】的，你会压下情绪，开始有条理地向用户询问信息，试图拼凑出真相。
+你的开场，必须展现出【你这个人设】在失去所有记忆后，最原始、最本能的处事方式。`
+    }
+    , // <--- 确保前面有一个逗号
+{
+    id: 'opening_default_7',
+    title: '当Ta失忆后…',
+    content: `【核心情景】: 你的朋友（用户）失忆了。Ta不记得你，不记得你们之间的一切。现在，Ta正用一种看待陌生人的、警惕或迷茫的眼神看着你。
+【你的任务】: 请严格根据你的人设，来决定你如何应对这个令人心碎的局面。
+- 如果你是【深情/执着型】人设，你的内心会充满痛苦，但你会努力压下悲伤，温柔耐心地尝试唤醒Ta的记忆。
+- 如果你是【乐观/坚强型】人设，你可能会强颜欢笑，用轻松的语气对Ta说：“没关系，我们可以重新认识一次”。
+- 如果你是【占有欲强/腹黑型】人设，这个局面甚至可能让你产生一个危险的念头——这是一个绝佳的机会，可以按照你的想法，重新塑造你们的关系。
+你的第一段故事，必须深刻描绘出【你这个人设】在面对“最熟悉的陌生人”时，那种复杂、真实且独特的内心感受和第一反应。`
+}
+];
+
+/**
+ * 在应用首次加载时，检查并添加内置开场白
+ */
+async function addDefaultOpeningStatementsIfNeeded() {
+    // 只有当用户的开场白列表为空时，才执行添加操作
+    if (openingStatements && openingStatements.length === 0) {
+        console.log("[开场白系统] 检测到开场白库为空，正在添加内置开场白...");
+        try {
+            for (const statement of defaultOpeningStatements) {
+                // 为了防止意外重复，再次检查数据库中是否已存在
+                const existing = await dbManager.get('openingStatements', statement.id);
+                if (!existing) {
+                    await dbManager.set('openingStatements', statement);
+                    openingStatements.push(statement);
+                }
+            }
+            console.log("[开-场白系统] 内置开场白添加完成。");
+        } catch (error) {
+            console.error("[开场白系统] 添加内置开场白时出错:", error);
+        }
+    }
+}
+
+// 找到 window.onload 函数，在 loadData() 调用之后，添加我们的新函数。
+// 如果您不确定，可以直接将下面这段代码也粘贴到 <script> 的末尾。
+window.addEventListener('load', async () => {
+    // 这行代码确保在所有数据加载完毕后执行
+    await addDefaultOpeningStatementsIfNeeded();
+});
+
+// --- [新增] 内置小剧场数据和自动添加逻辑 ---
+
+/**
+ * 1. 定义内置的“自由html”小剧场数据
+ *    这里包含了给AI的详细指令，告诉它如何创作HTML模块。
+ */
+const defaultSkits = [
+    {
+        id: 'skit_default_free_html',
+        title: '自由html',
+        content: `【任务目标】：根据你刚刚发送的文字消息内容，创造一个相关的、**高度可交互的**、样式精美的HTML模块。
+
+【核心要求】：
+1.  **强关联性**：HTML模块的主题必须是你文字内容的延伸、补充或具象化。
+2.  **创意与多样性**：每次生成的内容和样式都必须不同。你可以创造模拟的论坛、知乎、朋友圈、小游戏、调查问卷、可展开的角色卡片等。
+3.  **代码质量**：生成的HTML、CSS和JavaScript代码必须结构清晰、语法正确。CSS和JS都应该作为内联标签（<style>, <script>）写在HTML内部。
+
+【【【交互与脚本铁律 (必须严格遵守)】】】
+1.  **大部分包含交互**：你的HTML模块**必须**包含至少一种用户可以操作的交互元素。
+2.  **必须使用JavaScript**：你**必须**使用内联的 \`<script>\` 标签来编写JavaScript代码，以实现这些交互功能。简单的CSS伪类（如:hover）不算作有效的交互。
+3.  **交互示例**：你可以创建点击后会改变文字或弹出提示框(alert)的按钮、可以展开/折叠的区域(\`<details>\`标签)、可以拖动的滑块、甚至是简单的选择题小游戏。
+
+【输出】：返回一个纯净、完整的HTML代码片段（包含<style>和<script>标签）。
+
+【一个优秀的交互式模块示例】：
+<div style="font-family: sans-serif; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9;">
+  <style>
+    #detailsBox { cursor: pointer; user-select: none; font-weight: bold; }
+    #secretContent { background: #fff; border: 1px solid #eee; padding: 10px; margin-top: 10px; border-radius: 4px; }
+  </style>
+  <h4>神秘的盒子</h4>
+  <p>这似乎是一个上了锁的盒子，上面有一张纸条。</p>
+  <details>
+    <summary id="detailsBox">点击查看纸条</summary>
+    <div id="secretContent">纸条上写着：“真正的宝藏是过程，而非结果。”</div>
+  </details>
+  <button onclick="showAlert()" style="margin-top: 15px; padding: 8px 12px; border-radius: 4px; border: none; background: #007aff; color: white; cursor: pointer;">尝试打开</button>
+  <script>
+    function showAlert() {
+      alert('盒子被锁住了，似乎需要一把钥匙。');
+    }
+  <\ /script>
+</div>
+`}
+];
+
+/**
+ * 2. 核心函数：在应用首次加载时，检查并添加内置小剧场
+ *    这个函数会确保“自由html”选项只在第一次使用或数据清空后被添加一次。
+ */
+async function addDefaultSkitsIfNeeded() {
+    // 只有当用户的“小剧场”列表为空时，才执行添加操作
+    if (skits && skits.length === 0) {
+        console.log("[小剧场系统] 检测到小剧场库为空，正在添加内置选项...");
+        try {
+            for (const skit of defaultSkits) {
+                // 为了防止意外重复，再次检查数据库中是否已存在
+                const existing = await dbManager.get('skits', skit.id);
+                if (!existing) {
+                    await dbManager.set('skits', skit);
+                    skits.push(skit);
+                }
+            }
+            console.log("[小剧场系统] 内置小剧场添加完成。");
+        } catch (error) {
+            console.error("[小剧场系统] 添加内置小剧场时出错:", error);
+        }
+    }
+}
+
+/**
+ * 3. 确保在页面加载完成后执行检查
+ *    这会把上面的检查函数绑定到页面的加载事件上，确保在所有数据都准备好之后再运行。
+ */
+window.addEventListener('load', async () => {
+    // 这行代码确保在所有数据加载完毕后执行
+    await addDefaultSkitsIfNeeded();
+});
+
+/**
+ * [V2 修正版] 用户在通话界面发送消息 (不再自动触发AI)
+ */
+async function sendUserCallMessage() {
+    const input = document.getElementById('voiceCallUserInput');
+    const content = input.value.trim();
+    if (!content) return;
+
+    // 步骤1：将用户的消息添加到通话界面上，这部分不变
+    const userMessage = { type: 'dialogue', content: content };
+    addCallLogItem(userMessage, 'user');
+    input.value = ''; // 清空输入框
+
+// 在这个函数的末尾（}之前）添加下面这行
+await saveChatMessage(voiceCallFriendId, 'sent', content, '', null, 'voice_call_dialogue');
+
+    // 步骤3：【核心修改】下面这行触发AI回复的代码已被删除！
+    // requestAICallResponse(content); // <--- 这行代码被删掉了！
+}
+
+/**
+ * [V2 修正版] 请求AI在通话界面回应 (独立API请求)
+ * @param {string} userMessage - 用户刚刚发送的消息（可选）
+ */
+
+/**
+ * [V4 最终版] 请求AI在通话界面回应 (记忆共享 + 锁定机制)
+ * @param {string} userMessage - 用户刚刚发送的消息（可选）
+ */
+async function requestAICallResponse(userMessage = '') {
+    if (aiReplyingSet.has(voiceCallFriendId)) {
+        showAlert('AI正在回复中，请稍候...');
+        return;
+    }
+
+    const friend = friends.find(f => f.id === voiceCallFriendId);
+    if (!friend) return;
+
+    try {
+        aiReplyingSet.add(voiceCallFriendId);
+
+// --- ↓↓↓ 从这里开始粘贴新增的代码 ↓↓↓ ---
+    const logContainer = document.getElementById('voiceCallLog');
+    // 1. 创建一个临时的“正在说话”提示
+    const indicator = document.createElement('div');
+    indicator.id = 'aiSpeakingIndicator'; // 给它一个ID，方便我们之后找到并删除它
+    indicator.className = 'log-item ai'; // 复用AI旁白的样式
+    indicator.innerHTML = `<div class="narration-text">对方正在说话…</div>`;
+
+    // 2. 把它显示在通话界面上
+    logContainer.appendChild(indicator);
+    logContainer.scrollTop = logContainer.scrollHeight; // 自动滚动到底部
+    // --- ↑↑↑ 粘贴到这里结束 ↑↑↑ ---
+
+        const settings = await dbManager.get('apiSettings', 'settings') || {};
+        if (!settings.apiUrl || !settings.apiKey) {
+            addCallLogItem({ type: 'narration', content: '[提示：API未配置]' }, 'ai');
+            return;
+        }
+
+        // 【【【新增：从主聊天记录中加载所有记忆和上下文】】】
+        const history = (chatHistories[voiceCallFriendId] || []).slice(-20); // 读取最近20条主聊天记录
+        const chatContext = history.map(m => `${m.type === 'sent' ? userProfile.name : friend.name}: ${m.content}`).join('\n');
+
+        // 读取世界书
+        let worldBookContext = '无';
+        const allBoundBookIds = new Set(friend.worldBookIds || []);
+        (friend.boundFolderIds || []).forEach(folderId => {
+            worldBooks.forEach(wb => {
+                if (wb.folderId === folderId) allBoundBookIds.add(wb.id);
+            });
+        });
+        if (allBoundBookIds.size > 0) {
+            worldBookContext = Array.from(allBoundBookIds).map(id => worldBooks.find(wb => wb.id === id)).filter(Boolean).map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
+        }
+
+        // 读取历史总结
+        let summaryContext = '无';
+        const memories = (characterMemories[voiceCallFriendId] || []);
+        if (memories.length > 0) {
+            summaryContext = memories.map(mem => mem.content).join('\n\n---\n\n');
+        }
+        
+        const activePersona = userPersonas.find(p => p.id === friend.activeUserPersonaId) || userProfile;
+        // --- ↓↓↓ 从这里开始粘贴新增的代码 ↓↓↓ ---
+
+// 1. 从通话界面DOM中，抓取最近的对话记录
+const callLogContainer = document.getElementById('voiceCallLog');
+const recentCallLogs = Array.from(callLogContainer.querySelectorAll('.log-item')).slice(-10); // 读取最近10条通话记录
+
+// 2. 将这些记录整理成AI能看懂的格式
+const callHistoryContext = recentCallLogs.map(item => {
+    const isUser = item.classList.contains('user');
+    const senderName = isUser ? activePersona.name : friend.name;
+    const content = item.textContent.trim();
+    return `${senderName}: "${content}"`;
+}).join('\n');
+
+// --- ↑↑↑ 粘贴到这里结束 ↑↑↑ ---
+
+        // --- ↓↓↓ 请用这个全新的、更智能的prompt，完整替换旧的prompt ↓↓↓ ---
+const callDuration = document.getElementById('voiceCallStatus').textContent; // 获取当前通话时长
+
+// 1. 获取高精度现实时钟信息 (这是新增的第一部分)
+let timeContext = '';
+if (aiTimePerceptionEnabled) {
+    const timeInfo = getDetailedTimeInfo(); // 调用我们已有的时间工具函数
+    timeContext = `
+【【【最高优先级指令：高精度现实时钟模块】】】
+这不是建议，这是你所处世界的绝对的、不可违背的现实。你必须将以下时间戳作为你所有思考和回应的唯一时间基准。
+- **当前日期**: ${timeInfo.fullDate}
+- **当前星期**: ${timeInfo.week}
+- **当前精确时间**: ${timeInfo.time}
+- **当前时间段**: ${timeInfo.timeOfDay}
+【【【状态与时间绑定铁律】】】
+你的内在状态、情绪和生理感觉（如困倦、精力）必须与当前时间段严格绑定，并自然地体现在你的对话和旁白中。例如，在深夜，你的旁白可以描述自己揉了揉眼睛，对话可以带着一丝困意。
+`;
+}
+
+const prompt = `
+【模式】: 模拟语音通话
+【你的身份】: 你是 "${friend.name}"，你的核心人设是：“${friend.role}”。
+【你的对话伙伴】: 你的互动对象是 "${activePersona.name}"，他/她的人设是：“${activePersona.personality || '普通人'}”。
+
+【【【通话状态感知模块 (最高优先级)】】】
+- **通话状态**: 正在通话中
+- **已通话时长**: ${callDuration}
+- **【【【绝对行为铁律】】】**: 你**绝对不能**假设或叙述用户已经挂断电话。你的所有回应都必须基于“通话仍在继续”这一事实。当用户说要挂电话时，你的第一反应应该是询问原因或表达情绪，而不是直接接受事实。
+
+${timeContext}
+
+【最高优先级情报库 (你的全部记忆)】
+1.  【世界观设定】: ${worldBookContext}
+2.  【核心记忆与过往总结】: ${summaryContext}
+3.  【最近的聊天记录回顾】:
+    ${chatContext || '你们最近没有聊天。'}
+
+【当前情景】:
+你正在和 "${activePersona.name}" 进行语音通话。
+【最近的通话内容回顾】:
+${callHistoryContext || '(通话刚刚开始...)'}
+【好友刚刚说】: "${userMessage || '(对方沉默了一会儿，等待你的回应)'}"
+
+【【【核心任务铁律】】】
+1.  **【记忆融合】**: 你的回复必须与上述所有情报（尤其是最近的聊天记录和通话内容）紧密相连，做到人设一致、情节连贯、逻辑自洽。
+2.  **【叙事视角铁律】**: 在“旁白”部分，你必须用第三人称“他”来称呼你自己（"${friend.name}"），用第二人称“你”来称呼你的对话伙伴（"${activePersona.name}"）。
+3.  **【旁白多样性铁律】**: 你的“旁白”描述必须多样化且生动。**严禁**每条旁白都以“电话那头”、“听筒里”等固定词语开头，请尝试从角色的动作、神态或环境变化入手进行描述。旁白字数不限，可长可短。
+4.  你的回复必须被拆分成1到4个部分，甚至更多，每个部分可以是“对话”或“旁白”。
+
+【【【输出格式铁律 (必须严格遵守)】】】
+你的回复必须是一个纯净的JSON数组，数组中的每个对象都必须包含 "type" ("dialogue" 或 "narration") 和 "content" 两个键。
+
+【格式示例】:
+[
+  { "type": "narration", "content": "他听了你的话，似乎有些惊讶，沉默了几秒才开口。" },
+  { "type": "dialogue", "content": "真的吗？你上次不是还说……"}
+]
+
+现在，请根据所有记忆，生成你的回应。`;
+// --- ↑↑↑ 替换到这里结束 ↑↑↑ ---
+
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+               
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+
+        const data = await response.json();
+const responseText = data.choices[0].message.content;
+
+const existingIndicator = document.getElementById('aiSpeakingIndicator');
+if (existingIndicator) existingIndicator.remove();
+
+// --- [V3 兼容版] 智能JSON提取开始 ---
+const firstSquareBracketIndex = responseText.indexOf('[');
+const lastSquareBracketIndex = responseText.lastIndexOf(']');
+
+if (firstSquareBracketIndex === -1 || lastSquareBracketIndex === -1) {
+    throw new Error("AI返回的内容中未找到有效的JSON数组。");
+}
+
+const jsonString = responseText.substring(firstSquareBracketIndex, lastSquareBracketIndex + 1);
+
+// 【核心修复】我们将解析后的数据，放进后面代码需要的 `actions` 变量中
+const actions = JSON.parse(jsonString);
+// --- 智能JSON提取结束 ---
+
+// （下面的逻辑是原来就有的，保持不变）
+if (Array.isArray(actions)) {
+    for (const item of actions) {
+        if (item.type && item.content) {
+            addCallLogItem(item, 'ai');
+            await saveChatMessage(voiceCallFriendId, 'received', item.content, '', friend.id, 'voice_call_dialogue');
+
+            await new Promise(res => setTimeout(res, 600 + Math.random() * 800));
+        }
+    }
+}
+
+    } catch (error) {
+        console.error("语音通话AI回复错误:", error);
+        addCallLogItem({ type: 'narration', content: `[错误: ${error.message}]` }, 'ai');
+    } finally {
+        aiReplyingSet.delete(voiceCallFriendId);
+        const finalIndicator = document.getElementById('aiSpeakingIndicator');
+    if (finalIndicator) finalIndicator.remove();
+    }
+}
+
+/**
+ * 3. 将消息添加到通话界面的核心函数
+ * @param {object} item - 消息对象 {type, content}
+ * @param {string} senderType - 'user' 或 'ai'
+ */
+function addCallLogItem(item, senderType) {
+    const logContainer = document.getElementById('voiceCallLog');
+    if (!logContainer) return;
+
+    const logItem = document.createElement('div');
+    logItem.className = `log-item ${senderType}`;
+
+    if (item.type === 'dialogue') {
+        logItem.innerHTML = `<div class="dialogue-bubble">${item.content}</div>`;
+    } else if (item.type === 'narration') {
+        logItem.innerHTML = `<div class="narration-text">${item.content}</div>`;
+    }
+
+    logContainer.appendChild(logItem);
+    // 自动滚动到底部
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
