@@ -10363,44 +10363,29 @@ ${timeContext}
             }
         } else {
                     // --- [V3 兼容版] 智能解析与自我修复逻辑 ---
-        let responseActions; // 我们依然需要这个变量
-        try {
-            // 1. 获取AI返回的原始文本
-            const responseText = data.choices[0].message.content;
+        // (请粘贴这个新代码块到原来的位置)
 
-            // 2. 智能查找JSON的开始和结束位置 (同时兼容数组[]和对象{})
-            const firstBracketIndex = responseText.indexOf('{');
-            const lastBracketIndex = responseText.lastIndexOf('}');
-            const firstSquareBracketIndex = responseText.indexOf('[');
-            const lastSquareBracketIndex = responseText.lastIndexOf(']');
+// --- [V4 正则表达式版] 智能解析逻辑 ---
+let responseActions;
+try {
+    const responseText = data.choices[0].message.content;
+    // 使用正则表达式直接匹配出 [...] 的部分
+    const jsonMatch = responseText.match(/\[[\s\S]*\]/); 
 
-            let jsonString;
+    if (!jsonMatch) {
+        // 如果连 [...] 结构都匹配不到，说明回复格式严重错误
+        throw new Error("AI未返回有效的JSON数组格式。");
+    }
+    
+    // 直接解析匹配到的纯净JSON字符串
+    responseActions = JSON.parse(jsonMatch[0]);
 
-            // 3. 智能判断是对象{}还是数组[]
-            if (firstSquareBracketIndex !== -1 && (firstSquareBracketIndex < firstBracketIndex || firstBracketIndex === -1)) {
-                // 如果找到了'['，并且它在'{'前面，或者根本没有'{'，就按数组处理
-                jsonString = responseText.substring(firstSquareBracketIndex, lastSquareBracketIndex + 1);
-            } else if (firstBracketIndex !== -1) {
-                // 否则按对象处理
-                jsonString = responseText.substring(firstBracketIndex, lastBracketIndex + 1);
-            } else {
-                // 如果连括号都找不到，就抛出错误
-                throw new Error("AI返回的内容中未找到有效的JSON结构。");
-            }
-            
-            // 4. 解析提取出的纯净JSON字符串
-            const parsedData = JSON.parse(jsonString);
-
-            // 5. 【【【核心修复！！！】】】
-            // 将解析成功的数据，赋值给后面代码需要用到的 `responseActions` 变量
-            responseActions = parsedData;
-
-        } catch (error) {
-            console.error("解析AI回复时发生严重错误，正在向上抛出:", error);
-            // 如果发生任何错误，就直接把错误抛给外层的catch去处理
-            // 外层的catch会弹窗提示用户，并正确地清理“正在输入”状态
-            throw error;
-        }
+} catch (error) {
+    console.error("使用正则表达式解析AI回复时出错:", error);
+    // 将错误抛出，让外层的 finally 块来处理后续清理工作
+    throw error;
+}
+// --- 解析逻辑结束 ---
         // --- [V3 兼容版] 解析逻辑结束 ---
             if (Array.isArray(responseActions)) {
                 let lastMessageId = null;
@@ -16080,14 +16065,19 @@ async function savePersona() {
     const name = document.getElementById('personaNameInput').value.trim();
     if (!name) return showAlert('昵称不能为空');
 
-    const personaData = {
-        name: name,
-        avatar: name.substring(0, 1),
-        avatarImage: '', // 稍后处理
-        personality: document.getElementById('personaPersonalityInput').value.trim(),
-        background: document.getElementById('personaBackgroundInput').value.trim(),
-        patAction: document.getElementById('personaPatActionInput').value.trim(),
-    };
+    // 将上面那段代码修改为下面这样：
+const persona = currentEditingPersonaId ? userPersonas.find(p => p.id === currentEditingPersonaId) : null;
+
+const personaData = {
+    name: name,
+    avatar: name.substring(0, 1),
+    // 核心修改在这里！
+    // 这行代码的意思是：如果是编辑模式，就先把原来人设的头像地址(persona.avatarImage)填上；如果是新增模式，才是空白。
+    avatarImage: persona ? persona.avatarImage : '', 
+    personality: document.getElementById('personaPersonalityInput').value.trim(),
+    background: document.getElementById('personaBackgroundInput').value.trim(),
+    patAction: document.getElementById('personaPatActionInput').value.trim(),
+};
 
     if (currentEditingPersonaId) {
         // --- 更新现有的人设 ---
@@ -17232,7 +17222,7 @@ ${chatHistoryContext} `;
         3.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**:
             你**绝对不能**以任何形式描写或杜撰 "${activePersona.name}" 的任何动作、心理活动、或说出的话语。你的叙述视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。你只能回应，不能控制。
         4.  **【【【叙事视角与人称铁律】】】**:
-            - 在所有的小说式描述中（即非对话部分），你必须使用第三人称代词“他”来指代你自己的角色("${friend.name}")。严禁使用第一人称“我”。
+            - 在所有的小说式描述中（即非对话部分），你必须使用第三人称代词“他”或者“她”来指代你自己的角色("${friend.name}")。具体根据角色的性别。严禁使用第一人称“我”。
             - 当提到你的对话伙伴 ("${activePersona.name}") 时，必须且只能使用第二人称代词“你”。
        5.  **【【【格式化铁律】】】**:
             - 角色 "${friend.name}" 说的话必须被中文引号“ ”包裹。
