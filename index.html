@@ -10365,27 +10365,29 @@ ${timeContext}
                     // --- [V3 兼容版] 智能解析与自我修复逻辑 ---
         // (请粘贴这个新代码块到原来的位置)
 
-// --- [V4 正则表达式版] 智能解析逻辑 ---
+// --- [V6 结构重构版] 调用安全解析器 ---
 let responseActions;
 try {
     const responseText = data.choices[0].message.content;
-    // 使用正则表达式直接匹配出 [...] 的部分
-    const jsonMatch = responseText.match(/\[[\s\S]*\]/); 
+    // 直接调用我们全新的、功能强大的解析器函数
+    responseActions = safelyParseAiResponse(responseText);
 
-    if (!jsonMatch) {
-        // 如果连 [...] 结构都匹配不到，说明回复格式严重错误
-        throw new Error("AI未返回有效的JSON数组格式。");
-    }
-    
-    // 直接解析匹配到的纯净JSON字符串
-    responseActions = JSON.parse(jsonMatch[0]);
+} catch (parsingError) {
+    // 如果safelyParseAiResponse函数最终还是失败了，
+    // 它会抛出一个错误，我们在这里捕获它。
+    console.error("【最终捕获】在 receiveMessage 函数中发生解析错误:", parsingError);
 
-} catch (error) {
-    console.error("使用正则表达式解析AI回复时出错:", error);
-    // 将错误抛出，让外层的 finally 块来处理后续清理工作
-    throw error;
+    // 【核心修改】
+    // 在聊天界面上显示一条清晰的错误提示消息，而不是原始文本。
+    const errorMessage = `[AI回复解析失败: ${parsingError.message}]`;
+    const errorMsgData = await saveChatMessage(friendId, 'received', errorMessage);
+    addMessageToDOM(errorMsgData, friend);
+
+    // 终止后续的正常消息处理流程
+    return; // 提前结束函数
 }
 // --- 解析逻辑结束 ---
+
         // --- [V3 兼容版] 解析逻辑结束 ---
             if (Array.isArray(responseActions)) {
                 let lastMessageId = null;
@@ -11435,17 +11437,35 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
             reader.readAsDataURL(file);
         }
 
-        function applyCustomIcon(appId, dataUrl) { 
+                function applyCustomIcon(appId, dataUrl) { 
             const el = document.getElementById(`icon-${appId}`); 
-            if (el) { el.style.backgroundImage = `url(${dataUrl})`; el.innerHTML = ''; } 
+            if (el) { 
+                el.innerHTML = ''; // 移除 SVG 内容
+                el.style.backgroundImage = `url(${dataUrl})`; 
+                el.style.backgroundSize = 'cover'; // 明确设置 background-size
+                el.style.backgroundPosition = 'center'; // 明确设置 background-position
+            } 
         }
 
-        function applyCustomIcons() { 
-            for (const appId in customIcons) applyCustomIcon(appId, customIcons[appId]);
+                function applyCustomIcons() { 
+            // 上半部分保持不变
+            for (const appId in customIcons) {
+                applyCustomIcon(appId, customIcons[appId]);
+            }
+
+            // 对没有自定义图标的进行重置
             ['wechat', 'settings', 'worldbook', 'theme', 'phone', 'placeholder1', 'placeholder2'].forEach(id => {
                 if (!customIcons[id]) {
                     const el = document.getElementById(`icon-${id}`);
-                    if (el) { el.style.backgroundImage = ''; el.innerHTML = getDefaultIconSVG(id); }
+                    if (el) { 
+                        el.style.backgroundImage = ''; // 移除背景图片
+                        
+                        // --- ↓↓↓ 核心修复代码 ↓↓↓ ---
+                        el.style.backgroundSize = ''; // 明确重置 background-size 属性
+                        // --- ↑↑↑ 核心修复代码 ↑↑↑ ---
+
+                        el.innerHTML = getDefaultIconSVG(id); // 将默认的 SVG 图标放回去
+                    }
                 }
             });
         }
@@ -17213,7 +17233,7 @@ ${chatHistoryContext} `;
 
 
      // 第二步：处理默认情况（没有选择小-剧场）
-        if (!offlineModeSettings.skitId || !skits.some(s => s.id === offlineModeSettings.skitId)) {
+        if (! currentOfflineSettings.skitId || !skits.some(s => s.id === currentOfflineSettings.skitId)) {
             prompt += `
 
         【【【核心任务铁律 (必须严格遵守)】】】
@@ -17232,9 +17252,11 @@ ${chatHistoryContext} `;
        8.  **【【【最高记忆铁律：承上启下！！！】】】**:
     你**必须**仔细阅读并融合**以上所有情报**，尤其是“世界观”和“核心记忆”。你的续写**必须**与所有上文内容紧密相连，做到人设一致、情节连贯、逻辑自洽。**严禁遗忘**任何设定和已总结的记忆。
    【【【输出格式铁律 (必须严格遵守)】】】
-1.  **【纯文本输出】**: 你的回复**只能**是纯文本的小说内容。
-2.  **【禁止HTML】**: **严禁**生成任何 \`[HTML_SKIT_SEPARATOR]\` 分隔符或HTML代码。
-3.  **【心声可选】**: 如果需要更新心声，可以在小说文本结束后，另起一行，写下分隔符 \`[HEARTS_VOICE_SEPARATOR]\`，然后附上心声JSON对象。
+1.  **【双重输出】**: 你的回复**必须**包含两个部分：小说正文和心声JSON。
+2.  **【第一部分：故事】**: 首先，直接输出续写的小说正文（纯文本）。
+3.  **【第二部分：心声】**: 在小说正文结束后，**必须另起一行**，写下这个独一无二的分隔符：\`[HEARTS_VOICE_SEPARATOR]\`，然后**必须附上**一个完整、语法正确的心声JSON对象。
+4.  **【禁止HTML】**: **严禁**生成任何 \`[HTML_SKIT_SEPARATOR]\` 分隔符或HTML代码。
+
 
 【格式示例】:
 他看着你的消息，嘴角不自觉地上扬。_原来你还记得..._ 他拿起手机，指尖在屏幕上飞舞：“当然记得，那可是我们第一次见面。”
@@ -17261,7 +17283,7 @@ ${chatHistoryContext} `;
 1.  **【第一部分：故事】**: 首先，直接输出续写的小说正文（纯文本）。
 2.  **【第二部分：分隔符】**: 在小说正文结束后，**必须另起一行**，写下这个独一无二的分隔符：\`[HTML_SKIT_SEPARATOR]\`
 3.  **【第三部分：HTML模块】**: 在分隔符之后，再附上你生成的、纯净的、完整的HTML代码。
-4.  **【第四部分：心声】**: 如果需要更新心声，请在HTML模块之后，再另起一行，写下分隔符 \`[HEARTS_VOICE_SEPARATOR]\`，然后附上心声JSON对象。
+4.  **【第四部分：心声】**: 必须更新心声，请在HTML模块之后，再另起一行，写下分隔符 \`[HEARTS_VOICE_SEPARATOR]\`，然后附上心声JSON对象。
 
 【格式示例】:
 他看着你的消息，嘴角不自觉地上扬。_原来你还记得..._ 他拿起手机，指尖在屏幕上飞舞：“当然记得，那可是我们第一次见面。”
@@ -17504,46 +17526,6 @@ function openSkitList() {
     document.getElementById('skitModal').classList.add('show');
 }
 
-/**
- * 关闭“小剧场选择”弹窗
- */
-function closeSkitList() {
-    document.getElementById('skitModal').classList.remove('show');
-}
-
-/**
- * 渲染小剧场列表到弹窗中
- */
-function renderSkitList() {
-    const container = document.getElementById('skitList');
-    container.innerHTML = '';
-    
-    const noSkitItem = document.createElement('div');
-    noSkitItem.className = 'opening-statement-item';
-    noSkitItem.innerHTML = '<span>不使用小剧场</span>';
-    noSkitItem.onclick = () => selectSkit(null);
-    container.appendChild(noSkitItem);
-
-    skits.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'opening-statement-item';
-        div.innerHTML = `<span onclick="selectSkit('${item.id}')" style="flex-grow: 1;">${item.title}</span>`;
-        container.appendChild(div);
-    });
-}
-
-/**
- * 选中一个小剧场并更新设置
- */
-async function selectSkit(id) {
-    const friend = friends.find(f => f.id === currentChatFriendId);
-if (friend) {
-    friend.offlineSettings.skitId = id;
-}
-    updateCurrentSkitDisplay();
-    closeSkitList();
-}
-
 // --- ▲▲▲ 粘贴到这里结束 ▲▲▲ ---
 
 /**
@@ -17641,11 +17623,13 @@ function renderSkitList() {
     });
 }
 
-/**
- * 选中一个小剧场并更新设置
- */
 async function selectSkit(id) {
-    offlineModeSettings.skitId = id;
+    // 核心修改：找到当前好友，并将设置保存到他自己的 offlineSettings 对象中
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (friend) {
+        friend.offlineSettings.skitId = id;
+    }
+    // (下面的代码保持不变)
     updateCurrentSkitDisplay();
     closeSkitList();
 }
@@ -18159,6 +18143,56 @@ function addCallLogItem(item, senderType) {
     logContainer.appendChild(logItem);
     // 自动滚动到底部
     logContainer.scrollTop = logContainer.scrollHeight;
+}
+
+
+/**
+ * [V6 安全解析器 - 您的专属版本]
+ * 一个健壮的AI响应解析函数，采用分层策略来提取JSON数据。
+ * @param {string} rawAiResponse - 从AI API获取的原始文本响应。
+ * @returns {Array<object>} - 解析成功后返回的动作对象数组。
+ * @throws {Error} - 如果所有解析方案均失败，则抛出一个详细的错误。
+ */
+function safelyParseAiResponse(rawAiResponse) {
+    // 方案 1: 【乐观解析尝试】 - 这是最高效的模式
+    // 我们首先假设AI返回的是一个完美的、完整的JSON数组。
+    try {
+        const fullArrayMatch = rawAiResponse.match(/\[[\s\S]*\]/);
+        if (fullArrayMatch) {
+            console.log("解析成功：通过乐观解析模式。");
+            return JSON.parse(fullArrayMatch[0]);
+        }
+        // 如果连数组的方括号都找不到，就主动进入下一个方案。
+        throw new Error("响应中未找到有效的JSON数组结构。");
+
+    } catch (optimisticError) {
+        console.warn("乐观解析模式失败，启动后备恢复方案...", optimisticError);
+
+        // 方案 2: 【后备恢复方案】 - 提取所有独立的JSON对象
+        // 即使整个数组格式是坏的，我们也要尽力把里面完好的“零件”抢救出来。
+        const objectSnippets = rawAiResponse.match(/{[^{}]*}/g);
+        if (objectSnippets) {
+            const recoveredActions = [];
+            for (const snippet of objectSnippets) {
+                try {
+                    // 逐一解析我们“捞”出来的每一个JSON片段
+                    recoveredActions.push(JSON.parse(snippet));
+                } catch (snippetError) {
+                    console.warn("后备恢复方案：跳过一个无法解析的JSON片段:", snippet);
+                }
+            }
+
+            if (recoveredActions.length > 0) {
+                console.log(`解析成功：通过后备恢复方案，成功挽救了 ${recoveredActions.length} 个动作。`);
+                return recoveredActions;
+            }
+        }
+    }
+
+    // 【最终保障】
+    // 如果以上所有努力都失败了，说明AI的回复质量极差。
+    // 我们就抛出一个明确的错误，而不是返回混乱的文本。
+    throw new Error("所有解析方案均失败：AI响应内容不包含任何有效的JSON结构。");
 }
 
     </script>
