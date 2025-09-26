@@ -5300,6 +5300,28 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
     }
 }
 
+/* 日记卡片需要相对定位，作为删除按钮的“锚点” */
+.diary-cover-item {
+    position: relative;
+}
+
+/* 删除按钮本身的样式 */
+.diary-delete-icon {
+    position: absolute; /* 绝对定位，相对于父元素 */
+    top: 10px;          /* 距离顶部10像素 */
+    right: 10px;         /* 距离右侧10像素 */
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    fill: #bbb;         /* 默认灰色 */
+    transition: fill 0.2s ease; /* 添加颜色过渡效果 */
+    z-index: 2;         /* 确保在其他内容之上 */
+}
+
+.diary-delete-icon:hover {
+    fill: #ff3b30;     /* 鼠标悬停时变为红色 */
+}
+
     </style>
 </head>
 <body>
@@ -6090,7 +6112,17 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
             </div>
 
             <div id="walletScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToProfile()">←</button><div class="nav-title">钱包</div><div></div></div><div class="settings-content"><div class="balance-display"><div class="balance-amount" id="balanceAmount">¥ 0.00</div><div class="balance-label">余额</div></div><div class="wallet-menu"><div class="wallet-menu-item" onclick="rechargeWallet()"><span>💳 充值</span><span>></span></div><div class="wallet-menu-item" onclick="withdrawWallet()"><span>💰 提现</span><span>></span></div><div class="wallet-menu-item" onclick="transferWallet()"><span>💸 转账</span><span>></span></div><div class="wallet-menu-item" onclick="walletHistory()"><span>📋 账单</span><span>></span></div></div></div></div>
-            <div id="favoritesScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToProfile()">←</button><div class="nav-title">收藏</div><button class="nav-btn" onclick="toggleSelectMode()">选择</button></div><div class="select-mode" id="selectMode"><span id="selectedCount">已选择 0 项</span><button class="select-btn" onclick="deleteSelectedFavorites()">删除</button></div><div class="wechat-content"><div class="favorite-list" id="favoriteList"></div></div></div>
+            <div id="favoritesScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToProfile()">←</button><div class="nav-title">收藏</div><button class="nav-btn" onclick="toggleSelectMode()">选择</button> 
+    </div>
+    <div class="wechat-content">
+        <!-- ↓↓↓ 把“选择栏”移动到这里来 ↓↓↓ -->
+        <div class="select-mode" id="selectMode">
+            <span id="selectedCount">已选择 0 项</span>
+            <button class="select-btn" onclick="deleteSelectedFavorites()">删除</button>
+        </div>
+        <div class="favorite-list" id="favoriteList"></div>
+    </div>
+</div>
             <div id="worldBookScreen" class="page"><div class="nav-bar"> <button class="nav-btn" id="navBarGoHomeButton" onclick="goHome()">←</button> <div class="nav-title">世界书</div><div style="display: flex; align-items: center;"><button class="nav-btn" onclick="openAddWorldBookFolderModal()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg></button><button class="nav-btn" onclick="openAddWorldBook()">+</button></div></div><div class="wechat-content"><div class="worldbook-list" id="worldBookList"></div></div></div>
             <div id="momentsScreen" class="page"><div class="nav-bar"><button class="nav-btn" onclick="backToDiscover()">←</button><div class="nav-title">朋友圈</div> <button class="nav-btn nav-right-action-btn" onclick="openAddMoment()">+</button> </div><div class="wechat-content"><div id="momentsList"></div></div></div>
             
@@ -9345,58 +9377,60 @@ if (msg.isOfflineMessage) {
         }
 
         let lastMessageTimestamp = null;
-        // 新功能：仅渲染初始的最近消息
-function renderInitialMessages() {
-    const container = document.getElementById('chatMessages');
-    container.innerHTML = ''; // 清空容器
-    lastMessageTimestamp = null;
-    const friend = friends.find(f => f.id === currentChatFriendId);
-    if (!friend) return;
-    
-    applyIndividualChatBackground(friend); // 应用聊天背景
-    
-    const history = chatHistories[currentChatFriendId] || [];
-    if (history.length === 0) {
-        currentlyDisplayedMessageCount = 0;
-        return;
-    }
+                function renderInitialMessages() {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = ''; // 清空容器
+            lastMessageTimestamp = null;
+            const friend = friends.find(f => f.id === currentChatFriendId);
+            if (!friend) return;
 
-    const initialMessages = history.slice(-CHAT_PAGE_SIZE);
-    currentlyDisplayedMessageCount = initialMessages.length;
+            applyIndividualChatBackground(friend); // 应用聊天背景
 
-    // 如果还有更多历史消息，就在顶部显示一个提示
-    if (history.length > currentlyDisplayedMessageCount) {
-         const loadMoreDiv = document.createElement('div');
-         loadMoreDiv.id = 'loadMoreIndicator';
-         loadMoreDiv.style.textAlign = 'center';
-         loadMoreDiv.style.padding = '10px';
-         loadMoreDiv.style.color = '#999';
-         loadMoreDiv.style.fontSize = '12px';
-         loadMoreDiv.textContent = '--- 上滑加载更多记录 ---';
-         container.appendChild(loadMoreDiv);
-    }
+            // ↓↓↓ 核心修改：只筛选可以显示的消息类型 ↓↓↓
+            const fullHistory = chatHistories[currentChatFriendId] || [];
+            const displayableHistory = fullHistory.filter(msg => msg.contentType !== 'voice_call_dialogue');
+            // ↑↑↑ 修改结束 ↑↑↑
 
-    const fragment = document.createDocumentFragment();
-    initialMessages.forEach(msg => {
-        // 这部分逻辑和旧函数一样，用于处理时间戳和消息内容
-        const msgTimestamp = new Date(msg.timestamp);
-        if (lastMessageTimestamp && (msgTimestamp - lastMessageTimestamp) > 15 * 60 * 1000) {
-            const timeDiv = document.createElement('div');
-            timeDiv.className = 'chat-timestamp';
-            timeDiv.textContent = msgTimestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-            fragment.appendChild(timeDiv);
+            if (displayableHistory.length === 0) {
+                currentlyDisplayedMessageCount = 0;
+                return;
+            }
+
+            // 使用筛选后的历史记录进行后续操作
+            const initialMessages = displayableHistory.slice(-CHAT_PAGE_SIZE);
+            currentlyDisplayedMessageCount = initialMessages.length;
+
+            if (displayableHistory.length > currentlyDisplayedMessageCount) {
+                const loadMoreDiv = document.createElement('div');
+                loadMoreDiv.id = 'loadMoreIndicator';
+                loadMoreDiv.style.textAlign = 'center';
+                loadMoreDiv.style.padding = '10px';
+                loadMoreDiv.style.color = '#999';
+                loadMoreDiv.style.fontSize = '12px';
+                loadMoreDiv.textContent = '--- 上滑加载更多记录 ---';
+                container.appendChild(loadMoreDiv);
+            }
+
+            const fragment = document.createDocumentFragment();
+            initialMessages.forEach(msg => {
+                const msgTimestamp = new Date(msg.timestamp);
+                if (lastMessageTimestamp && (msgTimestamp - lastMessageTimestamp) > 15 * 60 * 1000) {
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'chat-timestamp';
+                    timeDiv.textContent = msgTimestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                    fragment.appendChild(timeDiv);
+                }
+                lastMessageTimestamp = msgTimestamp;
+                // 注意：这里我们不再需要 `addMessageToDOM` 返回的元素了，因为它会直接操作DOM
+                addMessageToDOM(msg, friend); 
+            });
+            
+            // 由于 addMessageToDOM 直接添加，我们不需要再 append fragment
+            // container.appendChild(fragment);
+
+            // 滚动到底部
+            container.scrollTop = container.scrollHeight;
         }
-        lastMessageTimestamp = msgTimestamp;
-        addMessageToDOM(msg, friend);
-        const msgElement = container.lastElementChild;
-        if(msgElement) fragment.appendChild(msgElement);
-    });
-    
-    container.appendChild(fragment);
-    // 滚动到底部
-    container.scrollTop = container.scrollHeight;
-}
-
 // 这是【修正后】的完整函数，请直接替换
 async function loadPreviousMessages() {
     if (isLazyLoading) return;
@@ -9653,14 +9687,22 @@ if (msg && msg.contentType === 'html_card') {
             input.focus();
         }
 
-        async function favoriteMessage() {
+                async function favoriteMessage() {
             const msgId = currentMessageElement.closest('.message').getAttribute('data-message-id');
             const msg = (chatHistories[currentChatFriendId] || []).find(m => String(m.id) === msgId);
             if(!msg) return;
             
             const friend = friends.find(f => f.id === currentChatFriendId);
-            const newFav = { id: generateUniqueId(), content: msg.content, contentType: msg.contentType, from: friend ? (friend.remark || friend.name) : '未知', timestamp: new Date().toISOString() };
+            // 【核心修改】在这里创建对象时，我们不再手动添加 id 属性
+            const newFav = { 
+                content: msg.content, 
+                contentType: msg.contentType, 
+                from: friend ? (friend.remark || friend.name) : '未知', 
+                timestamp: new Date().toISOString() 
+            };
+            // 让数据库自己生成ID，并把这个新ID返回给我们
             const newId = await dbManager.set('favorites', newFav);
+            // 把数据库生成的正确ID，赋值给我们内存中的对象
             newFav.id = newId;
             favorites.push(newFav);
             
@@ -11279,7 +11321,9 @@ function backToChat() {
                     ? `<div class="diary-cover-avatar" style="background-image: url(${diary.avatarImage})"></div>`
                     : `<div class="diary-cover-avatar" style="background-color: #eee; display: flex; align-items: center; justify-content: center;">${diary.avatar}</div>`;
 
+                
                 item.innerHTML = `
+                    <svg class="diary-delete-icon" onclick="deleteDiary(event, '${diary.id}', '${diary.authorId}')" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                     <div class="diary-cover-header">
                         ${avatarHtml}
                         <div class="diary-cover-info">
@@ -11290,6 +11334,7 @@ function backToChat() {
                     <div class="diary-cover-thought">“${diary.heartfeltThought || '...'}”</div>
                 `;
                 list.appendChild(item);
+
             });
         }
         
@@ -17277,7 +17322,18 @@ ${chatHistoryContext} `;
 1.  **【双重回复】**: 你的回复**必须**包含两个部分：一段纯文本的“小说式旁白与对话”，和一个独立的“HTML小剧场模块”。
 2.  **【小说家模式】**: 你的“小说式旁白与对话”部分必须遵循之前的全部小说模式规则（第三人称、内心戏、对话格式等）。
 3.  **【小剧场模式】**: 你的“HTML小剧场模块”部分必须遵循【HTML小剧场指令铁律】。如果该指令为空，则你无需生成HTML模块，回复格式退化为普通线下模式。
-4.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**: 你的所有描写和对话，视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。
+4.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**: 你**绝对不能**以任何形式描写或杜撰 "${activePersona.name}" 的任何动作、心理活动、或说出的话语。你的叙述视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。你只能回应，不能控制。
+
+ 5.  **【小说家模式】**: 你的回复必须是一段**小说式**的、连贯的、充满细节的文本。必须包含大量的心理活动、动作描写、环境描写和神态描写。
+6.  **【【【叙事视角与人称铁律】】】**:在所有的小说式描述中（即非对话部分），你必须使用第三人称代词“他”或者“她”来指代你自己的角色("${friend.name}")。具体根据角色的性别。严禁使用第一人称“我”。
+            - 当提到你的对话伙伴 ("${activePersona.name}") 时，必须且只能使用第二人称代词“你”。
+**【【【格式化铁律】】】**:
+角色 "${friend.name}" 说的话必须被中文引号“ ”包裹。
+角色 "${friend.name}" 的**所有内心想法/心理活动**，必须被下划线 \`_..._\` 包裹。
+ **【【【完整性与字数铁律】】】**: 你的任务是创作一段**完整且连贯**的故事，总字数**约等于** **${currentOfflineSettings.charCount}** 字。你必须在字数限制内讲完一个完整的情节或心理活动，**绝对不能**在句子中间突然截断。
+ **【禁止动作】**: 你的回复**只能**是纯文本。严禁生成任何JSON格式的动作。
+**【【【最高记忆铁律：承上启下！！！】】】**:
+    你**必须**仔细阅读并融合**以上所有情报**，尤其是“世界观”和“核心记忆”。你的续写**必须**与所有上文内容紧密相连，做到人设一致、情节连贯、逻辑自洽。**严禁遗忘**任何设定和已总结的记忆。
 
 【【【输出格式铁律 (必须严格遵守)】】】
 1.  **【第一部分：故事】**: 首先，直接输出续写的小说正文（纯文本）。
@@ -18193,6 +18249,32 @@ function safelyParseAiResponse(rawAiResponse) {
     // 如果以上所有努力都失败了，说明AI的回复质量极差。
     // 我们就抛出一个明确的错误，而不是返回混乱的文本。
     throw new Error("所有解析方案均失败：AI响应内容不包含任何有效的JSON结构。");
+}
+
+/**
+ * [新增] 删除一篇指定的日记
+ * @param {Event} event - 点击事件对象
+ * @param {string} diaryId - 要删除的日记ID
+ * @param {string} authorId - 该日记的作者ID，用于刷新列表
+ */
+async function deleteDiary(event, diaryId, authorId) {
+    // 阻止事件冒泡，防止点击删除按钮时，也触发了打开日记的事件
+    event.stopPropagation();
+
+    showConfirm('确定要删除这篇日记吗？此操作不可恢复。', async (confirmed) => {
+        if (!confirmed) return; // 如果用户取消，则不执行任何操作
+
+        // 1. 从数据库中删除
+        await dbManager.delete('diaries', diaryId);
+
+        // 2. 从内存的diaries数组中移除
+        diaries = diaries.filter(d => d.id !== diaryId);
+
+        // 3. 刷新当前的日记列表，让删除效果立即显示
+        showFriendDiary(authorId);
+        
+        showAlert('日记已删除。');
+    });
 }
 
     </script>
