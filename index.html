@@ -5322,6 +5322,36 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
     fill: #ff3b30;     /* 鼠标悬停时变为红色 */
 }
 
+/* 【【【第二步：请将这两段CSS代码粘贴到 <style> 区域】】】 */
+
+/* 用于隐藏和显示主动发消息的时间间隔设置 */
+.proactive-interval-setting {
+    display: none; /* 默认隐藏 */
+}
+.proactive-interval-setting.show {
+    display: flex; /* 当有 .show 类时显示 */
+}
+
+/* 未读消息红点的样式 */
+.friend-item {
+    position: relative; /* 让红点可以相对于它定位 */
+}
+.unread-badge {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background-color: #ff3b30;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
     </style>
 </head>
 <body>
@@ -5970,16 +6000,9 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
                 </div>
                 <div class="discover-content">
                     <div class="discover-menu">
-                    <!-- 【【【第一步 A：将这段代码粘贴到“我的设置”页面的 discover-menu 中】】】 -->
-<div class="discover-menu-item" onclick="openBeautificationSettings()">
-    <div class="discover-menu-left">
-        <svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,18C8.69,18 6,15.31 6,12C6,8.69 8.69,6 12,6C15.31,6 18,8.69 18,12C18,15.31 15.31,18 12,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/></svg>
-        <div class="discover-menu-title">美化设置</div>
-    </div>
-    <span>></span>
-</div>
+                   
                         <div class="discover-menu-item" onclick="openGlobalChatBg()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z"/></svg><div class="discover-menu-title">全局聊天背景</div></div><span>></span></div>
-                        <div class="discover-menu-item" onclick="openBubbleSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M15.04,7.5L15.5,8.96L16.96,9.5L15.5,10.04L15.04,11.5L14.5,10.04L13.04,9.5L14.5,8.96L15.04,7.5M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"/></svg><div class="discover-menu-title">气泡设置</div></div><span>></span></div>
+                       
                         <div class="discover-menu-item"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg><div class="discover-menu-title">圆角模式</div></div><label class="toggle-switch"><input type="checkbox" id="roundedToggle" onchange="toggleRoundedCorners()"><span class="toggle-slider"></span></label></div>
                         <div class="discover-menu-item"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,18C8.69,18 6,15.31 6,12C6,8.69 8.69,6 12,6C15.31,6 18,8.69 18,12C18,15.31 15.31,18 12,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/></svg><div class="discover-menu-title">夜间模式</div></div><label class="toggle-switch"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"><span class="toggle-slider"></span></label></div>
                     </div>
@@ -5988,7 +6011,7 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
 
             <div id="bubbleSettingsScreen" class="page">
                 <div class="nav-bar">
-                    <button class="nav-btn" onclick="backToMySettings()">←</button>
+                    <button class="nav-btn" onclick="backToTheme()">←</button>
                     <div class="nav-title">气泡设置</div>
                     <div></div>
                 </div>
@@ -6151,6 +6174,16 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
                         <div class="discover-menu-item" onclick="openIconSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M17.5,12A1.5,1.5 0 0,1 16 10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A9,9 0 0,0 21,12A9,9 0 0,0 12,3Z"/></svg><div class="discover-menu-title">图标设置</div></div><span>></span></div>
                         <div class="discover-menu-item" onclick="openComponentSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"
                         fill="currentColor"><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3M11 3H3v10h8V3m10 8h-8v10h8V11m-10 4H3v6h8v-6Z"/></svg><div class="discover-menu-title">组件设置</div></div><span>></span></div>
+                       
+<!-- 【【【第一步 A：将这段代码粘贴到“我的设置”页面的 discover-menu 中】】】 -->
+<div class="discover-menu-item" onclick="openBeautificationSettings()">
+    <div class="discover-menu-left">
+        <svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,18C8.69,18 6,15.31 6,12C6,8.69 8.69,6 12,6C15.31,6 18,8.69 18,12C18,15.31 15.31,18 12,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/></svg>
+        <div class="discover-menu-title">美化设置</div>
+    </div>
+    <span>></span>
+</div>
+<div class="discover-menu-item" onclick="openBubbleSettings()"><div class="discover-menu-left"><svg class="discover-menu-icon" viewBox="0 0 24 24"><path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M15.04,7.5L15.5,8.96L16.96,9.5L15.5,10.04L15.04,11.5L14.5,10.04L13.04,9.5L14.5,8.96L15.04,7.5M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"/></svg><div class="discover-menu-title">气泡设置</div></div><span>></span></div>
                     </div>
                 </div>
             </div>
@@ -6208,6 +6241,25 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
         <div class="discover-menu-title">API 设置</div>
         <span>></span>
     </div>   
+    
+    <!-- ↓↓↓ 从这里开始，粘贴所有新增的HTML代码 ↓↓↓ -->
+
+            <!-- 1. 这是“主动发消息”功能的总开关 -->
+            <div class="discover-menu-item">
+                <div class="discover-menu-title">开启主动发消息</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="proactiveMessagingToggle" onchange="toggleProactiveMessaging()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- 2. 这是时间间隔设置，默认是隐藏的 -->
+            <div class="discover-menu-item proactive-interval-setting" id="proactiveIntervalSetting">
+                <label for="proactiveIntervalInput">主动消息间隔 (分钟)</label>
+                <input type="number" id="proactiveIntervalInput" class="settings-input-number" min="1" onchange="updateProactiveInterval(this.value)">
+            </div>
+
+            <!-- ↑↑↑ HTML代码粘贴到这里结束 ↑↑↑ -->
     
     <!-- 【【【这是我们新增的自动总结开关】】】 -->
     <div class="discover-menu-item">
@@ -6310,7 +6362,7 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
             <!-- 【【【第一步 B：将这个全新的页面代码块粘贴到 apiSettingsScreen 页面之后】】】 -->
 <div id="beautificationSettingsScreen" class="page">
     <div class="nav-bar">
-        <button class="nav-btn" onclick="backToMySettings()">←</button>
+        <button class="nav-btn" onclick="backToTheme()">←</button>
         <div class="nav-title">美化设置</div>
         <div></div>
     </div>
@@ -7030,6 +7082,11 @@ requestPersistentStorage();
         // 全局变量
                 let userPersonas = []; // 新增：用于存储所有用户人设的数组
         let currentEditingPersonaId = null; // 新增：用于记录当前正在编辑的人设ID
+        let proactiveMessagingSettings = {
+    enabled: false,  // 总开关，默认关闭
+    interval: 360,    // 默认间隔，单位：分钟 (例如 360分钟 = 6小时)
+    enabledTimestamp: null
+};
         let currentChatFriendId = null;
         // [新增] 线下模式全局变量
 let isOfflineModeActive = false;
@@ -7700,6 +7757,8 @@ chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
 
 offlineModeSettings, // <-- 新增
 
+proactiveMessagingSettings: proactiveMessagingSettings
+
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
@@ -7827,6 +7886,12 @@ characterMemories = {};
             skitId: null
         };
     }
+    // 【【【这就是修复问题的核心代码】】】
+// 检查这个旧角色是否缺少“消息债务”属性
+if (friend.proactiveMessageDebt === undefined) {
+    // 如果缺少，就给他补上，并设置为0
+    friend.proactiveMessageDebt = 0;
+}
 });
 friends = loadedFriends || [];
 
@@ -7866,6 +7931,8 @@ moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(
                
 // 恢复应用设置
 const settings = loadedAppSettings;
+
+proactiveMessagingSettings = settings.proactiveMessagingSettings || { enabled: false, interval: 360 };
 
 // 恢复线下模式设置和开场白
 offlineModeSettings = settings.offlineModeSettings || { charCount: 8000, style: 'default', openingStatementId: null };
@@ -8206,6 +8273,7 @@ userPersonas = [userProfile];
         
         // 3. 将保存的 memoryGenerationTurns 变量的值，填入输入框
         document.getElementById('memoryGenerationTurnsInput').value = memoryGenerationTurns;
+        applyProactiveMessagingSettingsUI();
     }
     // --- 【【【修复结束】】】 ---
 
@@ -8696,7 +8764,9 @@ function setChatAreaPadding(isOpen) {
     patAction: '',
     activeUserPersonaId: 'default_user', // <--- 核心改动就是增加了这一行！
     heartsVoice: { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' },
-    turnCountSinceLastMemory: 0, isOfflineMode: false, // <-- [新增] 为每个好友添加独立的线下模式开关
+    turnCountSinceLastMemory: 0, 
+    proactiveMessageDebt: 0,
+    isOfflineMode: false, // <-- [新增] 为每个好友添加独立的线下模式开关
     offlineSettings: {
         charCount: 1000,
         openingStatementId: null,
@@ -8817,6 +8887,12 @@ const newGroup = {
                 item.onclick = () => openChat(friend.id);
                 const displayName = friend.remark || friend.name || '未知好友';
                 
+                let unreadBadgeHtml = '';
+    // 如果这个朋友有“消息债务”，并且债务大于0，就创建红点HTML
+    if (friend.proactiveMessageDebt && friend.proactiveMessageDebt > 0) {
+        unreadBadgeHtml = `<div class="unread-badge">${friend.proactiveMessageDebt}</div>`;
+    }
+                
                 let avatarHtml;
                 if (friend.avatarImage) {
                     avatarHtml = `<div class="friend-avatar" style="background-image: url(${friend.avatarImage}); border: none;"></div>`;
@@ -8836,9 +8912,16 @@ const newGroup = {
                 if(friend.lastMessageContentType === 'location') lastMessageContent = '[位置]';
                 if(friend.lastMessageContentType === 'voice_call') lastMessageContent = '[语音通话]';
 
-                item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${displayName}</div><div class="friend-message">${lastMessageContent}</div></div>`;
-                list.appendChild(item);
-            });
+                item.innerHTML = `
+    ${avatarHtml}
+    <div class="friend-info">
+        <div class="friend-name">${displayName}</div>
+        <div class="friend-message">${lastMessageContent}</div>
+    </div>
+    ${unreadBadgeHtml} 
+`;
+list.appendChild(item);
+});
         }
 
         function switchWechatTab(tab) {
@@ -8879,11 +8962,25 @@ const newGroup = {
 function openChat(friendId) {
     const friend = friends.find(f => f.id === friendId);
     if (!friend) return;
+    
+    if (friend.proactiveMessageDebt > 0) {
+        // 如果有“消息债务”，就先让AI生成消息，而不是直接渲染旧消息
+        generateMissedMessages(friendId);
+    } else {
+        // 如果没有“债务”，才执行原来的渲染逻辑
+        renderInitialMessages();
+    }
 
     currentChatFriendId = friend.id;
     setActivePage('chatScreen');
+    // ↓↓↓ 从这里开始修改 ↓↓↓
+// 【核心修复】只有在没有“消息债务”时，才立即设置标题。
+// 如果有债务，标题的控制权就交给 generateMissedMessages 函数。
+if (!friend.proactiveMessageDebt || friend.proactiveMessageDebt <= 0) {
     const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
     document.getElementById('chatTitle').textContent = chatTitle;
+}
+// ↑↑↑ 修改到这里结束 ↑↑↑
 
     // --- 【核心修复：悬浮球显示逻辑】 ---
     const floatButton = document.getElementById('offlineModeFloat');
@@ -9974,10 +10071,18 @@ ${historicalSummaries}
                 const loc = JSON.parse(msg.content);
                 content = `(用户分享了一个位置: "${loc.name}", 地址: ${loc.address})`;
             } else {
-                content = msg.content;
+                content = (msg.content || '')
+                    .replace(/</g, "&lt;") // 净化 <
+                    .replace(/>/g, "&gt;") // 净化 >
+                    .replace(/\n/g, " ");   // 净化换行符，避免多行输入破坏JSON
             }
+            // 确保 content 字段不是空值
+            if (content) {
+            
             apiPayloadMessages.push({ role, content });
+            }
         });
+        
 
         if (friend.isGroup) {
                         
@@ -13651,11 +13756,13 @@ const recentChatHistory = (chatHistories[characterId] || [])
     --- 朋友圈记录开始 ---
     ${recentMoments || '无朋友圈记录。'}
     --- 朋友圈记录结束 ---
-    【【【核心铁律】】】:
-    1.  你生成的内容应该是**“现实”与“虚构”的结合体**。大部分内容应基于“核心记忆库”，反映真实事件。小部分可以是角色的合理虚构，但**绝对不能与记忆库中的事实相矛盾！**
-    2.  **【绝对创新铁律】**: 即使基于相同记忆，你每次生成的内容都必须是**全新的**。严禁重复。
-    3.  **【绝对时间铁律】**: 所有生成的内容，其发生时间都必须围绕**当前现实日期：${currentDate}**，并且逻辑上必须合理。
-    4.  你的回复**必须**是一个符合下方具体格式要求的、纯净的JSON对象，不包含任何额外的解释。
+   【【【六大铁律 (必须严格遵守)】】】:
+    1.  **【【核心原则：动态平衡现实】】**: 你生成的内容应该是**“现实”与“虚构”的结合体**。大约70%的内容应该严格基于上方的“核心记忆库”，反映真实事件。剩下的30%应该是你基于角色人设进行的**合理虚构和生活化扩展**，用来丰富角色的世界，让ta看起来拥有自己的、用户看不到的另一部分生活（比如：虚构的朋友、独立的爱好、与记忆库无关的日常琐事）。**但虚构内容绝对不能与记忆库中的事实相矛盾！**
+    2.  **【绝对创新铁律】**: 即使基于相同记忆，你每次生成的内容（标题、正文、评论、日期等）都必须是**全新的、角度不同的**。严禁重复你之前生成过的任何内容。
+    3.  **【绝对时间铁律】**: 你必须严格遵守聊天记录和朋友圈中的**时间戳**。所有生成的内容，其发生时间都必须围绕**当前现实日期：${currentDate}**，并且逻辑上必须合理。例如，你不能在备忘录里记录一个发生在“昨天”但聊天记录显示是“上周”才发生的事件。
+    4.  **【绝对语言铁律】**: 你的所有输出，包括所有文字和模拟的网友昵称，都**必须使用简体中文**。严禁出现任何英文或其他语言。
+    5.  你生成的所有内容，都必须**极度符合**角色的核心人设，并**强烈反映**出“核心记忆库”中的真实事件和情绪。
+    6.  你的回复**必须**是一个符合下方具体格式要求的、纯净的JSON对象，不包含任何额外的解释或代码标记。
 
     请为应用“${appName}”生成内容：`;
     
@@ -14476,97 +14583,207 @@ function getAuthorById(authorId) {
     return { id: authorId, name: '未知用户', avatar: '?', avatarImage: '' };
 }
 
-        async function generateMissedMessages(friendId) {
-            const friend = friends.find(f => f.id === friendId);
-            if (!friend || !friend.proactiveMessageDebt || friend.proactiveMessageDebt === 0) return;
+        /**
+ * [V3 智能版] 为好友生成所有“欠下”的主动消息 (支持记忆和动作)
+ */
+async function generateMissedMessages(friendId) {
+    const friendIdForThisRequest = friendId; // 修正：在函数开头定义变量
 
-            const container = document.getElementById('chatMessages');
-            container.innerHTML = `<div class="recall-message"><div class="recall-content">正在努力回忆...</div></div>`;
+    const friend = friends.find(f => f.id === friendIdForThisRequest);
+    // 检查点：如果好友不存在，或者“债务”已经清空，则直接退出
+    if (!friend || !friend.proactiveMessageDebt || friend.proactiveMessageDebt === 0) {
+        renderInitialMessages();
+        return;
+    }
 
-            aiReplyingSet.add(friendId);
+    const debtCount = friend.proactiveMessageDebt;
+    const totalMinutesInactive = debtCount * proactiveMessagingSettings.interval; 
+    const history = chatHistories[friendIdForThisRequest] || [];
+    
+    // 找到用户最后发的那条消息，作为 AI 情绪转变的“锚点”
+    const lastUserMessageIndex = history.map(m => m.type).lastIndexOf('sent');
+    // 读取锚点之前的所有历史记录 (这次我们放宽到 30 条)
+    const relevantHistory = history.slice(0, lastUserMessageIndex + 1);
+    const chatContextForAI = relevantHistory.slice(-30).map(m => {
+        const senderName = m.type === 'sent' ? userProfile.name : friend.name;
+        // 使用一个工具函数来简化复杂消息内容，让 AI 更易阅读
+        const summarizedContent = summarizeMessageContentForAI(m);
+        return `[${formatTimestampForAI(m.timestamp)}] ${senderName}: ${summarizedContent}`;
+    }).join('\n');
 
-            const debtCount = friend.proactiveMessageDebt;
-            const totalMinutesInactive = debtCount * proactiveMessagingInterval;
-            const history = chatHistories[friendId] || [];
-            
-            const lastUserMessageIndex = history.map(m => m.type).lastIndexOf('sent');
-            const relevantHistory = history.slice(0, lastUserMessageIndex + 1);
-            const chatContext = relevantHistory.slice(-20).map(m => {
-                const senderName = m.type === 'sent' ? userProfile.name : friend.name;
-                return `${senderName}: ${m.content}`;
-            }).join('\n');
 
-            const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
-            你的重要朋友是"${userProfile.name}"，他/她的人设是：${userProfile.personality || '普通人'}。
+    // --- 准备高级情景指令：世界书、总结、人设 ---
+    const activePersona = userPersonas.find(p => p.id === friend.activeUserPersonaId) || userProfile;
 
-            【当前情景：非常重要】
-            你的朋友 "${userProfile.name}" 消失了 **${totalMinutesInactive} 分钟** 后终于上线了！
-            在这段时间里，你因为担心/想念/生气，**一共尝试联系了他/她 ${debtCount} 次**。
+    // 世界书上下文 (WorldBook Context)
+    let worldBookContext = '无';
+    const allBoundBookIds = new Set(friend.worldBookIds || []);
+    (friend.boundFolderIds || []).forEach(folderId => {
+        worldBooks.forEach(wb => {
+            if (wb.folderId === folderId) allBoundBookIds.add(wb.id);
+        });
+    });
+    if (allBoundBookIds.size > 0) {
+        worldBookContext = Array.from(allBoundBookIds).map(id => worldBooks.find(wb => wb.id === id)).filter(Boolean).map(wb => `[${wb.name}]: ${wb.content}`).join('\n\n');
+    }
 
-            【你的任务】:
-            现在，你需要一次性生成这 ${debtCount} 次尝试联系期间，你发送的**所有**聊天记录。
-            1.  **【情绪递进铁律】**: 你生成的所有消息，必须体现出明显的情绪或行为递进。从最初的轻松问候，到中间的疑惑关心，再到最后的担忧、生气或委屈。
-            2.  **【记忆铁律】**: 后面的消息，必须知道前面的消息发了什么但没被回复。
-            3.  **【数量铁律】**: 你生成的总消息条数应该在 **${debtCount * 2} 到 ${debtCount * 4}** 条之间，以模拟多次对话的真实感。
-            
-            【【【输出格式铁律】】】:
-            你的回复**必须**是一个纯净的JSON数组。数组中的每个对象代表一条独立的消息，只包含 "type" 和 "content" 两个键。
+    // 历史总结上下文 (Memory Context)
+    let summaryContext = '无';
+    const memories = (characterMemories[friendIdForThisRequest] || []);
+    if (memories.length > 0) {
+        summaryContext = memories.map(mem => mem.content).join('\n\n---\n\n');
+    }
+    
+    // --- 构造最终的 Prompt ---
+    const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
+你的重要朋友是"${activePersona.name}"，他/她的人设是：“${activePersona.personality || '普通人'}”。
 
-            【JSON格式示例】:
-            [
-              {"type": "text", "content": "宝宝在干嘛？"},
-              {"type": "voice", "content": "我看到一个好搞笑的视频！"},
-              {"type": "text", "content": "人呢？怎么还不回我？"},
-              {"type": "text", "content": "不会出什么事了吧..."},
-              {"type": "text", "content": "我有点担心了。"}
-            ]
+【【【最高优先级情景：好友回归】】】
+你的朋友 "${activePersona.name}" 消失了 **${totalMinutesInactive} 分钟** 后终于上线了！
+在这段时间里，你因为担心/想念/生气，**一共产生了 ${debtCount} 次尝试联系的冲动**。
 
-            现在，请根据以上所有信息，生成这些未读消息。`;
+【你的核心任务】:
+1.  **【生成所有消息】**: 你需要一次性生成这 ${debtCount} 次尝试联系期间，你发送的**所有**聊天记录。
+2.  **【情绪递进铁律】**: 你的消息必须体现出明显的情绪或行为递进。从最初的轻松问候，到中间的疑惑关心，再到最后的担忧、生气或委屈。
+3.  **【记忆铁律】**: 后面的消息，必须知道前面的消息发了什么但没被回复。
+4.  **【数量铁律】**: 你的每一次“尝试联系”，都应该包含1到3条消息。
 
-            try {
-                const settings = await dbManager.get('apiSettings', 'settings');
-                const response = await fetch(`${settings.apiUrl}/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: settings.modelName,
-                        messages: [{ role: 'user', content: prompt }],
-                       
-                    })
-                });
+【【【你的知识和世界观 (你必须融入你的回复中)】】】
+- **世界书设定**: ${worldBookContext}
+- **历史总结**: ${summaryContext}
+- **最后互动回顾 (你上次看到用户发的消息是这里)**:
+${chatContextForAI || '(无聊天记录，请直接开始第一条主动消息)'}
 
-                if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+【【【行为动作执行铁律 (Action Execution Iron Law)】】】
+1.  **【核心原则】**: 下面的动作列表是你与用户互动的**唯一方式**。
+2.  **【主动表情模块】**: 当你的情绪（如开心、惊讶、委屈）达到峰值时，**必须**使用 \`send_emoji\` 动作来发送表情包，让情绪表达更生动。
+3.  **【多消息】**: 若要连续发送多条消息，只需在数组中放入多个动作对象即可。
+
+【【【可用动作类型和格式】】】
+- **发送文本**: \`{"type": "text", "content": "消息内容"}\`
+- **发送语音**: \`{"type": "voice", "content": "语音的文字内容"}\`
+- **发送表情**: \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\`
+- **发送图片**: \`{"type": "image", "description": "详细的图片描述"}\`
+- **发起转账**: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
+- **拍一拍用户**: \`{"type": "pat_pat"}\`
+
+【JSON格式示例】:
+[
+  {"type": "text", "content": "人呢？在忙什么呀？"},
+  {"type": "send_emoji", "data": {"name": "疑惑", "url": "https://..."}},
+  {"type": "text", "content": "不会又睡着了吧？快回我啦！"}
+]
+
+现在，请根据所有信息，生成这些未读消息。`;
+    
+    // --- 【开始请求】 ---
+    aiReplyingSet.add(friendIdForThisRequest);
+    document.getElementById('chatTitle').textContent = '对方正在输入...';
+
+    try {
+        const settings = await dbManager.get('apiSettings', 'settings');
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+
+        // 使用更安全的解析函数
+        let responseData;
+        try {
+            responseData = safelyParseAiResponse(responseText);
+        } catch (parsingError) {
+            throw new Error(`AI回复解析失败: ${parsingError.message}`);
+        }
+        
+        // --- 【核心渲染与保存循环】 ---
+        if (Array.isArray(responseData)) {
+            for (const action of responseData) {
+                let msgData = null;
+                const delay = 600 + Math.random() * 800;
                 
-                const data = await response.json();
-                // 修正：AI返回的可能是一个包含数组的JSON对象，我们需要正确解析它
-                const responseText = data.choices[0].message.content;
-                const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-                if (!jsonMatch) throw new Error("AI未返回有效的JSON数组格式。");
-                const responseData = JSON.parse(jsonMatch[0]);
+                await new Promise(res => setTimeout(res, delay)); 
 
-                chatHistories[friendId] = history.filter(msg => !msg.id.startsWith('fake_'));
-                container.innerHTML = '';
-                renderInitialMessages();
-
-                if (Array.isArray(responseData)) {
-                    for (const reply of responseData) {
-                        const msgData = await saveChatMessage(friendId, 'received', reply.content, '', friend.id, reply.type || 'text');
-                        addMessageToDOM(msgData, friend);
-                        container.scrollTop = container.scrollHeight;
-                        await new Promise(res => setTimeout(res, 400));
-                    }
+                // 2. 将动作转换为消息对象并保存
+                switch (action.type) {
+                    case 'text':
+                    case 'voice':
+                        msgData = await saveChatMessage(friendIdForThisRequest, 'received', action.content, '', friend.id, action.type);
+                        break;
+                    case 'send_emoji':
+                        if (action.data && action.data.url) {
+                            msgData = await saveChatMessage(friendIdForThisRequest, 'received', action.data.url, '', friend.id, 'emoji');
+                            if (action.data.name) {
+                                msgData.emojiName = action.data.name;
+                            }
+                        }
+                        break;
+                    case 'image':
+                        const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中...</text></svg>')}`;
+                        msgData = await saveChatMessage(friendIdForThisRequest, 'received', placeholderUrl, '', friend.id, 'image');
+                        msgData.imageDescription = action.description || 'AI生成的图片';
+                        break;
+                    case 'transfer':
+                        if (action.data && action.data.amount > 0) {
+                            const transferData = { amount: action.data.amount, remark: action.data.remark || '' };
+                            msgData = await saveChatMessage(friendIdForThisRequest, 'received', JSON.stringify(transferData), '', friend.id, 'transfer_request');
+                        }
+                        break;
+                    case 'pat_pat':
+                        const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
+                        msgData = await saveChatMessage(friendIdForThisRequest, 'system', patContent, '', null, 'pat_pat');
+                        break;
+                    // ... 可以添加其他动作类型 ...
                 }
 
-            } catch (error) {
-                console.error("生成未读消息时出错:", error);
-                container.innerHTML = `<div class="recall-message"><div class="recall-content" style="color: red;">消息生成失败: ${error.message}</div></div>`;
-            } finally {
-                friend.proactiveMessageDebt = 0;
-                await saveData();
-                aiReplyingSet.delete(friendId);
+                // 3. 渲染消息到 UI (修复逻辑)
+                if (msgData) {
+                     if (friendIdForThisRequest === currentChatFriendId) {
+                        // 如果消息【属于】当前屏幕显示的角色，则正常渲染到聊天界面
+                        addMessageToDOM(msgData, friend);
+                        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                        // 确保 AI 只有在用户查看此聊天时才显示通知
+                    } else {
+                        // 如果消息【不属于】当前屏幕的角色，则只显示顶部通知弹窗
+                        showNotification(friend, msgData.content); 
+                    }
+                }
             }
         }
 
+    } catch (error) {
+        console.error("生成未读消息时出错:", error);
+        // 如果出错，也在聊天界面追加一条错误提示消息
+        if (friendIdForThisRequest === currentChatFriendId) {
+             const errorMsg = await saveChatMessage(friendIdForThisRequest, 'received', `[错误: ${error.message}]`);
+             addMessageToDOM(errorMsg, friend);
+        } else {
+            showNotification(friend, `[AI消息错误]`);
+        }
+
+    } finally {
+        // --- 最终清理 ---
+        friend.proactiveMessageDebt = 0;
+        await saveData();
+        aiReplyingSet.delete(friendIdForThisRequest);
+        
+        if (friendIdForThisRequest === currentChatFriendId) {
+            const chatTitle = friend.isGroup ? `${friend.name} (${friend.members.length})` : (friend.remark || friend.name);
+            document.getElementById('chatTitle').textContent = chatTitle;
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+
+        updateFriendList(); 
+    }
+}
 // 【【【这是一个全新的工具函数，请把它粘贴到<script>的末尾】】】
 /**
  * 将ISO格式的时间字符串转换为AI可读的格式
@@ -17322,18 +17539,7 @@ ${chatHistoryContext} `;
 1.  **【双重回复】**: 你的回复**必须**包含两个部分：一段纯文本的“小说式旁白与对话”，和一个独立的“HTML小剧场模块”。
 2.  **【小说家模式】**: 你的“小说式旁白与对话”部分必须遵循之前的全部小说模式规则（第三人称、内心戏、对话格式等）。
 3.  **【小剧场模式】**: 你的“HTML小剧场模块”部分必须遵循【HTML小剧场指令铁律】。如果该指令为空，则你无需生成HTML模块，回复格式退化为普通线下模式。
-4.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**: 你**绝对不能**以任何形式描写或杜撰 "${activePersona.name}" 的任何动作、心理活动、或说出的话语。你的叙述视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。你只能回应，不能控制。
-
- 5.  **【小说家模式】**: 你的回复必须是一段**小说式**的、连贯的、充满细节的文本。必须包含大量的心理活动、动作描写、环境描写和神态描写。
-6.  **【【【叙事视角与人称铁律】】】**:在所有的小说式描述中（即非对话部分），你必须使用第三人称代词“他”或者“她”来指代你自己的角色("${friend.name}")。具体根据角色的性别。严禁使用第一人称“我”。
-            - 当提到你的对话伙伴 ("${activePersona.name}") 时，必须且只能使用第二人称代词“你”。
-**【【【格式化铁律】】】**:
-角色 "${friend.name}" 说的话必须被中文引号“ ”包裹。
-角色 "${friend.name}" 的**所有内心想法/心理活动**，必须被下划线 \`_..._\` 包裹。
- **【【【完整性与字数铁律】】】**: 你的任务是创作一段**完整且连贯**的故事，总字数**约等于** **${currentOfflineSettings.charCount}** 字。你必须在字数限制内讲完一个完整的情节或心理活动，**绝对不能**在句子中间突然截断。
- **【禁止动作】**: 你的回复**只能**是纯文本。严禁生成任何JSON格式的动作。
-**【【【最高记忆铁律：承上启下！！！】】】**:
-    你**必须**仔细阅读并融合**以上所有情报**，尤其是“世界观”和“核心记忆”。你的续写**必须**与所有上文内容紧密相连，做到人设一致、情节连贯、逻辑自洽。**严禁遗忘**任何设定和已总结的记忆。
+4.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**: 你的所有描写和对话，视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。
 
 【【【输出格式铁律 (必须严格遵守)】】】
 1.  **【第一部分：故事】**: 首先，直接输出续写的小说正文（纯文本）。
@@ -18203,52 +18409,116 @@ function addCallLogItem(item, senderType) {
 
 
 /**
- * [V6 安全解析器 - 您的专属版本]
- * 一个健壮的AI响应解析函数，采用分层策略来提取JSON数据。
+ * [V7 Google 强化版] 健壮的AI响应解析函数，增加自我修复逻辑。
  * @param {string} rawAiResponse - 从AI API获取的原始文本响应。
  * @returns {Array<object>} - 解析成功后返回的动作对象数组。
  * @throws {Error} - 如果所有解析方案均失败，则抛出一个详细的错误。
  */
 function safelyParseAiResponse(rawAiResponse) {
-    // 方案 1: 【乐观解析尝试】 - 这是最高效的模式
-    // 我们首先假设AI返回的是一个完美的、完整的JSON数组。
-    try {
-        const fullArrayMatch = rawAiResponse.match(/\[[\s\S]*\]/);
-        if (fullArrayMatch) {
-            console.log("解析成功：通过乐观解析模式。");
-            return JSON.parse(fullArrayMatch[0]);
+    
+    // --- 核心修复函数：尝试清理和修复原始文本 ---
+    const cleanupAndRepair = (text) => {
+        // 1. 尝试移除 Markdown 的 JSON 标识符，如 ```json 或 ```
+        text = text.replace(/```json\s*|```/g, '').trim();
+        
+        // 2. 清理 JSON 前后可能存在的解释性、道歉性或引导性文本
+        // 这种模式是针对 AI 在 JSON 前后加解释性文字的常见情况
+        const firstBracket = text.indexOf('[');
+        const firstCurly = text.indexOf('{');
+        const startIndex = Math.min(...[firstBracket, firstCurly].filter(i => i !== -1));
+        
+        if (startIndex > 0 && startIndex < 100) {
+             // 如果 JSON 结构在开头附近，则切掉前面的所有文本
+            text = text.substring(startIndex);
         }
-        // 如果连数组的方括号都找不到，就主动进入下一个方案。
-        throw new Error("响应中未找到有效的JSON数组结构。");
+
+        // 3. 清理末尾可能多余的字符
+        const lastBracket = text.lastIndexOf(']');
+        const lastCurly = text.lastIndexOf('}');
+        const endIndex = Math.max(...[lastBracket, lastCurly].filter(i => i !== -1));
+        
+        if (endIndex > 0 && endIndex < text.length - 1) {
+             // 如果 JSON 结构在结尾附近，则切掉后面的所有文本
+            text = text.substring(0, endIndex + 1);
+        }
+
+        return text.trim();
+    };
+    
+    // --- 方案 1: 【乐观解析尝试】 (包含清洗) ---
+    try {
+        let cleanedResponse = cleanupAndRepair(rawAiResponse);
+        
+        // 尝试解析为数组（群聊和单聊都可能返回数组）
+        if (cleanedResponse.startsWith('[') && cleanedResponse.endsWith(']')) {
+             console.log("解析成功：通过乐观数组解析。");
+             return JSON.parse(cleanedResponse);
+        }
+        
+        // 尝试解析为对象（针对某些单聊返回单个动作对象的情况）
+        if (cleanedResponse.startsWith('{') && cleanedResponse.endsWith('}')) {
+             console.log("解析成功：通过乐观对象解析，转换为数组。");
+             return [JSON.parse(cleanedResponse)];
+        }
+        
+        // 如果清洗后仍不是一个完整的 JSON 结构，进入下一个方案。
+        throw new Error("响应清理后仍不是完整的 JSON 结构。");
 
     } catch (optimisticError) {
         console.warn("乐观解析模式失败，启动后备恢复方案...", optimisticError);
-
-        // 方案 2: 【后备恢复方案】 - 提取所有独立的JSON对象
-        // 即使整个数组格式是坏的，我们也要尽力把里面完好的“零件”抢救出来。
+        
+        // --- 方案 2: 【后备恢复方案】 - 提取所有独立的 JSON 对象/数组片段 ---
+        
+        const recoveredActions = [];
+        let success = false;
+        
+        // A. 提取所有独立的 JSON 对象片段 { ... }
         const objectSnippets = rawAiResponse.match(/{[^{}]*}/g);
         if (objectSnippets) {
-            const recoveredActions = [];
             for (const snippet of objectSnippets) {
                 try {
-                    // 逐一解析我们“捞”出来的每一个JSON片段
                     recoveredActions.push(JSON.parse(snippet));
+                    success = true;
                 } catch (snippetError) {
-                    console.warn("后备恢复方案：跳过一个无法解析的JSON片段:", snippet);
+                    // 跳过解析失败的片段
                 }
             }
+        }
+        
+        // B. 提取所有独立的 JSON 数组片段 [ ... ] (例如群聊的多个脚本)
+        const arraySnippets = rawAiResponse.match(/\[[\s\S]*?\]/g);
+        if (arraySnippets) {
+            for (const snippet of arraySnippets) {
+                 try {
+                     const parsedArray = JSON.parse(snippet);
+                     if (Array.isArray(parsedArray)) {
+                         // 将数组中的所有元素平铺添加到 recoveredActions
+                         recoveredActions.push(...parsedArray);
+                         success = true;
+                     }
+                 } catch (snippetError) {
+                     // 跳过解析失败的数组片段
+                 }
+            }
+        }
 
-            if (recoveredActions.length > 0) {
-                console.log(`解析成功：通过后备恢复方案，成功挽救了 ${recoveredActions.length} 个动作。`);
-                return recoveredActions;
+        if (success && recoveredActions.length > 0) {
+            console.log(`解析成功：通过后备恢复方案，成功挽救了 ${recoveredActions.length} 个动作。`);
+            
+            // 最终的保障：确保我们只返回合法的动作类型
+            const finalActions = recoveredActions.filter(action => action.type || action.sender_name);
+            if (finalActions.length > 0) {
+                return finalActions;
             }
         }
     }
 
-    // 【最终保障】
-    // 如果以上所有努力都失败了，说明AI的回复质量极差。
-    // 我们就抛出一个明确的错误，而不是返回混乱的文本。
-    throw new Error("所有解析方案均失败：AI响应内容不包含任何有效的JSON结构。");
+    // 【【【核心修改：增加具体报错信息】】】
+    // 如果所有努力都失败了，抛出包含原始响应的明确错误。
+    throw new Error(`AI解析失败：内容不包含有效 JSON 结构。
+        --- 原始AI响应（未解析内容）---
+        ${rawAiResponse}
+        --- --------------------- ---`);
 }
 
 /**
@@ -18276,6 +18546,114 @@ async function deleteDiary(event, diaryId, authorId) {
         showAlert('日记已删除。');
     });
 }
+
+/**
+ * 【V2 修复版】切换“主动发消息”功能的总开关
+ */
+function toggleProactiveMessaging() {
+    const toggle = document.getElementById('proactiveMessagingToggle');
+    proactiveMessagingSettings.enabled = toggle.checked;
+    
+    // 【【【核心修复逻辑】】】
+    if (proactiveMessagingSettings.enabled) {
+        // 如果开启，记录当前时间戳
+        proactiveMessagingSettings.enabledTimestamp = new Date().toISOString();
+        showAlert('主动发消息功能已开启！消息债务将从现在开始累积。');
+    } else {
+        // 如果关闭，清空时间戳
+        proactiveMessagingSettings.enabledTimestamp = null;
+        showAlert('主动发消息功能已关闭！');
+    }
+    
+    document.getElementById('proactiveIntervalSetting').classList.toggle('show', proactiveMessagingSettings.enabled);
+    saveData(); // 保存设置
+}
+
+/**
+ * 【新增】在加载数据后，应用这些设置到UI上
+ */
+function applyProactiveMessagingSettingsUI() {
+    const toggle = document.getElementById('proactiveMessagingToggle');
+    const intervalInput = document.getElementById('proactiveIntervalInput');
+    
+    toggle.checked = proactiveMessagingSettings.enabled;
+    intervalInput.value = proactiveMessagingSettings.interval;
+    document.getElementById('proactiveIntervalSetting').classList.toggle('show', proactiveMessagingSettings.enabled);
+}
+
+/**
+ * 【V3 修复版】后台巡检的核心函数 (以启用时间为起点)
+ */
+function checkProactiveMessages() {
+    // 【【【核心修改点 A】】】
+    if (!proactiveMessagingSettings.enabled || !proactiveMessagingSettings.enabledTimestamp) return;
+
+    const now = new Date();
+    // 启用功能的时间戳
+    const startTime = new Date(proactiveMessagingSettings.enabledTimestamp);
+    
+    let changed = false;
+
+    friends.forEach(friend => {
+        if (friend.isGroup) return;
+
+        const history = chatHistories[friend.id] || [];
+        if (history.length === 0) return;
+
+        // 1. 获取最后一条消息的时间（无论是谁发的）
+        const lastMessage = history[history.length - 1];
+        
+        // 2. 如果最后一条消息是用户发的，说明用户在线，AI不应该打扰
+        if (lastMessage.type === 'sent') return;
+
+        // 3. 【【【核心修改点 B：确定计算的起始时间】】】
+        // 从“启用时间”和“最后一条消息时间”中，取【更晚的那个】作为计算起点。
+        // 这样可以确保：
+        // a) 启用前的时间不作数。
+        // b) 如果启用功能后，AI又发了消息，则从 AI 发的那条消息算起。
+        const lastRelevantTime = Math.max(startTime.getTime(), new Date(lastMessage.timestamp).getTime());
+
+        const minutesSinceLastRelevantMessage = (now.getTime() - lastRelevantTime) / (1000 * 60);
+
+        // 4. 计算理论上应该积攒的消息债务
+        const expectedMessagesCount = Math.floor(minutesSinceLastRelevantMessage / proactiveMessagingSettings.interval);
+
+        // 【【【核心修改点 C：设定上限】】】
+        const cappedExpectedCount = Math.min(expectedMessagesCount, 10);
+
+        // 5. 更新消息债务
+        if (cappedExpectedCount > friend.proactiveMessageDebt) {
+            friend.proactiveMessageDebt = cappedExpectedCount;
+            changed = true;
+        }
+    });
+
+    if (changed) {
+        saveData();
+        updateFriendList();
+    }
+}
+
+// 【新增】在页面加载完成后，启动这个“后台巡检”定时器
+window.addEventListener('load', () => {
+    setInterval(checkProactiveMessages, 60 * 1000); // 每60秒执行一次检查
+});
+
+// --- ↓↓↓ 请将这段新增的代码，完整地粘贴到 <script> 标签的末尾 ↓↓↓ ---
+
+/**
+ * 核心修复：监听页面可见性变化，解决移动端后台不运行JS的问题
+ */
+document.addEventListener('visibilitychange', function() {
+    // 当页面从“隐藏”状态变为“可见”状态时
+    if (document.visibilityState === 'visible') {
+        console.log("页面恢复可见，立即执行一次主动消息检查！");
+        // 手动调用一次我们的检查函数
+        checkProactiveMessages();
+    }
+});
+
+// --- ↑↑↑ 粘贴到此结束 ↑↑↑ ---
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
