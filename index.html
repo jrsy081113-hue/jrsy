@@ -5352,6 +5352,689 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
     font-weight: bold;
 }
 
+/* --- 新增：论坛 App (模仿 X) 样式 --- */
+
+/* 1. 帖子时间线容器 */
+#forumTimeline {
+    /* 模仿 X 的深色背景 */
+    background-color: var(--theme-bg, #f7f7f7); 
+    padding: 0;
+}
+
+/* 2. 单个帖子项目 */
+.post-item {
+    display: flex;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+/* 3. 暗色模式下的帖子边框 */
+.wechat-dark-mode .post-item {
+    border-bottom: 1px solid var(--border-light, #3a3a3c);
+}
+
+/* 4. 帖子头像 */
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 10px;
+    flex-shrink: 0;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* 5. 帖子内容区 */
+.post-content-area {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+/* 6. 帖子作者信息 */
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    justify-content: space-between;
+width: 100%;
+}
+
+.post-author-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-color, #000);
+}
+
+.post-handle {
+    font-size: 14px;
+    color: var(--text-secondary, #666);
+    margin-left: 6px;
+}
+
+/* 7. 帖子正文 */
+.post-text {
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--text-color, #000);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 8. 帖子底部互动图标 */
+
+/* 这是您需要修改成的代码 */
+.post-actions {
+    display: flex;
+    /* 1. 使用这个属性来让所有图标组自动平均分布在整行 */
+    justify-content: space-between; 
+    align-items: center; /* 确保垂直居中 */
+    margin-top: 10px;
+    color: #657786;
+    width: 100%; /* 2. 必须确保容器宽度为100% */
+}
+
+.post-action-btn {
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+}
+
+/* 9. 发布新帖的浮动按钮 (FAB) */
+#newPostFab {
+    position: fixed;
+    bottom: 85px; 
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1da1f2; /* Twitter Blue */
+    color: white;
+    border: none;
+    font-size: 30px;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 110; 
+    display: flex;
+align-items: center;
+justify-content: center;
+
+filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+
+}
+.wechat-dark-mode #newPostFab {
+    background: #1da1f2;
+}
+
+/* 10. 论坛设置标题字体加粗 */
+.forum-nav-bar .nav-title {
+    font-weight: 800 !important;
+}
+
+
+/* --- FIX: 确保论坛内容区域有足够的顶部内边距来避开导航栏 --- */
+#forumTimeline {
+    /* 74px 是状态栏(30px) + 导航栏(44px)的总高度 */
+    padding-top: 74px !important; 
+}
+
+/* --- 步骤二：新增底部导航和内容区域修正 --- */
+
+/* --- 步骤二：新增底部导航和内容区域修正 --- */
+
+/* --- 步骤二：新增底部导航和内容区域修正 --- */
+
+.forum-content-view {
+    position: absolute;
+    top: 74px;
+    left: 0;
+    right: 0;
+    bottom: 0; /* 核心修改1：让容器延伸到屏幕最底部 */
+    overflow-y: auto; /* 核心修改2：明确指定这个外层容器来滚动 */
+    
+    /* 核心修改3：在这里留出足够的底部空间 (导航栏 + 额外间距 + 安全区) */
+    padding-bottom: calc(49px + 20px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box; /* 确保内边距计算正确 */
+
+    /* 其他样式保持不变 */
+    padding-left: 0;
+    padding-right: 0;
+    background: var(--theme-bg, #f7f7f7);
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+.forum-content-view.active {
+    display: block;     /* 只有激活的才显示 */
+}
+
+/* 2. 帖子列表容器（现在是 Home 视图的内容） */
+/* 我们把它移动到新的视图容器内，所以不再需要顶部内边距 */
+
+/* --- FIX: 确保 Home 页面可以正确滚动 --- */
+
+/* --- FIX: 确保 Home 页面可以正确滚动 --- */
+
+#forumHomeView {
+    /* 核心修改：移除这两个导致嵌套滚动冲突的属性 */
+    /* height: 100%; */
+    /* overflow-y: auto; */ 
+    
+    /* 其他样式保持不变 */
+    padding-top: 0 !important;
+}
+
+/* 3. 论坛底部导航栏样式 */
+.forum-bottom-nav {
+    /* 模仿微信底部导航栏的尺寸和定位 */
+    height: calc(49px + env(safe-area-inset-bottom, 0px));
+    background: var(--nav-bg, #f7f7f7);
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 100;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.forum-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary, #999);
+}
+
+/* 修复：底部导航栏选中时使用主题文本色（黑色或白色） */
+.forum-tab.active {
+    color: var(--text-color, #000); /* 选中时使用主题文本色 */
+}
+
+/* 修复：在暗色模式下，底部导航栏选中时依然使用主题文本色 */
+.wechat-dark-mode .forum-tab.active {
+    color: var(--text-color, #fff); 
+}
+
+.forum-tab svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+/* --- 步骤一：新增“我”界面（个人资料）样式 --- */
+
+.forum-profile-container {
+    padding-bottom: 40px; /* 为 Tab 预留空间 */
+}
+
+/* --- 这是修改和新增后的代码，请用它完整替换旧代码 --- */
+
+/* 1. 将封面图高度从180px缩短为120px */
+.forum-profile-header {
+    position: relative;
+    height: 150px; /* <-- 核心修改 */
+    background-color: #1da1f2; 
+    background-size: cover;
+    background-position: center;
+}
+
+/* 2. 新增：这是一个新的容器，用于放置头像和“编辑个人资料”按钮 */
+.forum-profile-top-actions {
+    display: flex;
+    justify-content: space-between; /* 让头像和按钮分别靠在两侧 */
+    align-items: flex-end;          /* 让按钮和头像的底部对齐 */
+    padding: 0 15px 10px 15px;      /* 为容器添加内边距，并给按钮下方留出10px空间 */
+    position: relative;             /* 使用相对定位，让它能浮动在普通内容之上 */
+    margin-top: -64px;              /* 向上移动，让头像能覆盖在背景图上 */
+}
+
+/* 3. 修改：头像容器不再需要自己处理边距和定位 */
+.forum-profile-avatar-container {
+    position: relative;
+    transform: translateY(15px); 
+    /* 之前的 margin 和 margin-top 已被移除，由父容器 .forum-profile-top-actions 控制 */
+}
+
+/* 4. 修改：头像本身的样式（保持不变）*/
+.forum-profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 4px solid var(--theme-bg, #f7f7f7);
+    cursor: pointer;
+}
+
+/* 5. 新增：“编辑个人资料”按钮的全新样式 */
+.forum-edit-profile-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color, #000);
+    background-color: transparent;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 9999px; /* 使用一个很大的值来确保按钮是圆角矩形（胶囊形状） */
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    transform: translateY(15px);
+}
+
+.forum-edit-profile-btn:hover {
+    background-color: var(--bg-hover, #f0f0f0);
+}
+
+.forum-profile-info {
+    padding: 0 15px 15px 15px; /* <--- 修改这里 */
+}
+
+/* 7. 下面的样式保持不变，但要确保它们在替换范围内 */
+.forum-profile-info h3 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 5px 0 2px 0; 
+    display: flex;
+    align-items: center;
+}
+
+.forum-profile-info p {
+    color: var(--text-secondary, #666);
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.forum-profile-info .verified-badge {
+    width: 20px;
+    height: 20px;
+    fill: #1da1f2;
+    margin-left: 5px;
+}
+
+.forum-profile-stats {
+    display: flex;
+    gap: 20px;
+    margin: 10px 0;
+}
+
+.forum-profile-stat-item span {
+    font-size: 15px;
+}
+
+.forum-profile-stat-item strong {
+    font-size: 15px;
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+.forum-profile-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color, #eee);
+    margin-bottom: 10px;
+}
+
+.forum-profile-tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary, #666);
+    cursor: pointer;
+    position: relative;
+}
+
+.forum-profile-tab.active {
+    color: var(--text-color, #000);
+}
+
+.forum-profile-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background: #1da1f2;
+    border-radius: 2px;
+}
+
+.wechat-dark-mode .forum-profile-avatar {
+    border-color: var(--theme-bg, #1c1c1e);
+}
+
+/* --- 替换到此结束 --- */
+
+/* --- 新增：帖子右上角“三点菜单”样式 --- */
+.post-more-options {
+   
+}
+
+.post-more-btn {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.post-more-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.post-more-btn svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    fill: var(--text-secondary, #999);
+}
+
+.post-options-menu {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    background: var(--bg-primary, white);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    z-index: 110;
+    min-width: 120px;
+    display: none;
+    overflow: hidden;
+}
+
+.post-options-menu.show {
+    display: block;
+}
+
+.post-options-item {
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.post-options-item.danger {
+    color: #ff3b30;
+    font-weight: 600;
+}
+
+/* 新增：用于控制作者信息区域内部的布局 */
+.post-author-info {
+    display: flex;       /* 让名字、@账号、时间在同一行显示 */
+    align-items: center; /* 确保它们垂直居中对齐 */
+    gap: -2px;            /* 在它们之间增加一个0像素的间距，可以自己调整 */
+}
+
+/* --- 新增：推特热搜界面专属样式 --- */
+
+/* 整体容器，确保可以滚动 */
+#forumSearchView {
+    padding: 0;
+    overflow-y: auto;
+    background-color: var(--theme-bg, #fff); /* 确保有背景色 */
+}
+
+/* 1. 顶部搜索栏样式 */
+.trends-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 12px;
+    position: sticky; /* 吸顶效果 */
+    top: 0;
+    background-color: var(--theme-bg, #fff);
+    z-index: 10;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+.trends-header-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ccc;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+.trends-search-bar {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-hover, #eff3f4);
+    border-radius: 9999px;
+    padding: 0 12px;
+}
+.trends-search-bar svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--text-secondary, #536471);
+    margin-right: 8px;
+}
+.trends-search-bar input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    height: 40px;
+    font-size: 15px;
+    color: var(--text-color);
+}
+.trends-header-refresh {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.trends-header-refresh:hover {
+    background-color: var(--bg-hover, #f0f0f0);
+}
+.trends-header-refresh svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text-color, #000);
+}
+
+/* 2. 分类标签样式 */
+.trends-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color, #eee);
+    position: sticky;
+    top: 57px; /* 搜索栏的高度 */
+    background-color: var(--theme-bg, #fff);
+    z-index: 9;
+}
+.trends-tab {
+    flex: 1;
+    text-align: center;
+    padding: 16px 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary, #536471);
+    cursor: pointer;
+    position: relative;
+}
+.trends-tab:hover {
+    background-color: var(--bg-hover, #f0f0f0);
+}
+.trends-tab.active {
+    font-weight: 700;
+    color: var(--text-color, #0f1419);
+}
+.trends-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 4px;
+    background-color: #1d9bf0; /* 推特蓝 */
+    border-radius: 9999px;
+}
+
+/* 3. 热搜列表样式 */
+.trends-list-container {
+    padding: 0;
+}
+.trend-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color, #eee);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.trend-item:hover {
+    background-color: var(--bg-hover, #f0f0f0);
+}
+.trend-info {
+    flex-grow: 1;
+}
+.trend-category {
+    font-size: 13px;
+    color: var(--text-secondary, #536471);
+}
+.trend-keyword {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-color, #0f1419);
+    margin: 2px 0;
+}
+.trend-heat {
+    font-size: 13px;
+    color: var(--text-secondary, #536471);
+}
+.trend-more-icon {
+    cursor: pointer;
+}
+.trend-more-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--text-secondary, #536471);
+}
+.featured-trend-item {
+    padding: 0;
+    position: relative;
+}
+.featured-trend-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.featured-trend-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: white;
+}
+.featured-trend-overlay .trend-category,
+.featured-trend-overlay .trend-keyword,
+.featured-trend-overlay .trend-heat {
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.featured-trend-overlay .trend-keyword {
+    font-size: 20px;
+}
+
+/* 暗色模式适配 */
+.wechat-dark-mode .trends-search-bar {
+    background-color: #202327;
+}
+.wechat-dark-mode .trends-header,
+.wechat-dark-mode .trends-tabs,
+.wechat-dark-mode .trend-item {
+    border-color: #2f3336;
+}
+.wechat-dark-mode .trends-header-refresh:hover,
+.wechat-dark-mode .trends-tab:hover,
+.wechat-dark-mode .trend-item:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* 让导航栏右侧的按钮靠在一起 */
+.nav-right-actions {
+    display: flex;
+    align-items: center;
+}
+
+/* 美化世界观列表的选中状态 */
+.friend-item.worldview-active {
+    background-color: #e3f2fd; /* 淡蓝色背景 */
+    border-left: 4px solid #007aff; /* 左侧蓝色高亮条 */
+    padding-left: 11px;
+}
+
+/* --- 新增：推特详情页复刻样式 V3 --- */
+
+/* 1. 让内容滚动区域占据导航栏和底部栏之间的所有空间 */
+#forumDetailContent {
+    position: absolute;
+    top: 74px; /* 状态栏+导航栏高度 */
+    bottom: 50px; /* 为底部回复栏预留空间 */
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    padding: 0; /* 移除所有内边距 */
+}
+
+/* 2. 【核心修复】让底部回复栏固定在页面最底部 */
+.bottom-reply-bar {
+    position: fixed; /* 固定定位，相对于整个屏幕 */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: var(--theme-bg, #fff);
+    padding: 8px 15px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); /* 适配iPhone底部安全区 */
+    border-top: 1px solid var(--border-color, #eee);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10; /* 确保在滚动内容之上 */
+}
+
+/* 3. 其他所有样式（主贴、评论、图标等）保持不变 */
+.forum-detail-main-post { padding: 12px 15px; border-bottom: 1px solid var(--border-color, #eee); }
+.post-header .post-more-btn { color: var(--text-secondary, #666); cursor: pointer; }
+.post-stats-bar { display: flex; gap: 12px; padding: 15px 0; font-size: 14px; color: var(--text-secondary, #666); border-top: 1px solid var(--border-color, #eee); }
+.post-stats-bar strong { font-weight: bold; color: var(--text-color, #000); }
+.post-actions { display: flex; justify-content: space-between; padding: 10px 0; color: var(--text-secondary, #666); width: 100%; max-width: 425px; }
+.post-actions .post-action-btn { display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer; }
+.post-actions .post-action-btn svg { fill: currentColor; }
+.post-actions .post-action-btn:hover { color: #1d9bf0; }
+.comment-thread-item { display: flex; padding: 12px 15px 0 15px; border-bottom: 1px solid var(--border-color, #eee); }
+.comment-avatar-container { position: relative; margin-right: 10px; flex-shrink: 0; }
+.thread-line { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 2px; height: calc(100% - 40px); background-color: var(--border-color, #eee); }
+.comment-content-container { flex-grow: 1; padding-bottom: 10px; }
+.reply-bar-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; background-color: #ccc; flex-shrink: 0; }
+.reply-bar-input { flex-grow: 1; border: 1px solid var(--border-color, #eee); background-color: var(--bg-hover, #f0f0f0); border-radius: 9999px; padding: 8px 16px; font-size: 15px; color: var(--text-color); outline: none; }
+
+/* 暗色模式适配 */
+.wechat-dark-mode .forum-detail-main-post, .wechat-dark-mode .post-stats-bar, .wechat-dark-mode .comment-thread-item, .wechat-dark-mode .bottom-reply-bar, .wechat-dark-mode .thread-line { border-color: var(--border-light, #3a3a3c); }
+.wechat-dark-mode .reply-bar-input { background-color: #202327; border-color: #3a3a3c; }
+
     </style>
 </head>
 <body>
@@ -5495,12 +6178,12 @@ transform: translate(var(--chat-avatar-frame-offset-x, 0px), var(--chat-avatar-f
                             </div>
                             <div class="app-label">手机</div>
                         </div>
-                        <div class="app" onclick="showAlert('此功能暂未开放')">
-                            <div class="app-icon-container" id="icon-placeholder1">
-                                <svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20,18H4V8H20M20,6H12L10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6Z" /></svg>
-                            </div>
-                            <div class="app-label">闲置1</div>
-                        </div>
+                        <div class="app forum-app" onclick="openApp('forum')">
+    <div class="app-icon-container" id="icon-forum">
+        <svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.32 8.52c.07.72-.03 1.4-.29 2.02-.29.69-.74 1.34-1.33 1.83-.55.45-1.22.78-1.95.96-.75.18-1.54.21-2.31.06-.54-.1-1.07-.3-1.57-.59-.51-.3-.98-.69-1.42-1.12.01.07.01.14.02.21v.01c.21 1.77 1.49 3.25 3.16 3.73.57.16 1.15.24 1.73.24.53 0 1.05-.09 1.55-.26.68-.23 1.3-.59 1.81-1.04.2-.17.38-.36.56-.56h-.01c.32-.32.61-.67.86-1.04h.01c.25-.38.45-.78.61-1.2h.01c.15-.41.25-.83.33-1.26h-.01c.08-.43.11-.86.11-1.29 0-.46-.03-.92-.1-1.37h-.01c-.07-.44-.19-.87-.36-1.27h-.01c-.17-.41-.4-.78-.69-1.12-.29-.35-.63-.65-1.02-.9-.38-.25-.8-.45-1.26-.6-.44-.15-.9-.25-1.37-.29-.48-.04-.96-.03-1.42.03-.6.08-1.19.23-1.74.46-.57.22-1.08.53-1.53.92-.02.01-.03.03-.05.04v.01c-.48.43-.89.92-1.22 1.46-.3.51-.51 1.06-.64 1.63h.01c-.12.58-.16 1.17-.11 1.76h.01c.05.6.2 1.18.44 1.71.24.52.57.99.98 1.43z"/> </svg>
+    </div>
+    <div class="app-label">论坛</div>
+</div>
                         <div class="app" onclick="showAlert('此功能暂未开放')">
                             <div class="app-icon-container" id="icon-placeholder2">
                                 <svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5,12A2.5,2.5 0 0,0 12,9.5A2.5,2.5 0 0,0 9.5,12A2.5,2.5 0 0,0 12,14.5A2.5,2.5 0 0,0 14.5,12M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z" /></svg>
@@ -6947,17 +7630,224 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
+<!-- 在 <body> 内, </div id="forumScreen"> 之前 -->
+
+<!-- 新增：帖子详情页 -->
+<div id="forumDetailView" class="page">
+    <div class="nav-bar">
+        <button class="nav-btn" onclick="backToForumTimeline()">←</button>
+        <div class="nav-title">帖子</div>
+        <div></div> <!-- 占位 -->
+    </div>
+    <div class="wechat-content" id="forumDetailContent" style="padding-top: 74px; overflow-y: auto;">
+        <!-- 帖子详情和评论将在这里动态生成 -->
+    </div>
+</div>
+
+<!-- 新增：模仿 Twitter/X 的论坛页面 -->
+<div id="forumScreen" class="page">
+  <!-- 替换后的导航栏 -->
+<div class="nav-bar forum-nav-bar" id="forumTopNavBar">
+    <button class="nav-btn" onclick="goHome()">←</button>
+    <div class="nav-title" style="font-weight: 800;">论坛</div>
+    <!-- 这是新的右侧按钮容器 -->
+    <div class="nav-right-actions" style="display: flex; align-items: center;">
+        <!-- 新增的刷新按钮 -->
+        <button class="nav-btn" id="refreshForumBtn" onclick="refreshForumTimeline()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M22 4v4h-4"/></svg>
+        </button>
+        <!-- 新的设置按钮 -->
+        <button class="nav-btn" id="openForumSettingsBtn" onclick="openForumSettingsModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6m2 5h6m2-12h6"/></svg>
+        </button>
+    </div>
+</div>
+    
+    <!-- 不同的内容视图，全部用绝对定位堆叠，只有 active 状态的显示 -->
+    <div class="forum-content-view active" id="forumHomeView">
+         <!-- 帖子内容将由 JavaScript 渲染到这里 -->
+    </div>
+    
+    <!-- ↓↓↓ 请用这段新代码，完整替换旧的 #forumSearchView 容器 ↓↓↓ -->
+<div class="forum-content-view" id="forumSearchView">
+    <!-- 1. 顶部搜索栏 -->
+    <div class="trends-header">
+        <div class="trends-header-avatar" id="trendsAvatar"></div>
+        <div class="trends-search-bar">
+            <svg viewBox="0 0 24 24"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.417-.727 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.83-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.432 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
+            <input type="text" placeholder="搜索">
+        </div>
+        <button class="trends-header-refresh" id="refreshTrendsBtn">
+            <svg viewBox="0 0 24 24"><g><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"></path></g></svg>
+        </button>
+    </div>
+
+    <!-- 2. 分类导航标签 -->
+    <div class="trends-tabs">
+        <div class="trends-tab active">为你推荐</div>
+        <div class="trends-tab">当前趋势</div>
+        <div class="trends-tab">新闻</div>
+        <div class="trends-tab">体育</div>
+        <div class="trends-tab">娱乐</div>
+    </div>
+
+    <!-- 3. 热搜列表容器 (内容由JS动态生成) -->
+    <div class="trends-list-container" id="trendsListContainer">
+        <!-- 热搜内容会显示在这里 -->
+    </div>
+</div>
+<!-- ↑↑↑ 替换到此结束 ↑↑↑ -->
+       <div class="forum-content-view" id="forumMeView">
+        <div class="forum-profile-container">
+            <!-- 封面图区域 -->
+            <div class="forum-profile-header" id="forumCoverHeader">
+                <div class="forum-profile-cover-upload" onclick="handleForumCoverUpload()"></div>
+            </div>
+            
+            <!-- 新增的、用于放置头像和按钮的容器 -->
+<div class="forum-profile-top-actions">
+    <!-- 头像容器现在只包含头像 -->
+    <div class="forum-profile-avatar-container">
+        <div class="forum-profile-avatar" id="forumProfileAvatar" onclick="handleForumAvatarUpload()"></div>
+    </div>
+    <!-- 编辑按钮现在有了自己的新样式 -->
+    <button class="forum-edit-profile-btn" onclick="openForumEditProfileModal()">编辑个人资料</button>
+</div>
+            
+            <!-- 信息区 -->
+            <div class="forum-profile-info">
+                <h3 id="forumProfileName"></h3>
+                <p id="forumProfileHandle"></p>
+                <p id="forumProfileBio" style="margin-bottom: 10px;"></p> <!-- <--- 添加这一行 -->
+                <p id="forumProfileJoined"></p>
+                
+                <div class="forum-profile-stats">
+                    <span class="forum-profile-stat-item">
+                        <strong id="forumProfileFollowing">0</strong><span>正在关注</span>
+                    </span>
+                    <span class="forum-profile-stat-item">
+                        <strong id="forumProfileFollowers">0</strong><span>关注者</span>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 资料卡片下方的 Tab 切换 -->
+            <div class="forum-profile-tabs">
+                <div class="forum-profile-tab active" data-tab="posts">帖子</div>
+                <div class="forum-profile-tab" data-tab="replies">回复</div>
+            </div>
+
+            <!-- 帖子/回复列表容器 -->
+            <div id="forumProfileTimeline" class="post-list-container">
+                <!-- 个人帖子将在这里渲染 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：编辑个人资料的模态框 -->
+    <div id="forumEditProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">编辑个人资料</div>
+            <input type="text" class="modal-input" id="forumEditName" placeholder="昵称">
+            <input type="text" class="modal-input" id="forumEditHandle" placeholder="Handle (例如：@username)">
+            <textarea class="modal-textarea" id="forumEditBio" placeholder="个人简介"></textarea>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeForumEditProfileModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="saveForumProfile()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 发布新帖的浮动按钮 -->
+    <button id="newPostFab" onclick="openNewPostModal()">+</button>
+    
+       <!-- 新增：论坛底部导航栏 (图标更新版) -->
+<div class="forum-bottom-nav">
+    <!-- 帖子/主页 -->
+    <div class="forum-tab active" onclick="switchForumTab('home', this)">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12.92 22.49h7.32c.45 0 .81-.36.81-.81V10.37a.81.81 0 0 0-.4-.7l-8.13-7.1a.81.81 0 0 0-1.02 0l-8.13 7.1a.81.81 0 0 0-.4.7v11.31c0 .45.36.81.81.81h7.32v-7.32h2.44v7.32z"></path></svg>
+    </div>
+    <!-- 搜索/热点 -->
+    <div class="forum-tab" onclick="switchForumTab('search', this)">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </div>
+    <!-- 我/个人资料 -->
+    <div class="forum-tab" onclick="switchForumTab('me', this)">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M4.93 19.07l14.14-14.14"></path></svg>
+    </div>
+</div>
+
+<!-- 新增：发布新帖的模态框 -->
+<div id="newPostModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">发布新帖</div>
+        <textarea class="modal-textarea" id="newPostContentInput" placeholder="有什么新鲜事？" style="min-height: 150px;"></textarea>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeNewPostModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="postForumMessage()">发布</button>
+        </div>
+    </div>
+</div>
+
+<!-- 新增：论坛世界观设置弹窗 -->
+<div id="forumSettingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">论坛设置</div>
+        <div class="form-group">
+            <label class="form-label">选择世界观</label>
+            <div id="currentWorldview" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openWorldviewModal()">
+                默认世界观
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">选择参与发帖的AI</label>
+            <div id="forumAiSelectList" class="multi-select-list" style="max-height: 150px;">
+                <!-- AI列表将动态生成在这里 -->
+            </div>
+        </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-confirm" onclick="saveForumSettingsAndRefresh()">保存并刷新论坛</button>
+        </div>
+    </div>
+</div>
+
+<!-- 新增：世界观管理弹窗 -->
+<div id="worldviewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>选择或创建世界观</span>
+            <button class="nav-btn" style="padding: 4px 8px;" onclick="openWorldviewEditor()">+</button>
+        </div>
+        <div id="worldviewList" class="friend-list" style="max-height: 50vh; overflow-y: auto;">
+            <!-- 世界观列表将动态生成在这里 -->
+        </div>
+    </div>
+</div>
+
+<!-- 新增：世界观编辑器弹窗 -->
+<div id="worldviewEditorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" id="worldviewEditorTitle">新建世界观</div>
+        <input type="text" class="modal-input" id="worldviewNameInput" placeholder="世界观名称 (例如：霍格沃茨魔法学校)">
+        <textarea class="modal-textarea" id="worldviewDescInput" placeholder="详细描述这个世界观的背景、规则、氛围等..." style="min-height: 200px;"></textarea>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeWorldviewEditor()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="saveWorldview()">保存</button>
+        </div>
+    </div>
+</div>
+
     <script>
         // --- [REFACTORED] IndexedDB Manager ---
                 // --- [REFACTORED & ROBUST] IndexedDB Manager (v3) ---
         const dbManager = {
             db: null,
             dbName: 'JRSY_DB_V2',
-            dbVersion: 6,
+            dbVersion: 7,
             stores: [
                 'friends', 'chatHistories', 'diaries', 'worldBooks', 'worldBookFolders', 
                 'favorites', 'moments', 'playlist', 'appSettings', 'apiSettings', 'customEmojis',
-                'memories', 'openingStatements' , 'writingStyles', 'skits'
+                'memories', 'openingStatements' , 'writingStyles', 'skits', 'forumPosts' 
             ],
 
             // 核心修改：初始化函数现在负责检查和重新连接
@@ -7101,6 +7991,30 @@ let openingStatements = []; // 用于存储所有开场白
 let writingStyles = []; // 用于存储所有文风
 
 let skits = []
+
+// ...（在其他全局变量下方）
+let forumPosts = []; // 存储论坛帖子
+
+// --- 粘贴到其他全局变量旁边 ---
+let worldviews = []; // 存储所有世界观
+let forumSettings = {
+    worldviewId: 'default_school', // 当前选中的世界观ID
+    activeAiIds: [] // 参与发帖的AI
+};
+let currentForumPosts = []; // 用于持久化当前显示的帖子
+let currentEditingWorldviewId = null; // 正在编辑的世界观ID
+
+// ...（在其他全局变量下方）
+let forumProfileData = {
+    name: '可点击编辑',
+    handle: '@user_handle',
+    bio: '这里是我的个人简介',
+    coverImage: '',
+    avatarImage: '',
+    joined: '2025年1月',
+    following: 12,
+    followers: 1
+};
 
         // 【【【第三步 A：添加这个新的全局变量】】】
 let beautificationSettings = {}; // 用来存放所有自定义图片
@@ -7249,6 +8163,110 @@ let userProfile = {
         
         // [NEW] Kaomoji List Definition
         const KAOMOJI_LIST = "ꉂ  ᳐  ˋ ᗜ ˊ    ᳐犭,눈 _ 눈,^ ㅇ ^,ㅎ_ㅎ,ㅇㅅㅇ,ㅋㅋㅋ,ㅇㅂㅇ,ㅇㅋㅇ,ㅎㅇㅎ,ㅎㅅㅎ,ㅎωㅎ,(ᐡ т  ̫ т ᐡ),=ᗜωᗜ=,>ヮ<,(՞_    ̫ _՞)ᐝ,⦁֊⦁꧞,՞⩌⌯⩌՞,ฅ´ ꄃ `ฅ,ᕱ⑅ᕱ,꒦ິ^꒦ິ,˶╹ꇴ╹˶,ฅ˙Ⱉ˙ฅ,ʚ✞ɞ,૮ ˃̵ ֊ ˂̵  ა,ᐡ•͈ ·̭ •͈ᐡ,៸៸᳐⦁⩊<៸៸᳐ ੭ﾞ🐾,/ᐠ .⸝⸝⸝. ྀིﾏ,. ₍˄ ₗ   ̫ ₗ ˄₎◞ ̑̑,ଘ៸៸᳐⦁⩊⦁៸៸᳐ଓ,^›⩊‹^ ੭,៸៸᳐>⩊<៸៸᳐,^⦁᎑-^ ੭,₍^˶ ╸𖥦  ╸˵^₎⟆,＞𐋣＜,ฅᐞ˶⦁༝⦁˶ᐞฅ,𓈒♡𐅛 ͚ ꠆. .  ꠆ ͚𑁨ྀི♡,ミ ᴗ͈  。ᴗ͈ ミ,^⎚˕⎚^,⦁֊⦁꧞,՞⩌⌯⩌՞ ᶻ 𝗓,´⚰︎`˵ಣ,⌯oᴗ<⌯ಣ,ฅ´ ꄃ `ฅ՞,˶╹ꇴ╹˶,ᐞ･֊･ᐞฅ,๑'~'๑,=⩌⩊⩌=,＞𐋣＜,ÒωÓ！,♡(ˆ꜆ . ω . ). ω . ꜀ˆ)♡,Ｏ(≧▽≦)Ｏ,ᯠ _   ̫  _ ᯄ,˶╹ꇴ╹˶,⁃ ⩊ ⁃,ᶻz ₍^_   ̫ _^₎,˶⊗ 𐋣 ᗜ˶ಣ,ꉂ૮ o̴̶̷᷄ ·̫ᕳᕲა,• ·̫ •,⁺ʚ> ·̫ <ɞ⁺,（ ≥ × ≤ ）, /•᷅‎‎•᷄\୭,⌯'ᵕ'⌯,⦁֊⦁꧞,՞⸝⸝'ᜊ'⸝⸝՞♥︎,๑>ᴗO๑,=• ֊ •=,ꉂ ･ ･ ☆,Z☡zᶻ,ᕑᗢᓫ,˃̵͈̑ᴗ˂̵͈̑,𖦹𖦹 .ᐟ.ᐟ,⌯>ᴗo⌯ಣ,^ ̳- ‧̫ • ̳^ฅ,^•ω<^ ੭,₍ᐢ..ᐢ₎ᐝ,•͈ᴗ⁃͈,•͈ ₃ •͈,⌯'Ⱉ'⌯,^⌯𖥦⌯^੭,ᖰ⌯'▾'⌯ᖳ,^_^,₍^ₗ   ̫˳ ₗ^₎,₍ᐢ⸝⸝-ᴗ-⸝⸝ᐢ₎,₍ᐢ⸝⸝• ֊ •⸝⸝ᐢ₎,ฅ( ̳• ·̫ • ̳ฅ),(꜆꜄꜆˙꒳˙)꜆꜄꜆,୧(๑⃙⃘⁃̀⩊⁃́๑⃙⃘)୨,៸៸᳐ÒωÓ៸៸᳐,ꉂ  ᳐  ˋ ᗜ ˊ    ᐐ犭,-ᶻz ₍^_   ̫ _^₎,˶⊗ ᎑ ᗜ˶ಣ,ꉂ૮˶⩌⩊ᕳᕲ˶ა,ㅎωㅎ,= ᗜ ω ᗜ.=,(ᐡ т   ̫ т ᐡ),>ヮ<,＞𐋣＜,⦁֊⦁꧞,໒𖦹 𖦹  ͛১,૮ ˃̵ ֊ ˂̵  ა,ᐡ•͈ ·̭ •͈ᐡ,ദ്ദി˶•̀֊•́)✧,ദ്ദി˶•̀֊<)✧,ദ്ദി˶ｰ̀֊ｰ́ )✧,ᕑᗢᓫ !!,•̆.•̑,ටᆼට,⁽¯꒳¯⁾,ᥫᩣᵕ̈,՞⩌⌯⩌՞,ฅ´ ꄃ `ฅ,ᕱ⑅ᕱ,˶╹ꇴ╹˶,ฅ˙Ⱉ˙ฅ,⦁ ㅈ -,=×ω×=,(･∞･ﾐэ )Э,ᡣ ︠𓈒. .𓈒 ︡𐑠,𐙚・⋆・𐙚,(ෆ• ֊ •ෆ）,ฅᐞ˶⦁༝⦁˶ᐞฅ,𓈒♡𐅛 ͚ ꠆. .  ꠆ ͚𑁨ྀི♡,ミ ᴗ͈  。ᴗ͈ ミ,(ᐡ ɞ̴̶̷ . ɞ̴̶̷ ᐡ),✧(≖ ◡ ≖✿),U- ˕ -Uᶻᶻᶻ,ᨦ₍ᐢ..ᐢ₎ᨩ ໋·̩͙,૮⑅•̤ ༝ •̤⑅ა,ᘏ ୨୧‬ ᘏ,๑>ᴗO๑,=• ֊ •=,ꉂ ･ ･ ☆,Z☡zᶻ,ᕑᗢᓫ,˃ᴗ˂̵͈̑,𖦹𖦹 .ᐟ.ᐟ,^ ̳- ‧̫ • ̳^ฅ,^•ω<^ ੭,^⌯𖥦⌯^੭,ᜊ꒰๑˃͈꒵˂͈๑꒱ᜊ,ᖰ⌯'▾'⌯ᖳ,៸៸᳐>⩊<៸៸᳐,૮⑉･-･⑉ა,✩*:.⸝⸝>o<⸝⸝.:*✩,՞⸝⸝'ᜊ'⸝⸝՞,⌯'▾'⌯,• ︡ᯅ•︠,ᗦ↞︎◃,꒰১☆⁺໒꒱,˶‾᷄   ⁻̫ ‾᷅˵,˙Ⱉ˙,˃̶͈̀ε ˂̶ ͈ ͈,ᵔ·͈༝༝༝·͈ᵔ,･ꈊ･,ᕑᗢᓫ,♥︎︎ᯐ,ᰔᩚ,៷>ᴗ<៷,•͈ ₃ •͈,⌯'Ⱉ'⌯,𖠚ᐝ,ყ ᥱ ᥉,𖤣𖥧𖥣｡,⌯>ᴗo⌯ಣ,⌯˃ ᵕ ˂⌯ಣ,⌯>𖥦<⌯ಣ,⌯˃̶ᗜ˂̶⌯ಣ,⌯ᕑᗢᓫ⌯ಣ。,⌯>ᴗ<⌯ಣ,⌯•͈ᴗ•͈⌯ಣ,⌯ᐢᗜᐢ⌯ಣ,⌯･-･⌯ಣ,⌯>v<⌯ಣ,⌯･ᴗ･⌯ಣ,⌯>₃<⌯ಣ,⌯•͈ ₃ •͈⌯ಣ。,⌯⁰ᵕᵔ⌯ಣ,⌯•͈⌔•͈⌯ಣ,⌯＞◡❛⌯ಣ,⌯' ꇴ '⌯ಣ。,⌯･∀･⌯ಣ,⌯>ෆ<⌯ಣ,⌯ᵔᵕᵔ⌯ಣ,𝐛𝐛 •͈ᴗ⁃͈,ოყ ხαხყ,𖨆♡𖨆,•︡ᯅ•︠,•͈ᴗ⁃͈★,ʚ •͈˽•͈ ིྀɞ,˶՞ɞ̴̶̷.ɞ̴̶̷՞˶,ฅ՞••՞ฅ,₌᳐･֊･₌᳐੭。,˃̶͈̀ε ˂̶ ͈,ꈨຶꎁꈨຶ,•͈ ₃ •͈,๐•ᴗ•๐,⌯>ᗜ<⌯,⌯˃~˂⌯,⌯･ᴗ･⌯,⌯•͈ ₃ •͈⌯,⌯^𖥦^⌯,⌯⁍̴̛ᴗ⁍̴̛⌯,⌯˃͈꒵˂͈⌯,⌯⁰ᵕᵔ⌯,⌯˙Ⱉ˙⌯,₌ ･ ᵕ ･ ₌,=• ֊ •=,ᜊ>ᴗ<ᜊ,^⌯𖥦⌯^੭,𖦹ࡇ𖦹 .ᐟ.ᐟ,૮  ´͈ ᗜ `͈ ა♡,૮ ᴗ͈ˬᴗ͈ෆა,૮⑉･-･⑉ა,ᵔ·͈༝༝༝·͈ᵔ,🐾₊⁺ S,^ ̳- ‧̫ • ̳^ฅ,⸝⸝っ·̫ •⸝⸝,˙Ⱉ˙,꒰ᐢ. .ᐢ꒱₊˚⊹✧,՞⸝⸝'ᜊ'⸝⸝՞,૮ • ·̫ •̥ ა,𑁊^.  ̫ .^𑁊,^ ̳• ·̫ • ̳^,ꉂ ･ ･ ☆,◍˃ᵕ˂◍,(◍＞◡＜◍),૮◍'ㅅ'◍ა,^>⸝⸝⸝⸝<^੭ﾞ,/ᐠ - ˕ -マ Ⳋ,/ᐠ .⸝⸝⸝. ྀིﾏ,づ♡ど,՞•･•՞🐾,⁺ʚ⦁⩊⦁ɞ⁺,૮ ˘͈ᵕ ˘͈ ა,๑⃙⃘´༥`๑⃙⃘,• ༝༝༝ •".split(',').map(s => s.trim()).filter(Boolean);
+        
+        // --- 步骤一：新增的代码 ---
+
+// 1. 您提供的所有头像URL列表
+const passerbyAvatarUrls = [
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220054097_qdqqd_crrrju.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220056956_qdqqd_3kl2n1.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220059209_qdqqd_7va6df.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220060363_qdqqd_t82h0i.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220061816_qdqqd_qwpznw.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220063474_qdqqd_fm3kv0.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220065053_qdqqd_qna138.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220066312_qdqqd_sciijb.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220067402_qdqqd_t2hk85.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220259355_qdqqd_acn5rj.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220262609_qdqqd_fmcls8.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220263846_qdqqd_8bqudb.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220266372_qdqqd_wq9c8q.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220270080_qdqqd_upoomb.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220271170_qdqqd_l51d5q.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220273036_qdqqd_ahoh2j.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220274821_qdqqd_t9sk63.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220277134_qdqqd_u4e85f.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220278485_qdqqd_s16q3v.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220279702_qdqqd_mdyyf6.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220280637_qdqqd_jxrqr3.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220356721_qdqqd_crpjqd.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220359450_qdqqd_rdtppj.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220360880_qdqqd_5y37og.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220363206_qdqqd_ivew06.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220365731_qdqqd_axzvai.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220369734_qdqqd_8hp68q.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220390139_qdqqd_tmqleq.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220392726_qdqqd_ek12hv.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220394731_qdqqd_twz5bm.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220397307_qdqqd_h6vg6k.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220400792_qdqqd_o81d31.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220403312_qdqqd_2mntiu.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220405422_qdqqd_2mqa05.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220408153_qdqqd_fzop6o.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220412148_qdqqd_kuuyqv.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220415674_qdqqd_6snes1.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220419794_qdqqd_h1r03w.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220421406_qdqqd_2ex54f.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220424636_qdqqd_zux8p3.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220426289_qdqqd_bb0nas.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220429740_qdqqd_c9l9vp.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220434108_qdqqd_qjrjtd.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220437144_qdqqd_t9u49p.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220439349_qdqqd_4bcort.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220440700_qdqqd_5f24ay.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220442621_qdqqd_4x27u4.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220475361_qdqqd_05iza7.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220479216_qdqqd_mmuxel.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220482287_qdqqd_1vcedg.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220489762_qdqqd_psfic1.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220491132_qdqqd_yp2pva.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220496222_qdqqd_kecve7.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220499449_qdqqd_xtj3f0.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220504375_qdqqd_h7tuuc.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220510190_qdqqd_2236lm.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220513625_qdqqd_z4kfd4.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220516536_qdqqd_vtgj60.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220519660_qdqqd_i2m9y6.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220521371_qdqqd_9qcp5g.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220523332_qdqqd_bq1imn.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220525802_qdqqd_o5zn8j.jpeg",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759220529137_qdqqd_ipuagx.jpeg",
+ 
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222724857_qdqqd_jaxqio.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222727726_qdqqd_yuj6z3.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222730245_qdqqd_mm34jp.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222734644_qdqqd_cq18qf.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222735938_qdqqd_uzoz8e.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222739849_qdqqd_poj3g7.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222741557_qdqqd_8we26v.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222745270_qdqqd_ivvbzx.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222746743_qdqqd_vm96hm.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222749565_qdqqd_7rz948.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222750614_qdqqd_o1g45a.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222752092_qdqqd_kjjxn0.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222753299_qdqqd_1ft3da.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222754769_qdqqd_7gb6j5.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222756140_qdqqd_ycrxzl.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222757671_qdqqd_622lqv.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222760343_qdqqd_v2l8h6.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222761417_qdqqd_spnprw.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222763229_qdqqd_facdjt.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222765002_qdqqd_7ekiro.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222766580_qdqqd_it251t.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222768082_qdqqd_4dwv5t.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222769171_qdqqd_55nlxd.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222771289_qdqqd_g92j2i.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222772560_qdqqd_30jepf.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222774266_qdqqd_qntprx.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222776023_qdqqd_keskww.png",
+    "https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1759222777895_qdqqd_8pkjkg.png"
+];
+
+// 2. 用于为文字头像生成随机背景色的函数
+function getRandomColor() {
+    const colors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#4caf50', '#ff5722', '#1890ff'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
 
         // --- [MODIFIED] Heart's Voice Modal Functions ---
         function openHeartsVoiceModal() {
@@ -7720,6 +8738,9 @@ async function saveProfileData() {
                 favorites.forEach(f => savePromises.push(dbManager.set('favorites', f)));
                 moments.forEach(m => savePromises.push(dbManager.set('moments', m)));
                 customEmojis.forEach(e => savePromises.push(dbManager.set('customEmojis', e))); // 假设 customEmojis 有 id
+                
+                (forumPosts || []).forEach(post => savePromises.push(dbManager.set('forumPosts', post))); // <<<<<<< 新增这一行
+// ...
 
                 // 4. 处理播放列表（隔离 File 对象）
                 const serializablePlaylist = await Promise.all(playlist.map(async (song) => {
@@ -7757,7 +8778,13 @@ chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
 
 offlineModeSettings, // <-- 新增
 
-proactiveMessagingSettings: proactiveMessagingSettings
+proactiveMessagingSettings: proactiveMessagingSettings,
+
+forumProfileData: forumProfileData,
+
+worldviews: worldviews,
+    forumSettings: forumSettings,
+    currentForumPosts: currentForumPosts,
 
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
@@ -7827,7 +8854,7 @@ proactiveMessagingSettings: proactiveMessagingSettings
                 const [
                     loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
                     loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
-                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories, loadedOpeningStatements, loadedWritingStyles, loadedSkits
+                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories, loadedOpeningStatements, loadedWritingStyles, loadedSkits, loadedForumPosts
                 ] = await Promise.all([
                     dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
                     dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
@@ -7839,7 +8866,9 @@ dbManager.getAll('openingStatements') ,
 
 dbManager.getAll('writingStyles') ,
 
-dbManager.getAll('skits')
+dbManager.getAll('skits'),
+
+dbManager.getAll('forumPosts') 
 
                 ]);
                 
@@ -7918,6 +8947,7 @@ friends = loadedFriends || [];
                 // 这是【修改后】的代码
 moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 customEmojis = loadedCustomEmojis || [];
+                forumPosts = (loadedForumPosts || []).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // <<<<<<< 新增这一行
 
                 // 恢复播放列表
                 playlist = (loadedPlaylist || []).map(song => {
@@ -7931,6 +8961,22 @@ moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(
                
 // 恢复应用设置
 const settings = loadedAppSettings;
+
+// ...加载 settings 之后...
+worldviews = settings.worldviews || [];
+forumSettings = settings.forumSettings || { worldviewId: 'default_school', activeAiIds: [] };
+currentForumPosts = settings.currentForumPosts || [];
+
+// 【修改后】添加一个更通用的默认世界观，防止初次使用时为空
+if (worldviews.length === 0) {
+    worldviews.push({
+        id: 'default_modern_city', // 使用了新的、更清晰的ID
+        name: '默认现代都市',     // 新的名称
+        description: '这是一个繁华与机遇并存的现代都市。形形色色的人在这里追逐梦想、应对生活、建立情感联系。故事可以发生在任何地方：高耸的写字楼、温馨的咖啡馆、热闹的商业街、宁静的公园，甚至是深夜的居酒屋。论坛上充满了关于职场竞争、都市恋情、个人成长和日常生活的喜怒哀乐。'
+    });
+}
+
+forumProfileData = settings.forumProfileData || forumProfileData; 
 
 proactiveMessagingSettings = settings.proactiveMessagingSettings || { enabled: false, interval: 360 };
 
@@ -8259,7 +9305,8 @@ userPersonas = [userProfile];
         'settings': 'settingsApp', 
         'worldbook': 'worldBookScreen', 
         'theme': 'themeApp', 
-        'phone': 'phoneApp' 
+        'phone': 'phoneApp',
+        'forum': 'forumScreen'
     };
 
     // --- 【【【核心修复代码就在这里！！！】】】 ---
@@ -8285,6 +9332,16 @@ userPersonas = [userProfile];
     if (appName === 'phone') {
         initPhoneApp();
     }
+   if (appName === 'forum') {
+    renderForumTimeline();
+
+    // 找到“主页”标签页的HTML元素
+    const homeTabElement = document.querySelector('.forum-bottom-nav .forum-tab[onclick*="home"]');
+    // 如果找到了，就手动调用一次切换函数，确保布局正确
+    if (homeTabElement) {
+        switchForumTab('home', homeTabElement);
+    }
+}
 }
 
         function goHome() {
@@ -11567,7 +12624,7 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
                 worldbook: `<svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`,
                 theme: `<svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12,18C8.69,18 6,15.31 6,12C6,8.69 8.69,6 12,6C15.31,6 18,8.69 18,12C18,15.31 15.31,18 12,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>`,
                 phone: `<svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>`,
-                placeholder1: `<svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20,18H4V8H20M20,6H12L10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6Z" /></svg>`,
+                forum: `<svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.32 8.52c.07.72-.03 1.4-.29 2.02-.29.69-.74 1.34-1.33 1.83-.55.45-1.22.78-1.95.96-.75.18-1.54.21-2.31.06-.54-.1-1.07-.3-1.57-.59-.51-.3-.98-.69-1.42-1.12.01.07.01.14.02.21v.01c.21 1.77 1.49 3.25 3.16 3.73.57.16 1.15.24 1.73.24.53 0 1.05-.09 1.55-.26.68-.23 1.3-.59 1.81-1.04.2-.17.38-.36.56-.56h-.01c.32-.32.61-.67.86-1.04h.01c.25-.38.45-.78.61-1.2h.01c.15-.41.25-.83.33-1.26h-.01c.08-.43.11-.86.11-1.29 0-.46-.03-.92-.1-1.37h-.01c-.07-.44-.19-.87-.36-1.27h-.01c-.17-.41-.4-.78-.69-1.12-.29-.35-.63-.65-1.02-.9-.38-.25-.8-.45-1.26-.6-.44-.15-.9-.25-1.37-.29-.48-.04-.96-.03-1.42.03-.6.08-1.19.23-1.74.46-.57.22-1.08.53-1.53.92-.02.01-.03.03-.05.04v.01c-.48.43-.89.92-1.22 1.46-.3.51-.51 1.06-.64 1.63h.01c-.12.58-.16 1.17-.11 1.76h.01c.05.6.2 1.18.44 1.71.24.52.57.99.98 1.43z"/> </svg>`,
                 placeholder2: `<svg class="app-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14.5,12A2.5,2.5 0 0,0 12,9.5A2.5,2.5 0 0,0 9.5,12A2.5,2.5 0 0,0 12,14.5A2.5,2.5 0 0,0 14.5,12M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z" /></svg>`,
              };
              return svgs[appId] || '';
@@ -11604,7 +12661,7 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
             }
 
             // 对没有自定义图标的进行重置
-            ['wechat', 'settings', 'worldbook', 'theme', 'phone', 'placeholder1', 'placeholder2'].forEach(id => {
+            ['wechat', 'settings', 'worldbook', 'theme', 'phone', 'forum', 'placeholder2'].forEach(id => {
                 if (!customIcons[id]) {
                     const el = document.getElementById(`icon-${id}`);
                     if (el) { 
@@ -17539,7 +18596,18 @@ ${chatHistoryContext} `;
 1.  **【双重回复】**: 你的回复**必须**包含两个部分：一段纯文本的“小说式旁白与对话”，和一个独立的“HTML小剧场模块”。
 2.  **【小说家模式】**: 你的“小说式旁白与对话”部分必须遵循之前的全部小说模式规则（第三人称、内心戏、对话格式等）。
 3.  **【小剧场模式】**: 你的“HTML小剧场模块”部分必须遵循【HTML小剧场指令铁律】。如果该指令为空，则你无需生成HTML模块，回复格式退化为普通线下模式。
-4.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**: 你的所有描写和对话，视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。
+4.  **【【【最高行为铁律：绝对禁止越俎代庖！！！】】】**: 你的所有描写和对话，视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。{activePersona.name}" 的任何动作、心理活动、或说出的话语。你的叙述视角**必须严格限制**在你自己的角色（"${friend.name}"）身上。你只能回应，不能控制。
+5.  **【【【叙事视角与人称铁律】】】**:
+在所有的小说式描述中（即非对话部分），你必须使用第三人称代词“他”或者“她”来指代你自己的角色("${friend.name}")。具体根据角色的性别。严禁使用第一人称“我”。
+ 当提到你的对话伙伴 ("${activePersona.name}") 时，必须且只能使用第二人称代词“你”。
+ 5.  **【【【格式化铁律】】】**:
+角色 "${friend.name}" 说的话必须被中文引号“ ”包裹。
+角色 "${friend.name}" 的**所有内心想法/心理活动**，必须被下划线 \`_..._\` 包裹。
+ 6.  **【【【完整性与字数铁律】】】**: 你的任务是创作一段**完整且连贯**的故事，总字数**约等于** **${currentOfflineSettings.charCount}** 字。你必须在字数限制内讲完一个完整的情节或心理活动，**绝对不能**在句子中间突然截断。
+7.  **【禁止动作】**: 你的回复**只能**是纯文本。严禁生成任何JSON格式的动作。
+8.  **【【【最高记忆铁律：承上启下！！！】】】**:
+你**必须**仔细阅读并融合**以上所有情报**，尤其是“世界观”和“核心记忆”。你的续写**必须**与所有上文内容紧密相连，做到人设一致、情节连贯、逻辑自洽。**严禁遗忘**任何设定和已总结的记忆。
+
 
 【【【输出格式铁律 (必须严格遵守)】】】
 1.  **【第一部分：故事】**: 首先，直接输出续写的小说正文（纯文本）。
@@ -18547,6 +19615,317 @@ async function deleteDiary(event, diaryId, authorId) {
     });
 }
 
+// --- 步骤三：替换 renderForumTimeline 函数 ---
+
+function renderForumTimeline() {
+    const container = document.getElementById('forumHomeView');
+    container.innerHTML = '';
+    
+    if (!currentForumPosts || currentForumPosts.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-secondary);">暂无帖子，点击右上角刷新按钮生成</div>';
+        return;
+    }
+
+    currentForumPosts.forEach(post => {
+        const item = document.createElement('div');
+        item.className = 'post-item';
+        item.onclick = () => openForumDetailView(post.id);
+
+        const likes = Math.floor(Math.random() * 200);
+        const comments = Math.floor(likes * (Math.random() * 0.5 + 0.2));
+        const retweets = Math.floor(likes * (Math.random() * 0.3 + 0.1));
+        const views = likes * (Math.floor(Math.random() * 10) + 5);
+
+        let displayName, displayHandle, avatarHtml;
+// --- 【【【核心修改：全新的头像读取逻辑】】】 ---
+        if (post.authorId && post.authorId === userProfile.id) {
+            // 情况1: 是用户自己发的帖子 (此逻辑不变)
+            displayName = forumProfileData.name;
+            displayHandle = forumProfileData.handle.startsWith('@') ? forumProfileData.handle : `@${forumProfileData.handle}`;
+            const avatarSrc = forumProfileData.avatarImage || userProfile.avatarImage;
+            if (avatarSrc) {
+                avatarHtml = `<div class="post-avatar" style="background-image: url('${avatarSrc}')"></div>`;
+            } else {
+                avatarHtml = `<div class="post-avatar" style="background-color: #1da1f2; color: white;">${displayName.substring(0,1)}</div>`;
+            }
+        } else if (post.authorId) {
+            // 情况2: 是已知的AI好友发的帖子 (此逻辑不变)
+            const author = getAuthorById(post.authorId);
+            displayName = author.name;
+            displayHandle = `@${displayName.replace(/\s+/g, '').substring(0, 8)}`;
+            if (author.avatarImage) {
+                avatarHtml = `<div class="post-avatar" style="background-image: url('${author.avatarImage}')"></div>`;
+            } else {
+                avatarHtml = `<div class="post-avatar" style="background-color: ${getRandomColor()}; color: white;">${author.avatar}</div>`;
+            }
+        } else {
+            // 情况3: 是AI生成的路人或匿名帖子
+            displayName = post.authorName;
+            displayHandle = `@${displayName.replace(/\s+/g, '').substring(0, 8)}`;
+            
+            // **新的读取逻辑在这里**
+            if (displayName === '匿名用户') {
+                avatarHtml = `<div class="post-avatar">?</div>`;
+            } else if (post.authorAvatarUrl) {
+                // 如果保存了图片URL，就用图片
+                avatarHtml = `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`;
+            } else if (post.authorAvatarChar) {
+                // 如果保存了文字和颜色，就用文字头像
+                avatarHtml = `<div class="post-avatar" style="background-color: ${post.authorAvatarColor}; color: white;">${post.authorAvatarChar}</div>`;
+            } else {
+                // 备用方案，以防万一
+                avatarHtml = `<div class="post-avatar">?</div>`;
+            }
+        }
+       
+        // --- 【【【头像生成逻辑结束】】】 ---
+
+        const timeAgo = timeSince(post.timestamp);
+
+        item.innerHTML = `
+            ${avatarHtml}
+            <div class="post-content-area" style="position: relative;">
+                <div class="post-header">
+                    <div class="post-author-info">
+                        <span class="post-author-name">${displayName}</span>
+                        <span class="post-handle">${displayHandle}</span>
+                        <span class="post-handle">· ${timeAgo}</span>
+                    </div>
+                    ${post.authorId === userProfile.id ? `
+                    <div class="post-more-options">
+                        <div class="post-more-btn" onclick="togglePostMenu(event, '${post.id}')">
+                            <svg viewBox="0 0 24 24"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+                        </div>
+                        <div class="post-options-menu" id="post-menu-${post.id}">
+                            <div class="post-options-item danger" onclick="deleteForumPost(event, '${post.id}')">删除</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="post-text">${post.content.replace(/\n/g, '<br>')}</div>
+                <div class="post-actions">
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        <span id="comments-count-${post.id}">${comments}</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
+                        <span id="retweets-count-${post.id}">${retweets}</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
+                        <span id="likes-count-${post.id}">${likes}</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-6h2v6h-2.004zM13.25 21l.004-11h2v11h-2.004z"></path></svg>
+                        <span id="views-count-${post.id}">${views}</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.879 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></svg>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></svg>
+                    </span>
+                </div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// ↓↓↓ 请用这个新版本，完整替换旧的 switchForumTab 函数 ↓↓↓
+function switchForumTab(tabName, tabElement) {
+    // 隐藏所有内容视图
+    document.querySelectorAll('.forum-content-view').forEach(view => {
+        view.classList.remove('active');
+    });
+    
+    // 移除所有 Tab 的 active 状态
+    document.querySelectorAll('.forum-bottom-nav .forum-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // 显示对应的 Tab 内容
+    const activeView = document.getElementById('forum' + tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'View');
+    activeView.classList.add('active');
+    
+    // 激活被点击的 Tab 元素
+    tabElement.classList.add('active');
+
+    if (tabName === 'home') {
+        renderForumTimeline();
+        document.getElementById('newPostFab').style.display = 'flex';
+    } else if (tabName === 'search') { // <<<--- 核心修改在这里
+        renderTrends(); // 当切换到搜索/热点页时，调用新的渲染函数
+        document.getElementById('newPostFab').style.display = 'none';
+    } else {
+        document.getElementById('newPostFab').style.display = 'none';
+    }
+    
+    if (tabName === 'me') {
+        renderForumProfile();
+    }
+}
+
+/**
+ * 打开新的帖子编辑模态框
+ */
+function openNewPostModal() {
+    document.getElementById('newPostContentInput').value = '';
+    document.getElementById('newPostModal').classList.add('show');
+}
+
+/**
+ * 关闭新的帖子编辑模态框
+ */
+function closeNewPostModal() {
+    document.getElementById('newPostModal').classList.remove('show');
+}
+
+/**
+ * 发布新帖子 (用户自己发帖)
+ */
+async function postForumMessage() {
+    const content = document.getElementById('newPostContentInput').value.trim();
+    if (!content) return showAlert('帖子内容不能为空');
+
+    const newPost = {
+        id: generateUniqueId(),
+        authorId: userProfile.id, // 作者是用户自己
+        content: content,
+        timestamp: new Date().toISOString()
+    };
+
+    const newId = await dbManager.set('forumPosts', newPost);
+    newPost.id = newId;
+    forumPosts.unshift(newPost); // 添加到最前面
+
+    await saveData();
+    renderForumTimeline(); // 刷新时间线
+    closeNewPostModal();
+}
+
+/**
+ * 删除帖子
+ * @param {Event} event - 点击事件
+ * @param {string} postId - 帖子ID
+ */
+async function deleteForumPost(event, postId) {
+    event.stopPropagation();
+    showConfirm('确定要删除这条帖子吗？', async (confirmed) => {
+        if (!confirmed) return;
+        
+        await dbManager.delete('forumPosts', postId);
+        forumPosts = forumPosts.filter(post => post.id !== postId);
+        
+        await saveData();
+        renderForumTimeline();
+    });
+}
+
+/**
+ * 打开论坛设置
+ */
+function openForumSettings() {
+    document.getElementById('forumSettingsModal').classList.add('show');
+}
+
+function closeForumSettings() {
+    document.getElementById('forumSettingsModal').classList.remove('show');
+}
+
+function clearForumHistoryConfirm() {
+    showConfirm('确定要清空所有论坛帖子吗？', async (confirmed) => {
+        if (!confirmed) return;
+        
+        await dbManager.clear('forumPosts');
+        forumPosts = [];
+        
+        await saveData();
+        renderForumTimeline();
+        closeForumSettings();
+        showAlert('所有帖子已清空。');
+    });
+}
+
+/**
+ * AI 生成新帖子 (核心功能)
+ */
+async function generateForumPostFromAI() {
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings.apiUrl || !settings.apiKey || !settings.modelName) {
+        return showAlert("请先在设置中配置API信息。");
+    }
+    
+    // 1. 找到 AI 朋友（非群聊）来扮演
+    const aiFriends = friends.filter(f => !f.isGroup);
+    if (aiFriends.length === 0) return showAlert("没有 AI 好友可用于生成帖子。");
+    
+    // 2. 随机选择一个 AI 朋友作为发帖者
+    const randomAi = aiFriends[Math.floor(Math.random() * aiFriends.length)];
+    
+    // 3. 收集该 AI 的聊天记录作为上下文
+    const recentChatHistory = (chatHistories[randomAi.id] || [])
+        .slice(-30) 
+        .map(m => `${m.type === 'sent' ? userProfile.name : randomAi.name}: ${m.content}`)
+        .join('\n');
+        
+    const prompt = `你叫"${randomAi.name}"，人设是：“${randomAi.role}”。
+        
+        【你的任务】:
+        请严格根据你的人设，并参考以下你与朋友的聊天记录，以**你的第一人称视角**发布一条论坛帖子（模仿Twitter/X的风格）。你的帖子内容必须是对聊天中的某件事或某种情绪的**发散**或**延伸**。
+
+        【聊天记录摘要】:
+        ${recentChatHistory || '无'}
+        
+        【要求】:
+        1.  **语气必须完全符合你的人设**。
+        2.  内容必须是**纯文字**，且是**口语化、即时感强**的短文。
+        3.  你的回复**必须且只能**是纯文本的帖子内容，不能包含任何JSON、标题或多余的解释。
+
+        现在，请生成你的帖子内容。`;
+        
+    closeForumSettings();
+    showAlert(`正在让 ${randomAi.name} 思考并发布新帖子...`, 5000);
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.8
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const content = data.choices[0].message.content.trim();
+        
+        const newPost = {
+            id: generateUniqueId(),
+            authorId: randomAi.id, 
+            content: content,
+            timestamp: new Date().toISOString(),
+            comments: [] // <--- 新增的就是这一行！
+        };
+
+        const newId = await dbManager.set('forumPosts', newPost);
+        newPost.id = newId;
+        forumPosts.unshift(newPost);
+
+        await saveData();
+        renderForumTimeline();
+        showAlert(`🎉 ${randomAi.name} 发布了新帖子！`);
+
+    } catch (error) {
+        console.error("AI生成论坛帖子失败:", error);
+        showAlert(`AI生成帖子失败: ${error.message}`);
+    }
+}
+
 /**
  * 【V2 修复版】切换“主动发消息”功能的总开关
  */
@@ -18654,6 +20033,976 @@ document.addEventListener('visibilitychange', function() {
 });
 
 // --- ↑↑↑ 粘贴到此结束 ↑↑↑ ---
+
+/**
+ * 渲染论坛个人资料页面 (V3 - 最终修复版)
+ */
+function renderForumProfile() {
+    const coverHeader = document.getElementById('forumCoverHeader');
+    coverHeader.onclick = handleForumCoverUpload;
+    coverHeader.style.backgroundImage = `url(${forumProfileData.coverImage || 'none'})`;
+    
+    const avatarEl = document.getElementById('forumProfileAvatar');
+    const forumAvatar = forumProfileData.avatarImage;
+    const wechatAvatar = userProfile.avatarImage;
+
+    if (forumAvatar) {
+        avatarEl.style.backgroundImage = `url(${forumAvatar})`;
+        avatarEl.textContent = '';
+    } else if (wechatAvatar) {
+        avatarEl.style.backgroundImage = `url(${wechatAvatar})`;
+        avatarEl.textContent = '';
+    } else {
+        avatarEl.style.backgroundImage = 'none';
+        avatarEl.textContent = userProfile.name.substring(0, 1);
+        avatarEl.style.backgroundColor = '#1da1f2';
+        avatarEl.style.color = 'white';
+    }
+    
+    document.getElementById('forumProfileName').innerHTML = `${forumProfileData.name} <svg class="verified-badge" ... (此处省略SVG代码) ... </svg>`;
+    
+    // --- 【核心修复1：修复重复的'@'符号】 ---
+    const handleText = forumProfileData.handle.startsWith('@') 
+        ? forumProfileData.handle 
+        : `@${forumProfileData.handle}`;
+    document.getElementById('forumProfileHandle').textContent = handleText;
+
+    // --- 【核心修复2：显示个人简介】 ---
+    const bioElement = document.getElementById('forumProfileBio');
+    if (forumProfileData.bio) {
+        bioElement.textContent = forumProfileData.bio;
+        bioElement.style.display = 'block'; // 如果有简介就显示
+    } else {
+        bioElement.style.display = 'none'; // 如果没有就隐藏
+    }
+
+    // (下面的代码保持不变)
+    document.getElementById('forumProfileFollowing').textContent = forumProfileData.following;
+    document.getElementById('forumProfileFollowers').textContent = forumProfileData.followers;
+    document.getElementById('forumProfileJoined').innerHTML = `📅 ${forumProfileData.joined} 加入`;
+
+    renderForumProfileTimeline('posts');
+    
+    document.querySelectorAll('.forum-profile-tab').forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll('.forum-profile-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            renderForumProfileTimeline(tab.getAttribute('data-tab'));
+        };
+    });
+}
+
+/**
+ * 渲染个人资料页的帖子/回复列表
+ * @param {string} type - 'posts' 或 'replies'
+ */
+function renderForumProfileTimeline(type) {
+    const container = document.getElementById('forumProfileTimeline');
+    container.innerHTML = '';
+    
+    const postsToDisplay = forumPosts.filter(post => {
+        if (type === 'posts') {
+            return post.authorId === userProfile.id;
+        }
+        // 由于我们的帖子模型没有回复概念，这里只显示“回复”占位符
+        return false;
+    });
+
+    if (postsToDisplay.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">暂无${type === 'posts' ? '帖子' : '回复'}</div>`;
+        return;
+    }
+
+    // 复制 renderForumTimeline 的逻辑来渲染帖子
+    postsToDisplay.forEach(post => {
+        // ... (复制 renderForumTimeline 内部的帖子渲染逻辑，但注意作者永远是用户自己)
+        const item = document.createElement('div');
+        item.className = 'post-item';
+        item.innerHTML = `
+            <div class="post-avatar" style="background-image: url('${forumProfileData.avatarImage || userProfile.avatarImage}');"></div>
+            <div class="post-content-area">
+                <!-- 这是【新的】头部结构 -->
+<div class="post-header">
+    <div class="post-author-info">
+        <span class="post-author-name">${forumProfileData.name}</span>
+        <span class="post-handle">${forumProfileData.handle}</span>
+        <span class="post-handle">· ${timeSince(post.timestamp)}</span>
+    </div>
+    <!-- 新增：“三点菜单”只在用户自己的帖子上显示 -->
+                ${post.authorId === userProfile.id ? `
+                <div class="post-more-options">
+                    <div class="post-more-btn" onclick="togglePostMenu(event, '${post.id}')">
+                        <svg viewBox="0 0 24 24"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+                    </div>
+                    <div class="post-options-menu" id="post-menu-${post.id}">
+                        <div class="post-options-item danger" onclick="deleteForumPost(event, '${post.id}')">删除</div>
+                    </div>
+                </div>
+                ` : ''}
+                </div>
+                <div class="post-text">${post.content.replace(/\n/g, '<br>')}</div>
+            <div class="post-actions">
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+</svg>
+                        <span>0</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
+                        <span>0</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
+                        <span>0</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-6h2v6h-2.004zM13.25 21l.004-11h2v11h-2.004z"></path></svg>
+                        <span>13</span>
+                    </span>
+                    <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.879 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></svg>
+                    </span>
+                     <span class="post-action-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></svg>
+                    </span>
+                </div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function switchForumTab(tabName, tabElement) {
+    const navBar = document.getElementById('forumTopNavBar');
+    
+    // 隐藏所有内容视图
+    document.querySelectorAll('.forum-content-view').forEach(view => {
+        view.classList.remove('active');
+    });
+    
+    // 移除所有 Tab 的 active 状态
+    document.querySelectorAll('.forum-bottom-nav .forum-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    const activeView = document.getElementById('forum' + tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'View');
+    activeView.classList.add('active');
+    tabElement.classList.add('active');
+
+    // --- 核心修改逻辑 ---
+    if (tabName === 'home') {
+        // 如果是“帖子”界面
+        navBar.style.display = 'flex'; // 显示导航栏
+        activeView.style.top = '74px'; // 内容从74px处开始（状态栏+导航栏高度）
+        document.getElementById('newPostFab').style.display = 'flex';
+    } else {
+        // 如果是“搜索”或“我”界面
+        navBar.style.display = 'none'; // 隐藏导航栏
+        activeView.style.top = '30px'; // 内容从30px处开始（只有状态栏高度）
+        document.getElementById('newPostFab').style.display = 'none';
+    }
+
+    // “我”界面的特殊渲染逻辑保持不变
+    if (tabName === 'me') {
+        renderForumProfile();
+    } else if (tabName === 'home') {
+        renderForumTimeline();
+    }
+}
+
+// --- 个人资料编辑模态框函数 ---
+
+function openForumEditProfileModal() {
+    document.getElementById('forumEditName').value = forumProfileData.name;
+    document.getElementById('forumEditHandle').value = forumProfileData.handle.replace('@', '');
+    document.getElementById('forumEditBio').value = forumProfileData.bio;
+    document.getElementById('forumEditProfileModal').classList.add('show');
+}
+
+function closeForumEditProfileModal() {
+    document.getElementById('forumEditProfileModal').classList.remove('show');
+}
+
+async function saveForumProfile() {
+    const newName = document.getElementById('forumEditName').value.trim();
+    const newHandle = document.getElementById('forumEditHandle').value.trim();
+    const newBio = document.getElementById('forumEditBio').value.trim();
+
+    if (!newName || !newHandle) return showAlert('昵称和Handle不能为空');
+
+    forumProfileData.name = newName;
+    forumProfileData.handle = newHandle.startsWith('@') ? newHandle : `@${newHandle}`;
+    forumProfileData.bio = newBio;
+    
+    await saveData();
+    renderForumProfile(); // 刷新页面
+    closeForumEditProfileModal();
+}
+
+
+// --- 图片上传处理函数 ---
+
+function handleForumCoverUpload() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => { 
+                forumProfileData.coverImage = event.target.result;
+                renderForumProfile();
+                await saveData();
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+function handleForumAvatarUpload() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => { 
+                forumProfileData.avatarImage = event.target.result;
+                renderForumProfile();
+                await saveData();
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+// 在你的其他工具函数（如 toggleProactiveMessaging）附近新增此函数
+/**
+ * 实时更新主动发消息的间隔值并保存
+ * @param {string} value - 输入框中的值
+ */
+function updateProactiveInterval(value) {
+    const parsedValue = parseInt(value, 10);
+    // 确保值是一个有效的、大于0的数字
+    if (!isNaN(parsedValue) && parsedValue > 0) {
+        proactiveMessagingSettings.interval = parsedValue;
+        saveData(); // 立即保存
+        // 建议增加一个提示，确认保存成功
+        showToast('主动消息间隔已保存');
+    } else {
+        // 如果输入无效，给一个提示，并恢复旧值
+        showAlert('请输入一个有效的、大于0的数字。');
+        document.getElementById('proactiveIntervalInput').value = proactiveMessagingSettings.interval;
+    }
+}
+
+/**
+ * 新增：切换帖子“三点菜单”的显示和隐藏
+ */
+function togglePostMenu(event, postId) {
+    event.stopPropagation(); // 阻止事件冒泡，防止触发全局点击事件
+    // 先隐藏所有其他可能打开的菜单
+    document.querySelectorAll('.post-options-menu').forEach(menu => {
+        if (menu.id !== `post-menu-${postId}`) {
+            menu.classList.remove('show');
+        }
+    });
+    // 然后切换当前点击的菜单
+    document.getElementById(`post-menu-${postId}`).classList.toggle('show');
+}
+
+// 新增：在 `window.onload` 或类似的全局初始化函数中，添加一个全局点击监听器
+//
+window.addEventListener('click', (event) => {
+    // 如果点击的不是“三点菜单”按钮，就隐藏所有打开的菜单
+    if (!event.target.closest('.post-more-btn')) {
+        document.querySelectorAll('.post-options-menu.show').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// ↓↓↓ 请将以下所有新代码，完整地粘贴到 <script> 标签的末尾 ↓↓↓
+
+/**
+ * 动态生成符合国情的、不重复的中文热搜数据
+ * @returns {Array<object>} 热搜对象数组
+ */
+function generateChineseTrends() {
+    const categories = ['社会百态', '科技前沿', '娱乐风向', '体育赛事', '财经动态', '生活趣闻'];
+    const keywords = [
+        '国产AI芯片取得新突破', '新式茶饮品牌出海受热捧', '古镇旅游热度持续攀升',
+        '虚拟数字人直播带货引争议', '多地出台人才引进新政策', '国产科幻电影宇宙初具雏形',
+        '年轻人开始流行“反向消费”', '新能源汽车市场竞争加剧', '非遗文化与现代潮流结合',
+        '短剧APP成为新风口', '全民健身热潮下的新消费', '大学生就业观念转变',
+        '老字号品牌如何焕发新生', '共享电单车管理难题', 'AI绘画版权问题探讨'
+    ];
+
+    // 打乱数组以确保每次生成的内容都不同
+    const shuffledKeywords = keywords.sort(() => 0.5 - Math.random());
+    
+    const trends = [];
+    // 生成 1 个推荐 + 10个普通热搜
+    for (let i = 0; i < 11; i++) {
+        trends.push({
+            category: categories[Math.floor(Math.random() * categories.length)],
+            keyword: shuffledKeywords[i % shuffledKeywords.length], // 循环使用关键词
+            heat: `${(Math.random() * 300 + 50).toFixed(1)} 万` // 生成50万到350万之间的热度值
+        });
+    }
+    return trends;
+}
+
+/**
+ * 渲染热搜列表到界面
+ */
+function renderTrends() {
+    const container = document.getElementById('trendsListContainer');
+    if (!container) return;
+
+    // 更新顶部的用户头像
+    const avatarEl = document.getElementById('trendsAvatar');
+    if (userProfile.avatarImage) {
+        avatarEl.style.backgroundImage = `url(${userProfile.avatarImage})`;
+    } else {
+        avatarEl.style.backgroundColor = '#1d9bf0'; // 一个默认背景色
+    }
+
+    const trendsData = generateChineseTrends();
+    container.innerHTML = ''; // 清空旧内容
+
+    // 渲染第一个作为“为你推荐”的特色卡片
+    const featured = trendsData.shift(); // 取出并移除第一个
+    const featuredItem = document.createElement('div');
+    featuredItem.className = 'featured-trend-item';
+    featuredItem.innerHTML = `
+        <img src="https://source.unsplash.com/random/800x450?city,technology,${featured.keyword}" alt="${featured.keyword}">
+        <div class="featured-trend-overlay">
+            <div class="trend-category">${featured.category} · 推荐</div>
+            <div class="trend-keyword">${featured.keyword}</div>
+            <div class="trend-heat">热度 ${featured.heat}</div>
+        </div>
+    `;
+    container.appendChild(featuredItem);
+
+    // 渲染剩下的普通热搜
+    trendsData.forEach(trend => {
+        const item = document.createElement('div');
+        item.className = 'trend-item';
+        item.innerHTML = `
+            <div class="trend-info">
+                <div class="trend-category">${trend.category} · 趋势</div>
+                <div class="trend-keyword">${trend.keyword}</div>
+                <div class="trend-heat">热度 ${trend.heat}</div>
+            </div>
+            <div class="trend-more-icon">
+                <svg viewBox="0 0 24 24"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// 为刷新按钮绑定点击事件
+document.getElementById('refreshTrendsBtn').addEventListener('click', () => {
+    showToast('正在刷新热搜...', 1500);
+    setTimeout(renderTrends, 500); // 延迟一点刷新，增加体验感
+});
+
+// --- 将这一整块新函数粘贴到您的 <script> 区域 ---
+
+/**
+ * 【修正版】打开论坛设置的主弹窗
+ */
+function openForumSettingsModal() {
+    // 关键：在打开弹窗前，先渲染好里面的动态内容
+    renderForumAiSelectList();
+    updateCurrentWorldviewDisplay();
+    
+    // 现在再显示弹窗
+    const modal = document.getElementById('forumSettingsModal');
+    if (modal) {
+         modal.classList.add('show');
+    } else {
+        console.error("错误：未能找到新的论坛设置弹窗！");
+    }
+}
+
+/**
+ * 渲染可参与发帖的AI列表
+ */
+function renderForumAiSelectList() {
+    const container = document.getElementById('forumAiSelectList');
+    container.innerHTML = '';
+    friends.filter(f => !f.isGroup).forEach(friend => {
+        const isChecked = forumSettings.activeAiIds.includes(friend.id);
+        const item = document.createElement('div');
+        item.className = 'multi-select-item';
+        item.innerHTML = `
+            <input type="checkbox" id="ai-select-${friend.id}" value="${friend.id}" ${isChecked ? 'checked' : ''}>
+            <label for="ai-select-${friend.id}">${friend.remark || friend.name}</label>
+        `;
+        container.appendChild(item);
+    });
+}
+
+/**
+ * 更新设置弹窗中当前选择的世界观名称
+ */
+function updateCurrentWorldviewDisplay() {
+    const display = document.getElementById('currentWorldview');
+    const selected = worldviews.find(w => w.id === forumSettings.worldviewId);
+    display.textContent = selected ? selected.name : '未选择';
+}
+
+/**
+ * 打开世界观选择/管理弹窗
+ */
+function openWorldviewModal() {
+    renderWorldviewList();
+    document.getElementById('worldviewModal').classList.add('show');
+}
+
+/**
+ * 渲染世界观列表
+ */
+function renderWorldviewList() {
+    const container = document.getElementById('worldviewList');
+    container.innerHTML = '';
+    worldviews.forEach(worldview => {
+        const item = document.createElement('div');
+        item.className = `friend-item ${worldview.id === forumSettings.worldviewId ? 'worldview-active' : ''}`;
+        item.innerHTML = `
+            <div class="friend-info" style="flex-grow: 1;" onclick="selectWorldview('${worldview.id}')">
+                <div class="friend-name">${worldview.name}</div>
+            </div>
+            <button class="nav-btn" onclick="openWorldviewEditor('${worldview.id}'); event.stopPropagation();">编辑</button>
+        `;
+        container.appendChild(item);
+    });
+}
+
+/**
+ * 选中一个世界观
+ */
+function selectWorldview(worldviewId) {
+    forumSettings.worldviewId = worldviewId;
+    updateCurrentWorldviewDisplay();
+    document.getElementById('worldviewModal').classList.remove('show');
+}
+
+/**
+ * 打开世界观编辑器（新建或编辑）
+ */
+function openWorldviewEditor(worldviewId = null) {
+    currentEditingWorldviewId = worldviewId;
+    const modal = document.getElementById('worldviewEditorModal');
+    const title = document.getElementById('worldviewEditorTitle');
+    const nameInput = document.getElementById('worldviewNameInput');
+    const descInput = document.getElementById('worldviewDescInput');
+
+    if (worldviewId) {
+        const worldview = worldviews.find(w => w.id === worldviewId);
+        title.textContent = '编辑世界观';
+        nameInput.value = worldview.name;
+        descInput.value = worldview.description;
+    } else {
+        title.textContent = '新建世界观';
+        nameInput.value = '';
+        descInput.value = '';
+    }
+    modal.classList.add('show');
+}
+
+/**
+ * 关闭世界观编辑器
+ */
+function closeWorldviewEditor() {
+    document.getElementById('worldviewEditorModal').classList.remove('show');
+    currentEditingWorldviewId = null;
+}
+
+/**
+ * 保存世界观
+ */
+async function saveWorldview() {
+    const name = document.getElementById('worldviewNameInput').value.trim();
+    const description = document.getElementById('worldviewDescInput').value.trim();
+    if (!name || !description) return showAlert('名称和描述不能为空');
+
+    if (currentEditingWorldviewId) {
+        const index = worldviews.findIndex(w => w.id === currentEditingWorldviewId);
+        worldviews[index] = { ...worldviews[index], name, description };
+    } else {
+        const newWorldview = { id: `wv_${generateUniqueId()}`, name, description };
+        worldviews.push(newWorldview);
+        // 如果是第一个创建的，自动选中它
+        if (worldviews.length === 1) {
+            forumSettings.worldviewId = newWorldview.id;
+        }
+    }
+    
+    await saveData();
+    closeWorldviewEditor();
+    renderWorldviewList(); // 刷新世界观列表
+    updateCurrentWorldviewDisplay(); // 更新主设置弹窗的显示
+}
+
+/**
+ * 保存论坛设置并刷新
+ */
+async function saveForumSettingsAndRefresh() {
+    // 保存选中的AI
+    forumSettings.activeAiIds = [];
+    document.querySelectorAll('#forumAiSelectList input:checked').forEach(checkbox => {
+        forumSettings.activeAiIds.push(checkbox.value);
+    });
+    
+    await saveData();
+    document.getElementById('forumSettingsModal').classList.remove('show');
+    
+    // 立即刷新
+    refreshForumTimeline();
+}
+
+// --- 步骤二：替换 refreshForumTimeline 函数 ---
+
+async function refreshForumTimeline() {
+    const container = document.getElementById('forumHomeView');
+    container.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-secondary);">正在生成新帖子，请稍候...</div>';
+    
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings || !settings.apiUrl || !settings.apiKey || !settings.modelName) {
+        container.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">请先在论坛设置中配置API</div>';
+        return;
+    }
+
+    const worldview = worldviews.find(w => w.id === forumSettings.worldviewId);
+    if (!worldview) {
+        container.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">请先在论坛设置中选择一个世界观</div>';
+        return;
+    }
+
+    const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
+    const aiInfoForPrompt = aiParticipants.map(ai => {
+        const recentChat = (chatHistories[ai.id] || []).slice(-5).map(m => `${m.type === 'sent' ? '你' : ai.name}: ${m.content}`).join('\n');
+        return `
+- AI角色: ${ai.name}
+- 人设: ${ai.role}
+- 与你的最近聊天摘要:
+${recentChat || '无'}
+`;
+    }).join('');
+
+    // 【【【第一处核心修正：全新的、更简单的AI指令】】】
+    // 这里使用了反引号 ` ` 来创建多行字符串，解决了您可能遇到的语法问题。
+    const prompt = `
+    【任务】: 你是一个论坛内容生成器。请严格根据提供的世界观，生成20条完全不同的、高质量的论坛帖子。
+
+    【世界观设定 (必须严格遵守)】:
+    - 名称: ${worldview.name}
+    - 描述: ${worldview.description}
+
+    【参与发帖的AI角色信息 (他们的帖子必须符合人设和聊天记录)】:
+    ${aiInfoForPrompt || '无特定AI角色参与，请生成路人帖子。'}
+
+    【发帖人“路人”昵称生成铁律】:
+    1. 你必须构思一批有“网感”的、生活化的、与具体事件无关的昵称备用。
+    2. 这些昵称应该是通用的，比如：“今天吃什么”、“脆脆鲨爱好者”、“不想上班啊啊啊”、“电子咸鱼”、“晚风轻踩”、“月亮失眠了”。
+    3. 严禁使用和帖子内容相关的名字。
+
+    【帖子生成铁律】:
+    1.  **【主题绝对相关】**: 所有帖子内容必须严格围绕 "${worldview.name}" 这个世界观展开。
+    2.  **【绝对禁止重复】**: 20条帖子的内容、发帖人姓名都必须是独一无二的。
+    3.  **【发帖人多样性】**: 帖子可以由AI角色、随机路人或匿名发布。
+    4.  **【内容多样性】**: 帖子内容应覆盖情感、美食、生活、学习、吐槽等多个方面。
+    5.  **【语言风格】**: 必须使用简体中文，口吻要生活化、网络化。绝对不能使用任何Emoji。
+    6.  **【绝对解耦铁律】**: 帖子的 "authorName" 和 "content" 之间绝对不能有任何主题关联。
+
+    【【【输出格式铁律 (必须严格遵守)】】】
+    你的回复必须是纯文本，并且每一条帖子都必须严格遵循以下格式：
+    1.  先写帖子正文内容（可以包含换行符 \\n）。
+    2.  在正文结束后，紧接着写下分隔符 \`[AUTHOR_SEPARATOR]\`。
+    3.  在分隔符之后，写上发帖人的名字。
+    4.  每条帖子之间用两个换行符隔开。
+
+    【格式示例】:
+求助！图书馆三楼那个靠窗的位置也太抢手了吧！
+有什么方法能占到座吗？[AUTHOR_SEPARATOR]夏天的风
+
+有点喜欢隔壁班的那个男生，怎么办啊...[AUTHOR_SEPARATOR]匿名用户
+
+    现在，开始生成20条帖子。`;
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                model: settings.modelName, 
+                messages: [{ role: 'user', content: prompt }], 
+                temperature: 1.0,
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+
+        // 【【【第二处核心修正：全新的、更健壮的解析逻辑】】】
+        const posts = responseText
+            // 1. 用两个换行符作为帖子的分隔，得到一个帖子数组
+            .split('\n\n')
+            // 2. 遍历每一段帖子文本
+            .map(postBlock => {
+                // 3. 找到最后一个作者分隔符的位置
+                const separatorIndex = postBlock.lastIndexOf('[AUTHOR_SEPARATOR]');
+                // 4. 如果找到了分隔符
+                if (separatorIndex !== -1) {
+                    // 5. 分隔符之前的是内容
+                    const content = postBlock.substring(0, separatorIndex).trim();
+                    // 6. 分隔符之后的是作者
+                    const authorName = postBlock.substring(separatorIndex + '[AUTHOR_SEPARATOR]'.length).trim();
+                    // 7. 返回一个结构化的帖子对象
+                    if (content && authorName) {
+                        return { authorName, content };
+                    }
+                }
+                // 8. 如果格式不对，返回 null
+                return null;
+            })
+            // 9. 过滤掉所有格式不对的帖子
+            .filter(Boolean);
+
+
+        const now = new Date();
+        currentForumPosts = posts.map((p, i) => {
+            const randomMinutesAgo = (i * 15) + Math.floor(Math.random() * 60);
+            const postDate = new Date(now.getTime() - randomMinutesAgo * 60 * 1000);
+            
+            const authorIsAiFriend = aiParticipants.find(ai => ai.name === p.authorName);
+            
+            const newPost = { 
+                ...p, 
+                id: `post_${generateUniqueId()}`, 
+                timestamp: postDate.toISOString(),
+                authorId: authorIsAiFriend ? authorIsAiFriend.id : null 
+            };
+
+            if (!newPost.authorId && newPost.authorName !== '匿名用户') {
+                if (Math.random() < 0.8) {
+                    const randomUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+                    newPost.authorAvatarUrl = randomUrl;
+                } else {
+                    const avatarChar = newPost.authorName.substring(0, 1) || '?';
+                    const randomBgColor = getRandomColor();
+                    newPost.authorAvatarChar = avatarChar;
+                    newPost.authorAvatarColor = randomBgColor;
+                }
+            }
+
+            return newPost;
+        });
+        
+        await saveData();
+        renderForumTimeline();
+
+    } catch (error) {
+        console.error("生成论坛帖子失败:", error);
+        container.innerHTML = `<div style="text-align: center; padding: 50px; color: #999;">帖子生成失败: ${error.message}</div>`;
+    }
+}
+
+/**
+ * 新增：从论坛主页返回
+ */
+function backToForumTimeline() {
+    setActivePage('forumScreen');
+    // 确保底部导航和FAB按钮状态正确
+    const homeTab = document.querySelector('.forum-tab[onclick*="home"]');
+    if (homeTab) {
+        switchForumTab('home', homeTab);
+    }
+}
+
+
+/**
+ * 核心功能：打开帖子详情页
+ * @param {string} postId - 要查看的帖子ID
+ */
+async function openForumDetailView(postId) {
+    const post = currentForumPosts.find(p => p.id === postId);
+    if (!post) return;
+
+    // 切换到详情页并显示加载状态
+    setActivePage('forumDetailView');
+    const detailContainer = document.getElementById('forumDetailContent');
+    detailContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">正在加载评论...</div>';
+
+    // 检查是否已经有评论
+    if (post.comments && post.comments.length > 0) {
+        // 如果有，直接渲染
+        renderForumDetailView(post);
+    } else {
+        // 如果没有，调用AI生成，然后渲染
+        await generatePostComments(postId);
+        // 再次获取最新的 post 数据
+        const updatedPost = currentForumPosts.find(p => p.id === postId);
+        renderForumDetailView(updatedPost);
+    }
+}
+
+/**
+ * 核心功能：调用AI为指定帖子生成评论 (最终纯文本版)
+ * @param {string} postId - 帖子ID
+ */
+async function generatePostComments(postId) {
+    const postIndex = currentForumPosts.findIndex(p => p.id === postId);
+    if (postIndex === -1) return;
+    
+    const post = currentForumPosts[postIndex];
+    // 修正：即使是路人发的帖子，也需要正确获取作者名
+    const postAuthor = getAuthorById(post.authorId) || { name: post.authorName };
+
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings.apiUrl || !settings.apiKey) return;
+
+    // --- 【【【核心修改1：全新的、极其简单的纯文本指令】】】 ---
+    const prompt = `
+    【任务】: 你是一个论坛评论生成器，你需要为下面的帖子生成8条高质量的、符合情景的评论。
+
+    【帖子内容】:
+    - 作者: "${postAuthor.name}"
+    - 内容: "${post.content}"
+
+    【评论生成铁律】:
+    1.  **【角色多样性】**: 评论区必须模拟真实网络生态，包含多种角色：理性的分析者、情绪化的支持者/反对者、抖机灵的、单纯的路人、甚至偶尔出现一两个“杠精”。
+    2.  **【昵称网感】**: 评论者的昵称必须非常生活化、有网感，例如“今天没吃饭”、“月亮警察”、“脆鲨爱好者”等。严禁使用“用户A”、“评论者1”这种代号。
+    3.  **【内容高度相关】**: 所有评论都必须紧密围绕帖子内容展开，表达鲜明的观点或情绪。
+    4.  **【作者互动】**: 在8条评论中，必须有1到2条是帖子作者（"${postAuthor.name}"）亲自下场回复别人的评论。
+    5.  **【语言风格】**: 全部使用简体中文，语气要口语化。
+
+    【【【输出格式铁律 (必须严格遵守)】】】
+    你的回复必须是纯文本。每一条评论都必须严格遵循以下格式，评论之间用两个换行符隔开：
+    评论内容[SEPARATOR]评论者昵称[SEPARATOR]头像类型(url, char, anonymous)
+
+    【格式示例】:
+    楼主说的太对了，感同身受！[SEPARATOR]电子咸鱼[SEPARATOR]char
+
+    不太同意这个观点，我觉得...[SEPARATOR]月亮警察[SEPARATOR]url
+
+    回复 @电子咸鱼：谢谢你的理解！[SEPARATOR]${postAuthor.name}[SEPARATOR]char
+
+    现在，开始生成8条评论。`;
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 1.0
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+
+        // --- 【【【核心修改2：全新的、更稳定的纯文本解析逻辑】】】 ---
+        const comments = responseText
+            .split('\n\n') // 用两个换行符分割每一条评论
+            .map(block => {
+                const parts = block.split('[SEPARATOR]'); // 用分隔符分割内容、作者和头像类型
+                if (parts.length === 3) {
+                    return {
+                        content: parts[0].trim(),
+                        authorName: parts[1].trim(),
+                        authorAvatarType: parts[2].trim()
+                    };
+                }
+                return null;
+            })
+            .filter(Boolean); // 过滤掉格式不正确的
+
+        if (comments.length > 0) {
+            currentForumPosts[postIndex].comments = comments;
+            await saveData();
+        } else {
+            // 如果解析后一条评论都没有，说明AI返回格式有问题
+            throw new Error("AI未能按要求返回正确的纯文本格式。");
+        }
+
+    } catch (error) {
+        console.error("生成评论失败:", error);
+        currentForumPosts[postIndex].comments = [{ authorName: "系统", authorAvatarType: "anonymous", content: `评论加载失败... (${error.message})` }];
+    }
+}
+
+/**
+ * 核心功能：将帖子和评论渲染成【推特复刻版 V3 - 最终布局】详情页UI
+ * @param {object} post - 包含评论的完整帖子对象
+ */
+function renderForumDetailView(post) {
+    // 获取整个详情页的容器，我们将重构它的内部结构
+    const pageContainer = document.getElementById('forumDetailView');
+
+    // --- 1. 准备主贴内容 ---
+    const postAuthor = getAuthorById(post.authorId) || { name: post.authorName, avatar: '?', avatarImage: '' };
+
+    // 智能判断主贴作者的头像
+    const postAvatarHtml = post.authorAvatarUrl
+        ? `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`
+        : (postAuthor.avatarImage
+            ? `<div class="post-avatar" style="background-image: url('${postAuthor.avatarImage}')"></div>`
+            : `<div class="post-avatar" style="background-color: ${post.authorAvatarColor || '#1d9bf0'}; color: white;">${post.authorAvatarChar || postAuthor.avatar}</div>`);
+
+    const mainPostHtml = `
+        <div class="forum-detail-main-post">
+            <div class="post-header" style="justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center;">
+                    ${postAvatarHtml}
+                    <div class="post-author-info" style="flex-direction: column; align-items: flex-start; margin-left: 10px;">
+                        <span class="post-author-name">${postAuthor.name}</span>
+                        <span class="post-handle">@${postAuthor.name.replace(/\s+/g, '')}</span>
+                    </div>
+                </div>
+                <div class="post-more-btn" style="padding: 8px; color: var(--text-secondary, #666);">...</div>
+            </div>
+            <div class="post-text" style="font-size: 20px; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; word-wrap: break-word;">
+                ${post.content.replace(/\n/g, '<br>')}
+            </div>
+            <div class="post-stats-bar">
+                <span>${new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span>·</span>
+                <span>${new Date(post.timestamp).toLocaleDateString()}</span>
+            </div>
+            ${generateForumActionsHtml()}
+        </div>
+        <div class="replies-header">最相关的回复</div>
+    `;
+
+    // --- 2. 准备评论区内容 ---
+    let commentsHtml = '';
+    if (post.comments && post.comments.length > 0) {
+        commentsHtml = post.comments.map(comment => {
+            let avatarHtml = '';
+            // 如果是主贴作者回复
+            if (comment.authorName === postAuthor.name) {
+                avatarHtml = postAvatarHtml;
+            } else { // 其他路人评论
+                switch (comment.authorAvatarType) {
+                    case 'url':
+                        const randomUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+                        avatarHtml = `<div class="post-avatar" style="background-image: url('${randomUrl}')"></div>`;
+                        break;
+                    case 'char':
+                        const avatarChar = comment.authorName.substring(0, 1) || '?';
+                        avatarHtml = `<div class="post-avatar" style="background-color: ${getRandomColor()}">${avatarChar}</div>`;
+                        break;
+                    case 'anonymous':
+                    default:
+                        avatarHtml = `<div class="post-avatar">?</div>`;
+                        break;
+                }
+            }
+
+            return `
+                <div class="comment-thread-item">
+                    <div class="comment-avatar-container">
+                        ${avatarHtml}
+                        <div class="thread-line"></div>
+                    </div>
+                    <div class="comment-content-container">
+                        <div class="post-header">
+                            <span class="post-author-name">${comment.authorName}</span>
+                            <span class="post-handle">@${comment.authorName.replace(/\s+/g, '')} · 18小时</span>
+                            <span class="post-more-btn" style="margin-left: auto;">...</span>
+                        </div>
+                        <div class="post-text">${comment.content}</div>
+                        ${generateForumActionsHtml()}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // --- 3. 准备底部回复栏内容 ---
+    const replyBarHtml = `
+        <div class="bottom-reply-bar">
+            <div class="reply-bar-avatar" style="background-image: url('${userProfile.avatarImage}')"></div>
+            <input type="text" placeholder="发布你的回复" class="reply-bar-input">
+        </div>
+    `;
+
+    // --- 4. 【核心】组装最终的页面结构 ---
+    // 我们先清空整个页面，然后重建导航栏、内容区，最后再把底部回复栏加上去。
+    
+    // 步骤 A: 重建基础框架
+    pageContainer.innerHTML = `
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="backToForumTimeline()">←</button>
+            <div class="nav-title">帖子</div>
+            <div></div>
+        </div>
+        <div class="wechat-content" id="forumDetailContent">
+            <!-- 滚动内容将放在这里 -->
+        </div>
+    `;
+
+    // 步骤 B: 填充滚动区域
+    const newContentContainer = document.getElementById('forumDetailContent');
+    newContentContainer.innerHTML = mainPostHtml + commentsHtml;
+
+    // 步骤 C: 将底部回复栏添加到页面容器的末尾，使其与内容区分离
+    pageContainer.insertAdjacentHTML('beforeend', replyBarHtml);
+}
+
+/**
+ * 新增：【唯一的】帖子操作栏生成函数 (主页和详情页共用)
+ */
+function generateForumActionsHtml() {
+    const comments = Math.floor(Math.random() * 100);
+    const retweets = Math.floor(Math.random() * 50);
+    const likes = Math.floor(Math.random() * 2000);
+    const views = Math.floor(likes * (Math.random() * 10 + 3));
+
+    const formatNumber = (num) => (num >= 10000) ? (num / 10000).toFixed(1) + '万' : num;
+
+    return `
+        <div class="post-actions">
+            <span class="post-action-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+</svg>
+                <span>${formatNumber(comments)}</span>
+            </span>
+            <span class="post-action-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
+                <span>${formatNumber(retweets)}</span>
+            </span>
+            <span class="post-action-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
+                <span>${formatNumber(likes)}</span>
+            </span>
+            <span class="post-action-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-6h2v6h-2.004zM13.25 21l.004-11h2v11h-2.004z"></path></svg>
+                <span>${formatNumber(views)}</span>
+            </span>
+            <span class="post-action-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.879 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></svg>
+                <span class="post-action-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></svg>
+            </span>
+        </div>
+    `;
+}
 
     </script>
     <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
