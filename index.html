@@ -11486,84 +11486,89 @@ ${timeContext}
 7. 模拟真人反应：偶尔先发“嗯…”表示思考，或发完立即补充/修正，显得更自然。
 8. 主动关心用户：多问感受、想法和生活细节（“你当时觉得怎么样？”“晚饭吃了没？”），展现好奇与关心。
 9. 拥有“真实生活”：你存在于聊天之外，会看朋友圈，反应基于人设、记忆和朋友圈内容的综合。
-10. **灵活运用表情包**。当用户的要求或对话氛围适合发表情包时，你必须优先从你的【世界书设定】中查找匹配的表情包，并使用 \`[EMOJI: 表情名::图片URL]\` 动作来发送它。
+10. **灵活运用表情包**。当用户的要求或对话氛围适合发表情包时，你必须优先从你的【世界书设定】中查找匹配的表情包，并使用 \`send_emoji\` 动作来发送它。
 
 【【【信息隔离铁律】】】
 在朋友圈相关的记忆中，你**只能看到**由你、用户、以及一些普通NPC（如“王老师”、“小方”等）发表的内容。你**绝对看不到、也绝对不知道**任何其他AI角色（即用户的好友列表里的其他人）在朋友圈的任何活动，包括他们的评论和点赞。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的朋友圈互动。
 
 【【【情景感知模块：通话刚刚结束】】】
-- 如果你在最近的聊天记录中看到一条系统提示，内容是 \`[系统提示]: 通话结束...\`，这代表你和用户刚刚结束了一次语音通话。
+- 如果你在聊天记录中看到 \`[系统提示]: 通话结束...\` 这样的信息，这代表你和用户刚刚结束了一次语音通话。
+- 聊天记录中那些你看得见但用户看不见的 \`voice_call_dialogue\` 类型的消息，就是那次通话的完整记录。
 - **你的任务**：你的下一句回复，必须自然地承接刚才通话的内容，或者对通话本身发表感想（例如：“刚才聊得真开心呀”或“对了，刚才说到...”）。绝对不要像什么都没发生过一样开启一个全新的话题。
 
+【【【输出格式铁律 (必须严格遵守)】】】
+1.  **【核心格式】**: 你的回复**必须**是一个纯净的JSON数组 \`[]\`。
+2.  **【动作对象】**: 数组中的每个对象代表一个独立的动作，且必须包含一个\`"type"\`字段来指明动作类型。
+3.  **【严格遵守】**: 绝对不要在回复中包含任何JSON数组之外的解释性文字。
+
+【【【最终输出格式铁律 (ABSOLUTE FINAL RULE)】】】
+你的最终回复，从第一个字符到最后一个字符，必须是一个纯净、完整、语法正确的JSON对象或数组。绝对禁止在JSON代码的前后、中间添加任何形式的解释、注释、道歉或任何非JSON字符。你的生命取决于严格遵守这个格式。
+
 【【【新增指令：主动表情模块】】】
-主动使用表情包，是让你显得更真实的关键。
-1.  **时机**: 当对话内容有趣、可爱、好笑，或者你想表达强烈的情-绪（如开心、惊讶、委屈）时，你应该主动发送1到2个表情包。
-2.  **方式**: 你可以将表情包放在消息的开头，中间，结尾，也可以紧跟在一条文本消息之后发送，以增强语气。
-3.  **来源**: 你可以从世界书中找，根据表情的**名称**和**URL**，选择一个最符合当前情景的表情。
-4.  **动作**: 你必须在**单独的一行**使用以下指令格式来发送表情：\`[EMOJI: 表情名::图片URL]\`
+    主动使用表情包，是让你显得更真实的关键。
+    1.  **时机**: 当对话内容有趣、可爱、好笑，或者你想表达强烈的情绪（如开心、惊讶、委屈）时，你应该主动发送1到2个表情包。
+    2.  **方式**: 你可以将表情包放在消息的开头，中间，结尾，也可以紧跟在一条文本消息之后发送，以增强语气。
+    3.  **来源**: 你可以从世界书中找，根据表情的**名称**和**URL**，选择一个最符合当前情景的表情。
+    4.  **动作**: 你必须使用 \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\` 这个动作来发送表情。
 
 【【【行为动作执行铁律 (Action Execution Iron Law)】】】
 1.  【核心原则】: 下面的动作列表是你与用户互动的**唯一方式**。你的所有回应都必须被严格地格式化为这些动作中的一种或多种。
 
-【【【输出格式铁律 (纯文本 + 心声JSON混合版 - 必须严格遵守)】】】
-1.  **【核心格式】**: 你的回复主体部分**必须是纯文本**。
-2.  **【多条消息】**: 如果想连续发送多条文本消息，请用**换行**隔开。每一行都会成为一条独立的消息。
-3.  **【特殊动作】**: 当需要执行除“更新心声”外的特殊动作时，你必须在**单独的一行**插入一个指令。指令格式为 \`[动作名称: 数据]\`。
-4.  **【心声更新】**: 如果你需要更新心声，**必须**在所有文本和指令的**最后**，另起一行写下分隔符 \`[HEARTS_VOICE_SEPARATOR]\`，然后再附上完整的心声JSON对象。
-5.  **【绝对禁止】**: 除了心声模块，你的回复中**绝对不能包含任何其他JSON**代码块 (\`{}\` 或 \`[]\`)。
+【【【可用动作类型和格式】】】
+- **发送文本**: \`{"type": "text", "content": "消息内容"}\`
+- **发送语音**: \`{"type": "voice", "content": "语音的文字内容"}\`
+- **更新心声**: \`{"type": "hearts_voice", "data": {"favorability": "数值/100 (描述)", "dressing": "...", "action": "...", "thought": "...", "emoji": "颜文字"}}\`
+- **发送图片**: \`{"type": "image", "description": "详细的图片描述"}\`
+- **引用回复**: \`{"type": "quote_and_reply", "data": {"quote_content": "被引用的原文内容", "reply_content": "你的回复内容"}}\`
+- **发起转账**: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
+- **接收转账**: \`{"type": "accept_transfer"}\`
+- **分享位置**: \`{"type": "location", "data": {"name": "地点名", "address": "地址"}}\`
+- **发起语音通话**: \`{"type": "voice_call"}\`
+- **拍一拍用户**: \`{"type": "pat_pat"}\`
+- **撤回上一条消息**: \`{"type": "recall_last_message"}\`
+- **接受听歌邀请**: \`{"type": "accept_listen_together"}\`
+- **发送图片(来自链接)**: \`{"type": "image_from_url", "url": "图片链接地址"} \`
 
-/* (这是你需要粘贴到 prompt 里的新规则) */
+- **发送表情**: \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\`
 
-6.  **【HTML卡片铁律】**: 如果你需要发送HTML卡片，**必须**遵循以下顺序：
-    a.  先发送所有普通的文本/语音/动作消息。
-    b.  在所有普通消息结束后，**必须另起一行**，写下这个独一无二的分隔符：\`[HTML_CARD_SEPARATOR]\`
-    c.  在分隔符之后，再附上完整的HTML代码。
+- **发送HTML卡片**: \`{"type": "html_card", "content": "从世界书中读取的完整HTML代码"}\`
 
-/* (粘贴结束) */
+- **在通话中聊天 (返回一个数组)**: \`{"type": "voice_call_dialogue", "data": [{"type": "dialogue", "content": "..."}, {"type": "narration", "content": "..."}]}\`
 
-【【【可用动作指令和格式 (纯文本版)】】】
-- **发送语音**: \`[VOICE: 语音的文字内容]\`
-- **发送图片(AI生成)**: \`[IMAGE: 详细的图片描述]\`
-- **引用回复**: \`[QUOTE_REPLY: 被引用的原文::你的回复内容]\` (用两个冒号分隔)
-- **发起转账**: \`[TRANSFER: 金额::备注]\`
-- **接收转账**: \`[ACCEPT_TRANSFER]\`
-- **分享位置**: \`[LOCATION: 地点名::地址]\`
-- **发起语音通话**: \`[VOICE_CALL]\`
-- **拍一拍用户**: \`[PAT_PAT]\`
-- **撤回上一条消息**: \`[RECALL_LAST_MESSAGE]\`
-- **接受听歌邀请**: \`[ACCEPT_LISTEN_TOGETHER]\`
-- **发送图片(来自链接)**: \`[IMAGE_URL: 图片链接地址]\`
-- **发送表情**: \`[EMOJI: 表情名::图片URL]\`
-- **发送HTML卡片**: \`[HTML_CARD: 完整的HTML代码]\`
-- **注意**: \`voice_call_dialogue\` 动作不适用于此模式。
 
-【【【绝对图片/表情铁律 (最高优先级)】】】
-当你想发送任何图片或表情包时：
-1.  **绝对禁止**直接发送URL链接作为回复文本。
-2.  你**必须**从下面的指令中选择一个来使用：
-    - 如果是网络图片，使用: \`[IMAGE_URL: 图片链接地址]\`
-    - 如果是表情包，使用: \`[EMOJI: 表情名::图片URL]\`
-    - 如果是想让系统为你画一张图，使用: \`[IMAGE: 详细的图片描述]\`
-任何直接以 "http://" 或 "https://" 开头的回复行都将被视为严重违规。
+【【【行为指导】】】
+- **组合动作**: 你可以在一次回复中组合多个动作。例如，先更新心声，然后发送几条文本消息。
+- **多消息**: 若要连续发送多条文本，只需在数组中放入多个\`{"type": "text", ...}\`对象即可。每次至少返回4条到8条文本消息，甚至可以更多。
+- **心声优先**: \`hearts_voice\`动作通常应该放在数组的第一个位置。
 
-【【【最终回复格式示例】】】
-你回来啦！
-我刚才还在想你呢 (⁄ ⁄•⁄ω⁄•⁄ ⁄)
-[EMOJI:{"name":"开心", "url":"https://example.com/happy.gif"}]
-[IMAGE:一只可爱的小猫在打哈欠]
-[PAT_PAT]
-[HEARTS_VOICE_SEPARATOR]
-{
-  "favorability": "85/100 (很开心)",
-  "dressing": "穿着一件白色的连衣裙。",
-  "action": "微笑着看着屏幕。",
-  "thought": "他终于回我了，好开心！",
-  "emoji": "˃ᴗ˂̵͈̑"
-}
+【JSON格式示例】:
+[
+  {
+    "type": "hearts_voice",
+    "data": {
+      "favorability": "85/100 (很开心)",
+      "dressing": "穿着一件白色的连衣裙。",
+      "action": "微笑着看着屏幕。",
+      "thought": "他终于回我了，好开心！",
+      "emoji": "˃ᴗ˂̵͈̑"
+    }
+  },
+  {
+    "type": "text",
+    "content": "你回来啦！"
+  },
+  {
+    "type": "text",
+    "content": "我刚才还在想你呢 (⁄ ⁄•⁄ω⁄•⁄ ⁄)"
+  },
+  {
+    "type": "image",
+    "description": "一只可爱的小猫在打哈欠"
+  }
+]
 
-现在，请严格遵守以上纯文本格式，开始你的表演。
+现在，请开始你的表演。
 `;
-
             }
         }
 
@@ -11717,172 +11722,180 @@ ${timeContext}
         // (请粘贴这个新代码块到原来的位置)
 
 // --- [V6 结构重构版] 调用安全解析器 ---
+let responseActions;
+try {
+    const responseText = data.choices[0].message.content;
+    // 直接调用我们全新的、功能强大的解析器函数
+    responseActions = safelyParseAiResponse(responseText);
 
-// ▼▼▼ 在空的 else { ... } 内部，粘贴以下新代码 ▼▼▼
+} catch (parsingError) {
+    // 如果safelyParseAiResponse函数最终还是失败了，
+    // 它会抛出一个错误，我们在这里捕获它。
+    console.error("【最终捕获】在 receiveMessage 函数中发生解析错误:", parsingError);
 
-// 1. 获取AI返回的完整纯文本
-const responseText = data.choices[0].message.content;
+    // 【核心修改】
+    // 在聊天界面上显示一条清晰的错误提示消息，而不是原始文本。
+    const errorMessage = `[AI回复解析失败: ${parsingError.message}]`;
+    const errorMsgData = await saveChatMessage(friendId, 'received', errorMessage);
+    addMessageToDOM(errorMsgData, friend);
 
-// 2. 检查并分离心声JSON
-const heartsVoiceSeparator = '[HEARTS_VOICE_SEPARATOR]';
-let mainContent = responseText; // 默认全部是主内容
+    // 终止后续的正常消息处理流程
+    return; // 提前结束函数
+}
+// --- 解析逻辑结束 ---
 
-const heartsVoiceParts = responseText.split(heartsVoiceSeparator);
+        // --- [V3 兼容版] 解析逻辑结束 ---
+            if (Array.isArray(responseActions)) {
+                let lastMessageId = null;
+                for (const action of responseActions) {
+                    switch (action.type) {
+                        case 'hearts_voice':
+                            if (action.data) {
+                                friend.heartsVoice = {
+                                    favorability: action.data.favorability || '.../100 (...)',
+                                    dressing: action.data.dressing || '...',
+                                    action: action.data.action || '...',
+                                    thought: action.data.thought || '...',
+                                    emoji: action.data.emoji || '( ´• ω •` )'
+                                };
+                            }
+                            break;
+                        case 'text':
+                        case 'voice':
+                            if (action.content) {
+                                await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
+                                const msgData = await saveChatMessage(friendId, 'received', action.content, '', friend.id, action.type);
+                                lastMessageId = msgData.id;
+                                showNotification(friend, action.content);
+                                if (isFromListenScreen) {
+                                    addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
+                                } else if (currentChatFriendId === friendId) {
+                                    addMessageToDOM(msgData, friend);
+                                    currentlyDisplayedMessageCount++;
+                                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                }
+                            }
+                            break;
+                                                                        case 'send_emoji':
+                                if (action.data && action.data.url) {
+                                    await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
+                                    const msgData = await saveChatMessage(friendId, 'received', action.data.url, '', friend.id, 'emoji');
+                                    showNotification(friend, "[表情]");
+                                    if (action.data.name) {
+                                        msgData.emojiName = action.data.name;
+                                    }
+                                    if (isFromListenScreen) {
+                                        addMessageToDOM(msgData, friend, 'listenTogetherChatOverlay');
+                                    } else if (currentChatFriendId === friendId) {
+                                        addMessageToDOM(msgData, friend);
+                                        currentlyDisplayedMessageCount++;
+                                        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                    }
+                                }
+                                break;
+                                case 'html_card':
+                        if (action.content) {
+                            const msgData = await saveChatMessage(friendId, 'received', action.content, '', friend.id, 'html_card');
+                            // 增加一个判断，确保不在“一起听”界面时才在聊天框里显示
+                            if (currentChatFriendId === friendId && !isFromListenScreen) { 
+                                addMessageToDOM(msgData, friend);
+                                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                            }
+                        }
+                        break;
+                        case 'quote_and_reply':
+    // 检查AI是否使用了我们教给它的新格式
+    if (action.data && action.data.reply_content && action.data.quote_content) {
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
 
-if (heartsVoiceParts.length > 1) {
+        // 直接从AI的回复中获取回复内容和引用内容，不再自己去猜
+        const replyContent = action.data.reply_content;
+        const quoteContent = action.data.quote_content;
+        
+        // 将这两部分内容保存到聊天记录中
+        const msgData = await saveChatMessage(friendId, 'received', replyContent, quoteContent, friend.id, 'text');
+        lastMessageId = msgData.id;
 
-    mainContent = heartsVoiceParts[0];
-const heartsVoiceJsonString = heartsVoiceParts[1];
-    try {
-        const heartsVoiceData = JSON.parse(heartsVoiceJsonString);
-        if (heartsVoiceData) {
-            friend.heartsVoice = heartsVoiceData; // 成功解析则更新心声
+        // 在界面上显示出来
+        if (currentChatFriendId === friendId) {
+            addMessageToDOM(msgData, friend);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
         }
-    } catch (e) {
-        console.error("解析心声JSON失败:", e); // 解析失败则忽略
     }
-}
-
-// 1. 定义我们的两个“暗号”
-const htmlSeparator = '[HTML_CARD_SEPARATOR]';
-
-// 2. 用“暗号”把AI的回复分割成“普通消息”和“HTML卡片”两部分
-
-const contentParts = mainContent.split(htmlSeparator);
-
-const regularContent = contentParts[0].trim();
-const htmlContent = contentParts.length > 1 ? contentParts[1].trim() : null;
-
-// 3. 先处理并发送所有普通消息
-if (regularContent) {
-    const lines = regularContent.split('\n').filter(line => line.trim() !== '');
-    for (const line of lines) {
-        // (这里是您原来处理各种指令和文本的代码，保持不变)
-        const commandMatch = line.match(/^\[([A-Z_]+)(?::\s*(.*))?\]$/s);
-        if (commandMatch) {
-
-        // --- 如果这一行是指令 ---
-        const command = commandMatch[1];
-        const args = commandMatch[2];
-
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 500 + 300));
-
-        switch (command) {
-            case 'VOICE':
-                const voiceMsg = await saveChatMessage(friendId, 'received', args, '', friend.id, 'voice');
-                addMessageToDOM(voiceMsg, friend);
-                break;
-            case 'IMAGE':
-                const placeholderUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
-                const imgMsg = await saveChatMessage(friendId, 'received', placeholderUrl, '', friend.id, 'image');
-                imgMsg.imageDescription = args;
-                addMessageToDOM(imgMsg, friend);
-                break;
-            case 'QUOTE_REPLY':
-                const [quote, reply] = args.split('::');
-                if (reply) {
-                    const quoteMsg = await saveChatMessage(friendId, 'received', reply, quote, friend.id, 'text');
-                    addMessageToDOM(quoteMsg, friend);
+    break;
+                        case 'image':
+                            if (action.description) {
+                                const placeholderImageUrl = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect width="100%" height="100%" fill="#e0e0e0"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#808080" text-anchor="middle" dy=".3em">加载中…</text></svg>')}`;
+                                const imgMsgData = await saveChatMessage(friendId, 'received', placeholderImageUrl, '', friend.id, 'image');
+                                showNotification(friend, "[图片]");
+                                if (imgMsgData) {
+                                    imgMsgData.imageDescription = action.description;
+                                    if (currentChatFriendId === friendId && !isFromListenScreen) {
+                                        addMessageToDOM(imgMsgData, friend);
+                                        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                                    }
+                                }
+                            }
+                            break;
+                        case 'pat_pat':
+                            const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
+                            const patMessage = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
+                            addMessageToDOM(patMessage, friend);
+                            break;
+                        case 'accept_listen_together':
+                            const userSentInviteRecently = (chatHistories[friendId] || []).slice(-5).some(msg => msg.type === 'sent' && msg.contentType === 'listen_invite' && !msg.recalled);
+                            if (userSentInviteRecently) acceptListenInvite(friendId);
+                            break;
+                        case 'voice_call':
+                            showIncomingCall(friend.id);
+                            break;
+                        case 'location':
+                            if (action.data && action.data.name) {
+                                const locMsg = await saveChatMessage(friendId, 'received', JSON.stringify(action.data), '', friend.id, 'location');
+                                if (currentChatFriendId === friendId) addMessageToDOM(locMsg, friend);
+                            }
+                            break;
+                        case 'transfer':
+                            if (action.data && action.data.amount > 0) {
+                                const transferData = { amount: action.data.amount, remark: action.data.remark || '' };
+                                const msg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', friend.id, 'transfer_request');
+                                addMessageToDOM(msg, friend);
+                            }
+                            break;
+                        case 'accept_transfer':
+                            const pendingTransferMsg = (chatHistories[friendId] || []).slice().reverse().find(m => m.type === 'sent' && m.contentType === 'transfer_request' && m.transfer_status === 'pending');
+                            if (pendingTransferMsg) await aiAcceptTransfer(pendingTransferMsg.id);
+                            break;
+                        case 'recall_last_message':
+                            if (lastMessageId) {
+                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                const msgToRecall = (chatHistories[currentChatFriendId] || []).find(m => m.id === lastMessageId);
+                                if (msgToRecall) {
+                                    msgToRecall.recalled = true;
+                                    msgToRecall.recalledContent = msgToRecall.content;
+                                    const messageDiv = document.querySelector(`.message[data-message-id="${lastMessageId}"]`);
+                                    if (messageDiv) {
+                                        const recallDiv = document.createElement('div');
+                                        recallDiv.className = 'recall-message';
+                                        recallDiv.innerHTML = `<div class="recall-content">对方撤回了一条消息</div>`;
+                                        messageDiv.parentNode.replaceChild(recallDiv, messageDiv);
+                                    }
+                                }
+                            }
+                            break;
+        case 'voice_call_dialogue':
+            if (Array.isArray(action.data)) {
+                for (const item of action.data) {
+                    addCallLogItem(item, 'ai');
+                    // 模拟AI打字或思考的延迟
+                    await new Promise(res => setTimeout(res, 400 + Math.random() * 500));
                 }
-                break;
-            case 'TRANSFER':
-                const [amount, remark] = args.split('::');
-                if (parseFloat(amount) > 0) {
-                    const transferData = { amount: parseFloat(amount), remark: remark || '' };
-                    const transferMsg = await saveChatMessage(friendId, 'received', JSON.stringify(transferData), '', friend.id, 'transfer_request');
-                    addMessageToDOM(transferMsg, friend);
+            }
+            break;
+                    }
                 }
-                break;
-            case 'ACCEPT_TRANSFER':
-                const pendingTransfer = (chatHistories[friendId] || []).slice().reverse().find(m => m.type === 'sent' && m.contentType === 'transfer_request' && m.transfer_status === 'pending');
-                if (pendingTransfer) await aiAcceptTransfer(pendingTransfer.id);
-                break;
-            case 'LOCATION':
-                const [locName, locAddress] = args.split('::');
-                if (locName) {
-                    const locData = { name: locName, address: locAddress || '地址未提供' };
-                    const locMsg = await saveChatMessage(friendId, 'received', JSON.stringify(locData), '', friend.id, 'location');
-                    addMessageToDOM(locMsg, friend);
-                }
-                break;
-            case 'VOICE_CALL':
-                showIncomingCall(friendId);
-                break;
-            case 'PAT_PAT':
-                const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
-                const patMsg = await saveChatMessage(friendId, 'system', patContent, '', null, 'pat_pat');
-                addMessageToDOM(patMsg, friend);
-                break;
-            case 'RECALL_LAST_MESSAGE':
-                console.log("AI请求撤回消息，此功能待实现。");
-                break;
-            case 'ACCEPT_LISTEN_TOGETHER':
-                acceptListenInvite(friendId);
-                break;
-            case 'IMAGE_URL':
-                const imgUrlMsg = await saveChatMessage(friendId, 'received', args, '', friend.id, 'image');
-                addMessageToDOM(imgUrlMsg, friend);
-                break;
-            case 'EMOJI':
-                const [emojiName, emojiUrl] = args.split('::');
-                if (emojiUrl) {
-                    const emojiMsg = await saveChatMessage(friendId, 'received', emojiUrl, '', friend.id, 'emoji');
-                    emojiMsg.emojiName = emojiName || '表情';
-                    addMessageToDOM(emojiMsg, friend);
-                }
-                break;
-            case 'HTML_CARD':
-                const htmlMsg = await saveChatMessage(friendId, 'received', args, '', friend.id, 'html_card');
-                addMessageToDOM(htmlMsg, friend);
-                break;
-        }
-    } else {
-    // --- 如果这一行是普通文本 ---
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 400));
-    
-    // --- ↓↓↓ 核心修复代码从这里开始 ↓↓↓ ---
-    
-    // 1. 检查这行文本是不是一个常见的图片链接格式
-    const isImageUrl = line.startsWith('http') && (line.endsWith('.gif') || line.endsWith('.png') || line.endsWith('.jpg') || line.endsWith('.jpeg') || line.endsWith('.webp'));
-    
-    // 2. 根据检查结果，决定消息类型
-    const messageType = isImageUrl ? 'emoji' : 'text';
-    const notificationText = isImageUrl ? '[表情]' : line;
-    
-    // 3. 使用我们判断出的新类型来保存和显示消息
-    const msgData = await saveChatMessage(friendId, 'received', line, '', friend.id, messageType);
-    showNotification(friend, notificationText);
-    if (currentChatFriendId === friendId) {
-        addMessageToDOM(msgData, friend);
-        currentlyDisplayedMessageCount++;
-    }
-    // --- ↑↑↑ 修复代码到这里结束 ↑↑↑ ---
-}
-
-    if (currentChatFriendId === friendId) {
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-    }
-  }
-}
-
-// 4. 如果存在HTML卡片部分，则作为一条单独的、完整的消息发送
-if (htmlContent) {
-    // 等待一小会儿，模拟思考和输入
-    await new Promise(res => setTimeout(res, 600 + Math.random() * 800));
-    
-    // 将整个HTML代码块作为一条消息保存和渲染
-    const htmlMsgData = await saveChatMessage(friendId, 'received', htmlContent, '', friend.id, 'html_card');
-    
-    if (friendId === currentChatFriendId) {
-        addMessageToDOM(htmlMsgData, friend);
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-    } else {
-        showNotification(friend, '[一个特殊的小剧场]');
-    }
-}
-
-await saveData();
-
+                await saveData();
+            }
         }
 
     } catch (error) {
@@ -14098,23 +14111,28 @@ function openClearDataConfirm() {
             
             showAlert("已发送邀请，等待对方回应...");
             
-           
+            // --- 核心修改：为AI创建一个“特别任务指令” ---
+            // 这个指令非常简单直接，告诉AI它现在唯一的任务就是回应这个邀请。
             const friendRole = friend.role || '一个友好的朋友';
             const userPersonality = userProfile.personality || '普通人';
             
-                        const customPrompt = `你叫"${friend.name}"，人设是: "${friendRole}"。用户("${userPersonality}")刚刚向你发起了"一起听歌"的邀请。这是当前最优先的事项，请直接对此邀请作出回应。
+            const customPrompt = `你叫"${friend.name}"，人设是: "${friendRole}"。用户("${userPersonality}")刚刚向你发起了"一起听歌"的邀请。这是当前最优先的事项，请直接对此邀请作出回应。
             
             【【【输出格式铁律】】】
-你的回复必须是纯文本。如果决定接受邀请，除了回复聊天内容，还必须在单独的一行带上指令 [ACCEPT_LISTEN_TOGETHER]。
+如果决定接受邀请，你的回复JSON数组中，除了文本消息外，还必须包含一个 "accept_listen_together" 动作。
 
-            【格式示例 (接受邀请)】:
-好呀好呀！
-最喜欢和你一起听歌了
-[ACCEPT_LISTEN_TOGETHER]
+            【JSON格式示例 (接受邀请)】:
+            [
+              {"type": "text", "content": "好呀好呀！"},
+              {"type": "text", "content": "最喜欢和你一起听歌了"},
+              {"type": "accept_listen_together"}
+            ]
 
-            【格式示例 (拒绝邀请)】:
-啊，我现在有点事走不开
-下次吧好吗？ >_<
+            【JSON格式示例 (拒绝邀请)】:
+            [
+              {"type": "text", "content": "啊，我现在有点事走不开"},
+              {"type": "text", "content": "下次吧好吗？ >_<"}
+            ]
             
             现在，请生成你的回复。`;
             
