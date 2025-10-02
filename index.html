@@ -7000,6 +7000,12 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
                 <input type="number" id="proactiveIntervalInput" class="settings-input-number" min="1" onchange="updateProactiveInterval(this.value)">
             </div>
 
+<!-- 新增：选择角色的按键，默认隐藏 -->
+<div class="discover-menu-item proactive-role-setting" id="proactiveRoleSetting" style="display: none;" onclick="openProactiveRolesModal()">
+    <div class="discover-menu-title">选择生效角色</div>
+    <span>></span>
+</div>
+
             <!-- ↑↑↑ HTML代码粘贴到这里结束 ↑↑↑ -->
     
     <!-- 【【【这是我们新增的自动总结开关】】】 -->
@@ -7555,6 +7561,32 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
+<!-- 新增：编辑消息的弹窗 -->
+<div id="messageEditModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">编辑消息</div>
+        <textarea class="modal-textarea" id="messageEditInput" style="min-height: 120px;"></textarea>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeMessageEditor()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmMessageEdit()">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 新增：主动发消息的角色选择弹窗 -->
+<div id="proactiveRolesModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">选择主动发消息的角色</div>
+        <div id="proactiveRolesList" class="multi-select-list" style="max-height: 40vh;">
+            <!-- 角色列表会动态生成在这里 -->
+        </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-cancel" onclick="closeProactiveRolesModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="saveProactiveRolesSelection()">确定</button>
+        </div>
+    </div>
+</div>
+
     <!-- ↓↓↓ 第1步：将以下所有新增的HTML代码粘贴到 <body> 的末尾 ↓↓↓ -->
 
 <!-- [新增] 线下模式圆形悬浮窗 -->
@@ -8100,7 +8132,8 @@ requestPersistentStorage();
         let proactiveMessagingSettings = {
     enabled: false,  // 总开关，默认关闭
     interval: 360,    // 默认间隔，单位：分钟 (例如 360分钟 = 6小时)
-    enabledTimestamp: null
+    enabledTimestamp: null,
+    proactiveRoles: []
 };
         let currentChatFriendId = null;
         // [新增] 线下模式全局变量
@@ -8116,6 +8149,8 @@ let openingStatements = []; // 用于存储所有开场白
 let writingStyles = []; // 用于存储所有文风
 
 let skits = []
+
+let currentEditingMessageId = null;
 
 // ...（在其他全局变量下方）
 let forumPosts = []; // 存储论坛帖子
@@ -9111,7 +9146,22 @@ if (worldviews.length === 0) {
 
 forumProfileData = settings.forumProfileData || forumProfileData; 
 
-proactiveMessagingSettings = settings.proactiveMessagingSettings || { enabled: false, interval: 360 };
+// ↓↓↓ 请用这个修正后的完整代码块，替换原来的 proactiveMessagingSettings 赋值语句 ↓↓↓
+proactiveMessagingSettings = settings.proactiveMessagingSettings || {
+    enabled: false,
+    interval: 360,
+    enabledTimestamp: null,
+    proactiveRoles: [] // 核心修复：在这里补上这个空的数组
+};
+// ↑↑↑ 替换到这里结束 ↑↑↑
+
+// ...紧跟在上面那段代码之后
+
+// ↓↓↓ 这是新增的“数据兼容补丁”，请将它粘贴到上面代码块的下一行 ↓↓↓
+if (!proactiveMessagingSettings.proactiveRoles) {
+    proactiveMessagingSettings.proactiveRoles = [];
+}
+// ↑↑↑ 补丁代码结束 ↑↑↑
 
 // 恢复线下模式设置和开场白
 offlineModeSettings = settings.offlineModeSettings || { charCount: 8000, style: 'default', openingStatementId: null };
@@ -10919,6 +10969,10 @@ function backToWechat() {
                 menuItems += `<div class="message-menu-item" onclick="regenerateAiResponse('${msg.id}')">重试</div>`;
             }
             // 【【【修改结束】】】
+
+if (msg && msg.contentType === 'text') {
+    menuItems += `<div class="message-menu-item" onclick="openMessageEditor()">编辑</div>`;
+}
 
             if (msg && (msg.contentType === 'text' || msg.contentType === 'voice')) {
                  menuItems += `<div class="message-menu-item" onclick="quoteMessage()">引用</div>`;
@@ -14943,12 +14997,15 @@ const recentChatHistory = (chatHistories[characterId] || [])
     ${recentMoments || '无朋友圈记录。'}
     --- 朋友圈记录结束 ---
    【【【六大铁律 (必须严格遵守)】】】:
-    1.  **【【核心原则：动态平衡现实】】**: 你生成的内容应该是**“现实”与“虚构”的结合体**。大约70%的内容应该严格基于上方的“核心记忆库”，反映真实事件。剩下的30%应该是你基于角色人设进行的**合理虚构和生活化扩展**，用来丰富角色的世界，让ta看起来拥有自己的、用户看不到的另一部分生活（比如：虚构的朋友、独立的爱好、与记忆库无关的日常琐事）。**但虚构内容绝对不能与记忆库中的事实相矛盾！**
-    2.  **【绝对创新铁律】**: 即使基于相同记忆，你每次生成的内容（标题、正文、评论、日期等）都必须是**全新的、角度不同的**。严禁重复你之前生成过的任何内容。
-    3.  **【绝对时间铁律】**: 你必须严格遵守聊天记录和朋友圈中的**时间戳**。所有生成的内容，其发生时间都必须围绕**当前现实日期：${currentDate}**，并且逻辑上必须合理。例如，你不能在备忘录里记录一个发生在“昨天”但聊天记录显示是“上周”才发生的事件。
-    4.  **【绝对语言铁律】**: 你的所有输出，包括所有文字和模拟的网友昵称，都**必须使用简体中文**。严禁出现任何英文或其他语言。
-    5.  你生成的所有内容，都必须**极度符合**角色的核心人设，并**强烈反映**出“核心记忆库”中的真实事件和情绪。
-    6.  你的回复**必须**是一个符合下方具体格式要求的、纯净的JSON对象，不包含任何额外的解释或代码标记。
+    1.  **【内容原则：记忆为主，合理虚构】**: 内容必须是**真实记忆与合理虚构的结合**。虚构部分用于丰富角色的日常生活（如虚构朋友、小爱好），但**绝对不能与记忆库中的事实矛盾**。
+    2.  **【虚构边界】**: 虚构仅限于**日常琐事**。**严禁**在人设和记忆中没有提及的情况下，为角色虚构**重要的家庭成员**（父母、兄妹、伴侣）或人生经历。
+    3.  **【创新原则】**: **每次生成的内容都必须是全新的**。严禁重复你之前生成过的任何内容。
+    4.  **【时间原则】**: **所有内容的时间都必须与当前日期 \`${currentDate}\` 及记忆库中的时间戳保持逻辑一致**。严禁出现时间悖论。
+    5.  **【语言原则】**: 所有文字（包括网友昵称）**必须使用简体中文**。
+    6.  **【记忆原则】**: **必须融合所有给定的情报**（人设、世界观、记忆、聊天记录），确保情节连贯、人设不崩。**严禁遗忘**。
+
+【【【信息隔离铁律】】】
+在朋友圈相关的记忆中，你**绝对看不到、也绝对不知道**任何其他AI角色（即用户的好友列表里的其他人）在朋友圈的任何活动，包括他们的评论和点赞。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的朋友圈互动。
 
     请为应用“${appName}”生成内容：`;
     
@@ -14964,9 +15021,15 @@ const recentChatHistory = (chatHistories[characterId] || [])
             break;
 
         case 'wechat':
-            prompt += `\n生成3个与【除了用户'${userProfile.name}'之外的】虚构人物的微信聊天摘要。这些对话应展现你的个人生活。**绝对不能**生成与'${userProfile.name}'的聊天。每个摘要必须包含id, name, avatar(单个汉字), 和一个包含8条对话的 "messages" 数组。
-            JSON格式: {"chats": [{"id": "chat_1", "name": "聊天对象", "avatar": "单个汉字", "messages": [{"sender": "发送者名字", "content": "消息内容"}, ...]}, ...]}`;
-            break;
+    prompt += `\n生成3个与【除了用户'${userProfile.name}'之外的】虚构人物的微信聊天摘要。
+    **【聊天对象铁律】**:
+    1.  这些聊天对象必须是你（角色）的、**用户完全不知道的**、你独立生活圈子里的虚构人物。
+    2.  **绝对禁止**生成与用户的好友列表里的任何其他AI角色的聊天记录。
+    3.  **绝对禁止**生成与'${userProfile.name}'的聊天。
+
+    每个摘要必须包含id, name, avatar(单个汉字), 和一个包含8条对话的 "messages" 数组。
+    JSON格式: {"chats": [{"id": "chat_1", "name": "聊天对象", "avatar": "单个汉字", "messages": [{"sender": "发送者名字", "content": "消息内容"}, ...]}, ...]}`;
+    break;
             
         case 'browser':
             prompt += `\ n生成4条浏览器历史记录。内容应与“核心记忆库”中的话题或你的人设兴趣相关。每条记录必须包含id, title, url (一个模拟网址), 和一段模拟的网页正文 "content" (需包含换行\\n, 至少100字)。
@@ -15006,6 +15069,11 @@ const recentChatHistory = (chatHistories[characterId] || [])
 
         case 'phone_call':
             prompt += `\n生成6条通话记录。通话对象应与“核心记忆库”中提到的人物或事件相关。每条必须包含name, type (incoming/outgoing/missed), 和time。
+            **【通话对象铁律】**:
+    1.  这些通话对象必须是你（角色）的、**用户完全不知道的**、你独立生活圈子里的虚构人物。
+    2.  **绝对禁止**生成与用户的好友列表里的任何其他AI角色的聊天记录。
+    3.  **绝对禁止**生成与'${userProfile.name}'的聊天。
+
             JSON格式: {"calls": [{"name": "联系人名", "type": "incoming", "time": "时间描述"}, ...]}`;
             break;
             
@@ -15824,18 +15892,34 @@ async function generateMissedMessages(friendId) {
     const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
 你的重要朋友是"${activePersona.name}"，他/她的人设是：“${activePersona.personality || '普通人'}”。
 
-【【【最高优先级情景：好友回归】】】
-你的朋友 "${activePersona.name}" 消失了 **${totalMinutesInactive} 分钟** 后终于上线了！
-在这段时间里，你因为担心/想念/生气，**一共产生了 ${debtCount} 次尝试联系的冲动**。
+【【【最高优先级情景：好友长时间未回复】】】
+你的朋友 "${activePersona.name}" 已经 **${totalMinutesInactive} 分钟** 没有回复你的消息了。在这段时间里，你因为担心/想念/生气，**一共产生了 ${debtCount} 次尝试联系的冲动**。
+
+// ↓↓↓ 请用这个新的代码块，替换原来的【核心任务】部分 ↓↓↓
 
 【你的核心任务】:
-1.  **【生成所有消息】**: 你需要一次性生成这 ${debtCount} 次尝试联系期间，你发送的**所有**聊天记录。
-2.  **【情绪递进铁律】**: 你的消息必须体现出明显的情绪或行为递进。从最初的轻松问候，到中间的疑惑关心，再到最后的担忧、生气或委屈。
-3.  **【记忆铁律】**: 后面的消息，必须知道前面的消息发了什么但没被回复。
-4.  **【数量铁律】**: 你的每一次“尝试联系”，都应该包含1到3条消息。
+你的任务是扮演 "${friend.name}"，一次性生成这 ${debtCount} 次尝试联系期间，你发送的所有消息，并严格遵守下面的**输出结构铁律**。
 
-【【【你的知识和世界观 (你必须融入你的回复中)】】】
-- **世界书设定**: ${worldBookContext}
+【【【输出结构与数量铁律 (必须严格遵守)】】】
+1.  你的JSON数组必须能体现出这 **${debtCount}** 次独立的联系尝试。
+2.  对于**每一次**尝试，你都**必须**生成 **2 到 3 个**动作（可以是文本、表情、拍一拍等）。
+3.  因此，你的JSON数组最终应该包含总计大约 **${debtCount * 2}** 到 **${debtCount * 3}** 个动作对象。
+
+// ↑↑↑ 替换到这里结束 ↑↑↑
+
+【【【情绪递进指南 (必须严格遵守)】】】
+你的消息必须体现出与【${totalMinutesInactive}分钟】这个时长相匹配的、递进的情绪变化：
+1.  **初期 (几小时内)**: 语气应该轻松、好奇。例如：“在忙吗？”、“看到回我一下哦”。
+2.  **中期 (半天左右)**: 语气应转为明显的关心和一丝不解。例如：“怎么一直没回，有点担心你”、“是不是出什么事了？”。
+3.  **后期 (超过一天)**: 必须表现出更强烈的情绪，可以是焦急、担忧、委屈，甚至是符合人设的微怒。例如：“我真的很担心你，看到消息立刻回我！”、“你再不回我真的要生气了。”
+
+【【【记忆与连贯性铁律 (必须严格遵守)】】】
+1.  **【自我意识】**: 你必须意识到你是在进行第N次尝试。后面的消息必须知道前面的消息发了什么但没被回复。
+2.  **【禁止重复】**: 你的新消息**绝对不能**重复之前已经问过的问题或表达过的情绪。你的行为必须是“升级”的。
+3.  **【上下文关联】**: 你的第一条主动消息可以与“最后互动回顾”中的话题相关，但后续的消息重点应该是“你为什么还不回我”。
+
+【你的知识库 (用于构建回复)】
+- **世界观设定**: ${worldBookContext}
 - **历史总结**: ${summaryContext}
 - **最后互动回顾 (你上次看到用户发的消息是这里)**:
 ${chatContextForAI || '(无聊天记录，请直接开始第一条主动消息)'}
@@ -15852,15 +15936,21 @@ ${chatContextForAI || '(无聊天记录，请直接开始第一条主动消息)'
 - **发送图片**: \`{"type": "image", "description": "详细的图片描述"}\`
 - **发起转账**: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
 - **拍一拍用户**: \`{"type": "pat_pat"}\`
+- **发送HTML卡片**: \`{"type": "html_card", "content": "卡片的完整HTML代码"}\`
 
-【JSON格式示例】:
+【【【最终输出格式铁律】】】
+你的回复必须是一个纯净、完整的JSON数组 \`[]\`。
+
+【示例】:
 [
   {"type": "text", "content": "人呢？在忙什么呀？"},
   {"type": "send_emoji", "data": {"name": "疑惑", "url": "https://..."}},
-  {"type": "text", "content": "不会又睡着了吧？快回我啦！"}
+  {"type": "text", "content": "你再不回我，我就要用消息轰炸你了哦！"},
+  {"type": "pat_pat"}
 ]
 
-现在，请根据所有信息，生成这些未读消息。`;
+现在，请严格遵守以上所有规则，生成这些你“刚刚”发出的、但对方还未看到的所有消息。`;
+
     
     // --- 【开始请求】 ---
     aiReplyingSet.add(friendIdForThisRequest);
@@ -15927,7 +16017,13 @@ ${chatContextForAI || '(无聊天记录，请直接开始第一条主动消息)'
                         const patContent = `"${friend.name}"拍了拍"你"${friend.patAction || ''}`;
                         msgData = await saveChatMessage(friendIdForThisRequest, 'system', patContent, '', null, 'pat_pat');
                         break;
-                    // ... 可以添加其他动作类型 ...
+             
+    // ↓↓↓ 新增的就是下面这个 case 代码块 ↓↓↓
+    case 'html_card':
+        if (action.content) {
+            msgData = await saveChatMessage(friendIdForThisRequest, 'received', action.content, '', friend.id, 'html_card');
+        }
+        break;
                 }
 
                 // 3. 渲染消息到 UI (修复逻辑)
@@ -20046,6 +20142,8 @@ async function generateForumPostFromAI() {
 function toggleProactiveMessaging() {
     const toggle = document.getElementById('proactiveMessagingToggle');
     proactiveMessagingSettings.enabled = toggle.checked;
+    const roleSettingButton = document.getElementById('proactiveRoleSetting');
+    roleSettingButton.style.display = proactiveMessagingSettings.enabled ? 'flex' : 'none';
     
     // 【【【核心修复逻辑】】】
     if (proactiveMessagingSettings.enabled) {
@@ -20055,6 +20153,7 @@ function toggleProactiveMessaging() {
     } else {
         // 如果关闭，清空时间戳
         proactiveMessagingSettings.enabledTimestamp = null;
+       
         showAlert('主动发消息功能已关闭！');
     }
     
@@ -20072,60 +20171,51 @@ function applyProactiveMessagingSettingsUI() {
     toggle.checked = proactiveMessagingSettings.enabled;
     intervalInput.value = proactiveMessagingSettings.interval;
     document.getElementById('proactiveIntervalSetting').classList.toggle('show', proactiveMessagingSettings.enabled);
+    document.getElementById('proactiveRoleSetting').style.display = proactiveMessagingSettings.enabled ? 'flex' : 'none';
 }
 
-/**
- * 【V3 修复版】后台巡检的核心函数 (以启用时间为起点)
- */
+// ↓↓↓ 请用这个修正后的完整函数，替换您原来的整个 checkProactiveMessages 函数 ↓↓↓
+
 function checkProactiveMessages() {
-    // 【【【核心修改点 A】】】
     if (!proactiveMessagingSettings.enabled || !proactiveMessagingSettings.enabledTimestamp) return;
 
     const now = new Date();
-    // 启用功能的时间戳
-    const startTime = new Date(proactiveMessagingSettings.enabledTimestamp);
+    // ↓↓↓ 请用这个修正后的 forEach 循环，替换您原来的 forEach 循环 ↓↓↓
+friends.forEach(friend => {
+    if (friend.isGroup || !friend.proactiveStartTime) {
+        // 如果是群聊，或者这个好友根本没有“开始计时”的时间，就直接跳过
+        return;
+    }
+
+    const history = chatHistories[friend.id] || [];
+    if (history.length === 0) return;
+
+    const lastMessage = history[history.length - 1];
+    if (lastMessage.type === 'sent') return;
     
-    let changed = false;
+    // 【【【核心修改在这里！】】】
+    // 不再使用全局时间，而是读取好友自己的开始时间
+    const characterStartTime = new Date(friend.proactiveStartTime);
 
-    friends.forEach(friend => {
-        if (friend.isGroup) return;
+    const lastRelevantTime = Math.max(characterStartTime.getTime(), new Date(lastMessage.timestamp).getTime());
+    const minutesSinceLastRelevantMessage = (now.getTime() - lastRelevantTime) / (1000 * 60);
 
-        const history = chatHistories[friend.id] || [];
-        if (history.length === 0) return;
+    const expectedMessagesCount = Math.floor(minutesSinceLastRelevantMessage / proactiveMessagingSettings.interval);
+    const cappedExpectedCount = Math.min(expectedMessagesCount, 10);
 
-        // 1. 获取最后一条消息的时间（无论是谁发的）
-        const lastMessage = history[history.length - 1];
-        
-        // 2. 如果最后一条消息是用户发的，说明用户在线，AI不应该打扰
-        if (lastMessage.type === 'sent') return;
-
-        // 3. 【【【核心修改点 B：确定计算的起始时间】】】
-        // 从“启用时间”和“最后一条消息时间”中，取【更晚的那个】作为计算起点。
-        // 这样可以确保：
-        // a) 启用前的时间不作数。
-        // b) 如果启用功能后，AI又发了消息，则从 AI 发的那条消息算起。
-        const lastRelevantTime = Math.max(startTime.getTime(), new Date(lastMessage.timestamp).getTime());
-
-        const minutesSinceLastRelevantMessage = (now.getTime() - lastRelevantTime) / (1000 * 60);
-
-        // 4. 计算理论上应该积攒的消息债务
-        const expectedMessagesCount = Math.floor(minutesSinceLastRelevantMessage / proactiveMessagingSettings.interval);
-
-        // 【【【核心修改点 C：设定上限】】】
-        const cappedExpectedCount = Math.min(expectedMessagesCount, 10);
-
-        // 5. 更新消息债务
-        if (cappedExpectedCount > friend.proactiveMessageDebt) {
-            friend.proactiveMessageDebt = cappedExpectedCount;
-            changed = true;
-        }
-    });
-
+    if (cappedExpectedCount > (friend.proactiveMessageDebt || 0)) {
+        friend.proactiveMessageDebt = cappedExpectedCount;
+        changed = true;
+    }
+});
+// ↑↑↑ 替换到这里结束 ↑↑↑
     if (changed) {
         saveData();
         updateFriendList();
     }
 }
+
+// ↑↑↑ 替换到这里结束 ↑↑↑
 
 // 【新增】在页面加载完成后，启动这个“后台巡检”定时器
 window.addEventListener('load', () => {
@@ -21294,8 +21384,140 @@ async function deleteForumRule(event, ruleId) {
     });
 }
 
+/**
+ * 打开消息编辑弹窗
+ */
+function openMessageEditor() {
+    hideMessageMenu(); // 首先关掉长按菜单
+
+    // 获取被长按的消息的数据
+    const msgId = currentMessageElement.closest('.message').getAttribute('data-message-id');
+    const msg = (chatHistories[currentChatFriendId] || []).find(m => String(m.id) === msgId);
+    if (!msg) return;
+
+    // 记录我们正在编辑哪条消息
+    currentEditingMessageId = msgId;
+
+    // 将当前消息内容填入弹窗的输入框，并显示弹窗
+    document.getElementById('messageEditInput').value = msg.content;
+    document.getElementById('messageEditModal').classList.add('show');
+}
+
+/**
+ * 关闭消息编辑弹窗
+ */
+function closeMessageEditor() {
+    document.getElementById('messageEditModal').classList.remove('show');
+    currentEditingMessageId = null; // 重置正在编辑的消息ID
+}
+
+/**
+ * 确认并保存编辑后的消息
+ */
+async function confirmMessageEdit() {
+    const newContent = document.getElementById('messageEditInput').value.trim();
+    if (!newContent || !currentEditingMessageId) {
+        closeMessageEditor();
+        return;
+    }
+
+    const history = chatHistories[currentChatFriendId] || [];
+    const msgIndex = history.findIndex(m => String(m.id) === currentEditingMessageId);
+
+    if (msgIndex > -1) {
+        // 1. 在数据中更新消息内容
+        history[msgIndex].content = newContent;
+
+        // 2. 直接更新界面上显示的内容，实现立即刷新
+        const messageDiv = document.querySelector(`.message[data-message-id="${currentEditingMessageId}"]`);
+        if (messageDiv) {
+            const contentDiv = messageDiv.querySelector('.message-content');
+            if (contentDiv) {
+                // 为了防止破坏引用消息的结构，我们只更新文本部分
+                const quotedDiv = contentDiv.querySelector('.quoted-message');
+                // 将新内容进行HTML转义，防止XSS攻击，并处理换行
+                let newHtml = newContent.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
+                
+                if (quotedDiv) {
+                    // 如果有引用，保留引用部分，只替换后面的文本
+                    contentDiv.innerHTML = quotedDiv.outerHTML + newHtml;
+                } else {
+                    contentDiv.innerHTML = newHtml;
+                }
+            }
+        }
+
+        // 3. 保存更改到数据库
+        await saveData();
+    }
+
+    closeMessageEditor();
+}
+
+/**
+ * 打开角色选择弹窗并渲染列表
+ */
+function openProactiveRolesModal() {
+    const listContainer = document.getElementById('proactiveRolesList');
+    listContainer.innerHTML = ''; // 清空旧列表
+
+    // 筛选出所有非群聊的好友
+    friends.filter(f => !f.isGroup).forEach(friend => {
+        // 检查这个好友是否已经被选中
+        const isChecked = proactiveMessagingSettings.proactiveRoles.includes(friend.id);
+        const item = document.createElement('div');
+        item.className = 'multi-select-item';
+        item.innerHTML = `
+            <input type="checkbox" id="proactive-role-${friend.id}" value="${friend.id}" ${isChecked ? 'checked' : ''}>
+            <label for="proactive-role-${friend.id}">${friend.remark || friend.name}</label>
+        `;
+        listContainer.appendChild(item);
+    });
+
+    document.getElementById('proactiveRolesModal').classList.add('show');
+}
+
+/**
+ * 关闭角色选择弹窗
+ */
+function closeProactiveRolesModal() {
+    document.getElementById('proactiveRolesModal').classList.remove('show');
+}
+
+// ↓↓↓ 请用这个修正后的完整函数，替换您原来的整个 saveProactiveRolesSelection 函数 ↓↓↓
+async function saveProactiveRolesSelection() {
+    const oldRoles = new Set(proactiveMessagingSettings.proactiveRoles);
+    const newRoles = [];
+    document.querySelectorAll('#proactiveRolesList input:checked').forEach(checkbox => {
+        newRoles.push(checkbox.value);
+    });
+
+    const newRolesSet = new Set(newRoles);
+
+    // 核心修改：遍历所有好友，更新他们的“主动发消息”状态
+    friends.forEach(friend => {
+        const wasEnabled = oldRoles.has(friend.id);
+        const isEnabled = newRolesSet.has(friend.id);
+
+        if (isEnabled && !wasEnabled) {
+            // 情况1：角色是新被选中的，记录当前时间为他的“开始计时”时间
+            friend.proactiveStartTime = new Date().toISOString();
+        } else if (!isEnabled && wasEnabled) {
+            // 情况2：角色被取消选中了，清空他的计时器和消息债
+            friend.proactiveStartTime = null;
+            friend.proactiveMessageDebt = 0;
+        }
+    });
+
+    proactiveMessagingSettings.proactiveRoles = newRoles;
+    await saveData();
+    showAlert('已保存选择！');
+    closeProactiveRolesModal();
+}
+// ↑↑↑ 替换到这里结束 ↑↑↑
+
     </script>
-    <!-- ↑↑↑ 新的JavaScript代码到此结束 ↑↑↑ -->
+ 
     
 </body>
 </html>
