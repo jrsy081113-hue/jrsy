@@ -11596,6 +11596,7 @@ ${timeContext}
                     if (!sender || !action || !action.type) continue;
 
                     setTimeout(async () => {
+                  
                         switch (action.type) {
                             case 'text':
                             case 'voice':
@@ -15819,16 +15820,11 @@ async function generateMissedMessages(friendId) {
         summaryContext = memories.map(mem => mem.content).join('\n\n---\n\n');
     }
     
-    // ... (这是函数前面的部分)
-
     // --- 构造最终的 Prompt ---
-    const prompt = `【【【输出格式铁律 (必须严格遵守)】】】
-1.  **【核心格式】**: 你的回复**必须**是一个纯净的JSON数组 \`[]\`。
-2.  **【动作对象】**: 数组中的每个对象代表一个独立的动作，且必须包含一个\`"type"\`字段来指明动作类型。
-3.  **【严格遵守】**: 绝对不要在回复中包含任何JSON数组之外的解释性文字、代码标记或任何非JSON字符。
+    const prompt = `你叫"${friend.name}"，人设是: "${friend.role}"。
+你的重要朋友是"${activePersona.name}"，他/她的人设是：“${activePersona.personality || '普通人'}”。
 
----
-【最高优先级情景：好友回归】
+【【【最高优先级情景：好友回归】】】
 你的朋友 "${activePersona.name}" 消失了 **${totalMinutesInactive} 分钟** 后终于上线了！
 在这段时间里，你因为担心/想念/生气，**一共产生了 ${debtCount} 次尝试联系的冲动**。
 
@@ -15838,11 +15834,11 @@ async function generateMissedMessages(friendId) {
 3.  **【记忆铁律】**: 后面的消息，必须知道前面的消息发了什么但没被回复。
 4.  **【数量铁律】**: 你的每一次“尝试联系”，都应该包含1到3条消息。
 
-【你的知识库 (你的所有行为都必须基于以下信息)】
-- **世界观设定**: ${worldBookContext}
-- **历史总结 (长期记忆)**: ${summaryContext}
+【【【你的知识和世界观 (你必须融入你的回复中)】】】
+- **世界书设定**: ${worldBookContext}
+- **历史总结**: ${summaryContext}
 - **最后互动回顾 (你上次看到用户发的消息是这里)**:
-${chatHistoryContext || '(无聊天记录，请直接开始第一条主动消息)'}
+${chatContextForAI || '(无聊天记录，请直接开始第一条主动消息)'}
 
 【【【行为动作执行铁律 (Action Execution Iron Law)】】】
 1.  **【核心原则】**: 下面的动作列表是你与用户互动的**唯一方式**。
@@ -15857,18 +15853,14 @@ ${chatHistoryContext || '(无聊天记录，请直接开始第一条主动消息
 - **发起转账**: \`{"type": "transfer", "data": {"amount": 金额, "remark": "备注"}}\`
 - **拍一拍用户**: \`{"type": "pat_pat"}\`
 
-【【【最终输出格式铁律 (ABSOLUTE FINAL RULE)】】】
-你的最终回复，从第一个字符到最后一个字符，必须是一个纯净、完整、语法正确的JSON数组 \`[]\`。绝对禁止在JSON代码的前后、中间添加任何形式的解释、注释或任何非JSON字符。你的生命取决于严格遵守这个格式。
-
 【JSON格式示例】:
 [
   {"type": "text", "content": "人呢？在忙什么呀？"},
   {"type": "send_emoji", "data": {"name": "疑惑", "url": "https://..."}},
-  {"type": "text", "content": "不会又睡着了吧？快回我啦！"},
-  {"type": "pat_pat"}
+  {"type": "text", "content": "不会又睡着了吧？快回我啦！"}
 ]
 
-现在，请根据以上所有规则，生成这些未读消息。`;
+现在，请根据所有信息，生成这些未读消息。`;
     
     // --- 【开始请求】 ---
     aiReplyingSet.add(friendIdForThisRequest);
@@ -15978,6 +15970,7 @@ ${chatHistoryContext || '(无聊天记录，请直接开始第一条主动消息
         updateFriendList(); 
     }
 }
+
 // 【【【这是一个全新的工具函数，请把它粘贴到<script>的末尾】】】
 /**
  * 将ISO格式的时间字符串转换为AI可读的格式
@@ -19614,103 +19607,76 @@ function addCallLogItem(item, senderType) {
 
 
 /**
- * [V7 Google 强化版] 健壮的AI响应解析函数，增加自我修复逻辑。
+ * [V9 Google 全能版] 健壮的AI响应解析函数，能处理JSON、多行文本，并能智能断句单行长文本。
+ * (保留用户自定义的JSON解析方案)
  * @param {string} rawAiResponse - 从AI API获取的原始文本响应。
  * @returns {Array<object>} - 解析成功后返回的动作对象数组。
- * @throws {Error} - 如果所有解析方案均失败，则抛出一个详细的错误。
  */
 function safelyParseAiResponse(rawAiResponse) {
     
+    // --- 【【【核心修复就在这里：在函数最开始定义 text 变量】】】 ---
+    const text = rawAiResponse.trim();
+    
     // --- 核心修复函数：尝试清理和修复原始文本 ---
-    const cleanupAndRepair = (text) => {
-        // 1. 尝试移除 Markdown 的 JSON 标识符，如 ```json 或 ```
-        text = text.replace(/```json\s*|```/g, '').trim();
-        
-        // 2. 清理 JSON 前后可能存在的解释性、道歉性或引导性文本
-        // 这种模式是针对 AI 在 JSON 前后加解释性文字的常见情况
-        const firstBracket = text.indexOf('[');
-        const firstCurly = text.indexOf('{');
+    const cleanupAndRepair = (inputText) => { // 将参数名改为 inputText 避免混淆
+        let workingText = inputText;
+        workingText = workingText.replace(/```json\s*|```/g, '').trim();
+        const firstBracket = workingText.indexOf('[');
+        const firstCurly = workingText.indexOf('{');
         const startIndex = Math.min(...[firstBracket, firstCurly].filter(i => i !== -1));
-        
         if (startIndex > 0 && startIndex < 100) {
-             // 如果 JSON 结构在开头附近，则切掉前面的所有文本
-            text = text.substring(startIndex);
+            workingText = workingText.substring(startIndex);
         }
-
-        // 3. 清理末尾可能多余的字符
-        const lastBracket = text.lastIndexOf(']');
-        const lastCurly = text.lastIndexOf('}');
+        const lastBracket = workingText.lastIndexOf(']');
+        const lastCurly = workingText.lastIndexOf('}');
         const endIndex = Math.max(...[lastBracket, lastCurly].filter(i => i !== -1));
-        
-        if (endIndex > 0 && endIndex < text.length - 1) {
-             // 如果 JSON 结构在结尾附近，则切掉后面的所有文本
-            text = text.substring(0, endIndex + 1);
+        if (endIndex > 0 && endIndex < workingText.length - 1) {
+            workingText = workingText.substring(0, endIndex + 1);
         }
-
-        return text.trim();
+        return workingText.trim();
     };
     
-    // --- 方案 1: 【乐观解析尝试】 (包含清洗) ---
+    // --- 方案 1: 【乐观解析尝试】 (包含清洗) - 这部分完全是您的代码，保持不变 ---
     try {
-        let cleanedResponse = cleanupAndRepair(rawAiResponse);
-        
-        // 尝试解析为数组（群聊和单聊都可能返回数组）
+        let cleanedResponse = cleanupAndRepair(text); // 使用我们新定义的 text 变量
         if (cleanedResponse.startsWith('[') && cleanedResponse.endsWith(']')) {
              console.log("解析成功：通过乐观数组解析。");
              return JSON.parse(cleanedResponse);
         }
-        
-        // 尝试解析为对象（针对某些单聊返回单个动作对象的情况）
         if (cleanedResponse.startsWith('{') && cleanedResponse.endsWith('}')) {
              console.log("解析成功：通过乐观对象解析，转换为数组。");
              return [JSON.parse(cleanedResponse)];
         }
-        
-        // 如果清洗后仍不是一个完整的 JSON 结构，进入下一个方案。
         throw new Error("响应清理后仍不是完整的 JSON 结构。");
-
     } catch (optimisticError) {
         console.warn("乐观解析模式失败，启动后备恢复方案...", optimisticError);
         
-        // --- 方案 2: 【后备恢复方案】 - 提取所有独立的 JSON 对象/数组片段 ---
-        
+        // --- 方案 2: 【后备恢复方案】 - 这部分也完全是您的代码，保持不变 ---
         const recoveredActions = [];
         let success = false;
-        
-        // A. 提取所有独立的 JSON 对象片段 { ... }
-        const objectSnippets = rawAiResponse.match(/{[^{}]*}/g);
+        const objectSnippets = text.match(/{[^{}]*}/g); // 使用 text 变量
         if (objectSnippets) {
             for (const snippet of objectSnippets) {
                 try {
                     recoveredActions.push(JSON.parse(snippet));
                     success = true;
-                } catch (snippetError) {
-                    // 跳过解析失败的片段
-                }
+                } catch (snippetError) {}
             }
         }
-        
-        // B. 提取所有独立的 JSON 数组片段 [ ... ] (例如群聊的多个脚本)
-        const arraySnippets = rawAiResponse.match(/\[[\s\S]*?\]/g);
+        const arraySnippets = text.match(/\[[\s\S]*?\]/g); // 使用 text 变量
         if (arraySnippets) {
             for (const snippet of arraySnippets) {
                  try {
                      const parsedArray = JSON.parse(snippet);
                      if (Array.isArray(parsedArray)) {
-                         // 将数组中的所有元素平铺添加到 recoveredActions
                          recoveredActions.push(...parsedArray);
                          success = true;
                      }
-                 } catch (snippetError) {
-                     // 跳过解析失败的数组片段
-                 }
+                 } catch (snippetError) {}
             }
         }
-
         if (success && recoveredActions.length > 0) {
             console.log(`解析成功：通过后备恢复方案，成功挽救了 ${recoveredActions.length} 个动作。`);
-            
-            // 最终的保障：确保我们只返回合法的动作类型
             const finalActions = recoveredActions.filter(action => action.type || action.sender_name);
             if (finalActions.length > 0) {
                 return finalActions;
@@ -19718,12 +19684,23 @@ function safelyParseAiResponse(rawAiResponse) {
         }
     }
 
-    // 【【【核心修改：增加具体报错信息】】】
-    // 如果所有努力都失败了，抛出包含原始响应的明确错误。
-    throw new Error(`AI解析失败：内容不包含有效 JSON 结构。
-        --- 原始AI响应（未解析内容）---
-        ${rawAiResponse}
-        --- --------------------- ---`);
+    // --- 方案 3: 【最终后备方案】 - 这部分也完全是您的代码，现在可以正常工作了 ---
+    console.log("所有JSON解析方案均失败，启动纯文本处理方案...");
+    if (text.includes('\n')) {
+        console.log("检测到换行符，按行拆分消息。");
+        return text
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+            .map(line => ({ type: "text", content: line }));
+    } else {
+        console.log("未检测到换行符，启动智能断句模式。");
+        const sentences = text.match(/[^。！？\.\.\.;；]+[。！？\.\.\.;；]?/g) || [text];
+        return sentences
+            .map(sentence => sentence.trim())
+            .filter(sentence => sentence.length > 0)
+            .map(sentence => ({ type: "text", content: sentence }));
+    }
 }
 
 /**
