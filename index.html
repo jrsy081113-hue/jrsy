@@ -18217,7 +18217,7 @@ function closeHtmlCardEditor() {
 }
 
 /**
- * 保存编辑后的HTML卡片
+ * 保存编辑后的HTML卡片 (修正版：支持实时刷新Shadow DOM)
  */
 async function saveHtmlCardEdit() {
     if (!currentEditingCardId) return;
@@ -18227,29 +18227,35 @@ async function saveHtmlCardEdit() {
     const msgIndex = history.findIndex(m => String(m.id) === currentEditingCardId);
 
     if (msgIndex > -1) {
-        // 1. 更新后台数据
+        // 1. 在后台数据中更新消息内容并保存（这部分是正确的，保持不变）
         history[msgIndex].content = newHtmlContent;
         await saveData();
 
-        // 2. 实时更新界面上的卡片
+        // 2. 【核心修复】找到并正确地更新界面上的卡片
         const messageDiv = document.querySelector(`.message[data-message-id="${currentEditingCardId}"]`);
         if (messageDiv) {
             const contentDiv = messageDiv.querySelector('.message-content');
-            if(contentDiv) {
-                // 2a. 替换HTML内容
-                contentDiv.innerHTML = newHtmlContent;
+            
+            // 3. 确保我们能访问到这个卡片的 "样式沙箱" (Shadow DOM)
+            if (contentDiv && contentDiv.shadowRoot) { 
+                const shadow = contentDiv.shadowRoot;
 
-                // 2b. 重新激活卡片内的脚本，确保互动依然有效
-                const scriptRegex = /<script>([\s\S]*?)<\/script>/;
+                // 4. 像第一次创建时一样，分离出HTML和脚本
+                const scriptRegex = /<script>([\s\S]*?)<\/script>/i;
                 const scriptMatch = newHtmlContent.match(scriptRegex);
+                const htmlOnly = newHtmlContent.replace(scriptRegex, '');
+
+                // 5. 【关键】更新沙箱内部的 HTML 内容
+                shadow.innerHTML = htmlOnly;
+
+                // 6. 【关键】在沙箱内部重新执行新的脚本
                 if (scriptMatch && scriptMatch[1]) {
                     try {
                         const scriptElement = document.createElement('script');
                         scriptElement.textContent = scriptMatch[1];
-                        document.body.appendChild(scriptElement);
-                        document.body.removeChild(scriptElement);
+                        shadow.appendChild(scriptElement); // 将脚本添加到沙箱内，而不是主页面
                     } catch (e) {
-                        console.error("执行更新后的卡片脚本时出错:", e);
+                        console.error("在沙箱内执行更新后的卡片脚本时出错:", e);
                     }
                 }
             }
