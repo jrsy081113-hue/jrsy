@@ -6017,9 +6017,9 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
 
 /* 3. 其他所有样式（主贴、评论、图标等）保持不变 */
 
-.forum-detail-main-post { padding: 12px 15px; border-bottom: 1px solid var(--border-color, #eee); }
+.forum-detail-main-post { padding: 12px 15px; }
 .post-header .post-more-btn { color: var(--text-secondary, #666); cursor: pointer; }
-.post-stats-bar { display: flex; gap: 12px; padding: 15px 0; font-size: 14px; color: var(--text-secondary, #666); border-top: 1px solid var(--border-color, #eee); }
+.post-stats-bar { display: flex; gap: 12px; padding: 15px 0; font-size: 14px; color: var(--text-secondary, #666); }
 .post-stats-bar strong { font-weight: bold; color: var(--text-color, #000); }
 
 /* 这是您需要修改成的代码 */
@@ -6051,16 +6051,21 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     position: fixed;
     top: 0;
     left: 0;
-    width: 80%; /* 占据屏幕80%宽度 */
+    width: 80%;
     max-width: 320px;
     height: 100%;
     background: var(--bg-primary, white);
     z-index: 1002;
-    transform: translateX(-100%); /* 默认藏在左边 */
+    transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
-    padding-top: env(safe-area-inset-top, 40px); /* 适配刘海屏 */
+    /* --- 核心修改在这里 --- */
+    /* 我们把原来的内边距调整为一个固定的、更大的值，为状态栏留出空间 */
+    padding-top: 50px; 
+    box-sizing: border-box; /* 确保内边距计算正确 */
+    /* --- 修改结束 --- */
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
+
 .forum-side-menu.show {
     transform: translateX(0); /* 显示时滑入 */
 }
@@ -6091,6 +6096,113 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
 .forum-menu-overlay.show {
     opacity: 1;
     pointer-events: auto; /* 显示时可点击 */
+}
+
+/* --- 最终修复版：统一管理论坛相关弹窗层级 --- */
+
+/* 基础弹窗（如“论坛设置”）保持默认或 z-index: 1000 */
+
+/* 侧滑菜单的灰色遮罩层 */
+.forum-menu-overlay {
+    z-index: 1001; 
+}
+
+/* 侧滑菜单本身 */
+.forum-side-menu {
+    z-index: 1002;
+}
+
+/* 从侧滑菜单里打开的第一层弹窗（如角色选择列表）*/
+#forumCharacterSelectModal,
+#worldviewModal,
+#forumRulesModal {
+    z-index: 1003; /* <-- 核心修改：比侧滑菜单的1002更高 */
+}
+
+/* 从列表弹窗里再打开的第二层弹窗（如规则编辑器）*/
+#worldviewEditorModal,
+#forumRuleEditorModal {
+    z-index: 1004; /* <-- 比第一层弹窗更高 */
+}
+
+/* 找到这段已有的CSS */
+.generate-diary-btn.loading svg {
+    animation: spin 1s linear infinite;
+}
+
+/* 在它下面，添加这一行新的CSS规则 */
+.nav-btn.loading svg {
+    animation: spin 1s linear infinite;
+}
+
+/* @keyframes spin 规则保持不变 */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* --- 新增：论坛 App 颜色优化 --- */
+
+/* 1. 将论坛底部导航栏的背景强制设为纯白色 */
+.forum-bottom-nav {
+    background-color: #ffffff !important;
+    /* 同时让顶部分割线更浅，与白色背景更搭 */
+    border-top-color: #f0f0f0 !important;
+}
+
+/* 2. 将论坛主页("帖子"时间线)和"我"页面的背景强制设为纯白色 */
+#forumHomeView,
+#forumMeView {
+    background-color: #ffffff !important;
+}
+
+/* 3. 【细节优化】将"我"页面头像周围的边框也变成纯白色，使其与新背景融为一体 */
+.wechat-dark-mode .forum-profile-avatar,
+.forum-profile-avatar {
+    border-color: #ffffff !important;
+}
+
+/* 3. 【新增】将论坛顶部的导航栏背景也强制设为纯白色 */
+#forumTopNavBar {
+    background-color: #ffffff !important;
+    border-bottom-color: #f0f0f0 !important;
+}
+
+/* 4. 【新增】暗色模式下，顶部导航栏的边框颜色适配 */
+.wechat-dark-mode #forumTopNavBar {
+    border-bottom-color: #2f3336 !important;
+}
+
+/* --- 新增：帖子详情页颜色优化 --- */
+
+/* 1. 将详情页的顶部导航栏和底部回复栏背景设为纯白色 */
+#forumDetailView .nav-bar,
+#forumDetailView .bottom-reply-bar {
+    background-color: #ffffff !important;
+}
+
+/* 2. 统一详情页所有区域的分割线颜色，让它们更柔和 */
+#forumDetailView .nav-bar,
+#forumDetailView .forum-detail-main-post,
+#forumDetailView .comment-thread-item {
+    border-bottom-color: #f0f0f0 !important;
+}
+#forumDetailView .bottom-reply-bar {
+    border-top-color: #f0f0f0 !important;
+}
+
+/* 3. 确保主内容滚动区域也是纯白色背景 */
+#forumDetailContent {
+    background-color: #ffffff !important;
+}
+
+.replies-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px;
+    margin: 0;
+    font-weight: 500; /* 将粗体改为中等粗细 */
+    font-size: 14px; /* 设置字体大小与 @handle 一致 */
+    color: var(--text-secondary, #666); /* 使用灰色变量 */
 }
 
     </style>
@@ -7739,22 +7851,26 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
   <!-- 替换后的导航栏 -->
 
 <!-- 这是改造后的新导航栏 -->
+
+<!-- 这是修改后的导航栏代码 -->
 <div class="nav-bar forum-nav-bar" id="forumTopNavBar">
-    <!-- 左侧：之前是返回键，现在是头像按钮 -->
+    <!-- 左侧头像按钮 (不变) -->
     <div id="forumNavAvatar" class="nav-btn" style="padding: 0; border-radius: 50%; width: 34px; height: 34px; background-size: cover; background-position: center;"></div>
 
-    <!-- 中间：标题和刷新按钮保持不变 -->
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <div class="nav-title" style="font-weight: 800;">论坛</div>
+    <!-- 中间标题 (不变, 内部的刷新按钮已被移走) -->
+    <div class="nav-title" style="font-weight: 800;">论坛</div>
+
+    <!-- 右侧动作按钮 (核心修改) -->
+    <div class="nav-right-actions">
+        <!-- 刷新按钮现在在这里 -->
         <button class="nav-btn" id="refreshForumBtn" onclick="refreshForumTimeline()">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M22 4v4h-4"/></svg>
         </button>
+        <!-- 关闭按钮现在在这里 -->
+        <button class="nav-btn" onclick="goHome()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
     </div>
-
-    <!-- 右侧：之前是设置键，现在是退出 App 的叉叉按钮 -->
-    <button class="nav-btn" onclick="goHome()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </button>
 </div>
 
     <!-- 不同的内容视图，全部用绝对定位堆叠，只有 active 状态的显示 -->
@@ -7915,6 +8031,9 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         <div id="worldviewList" class="friend-list" style="max-height: 50vh; overflow-y: auto;">
             <!-- 世界观列表将动态生成在这里 -->
         </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-confirm" onclick="closeWorldviewModal()">关闭</button>
+        </div>
     </div>
 </div>
 
@@ -7978,6 +8097,9 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             <button class="nav-btn" style="padding: 4px 8px;" onclick="openForumRuleEditor()">+</button>
         </div>
         <div id="forumRulesList" class="friend-list" style="max-height: 50vh; overflow-y: auto;"></div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-confirm" onclick="closeForumRulesModal()">关闭</button>
+        </div>
     </div>
 </div>
 
@@ -8955,16 +9077,7 @@ forumRules: forumRules,
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
-                const apiSettings = { 
-                    id: 'settings',
-                    apiUrl: document.getElementById('apiUrl').value, 
-                    apiKey: document.getElementById('apiKey').value, 
-                    modelName: document.getElementById('modelName').value,
-                    memoryMessagesCount: document.getElementById('memoryMessagesCount').value,
-                    apiTemperature: document.getElementById('apiTemperature').value,
-                    aiTimePerceptionEnabled: aiTimePerceptionEnabled
-                };
-                savePromises.push(dbManager.set('apiSettings', apiSettings));
+               
                 
                 (openingStatements || []).forEach(item => savePromises.push(dbManager.set('openingStatements', item)));
                 
@@ -9573,24 +9686,35 @@ function applyAppLabelColor() {
             });
         }
         
-        function applyIndividualChatBackground(friend) {
-            const chatScreen = document.getElementById('chatMessages');
-            if (!chatScreen) return;
-            // FIX: Prioritize global background if it's custom
-            if (selectedGlobalChatBg === 'custom' && customGlobalChatBgImage) {
-                applyGlobalChatBackground();
-                return;
-            }
-            if (!friend || !friend.chatBackground || friend.chatBackground.type === 'default') return applyGlobalChatBackground();
-            const bgSetting = friend.chatBackground;
-            const bgImage = (bgSetting.type === 'custom' && bgSetting.customImage) ? `url(${bgSetting.customImage})` : 'none';
-            if(bgImage !== 'none') {
-                chatScreen.style.backgroundImage = bgImage;
-                chatScreen.style.backgroundColor = 'transparent';
-            } else {
-                 applyGlobalChatBackground();
-            }
-        }
+        /**
+ * [V2 优先级修正版] 应用正确的聊天背景
+ * 规则: 优先使用好友的独立设置，如果没有，则回退到全局设置。
+ * @param {object} friend - 当前聊天的好友对象
+ */
+function applyIndividualChatBackground(friend) {
+    const chatScreen = document.getElementById('chatMessages');
+    if (!chatScreen) return;
+
+    // 1. 优先检查好友的独立聊天背景设置
+    if (friend && friend.chatBackground && friend.chatBackground.type === 'custom' && friend.chatBackground.customImage) {
+        // 如果好友有自己的自定义背景，就用它
+        chatScreen.style.backgroundImage = `url(${friend.chatBackground.customImage})`;
+        chatScreen.style.backgroundColor = 'transparent'; // 有图片时背景应透明
+        return; // 应用成功，结束函数
+    }
+
+    // 2. 如果好友没有独立设置，再检查全局聊天背景
+    if (selectedGlobalChatBg === 'custom' && customGlobalChatBgImage) {
+        // 如果有全局背景，就用全局的
+        chatScreen.style.backgroundImage = `url(${customGlobalChatBgImage})`;
+        chatScreen.style.backgroundColor = 'transparent';
+        return; // 应用成功，结束函数
+    }
+
+    // 3. 如果两者都没有，则使用默认的纯色背景
+    chatScreen.style.backgroundImage = 'none';
+    chatScreen.style.backgroundColor = 'var(--chat-bg, #ededee)'; // 使用CSS变量以适配深色模式
+}
         
         /* 这是修改后的JS代码 */
 function setChatAreaPadding(isOpen) {
@@ -10620,25 +10744,10 @@ if (msg.type === 'sent') {
                  contentHTML = `<span>通话时长 ${msg.content}</span><svg class="call-icon" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.2c.27-.27.35-.66.24-1.01-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.75 0 .99-.65.99-.99v-3.45c0-.54-.45-.98-.99-.98z"/></svg>`;
                  
 
-// ↓↓↓ 把新代码粘贴在这里 ↓↓↓
 } else if (hasHtmlCard) {
-    const scriptRegex = /<script>([\s\S]*?)<\/script>/;
-    const scriptMatch = msg.content.match(scriptRegex);
-    const htmlOnly = msg.content.replace(scriptRegex, '');
-    contentHTML = htmlOnly;
+    // 留空，等待后续处理
+    contentHTML = '';
 
-    setTimeout(() => {
-        if (scriptMatch && scriptMatch[1]) {
-            try {
-                const scriptElement = document.createElement('script');
-                scriptElement.textContent = scriptMatch[1];
-                document.body.appendChild(scriptElement);
-                document.body.removeChild(scriptElement);
-            } catch (e) {
-                console.error("执行卡片脚本时出错:", e);
-            }
-        }
-    }, 0);
 // ↑↑↑ 新代码粘贴到这里结束 ↑↑↑
 
             } else {
@@ -10728,6 +10837,29 @@ if (msg.isOfflineMessage) {
                  // 明确地阻止在安卓上长按时触发的“右键菜单”事件
                  avatarEl.addEventListener('contextmenu', (e) => e.preventDefault());
             }
+
+// 【【【新增核心逻辑：为HTML卡片启动Shadow DOM沙箱】】】
+    if (hasHtmlCard) {
+        const contentDiv = msgDiv.querySelector('.message-content');
+        if (contentDiv) {
+            const shadow = contentDiv.attachShadow({ mode: 'open' });
+            const scriptRegex = /<script>([\s\S]*?)<\/script>/i;
+            const scriptMatch = msg.content.match(scriptRegex);
+            const htmlOnly = msg.content.replace(scriptRegex, '');
+
+            shadow.innerHTML = htmlOnly;
+
+            if (scriptMatch && scriptMatch[1]) {
+                try {
+                    const scriptElement = document.createElement('script');
+                    scriptElement.textContent = scriptMatch[1];
+                    shadow.appendChild(scriptElement);
+                } catch (e) {
+                    console.error("在沙箱内执行卡片脚本时出错:", e);
+                }
+            }
+        }
+    }
 
             return msgDiv;
         }
@@ -12780,8 +12912,8 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
         function renderIconSettingsList() {
             const container = document.getElementById('iconSettingsList');
             container.innerHTML = '';
-            ['wechat', 'settings', 'worldbook', 'theme', 'phone', 'placeholder1', 'placeholder2'].forEach(id => {
-                const name = {wechat:'微信', settings:'设置', worldbook:'世界书', theme:'主题', phone:'手机', placeholder1: '闲置1', placeholder2: '闲置2'}[id];
+            ['wechat', 'settings', 'worldbook', 'theme', 'phone', 'forum', 'placeholder2'].forEach(id => {
+                const name = {wechat:'微信', settings:'设置', worldbook:'世界书', theme:'主题', phone:'手机', forum: '论坛', placeholder2: '闲置2'}[id];
                 const item = document.createElement('div');
                 item.className = 'icon-setting-item';
                 item.innerHTML = `<div class="icon-setting-preview" id="preview-${id}" style="background-image: url(${customIcons[id] || ''})"></div><div class="icon-setting-label">${name}</div><label class="icon-setting-btn">上传<input type="file" accept="image/*" onchange="handleIconUpload(event, '${id}')"></label>`;
@@ -20777,8 +20909,9 @@ async function saveForumSettingsAndRefresh() {
 // --- 步骤二：替换 refreshForumTimeline 函数 ---
 
 async function refreshForumTimeline() {
-    const container = document.getElementById('forumHomeView');
-    container.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-secondary);">正在生成新帖子，请稍候...</div>';
+    const refreshBtn = document.getElementById('refreshForumBtn');
+    // 如果正在加载，则阻止重复点击
+    if (refreshBtn && refreshBtn.classList.contains('loading')) return;
     
     const settings = await dbManager.get('apiSettings', 'settings');
     if (!settings || !settings.apiUrl || !settings.apiKey || !settings.modelName) {
@@ -20844,6 +20977,10 @@ ${recentChat || '无'}
     现在，开始生成20条帖子。`;
 
     try {
+    if(refreshBtn) {
+            refreshBtn.classList.add('loading');
+            refreshBtn.disabled = true;
+        }
         const response = await fetch(`${settings.apiUrl}/chat/completions`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
@@ -20899,15 +21036,9 @@ ${recentChat || '无'}
             };
 
             if (!newPost.authorId && newPost.authorName !== '匿名用户') {
-                if (Math.random() < 0.8) {
-                    const randomUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
-                    newPost.authorAvatarUrl = randomUrl;
-                } else {
-                    const avatarChar = newPost.authorName.substring(0, 1) || '?';
-                    const randomBgColor = getRandomColor();
-                    newPost.authorAvatarChar = avatarChar;
-                    newPost.authorAvatarColor = randomBgColor;
-                }
+                // 直接从头像库中随机选择一个URL并保存
+                const randomUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+                newPost.authorAvatarUrl = randomUrl;
             }
 
             return newPost;
@@ -20915,11 +21046,21 @@ ${recentChat || '无'}
         
         await saveData();
         renderForumTimeline();
+        showToast('论坛已刷新！');
 
-    } catch (error) {
-        console.error("生成论坛帖子失败:", error);
-        container.innerHTML = `<div style="text-align: center; padding: 50px; color: #999;">帖子生成失败: ${error.message}</div>`;
+} catch (error) {
+    console.error("生成论坛帖子失败:", error);
+    // 【修改1】当出错时，不再清空主页，而是弹窗提示，保留旧内容
+    showAlert(`刷新失败: ${error.message}`); 
+    
+} finally {
+    // 【修改2】在这里新增 finally 块
+    // 无论成功或失败，最后都在这里停止按钮动画
+    if(refreshBtn) {
+        refreshBtn.classList.remove('loading');
+        refreshBtn.disabled = false;
     }
+}
 }
 
 /**
@@ -21021,19 +21162,32 @@ async function generatePostComments(postId) {
 
         // --- 【【【核心修改2：全新的、更稳定的纯文本解析逻辑】】】 ---
         const comments = responseText
-            .split('\n\n') // 用两个换行符分割每一条评论
+            .split('\n\n')
             .map(block => {
-                const parts = block.split('[SEPARATOR]'); // 用分隔符分割内容、作者和头像类型
+                const parts = block.split('[SEPARATOR]');
                 if (parts.length === 3) {
-                    return {
+                    const commentData = {
                         content: parts[0].trim(),
                         authorName: parts[1].trim(),
-                        authorAvatarType: parts[2].trim()
+                        authorAvatarType: parts[2].trim() // 暂时保留这个字段用于判断
                     };
+
+                    // --- 核心修改在这里 ---
+                    // 根据AI指定的类型，我们立刻决定并保存具体的头像信息
+                    if (commentData.authorAvatarType === 'anonymous' || commentData.authorName === '匿名用户') {
+                        // 如果是匿名，做一个标记
+                        commentData.isAnonymous = true;
+                    } else {
+                        // 否则（无论是url还是char），都统一从你的头像库里随机选一个
+                        commentData.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+                    }
+                    // --- 修改结束 ---
+
+                    return commentData;
                 }
                 return null;
             })
-            .filter(Boolean); // 过滤掉格式不正确的
+            .filter(Boolean);
 
         if (comments.length > 0) {
             currentForumPosts[postIndex].comments = comments;
@@ -21057,6 +21211,9 @@ function renderForumDetailView(post) {
     // 获取整个详情页的容器，我们将重构它的内部结构
     const pageContainer = document.getElementById('forumDetailView');
 
+// 在函数开头添加这一行
+const postViews = Math.floor(Math.random() * 8000) + 100;
+
     // --- 1. 准备主贴内容 ---
     const postAuthor = getAuthorById(post.authorId) || { name: post.authorName, avatar: '?', avatarImage: '' };
 
@@ -21079,15 +21236,14 @@ function renderForumDetailView(post) {
                 </div>
                 <div class="post-more-btn" style="padding: 8px; color: var(--text-secondary, #666);">...</div>
             </div>
-            <div class="post-text" style="font-size: 20px; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; word-wrap: break-word;">
-                ${post.content.replace(/\n/g, '<br>')}
-            </div>
+            <div class="post-text" style="font-size: 15px; line-height: 1.5; margin: 15px 0; white-space: pre-wrap; word-wrap: break-word;">${post.content.trim().replace(/\n/g, '<br>')}</div>
+            
             <div class="post-stats-bar">
-                <span>${new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                <span>·</span>
-                <span>${new Date(post.timestamp).toLocaleDateString()}</span>
-            </div>
-            ${generateForumActionsHtml()}
+    <span>
+        ${new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${new Date(post.timestamp).toLocaleDateString()} · ${postViews.toLocaleString()} 次查看
+    </span>
+</div>
+${generateForumActionsHtml(false)}
         </div>
         <div class="replies-header">最相关的回复</div>
     `;
@@ -21101,20 +21257,19 @@ function renderForumDetailView(post) {
             if (comment.authorName === postAuthor.name) {
                 avatarHtml = postAvatarHtml;
             } else { // 其他路人评论
-                switch (comment.authorAvatarType) {
-                    case 'url':
-                        const randomUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
-                        avatarHtml = `<div class="post-avatar" style="background-image: url('${randomUrl}')"></div>`;
-                        break;
-                    case 'char':
-                        const avatarChar = comment.authorName.substring(0, 1) || '?';
-                        avatarHtml = `<div class="post-avatar" style="background-color: ${getRandomColor()}">${avatarChar}</div>`;
-                        break;
-                    case 'anonymous':
-                    default:
-                        avatarHtml = `<div class="post-avatar">?</div>`;
-                        break;
+
+                // --- 核心修改在这里 ---
+                if (comment.isAnonymous) {
+                    // 1. 如果是匿名，显示固定的匿名头像
+                    avatarHtml = `<div class="post-avatar">?</div>`;
+                } else if (comment.authorAvatarUrl) {
+                    // 2. 如果保存了URL，就直接使用这个URL
+                    avatarHtml = `<div class="post-avatar" style="background-image: url('${comment.authorAvatarUrl}')"></div>`;
+                } else {
+                    // 3. 备用方案，以防万一
+                    avatarHtml = `<div class="post-avatar">?</div>`;
                 }
+                // --- 修改结束 ---
             }
 
             return `
@@ -21130,7 +21285,7 @@ function renderForumDetailView(post) {
                             <span class="post-more-btn" style="margin-left: auto;">...</span>
                         </div>
                         <div class="post-text">${comment.content}</div>
-                        ${generateForumActionsHtml()}
+${generateForumActionsHtml()}
                     </div>
                 </div>
             `;
@@ -21169,43 +21324,47 @@ function renderForumDetailView(post) {
 }
 
 /**
- * 新增：【唯一的】帖子操作栏生成函数 (主页和详情页共用)
+ * 【V2 智能版】帖子操作栏生成函数
+ * @param {boolean} showViews - 是否显示浏览量，默认为 true
  */
-function generateForumActionsHtml() {
+function generateForumActionsHtml(showViews = true) {
     const comments = Math.floor(Math.random() * 100);
     const retweets = Math.floor(Math.random() * 50);
     const likes = Math.floor(Math.random() * 2000);
-    const views = Math.floor(likes * (Math.random() * 10 + 3));
+    // 【核心修改1】我们把浏览量的生成移到了函数内部
+    const views = Math.floor(likes * (Math.random() * 10 + 3)); 
 
     const formatNumber = (num) => (num >= 10000) ? (num / 10000).toFixed(1) + '万' : num;
+
+    // 【核心修改2】根据 showViews 参数决定是否生成浏览量的HTML
+    const viewsHtml = showViews ? `
+        <span class="post-action-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-6h2v6h-2.004zM13.25 21l.004-11h2v11h-2.004z"></path></svg>
+            <span>${formatNumber(views)}</span>
+        </span>
+    ` : '';
 
     return `
         <div class="post-actions">
             <span class="post-action-btn">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-</svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 <span>${formatNumber(comments)}</span>
             </span>
             <span class="post-action-btn">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53-.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
                 <span>${formatNumber(retweets)}</span>
             </span>
             <span class="post-action-btn">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
                 <span>${formatNumber(likes)}</span>
             </span>
-            <span class="post-action-btn">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-6h2v6h-2.004zM13.25 21l.004-11h2v11h-2.004z"></path></svg>
-                <span>${formatNumber(views)}</span>
-            </span>
+            ${viewsHtml}
             <span class="post-action-btn">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.879 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></svg>
-                </span>
-                <span class="post-action-btn">
+            </span>
+            <span class="post-action-btn">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></svg>
-                </span>
-                </div>
+            </span>
         </div>
     `;
 }
@@ -21515,6 +21674,26 @@ async function saveProactiveRolesSelection() {
     closeProactiveRolesModal();
 }
 // ↑↑↑ 替换到这里结束 ↑↑↑
+
+/**
+ * 新增：关闭世界观选择弹窗
+ */
+function closeWorldviewModal() {
+    const modal = document.getElementById('worldviewModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+/**
+ * 新增：关闭论坛规则弹窗
+ */
+function closeForumRulesModal() {
+    const modal = document.getElementById('forumRulesModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
 
     </script>
  
