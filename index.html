@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="https://jrsy081113-hue.github.io/jrsy/star-icon.png">
     <link rel="apple-touch-icon-precomposed" href="https://jrsy081113-hue.github.io/jrsy/star-icon.png">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style id="customBubblePreviewStyle"></style>
     <style id="customBubbleStyle"></style>
     <style>
@@ -5437,7 +5438,7 @@ width: 100%;
     /* 1. 使用这个属性来让所有图标组自动平均分布在整行 */
     justify-content: space-between; 
     align-items: center; /* 确保垂直居中 */
-    margin-top: 10px;
+    margin-top: 8px;
     color: #657786;
     width: 100%; /* 2. 必须确保容器宽度为100% */
 }
@@ -5988,14 +5989,19 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
 /* --- 新增：推特详情页复刻样式 V3 --- */
 
 /* 1. 让内容滚动区域占据导航栏和底部栏之间的所有空间 */
+
+/* --- 请用这个新版本完整替换 --- */
 #forumDetailContent {
     position: absolute;
-    top: 74px; /* 状态栏+导航栏高度 */
-    bottom: 50px; /* 为底部回复栏预留空间 */
+    top: 74px; 
+    bottom: 0; /* 核心修改1：让内容区域延伸到底部 */
     left: 0;
     right: 0;
     overflow-y: auto;
-    padding: 0; /* 移除所有内边距 */
+    padding: 0;
+    /* 核心修改2：增加一个足够高的底部内边距，把内容“顶”上来 */
+    padding-bottom: calc(125px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box; /* 确保内边距计算正确 */
 }
 
 /* 2. 【核心修复】让底部回复栏固定在页面最底部 */
@@ -6017,9 +6023,9 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
 
 /* 3. 其他所有样式（主贴、评论、图标等）保持不变 */
 
-.forum-detail-main-post { padding: 12px 15px; }
+.forum-detail-main-post { padding: 12px 15px 0; }
 .post-header .post-more-btn { color: var(--text-secondary, #666); cursor: pointer; }
-.post-stats-bar { display: flex; gap: 12px; padding: 15px 0; font-size: 14px; color: var(--text-secondary, #666); }
+.post-stats-bar { display: flex; gap: 12px; padding: 10px 0; font-size: 14px; color: var(--text-secondary, #666); }
 .post-stats-bar strong { font-weight: bold; color: var(--text-color, #000); }
 
 /* 这是您需要修改成的代码 */
@@ -6037,7 +6043,7 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
 .post-actions .post-action-btn:hover { color: #1d9bf0; }
 .comment-thread-item { display: flex; padding: 12px 15px 0 8px; border-bottom: 1px solid var(--border-color, #eee); }
 .comment-avatar-container { position: relative; margin-right: -2px; flex-shrink: 0; }
-.thread-line { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 2px; height: calc(100% - 40px); background-color: var(--border-color, #eee); }
+.thread-line { display: none; position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 2px; height: calc(100% - 40px); background-color: var(--border-color, #eee); }
 .comment-content-container { flex-grow: 1; padding-bottom: 10px; }
 .reply-bar-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; background-color: #ccc; flex-shrink: 0; }
 .reply-bar-input { flex-grow: 1; border: 1px solid var(--border-color, #eee); background-color: var(--bg-hover, #f0f0f0); border-radius: 9999px; padding: 8px 16px; font-size: 15px; color: var(--text-color); outline: none; }
@@ -6200,9 +6206,31 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     border-bottom: 1px solid #f0f0f0;
     padding: 15px;
     margin: 0;
-    font-weight: 500; /* 将粗体改为中等粗细 */
-    font-size: 14px; /* 设置字体大小与 @handle 一致 */
-    color: var(--text-secondary, #666); /* 使用灰色变量 */
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-secondary, #666);
+    /* --- ↓↓↓ 新增的样式 ↓↓↓ --- */
+    display: flex;         /* 使用flex布局 */
+    align-items: center;   /* 让文字和箭头垂直居中 */
+    gap: -1px;              /* 在文字和箭头之间增加一点间距 */
+    cursor: pointer;       /* 让它看起来可以点击 */
+}
+
+/* 新增：修复帖子详情页中@账号的对齐问题 */
+.forum-detail-main-post .post-handle {
+    margin-left: 0;
+}
+
+/* 新增：论坛详情页的关注按钮样式 */
+.forum-follow-btn {
+    background-color: #0F1419; /* 接近黑色的深灰色 */
+    color: white;
+    padding: 4px 12px;
+    border-radius: 9999px; /* 实现胶囊形状 */
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
     </style>
@@ -7945,6 +7973,7 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
             <div class="forum-profile-tabs">
                 <div class="forum-profile-tab active" data-tab="posts">帖子</div>
                 <div class="forum-profile-tab" data-tab="replies">回复</div>
+                <div class="forum-profile-tab" data-tab="likes">喜欢</div> <!-- <-- 新增这一行 -->
             </div>
 
             <!-- 帖子/回复列表容器 -->
@@ -8122,11 +8151,11 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         const dbManager = {
             db: null,
             dbName: 'JRSY_DB_V2',
-            dbVersion: 8,
+            dbVersion: 9,
             stores: [
                 'friends', 'chatHistories', 'diaries', 'worldBooks', 'worldBookFolders', 
                 'favorites', 'moments', 'playlist', 'appSettings', 'apiSettings', 'customEmojis',
-                'memories', 'openingStatements' , 'writingStyles', 'skits', 'forumPosts' , 'forumRules'
+                'memories', 'openingStatements' , 'writingStyles', 'skits', 'forumPosts' , 'forumRules', 'forumLikes' 
             ],
 
             // 核心修改：初始化函数现在负责检查和重新连接
@@ -8288,6 +8317,8 @@ let currentEditingWorldviewId = null; // 正在编辑的世界观ID
 
 let forumRules = []; // 用于存储所有论坛规则
 let currentEditingRuleId = null; // 用于编辑
+
+let forumLikes = [];
 
 // ...（在其他全局变量下方）
 let forumProfileData = {
@@ -9133,7 +9164,7 @@ forumRules: forumRules,
                 const [
                     loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
                     loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
-                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories, loadedOpeningStatements, loadedWritingStyles, loadedSkits, loadedForumPosts, loadedForumRules
+                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories, loadedOpeningStatements, loadedWritingStyles, loadedSkits, loadedForumPosts, loadedForumRules, loadedForumLikes
                 ] = await Promise.all([
                     dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
                     dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
@@ -9149,7 +9180,9 @@ dbManager.getAll('skits'),
 
 dbManager.getAll('forumPosts') ,
 
-dbManager.getAll('forumRules')
+dbManager.getAll('forumRules'),
+
+dbManager.getAll('forumLikes')
 
                 ]);
                 
@@ -9285,6 +9318,8 @@ writingStyles = loadedWritingStyles || []; // <-- 【新增这一行】
 skits = loadedSkits || [];
 
 forumRules = loadedForumRules || [];
+
+forumLikes = loadedForumLikes || []; 
 
 // 在 loadData 函数里，settings 变量赋值的下方添加
 chatAvatarSize = settings.chatAvatarSize || 45;
@@ -19979,6 +20014,8 @@ function renderForumTimeline() {
         item.className = 'post-item';
         item.onclick = () => openForumDetailView(post.id);
 
+const isLiked = forumLikes.some(p => p.id === post.id);
+
         const likes = Math.floor(Math.random() * 200);
         const comments = Math.floor(likes * (Math.random() * 0.5 + 0.2));
         const retweets = Math.floor(likes * (Math.random() * 0.3 + 0.1));
@@ -20060,10 +20097,10 @@ function renderForumTimeline() {
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
                         <span id="retweets-count-${post.id}">${retweets}</span>
                     </span>
-                    <span class="post-action-btn">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
-                        <span id="likes-count-${post.id}">${likes}</span>
-                    </span>
+<span class="post-action-btn" onclick="toggleLikePost(event, '${post.id}')">
+    <svg viewBox="0 0 24 24" width="20" height="20" style="${isLiked ? 'color: red; fill: red;' : 'fill: currentColor;'}"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
+    <span id="likes-count-${post.id}">${likes}</span>
+</span>
                     <span class="post-action-btn">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-6h2v6h-2.004zM13.25 21l.004-11h2v11h-2.004z"></path></svg>
                         <span id="views-count-${post.id}">${views}</span>
@@ -20380,6 +20417,17 @@ document.addEventListener('visibilitychange', function() {
  * 渲染论坛个人资料页面 (V3 - 最终修复版)
  */
 function renderForumProfile() {
+
+// --- ▼▼▼ 将这段代码粘贴到函数开头 ▼▼▼ ---
+const profileTabs = document.querySelectorAll('.forum-profile-tab');
+profileTabs.forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.getAttribute('data-tab') === 'posts') {
+        tab.classList.add('active');
+    }
+});
+// --- ▲▲▲ 添加结束 ▲▲▲ ---
+
     const coverHeader = document.getElementById('forumCoverHeader');
     coverHeader.onclick = handleForumCoverUpload;
     coverHeader.style.backgroundImage = `url(${forumProfileData.coverImage || 'none'})`;
@@ -20435,80 +20483,110 @@ function renderForumProfile() {
 }
 
 /**
- * 渲染个人资料页的帖子/回复列表
- * @param {string} type - 'posts' 或 'replies'
+ * 渲染个人资料页的帖子/回复/喜欢列表 (V3 - 恢复所有图标版)
+ * @param {string} type - 'posts', 'replies', 或 'likes'
  */
 function renderForumProfileTimeline(type) {
     const container = document.getElementById('forumProfileTimeline');
     container.innerHTML = '';
     
-    const postsToDisplay = forumPosts.filter(post => {
-        if (type === 'posts') {
-            return post.authorId === userProfile.id;
-        }
-        // 由于我们的帖子模型没有回复概念，这里只显示“回复”占位符
-        return false;
-    });
+    let postsToDisplay = [];
+
+    if (type === 'posts') {
+        postsToDisplay = currentForumPosts.filter(post => post.authorId === userProfile.id);
+    } else if (type === 'likes') {
+        postsToDisplay = forumLikes;
+    }
 
     if (postsToDisplay.length === 0) {
-        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">暂无${type === 'posts' ? '帖子' : '回复'}</div>`;
+        let emptyText = '暂无内容';
+        if (type === 'posts') emptyText = '你还没有发布过帖子';
+        if (type === 'replies') emptyText = '你还没有回复过任何帖子';
+        if (type === 'likes') emptyText = '你还没有喜欢过任何帖子';
+        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">${emptyText}</div>`;
         return;
     }
 
-    // 复制 renderForumTimeline 的逻辑来渲染帖子
     postsToDisplay.forEach(post => {
-        // ... (复制 renderForumTimeline 内部的帖子渲染逻辑，但注意作者永远是用户自己)
         const item = document.createElement('div');
         item.className = 'post-item';
+        item.onclick = () => openForumDetailView(post.id);
+
+        // --- 作者信息判断逻辑 (已修复) ---
+        let displayName, displayHandle, avatarHtml;
+        if (post.authorId && post.authorId === userProfile.id) {
+            displayName = forumProfileData.name;
+            displayHandle = forumProfileData.handle.startsWith('@') ? forumProfileData.handle : `@${forumProfileData.handle}`;
+            const avatarSrc = forumProfileData.avatarImage || userProfile.avatarImage;
+            avatarHtml = avatarSrc 
+                ? `<div class="post-avatar" style="background-image: url('${avatarSrc}')"></div>`
+                : `<div class="post-avatar" style="background-color: #1da1f2; color: white;">${displayName.substring(0,1)}</div>`;
+        } else if (post.authorId) {
+            const author = getAuthorById(post.authorId);
+            displayName = author.name;
+            displayHandle = `@${displayName.replace(/\s+/g, '').substring(0, 8)}`;
+            avatarHtml = author.avatarImage
+                ? `<div class="post-avatar" style="background-image: url('${author.avatarImage}')"></div>`
+                : `<div class="post-avatar" style="background-color: ${getRandomColor()}; color: white;">${author.avatar}</div>`;
+        } else {
+            displayName = post.authorName;
+            displayHandle = `@${displayName.replace(/\s+/g, '').substring(0, 8)}`;
+            if (displayName === '匿名用户') {
+                avatarHtml = `<div class="post-avatar">?</div>`;
+            } else if (post.authorAvatarUrl) {
+                avatarHtml = `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`;
+            } else {
+                avatarHtml = `<div class="post-avatar" style="background-color: ${post.authorAvatarColor}; color: white;">${post.authorAvatarChar}</div>`;
+            }
+        }
+
+        const timeAgo = timeSince(post.timestamp);
+        const isLiked = forumLikes.some(p => p.id === post.id);
+        
+        // --- 动态生成随机数 (为了演示) ---
+        const likes = Math.floor(Math.random() * 200);
+        const comments = Math.floor(likes * (Math.random() * 0.5 + 0.2));
+        const retweets = Math.floor(likes * (Math.random() * 0.3 + 0.1));
+        const views = likes * (Math.floor(Math.random() * 10) + 5);
+
         item.innerHTML = `
-            <div class="post-avatar" style="background-image: url('${forumProfileData.avatarImage || userProfile.avatarImage}');"></div>
-            <div class="post-content-area">
-                <!-- 这是【新的】头部结构 -->
-<div class="post-header">
-    <div class="post-author-info">
-        <span class="post-author-name">${forumProfileData.name}</span>
-        <span class="post-handle">${forumProfileData.handle}</span>
-        <span class="post-handle">· ${timeSince(post.timestamp)}</span>
-    </div>
-    <!-- 新增：“三点菜单”只在用户自己的帖子上显示 -->
-                ${post.authorId === userProfile.id ? `
-                <div class="post-more-options">
-                    <div class="post-more-btn" onclick="togglePostMenu(event, '${post.id}')">
-                        <svg viewBox="0 0 24 24"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+            ${avatarHtml}
+            <div class="post-content-area" style="position: relative;">
+                <div class="post-header">
+                    <div class="post-author-info">
+                        <span class="post-author-name">${displayName}</span>
+                        <span class="post-handle">${displayHandle}</span>
+                        <span class="post-handle">· ${timeAgo}</span>
                     </div>
-                    <div class="post-options-menu" id="post-menu-${post.id}">
-                        <div class="post-options-item danger" onclick="deleteForumPost(event, '${post.id}')">删除</div>
-                    </div>
-                </div>
-                ` : ''}
                 </div>
                 <div class="post-text">${post.content.replace(/\n/g, '<br>')}</div>
-            <div class="post-actions">
+                
+                <!-- ▼▼▼ 核心修正部分：恢复完整的图标栏 ▼▼▼ -->
+                <div class="post-actions">
                     <span class="post-action-btn">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-</svg>
-                        <span>0</span>
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        <span id="comments-count-${post.id}">${comments}</span>
                     </span>
                     <span class="post-action-btn">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
-                        <span>0</span>
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53-.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
+                        <span id="retweets-count-${post.id}">${retweets}</span>
                     </span>
-                    <span class="post-action-btn">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
-                        <span>0</span>
+                    <span class="post-action-btn" onclick="toggleLikePost(event, '${post.id}')">
+                        <svg viewBox="0 0 24 24" width="20" height="20" style="${isLiked ? 'color: red; fill: red;' : 'fill: currentColor;'}" ><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
+                        <span id="likes-count-${post.id}">${likes}</span>
                     </span>
                     <span class="post-action-btn">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-6h2v6h-2.004zM13.25 21l.004-11h2v11h-2.004z"></path></svg>
-                        <span>13</span>
+                        <span id="views-count-${post.id}">${views}</span>
                     </span>
                     <span class="post-action-btn">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.879 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></svg>
                     </span>
-                     <span class="post-action-btn">
+                    <span class="post-action-btn">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></svg>
                     </span>
                 </div>
+                <!-- ▲▲▲ 修正结束 ▲▲▲ -->
             </div>
         `;
         container.appendChild(item);
@@ -20953,21 +21031,26 @@ ${recentChat || '无'}
 `;
         }).join('');
 
-        const prompt = `
-        【任务】: 你是一个论坛内容生成器。请严格根据提供的世界观，生成20条完全不同的、高质量的论坛帖子。
+       
+const prompt = `
+ 【任务】: 你是一个论坛内容生成器。请严格根据提供的世界观，生成20条完全不同的、高质量的论坛帖子。
 
-        【世界观设定 (必须严格遵守)】:
-        - 名称: ${worldview.name}
-        - 描述: ${worldview.description}
+【【【最高优先级铁律 (必须严格遵守)】】】
+1. 世界观设定: 
+   - 名称: ${worldview.name}
+   - 描述: ${worldview.description}
+2. 论坛规则:
+   ${forumRules.map(rule => `- ${rule.name}: ${rule.description}`).join('\n')}
 
         【参与发帖的AI角色信息 (他们的帖子必须符合人设和聊天记录)】:
         ${aiInfoForPrompt || '无特定AI角色参与，请生成路人帖子。'}
 
-        【发帖人“路人”昵称生成铁律】:
-        1. 你必须构思一批有“网感”的、生活化的、与具体事件无关的昵称备用。
-        2. 这些昵称应该是通用的，比如：“今天吃什么”、“脆脆鲨爱好者”、“不想上班啊啊啊”、“电子咸鱼”、“晚风轻踩”、“月亮失眠了”。
-        3. 严禁使用和帖子内容相关的名字。
-
+       
+【发帖人“路人”昵称生成铁律 (最终修复版)】:
+1.  【世界观优先原则】: 你的首要任务是阅读并理解【世界观设定】。所有路人昵称的风格、年代感和用词，都必须严格符合该世界观的背景和氛围。
+2.  【学会举一反三】: 例如，如果世界观是“霍格沃茨魔法世界”，昵称就应该是“魔药课代表”、“格兰芬多找球手”；如果世界观是“赛博朋克都市”，昵称就应该是“霓虹下的幻影”、“数据浪人77”。
+3.  【【【绝对创新铁律】】】: 你必须为【每一次请求】都构思一批【全新的、独一无二的】昵称。严禁重复使用你之前生成过的、或示例中出现过的任何名字。
+4.  【解耦原则】: 昵称本身不能与它所发布的具体帖子内容有直接关联。
         【帖子生成铁律】:
         1.  **【主题绝对相关】**: 所有帖子内容必须严格围绕 "${worldview.name}" 这个世界观展开。
         2.  **【绝对禁止重复】**: 20条帖子的内容、发帖人姓名都必须是独一无二的。
@@ -21073,27 +21156,32 @@ function backToForumTimeline() {
 
 
 /**
- * 核心功能：打开帖子详情页
+ * 核心功能：打开帖子详情页 (V2 - 修复喜欢列表无法跳转版)
  * @param {string} postId - 要查看的帖子ID
  */
 async function openForumDetailView(postId) {
-    const post = currentForumPosts.find(p => p.id === postId);
-    if (!post) return;
+    // --- ▼▼▼ 核心修复就在这一行！ ▼▼▼ ---
+    // 首先，尝试在当前的主时间线(currentForumPosts)里寻找帖子。
+    // 如果找不到 (因为主页被刷新了)，就用 "||" (或者) 去喜欢列表(forumLikes)里再找一次。
+    const post = currentForumPosts.find(p => p.id === postId) || forumLikes.find(p => p.id === postId);
+    // --- ▲▲▲ 修复结束 ▲▲▲ ---
 
-    // 切换到详情页并显示加载状态
+    if (!post) {
+        // 如果两个地方都找不到，给用户一个明确的提示
+        showAlert("帖子详情已不存在或已被刷新。");
+        return;
+    }
+
+    // (后面的所有代码保持不变，因为它们现在能拿到正确的post对象了)
     setActivePage('forumDetailView');
     const detailContainer = document.getElementById('forumDetailContent');
     detailContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">正在加载评论...</div>';
 
-    // 检查是否已经有评论
     if (post.comments && post.comments.length > 0) {
-        // 如果有，直接渲染
         renderForumDetailView(post);
     } else {
-        // 如果没有，调用AI生成，然后渲染
         await generatePostComments(postId);
-        // 再次获取最新的 post 数据
-        const updatedPost = currentForumPosts.find(p => p.id === postId);
+        const updatedPost = currentForumPosts.find(p => p.id === postId) || forumLikes.find(p => p.id === postId);
         renderForumDetailView(updatedPost);
     }
 }
@@ -21113,9 +21201,20 @@ async function generatePostComments(postId) {
     const settings = await dbManager.get('apiSettings', 'settings');
     if (!settings.apiUrl || !settings.apiKey) return;
 
-    // --- 【【【核心修改1：全新的、极其简单的纯文本指令】】】 ---
-    const prompt = `
-    【任务】: 你是一个论坛评论生成器，你需要为下面的帖子生成8条高质量的、符合情景的评论。
+  // --- 修改后 ---
+// 首先，在函数开头，我们需要先获取到世界观和规则的数据
+const worldview = worldviews.find(w => w.id === forumSettings.worldviewId);
+if (!worldview) return; // 安全检查
+
+const prompt = `
+【【【最高优先级铁律 (必须严格遵守)】】】
+1. 世界观设定: 
+   - 名称: ${worldview.name}
+   - 描述: ${worldview.description}
+2. 论坛规则:
+   ${forumRules.map(rule => `- ${rule.name}: ${rule.description}`).join('\n')}
+
+【任务】: 你是一个论坛评论生成器，你需要为下面的帖子生成8条高质量的、符合情景的评论。
 
     【帖子内容】:
     - 作者: "${postAuthor.name}"
@@ -21157,33 +21256,35 @@ async function generatePostComments(postId) {
         const responseText = data.choices[0].message.content;
 
         // --- 【【【核心修改2：全新的、更稳定的纯文本解析逻辑】】】 ---
-        const comments = responseText
-            .split('\n\n')
-            .map(block => {
-                const parts = block.split('[SEPARATOR]');
-                if (parts.length === 3) {
-                    const commentData = {
-                        content: parts[0].trim(),
-                        authorName: parts[1].trim(),
-                        authorAvatarType: parts[2].trim() // 暂时保留这个字段用于判断
-                    };
+        // --- 请用这段新代码完整替换 ---
+const comments = responseText
+    .split('\n\n')
+    .map(block => {
+        const parts = block.split('[SEPARATOR]');
+        if (parts.length === 3) {
+            const commentData = {
+                content: parts[0].trim(),
+                authorName: parts[1].trim()
+            };
 
-                    // --- 核心修改在这里 ---
-                    // 根据AI指定的类型，我们立刻决定并保存具体的头像信息
-                    if (commentData.authorAvatarType === 'anonymous' || commentData.authorName === '匿名用户') {
-                        // 如果是匿名，做一个标记
-                        commentData.isAnonymous = true;
-                    } else {
-                        // 否则（无论是url还是char），都统一从你的头像库里随机选一个
-                        commentData.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
-                    }
-                    // --- 修改结束 ---
+            // === 核心修复逻辑就在这里！ ===
+            if (commentData.authorName === postAuthor.name) {
+                // 1. 如果评论者就是主楼作者，直接继承主楼的头像信息。
+                commentData.authorAvatarUrl = post.authorAvatarUrl; 
+            } else if (commentData.authorName === '匿名用户') {
+                // 2. 如果是匿名用户，做好标记。
+                commentData.isAnonymous = true;
+            } else {
+                // 3. 如果是其他路人，才为他分配一个新的随机头像。
+                commentData.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+            }
+            // =================================
 
-                    return commentData;
-                }
-                return null;
-            })
-            .filter(Boolean);
+            return commentData;
+        }
+        return null;
+    })
+    .filter(Boolean);
 
         if (comments.length > 0) {
             currentForumPosts[postIndex].comments = comments;
@@ -21211,7 +21312,18 @@ function renderForumDetailView(post) {
 const postViews = Math.floor(Math.random() * 8000) + 100;
 
     // --- 1. 准备主贴内容 ---
-    const postAuthor = getAuthorById(post.authorId) || { name: post.authorName, avatar: '?', avatarImage: '' };
+    let postAuthor = getAuthorById(post.authorId);
+
+// 核心修复：如果getAuthorById返回了“未知用户”或无效值，
+// 我们就从帖子数据本身来构建作者信息。
+if (!postAuthor || postAuthor.id === 'unknown') {
+    postAuthor = {
+        name: post.authorName,
+        avatar: post.authorAvatarChar,
+        avatarImage: post.authorAvatarUrl,
+        id: `passerby_${post.id}` // 给路人一个临时的唯一ID
+    };
+}
 
     // 智能判断主贴作者的头像
     const postAvatarHtml = post.authorAvatarUrl
@@ -21225,23 +21337,28 @@ const postViews = Math.floor(Math.random() * 8000) + 100;
             <div class="post-header" style="justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center;">
                     ${postAvatarHtml}
-                    <div class="post-author-info" style="flex-direction: column; align-items: flex-start; margin-left: 10px;">
+                    <div class="post-author-info" style="flex-direction: column; align-items: flex-start; margin-left: 0px;">
                         <span class="post-author-name">${postAuthor.name}</span>
                         <span class="post-handle">@${postAuthor.name.replace(/\s+/g, '')}</span>
                     </div>
                 </div>
-                <div class="post-more-btn" style="padding: 8px; color: var(--text-secondary, #666);">...</div>
+<button class="forum-follow-btn">关注</button>
             </div>
             <div class="post-text" style="font-size: 15px; line-height: 1.5; margin: 15px 0; white-space: pre-wrap; word-wrap: break-word;">${post.content.trim().replace(/\n/g, '<br>')}</div>
             
             <div class="post-stats-bar">
     <span>
-        ${new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${new Date(post.timestamp).toLocaleDateString()} · ${postViews.toLocaleString()} 次查看
-    </span>
+    ${new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}·${new Date(post.timestamp).toLocaleDateString()}·<strong style="color: var(--text-color, #000);">${postViews.toLocaleString()}</strong> 次查看
+</span>
 </div>
-${generateForumActionsHtml(false)}
+
+${generateForumActionsHtml(post.id, false)}
+
         </div>
-        <div class="replies-header">最相关的回复</div>
+       <div class="replies-header">
+    最相关的回复
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>
+</div>
     `;
 
     // --- 2. 准备评论区内容 ---
@@ -21281,7 +21398,9 @@ ${generateForumActionsHtml(false)}
                             <span class="post-more-btn" style="margin-left: auto;">...</span>
                         </div>
                         <div class="post-text">${comment.content}</div>
+
 ${generateForumActionsHtml()}
+
                     </div>
                 </div>
             `;
@@ -21323,7 +21442,11 @@ ${generateForumActionsHtml()}
  * 【V2 智能版】帖子操作栏生成函数
  * @param {boolean} showViews - 是否显示浏览量，默认为 true
  */
-function generateForumActionsHtml(showViews = true) {
+
+function generateForumActionsHtml(postId, showViews = true) {
+
+const isLiked = forumLikes.some(p => p.id === postId);
+
     const comments = Math.floor(Math.random() * 100);
     const retweets = Math.floor(Math.random() * 50);
     const likes = Math.floor(Math.random() * 2000);
@@ -21350,10 +21473,10 @@ function generateForumActionsHtml(showViews = true) {
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M23.77 15.67c-.292-.293-.767-.293-1.06 0l-2.22 2.22V7.65c0-2.068-1.683-3.75-3.75-3.75h-5.85c-.414 0-.75.336-.75.75s.336.75.75.75h5.85c1.24 0 2.25 1.01 2.25 2.25v10.24l-2.22-2.22c-.293-.293-.768-.293-1.06 0s-.294.768 0 1.06l3.5 3.5c.145.147.337.22.53.22s.383-.072.53-.22l3.5-3.5c.294-.292.294-.767 0-1.06zM.23 8.33c.292.293.767.293 1.06 0l2.22-2.22V16.35c0 2.068 1.683 3.75 3.75 3.75h5.85c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-5.85c-1.24 0-2.25-1.01-2.25-2.25V6.11l2.22 2.22c.293.293.768.293 1.06 0s.294-.768 0-1.06l-3.5-3.5c-.145-.147-.337-.22-.53-.22s-.383.072-.53-.22l-3.5 3.5c-.294.292-.294.767 0-1.06z"></path></svg>
                 <span>${formatNumber(retweets)}</span>
             </span>
-            <span class="post-action-btn">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
-                <span>${formatNumber(likes)}</span>
-            </span>
+          <span class="post-action-btn" onclick="toggleLikePost(event, '${postId}')">
+    <svg viewBox="0 0 24 24" width="20" height="20" style="${isLiked ? 'color: red; fill: red;' : 'fill: currentColor;'}" ><path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.253 0 5.27 6.69 11.237 8.55 11.237.173 0 .174 0 .175-.002 1.86-1.07 8.55-5.966 8.55-11.235 0-2.265-1.823-4.253-3.902-4.253-1.928 0-3.168 1.507-3.58 2.25h-2.454c-.412-.743-1.652-2.25-3.58-2.25z"></path></svg>
+    <span id="likes-count-${postId}">${formatNumber(likes)}</span>
+</span>
             ${viewsHtml}
             <span class="post-action-btn">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.879 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></svg>
@@ -21689,6 +21812,47 @@ function closeForumRulesModal() {
     if (modal) {
         modal.classList.remove('show');
     }
+}
+
+/**
+ * 新增：处理帖子点赞/取消点赞的核心函数
+ * @param {Event} event - 点击事件
+ * @param {string} postId - 帖子的ID
+ */
+async function toggleLikePost(event, postId) {
+    event.stopPropagation(); // 阻止事件冒泡，防止点赞时意外跳转页面
+
+    const postInTimeline = currentForumPosts.find(p => p.id === postId);
+    if (!postInTimeline) {
+        console.error("无法找到要点赞的帖子！");
+        return;
+    }
+
+    const likeIndex = forumLikes.findIndex(p => p.id === postId);
+    const likeButtonSvg = event.currentTarget.querySelector('svg');
+    const likesCountSpan = document.getElementById(`likes-count-${postId}`);
+    let currentLikes = parseInt(likesCountSpan.textContent.replace(/,/g, ''), 10);
+
+    if (likeIndex > -1) {
+        // --- 如果已经喜欢了，就取消喜欢 ---
+        forumLikes.splice(likeIndex, 1); // 从喜欢列表移除
+        likeButtonSvg.style.color = ''; // 恢复默认颜色
+        likeButtonSvg.style.fill = 'currentColor'; // 确保SVG填充色也恢复
+        likesCountSpan.textContent = currentLikes > 0 ? currentLikes - 1 : 0; // 点赞数减一
+    } else {
+        // --- 如果还没喜欢，就添加喜欢 ---
+        forumLikes.unshift(postInTimeline); // 添加到喜欢列表的最前面
+        likeButtonSvg.style.color = 'red'; // 颜色变红
+        likeButtonSvg.style.fill = 'red'; // SVG填充色也变红
+        likesCountSpan.textContent = currentLikes + 1; // 点赞数加一
+    }
+
+    // 更新数据库并保存
+    await dbManager.clear('forumLikes'); // 先清空旧的
+    for (const post of forumLikes) {
+        await dbManager.set('forumLikes', post); // 再写入新的
+    }
+    await saveData(); // 顺便保存其他可能的数据
 }
 
     </script>
