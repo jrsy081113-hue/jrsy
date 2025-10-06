@@ -733,22 +733,24 @@ html {
         
         /* --- [BUG FIX] White Module Fix START --- */
         #chatScreen .wechat-content {
-            padding-top: 74px;
+            padding-top: 0px;
             padding-bottom: 0; /* Remove padding from container */
             background: transparent; /* Make container transparent */
             height: 100%;
             overflow: hidden; /* Prevent double scrollbars */
         }
         
-        /* 这是修改后的代码 */
-.chat-messages {
+        .chat-messages {
     height: 100%;
-    padding: 15px 15px 65px 15px; /* 把底部的 50px 增加到了 65px */
+    /* 【核心修改】在这里加上 74px 的顶部内边距 */
+    padding: 74px 15px 65px 15px; 
     overflow-y: auto;
     background-size: cover;
     background-position: center;
     position: relative;
     transition: padding-bottom 0.3s ease;
+    /* 【关键新增】确保内边距不会把盒子撑开 */
+    box-sizing: border-box; 
 }
         /* --- [BUG FIX] White Module Fix END --- */
 
@@ -9194,43 +9196,36 @@ async function saveProfileData() {
                 await dbManager.clear('playlist');
                 serializablePlaylist.forEach(song => savePromises.push(dbManager.set('playlist', song)));
 
-                // 5. 保存应用和API设置
-                const appSettings = {
+                // 这是修正后的代码
+const appSettings = {
     id: 'settings',
     autoSummaryEnabled: autoSummaryEnabled,
-   beautificationSettings: beautificationSettings, // <-- 新增的就是这一行！
+    beautificationSettings: beautificationSettings,
     userPersonas: userPersonas,
     userProfile,
     homeWidgetData,
     selectedGlobalChatBg, customGlobalChatBgImage, selectedFont, selectedFontSize,
     selectedFontColor, customFontUrl, selectedWallpaper, customWallpaperImage,
     customWidgetBackgroundImage, roundedCornersEnabled, darkModeEnabled,
-    sentBubbleColor, selectedAppLabelColor, receivedBubbleColor, customBubbleCSS, chatInterfaceCSS: chatInterfaceCSS,
+    // 【核心修改】下面这一行已经被删除
+    // sentBubbleColor, selectedAppLabelColor, receivedBubbleColor, customBubbleCSS, chatInterfaceCSS: chatInterfaceCSS,
+    selectedAppLabelColor, // 保留这个，因为它不属于气泡设置
     customIcons, recalledMessages: Array.from(recalledMessages.entries()),
     customListenBg, persistentVinylCover, profileWidgetTransparent,
-    smallWidgetTransparent, simPhoneContentCache, 
-    memoryGenerationTurns: memoryGenerationTurns, // <-- 新增：保存记忆轮数设置
-    characterAppearanceSettings: characterAppearanceSettings, // 【【【新增这一行】】】
+    smallWidgetTransparent, simPhoneContentCache,
+    memoryGenerationTurns: memoryGenerationTurns,
+    characterAppearanceSettings: characterAppearanceSettings, // 新的、正确的设置对象
     wechatAppGlobalBgImage,
-    // 在 saveData 函数的 appSettings 对象里添加
-chatAvatarSize, chatAvatarRadius, chatAvatarFrameUrl, chatAvatarFrameSize,
-
-// 在 saveData 函数的 appSettings 对象里添加
-chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
-
-offlineModeSettings, // <-- 新增
-
-proactiveMessagingSettings: proactiveMessagingSettings,
-
-forumProfileData: forumProfileData,
-
-worldviews: worldviews,
-
-forumRules: forumRules,
-
+    // 【核心修改】下面这些行也全部被删除
+    // chatAvatarSize, chatAvatarRadius, chatAvatarFrameUrl, chatAvatarFrameSize,
+    // chatAvatarFrameOffsetX, chatAvatarFrameOffsetY,
+    offlineModeSettings,
+    proactiveMessagingSettings: proactiveMessagingSettings,
+    forumProfileData: forumProfileData,
+    worldviews: worldviews,
+    forumRules: forumRules,
     forumSettings: forumSettings,
     currentForumPosts: currentForumPosts,
-
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
