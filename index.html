@@ -6898,6 +6898,14 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
                 </div>
                 <div class="modal-content-container">
                     <div class="modal-content">
+                    <!-- 【【【新增】】】 角色/全局选择器 -->
+<div class="bubble-color-group">
+    <div class="bubble-color-label">为谁设置？</div>
+    <select class="form-select" id="characterAppearanceSelect" onchange="loadAppearanceSettingsForSelectedCharacter()">
+        <!-- 选项将由JS动态生成 -->
+    </select>
+</div>
+<!-- 【【【新增结束】】】 -->
                         <div class="bubble-settings">
                         <!-- ↓↓↓ 从这里开始复制 ↓↓↓ -->
 
@@ -6975,7 +6983,13 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     </div>
 </div>
 <!-- ↑↑↑ 替换到这里结束 ↑↑↑ -->
-                            <div class="bubble-css-group"><div class="bubble-color-label">自定义CSS样式</div> <textarea class="bubble-css-textarea" id="bubbleCustomCSS" 
+
+                            <div class="bubble-css-group"><div class="bubble-color-label">自定义CSS样式</div> 
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+    <button class="modal-btn" onclick="saveCssPreset('bubble')">保存样式</button>
+    <button class="modal-btn modal-btn-cancel" onclick="openPresetSelector('bubble')">选择样式</button>
+</div>
+   <textarea class="bubble-css-textarea" id="bubbleCustomCSS" 
     placeholder="在此输入CSS，格式如下：
 
 /* “我”的气泡 (同时适配语音条) */
@@ -6991,6 +7005,22 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
   background: #EFEFEF;
 }" 
     oninput="applyCustomBubbleCSS(this.value)"></textarea> </div>
+    <!-- ↓↓↓ 将新按钮代码粘贴在这里 ↓↓↓ -->
+<div class="bubble-css-group" style="padding: 10px; text-align: center; background: var(--bg-hover, #f0f0f0); cursor: pointer; margin-top: 15px;" onclick="copyInterfaceFormat()">
+    <span style="font-weight: 500; color: #007aff;">一键复制界面格式</span>
+</div>
+    <!-- 在 </div class="bubble-css-group"> 之后添加 -->
+
+<div class="bubble-css-group">
+    <div class="bubble-color-label">界面自定义CSS</div>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+    <button class="modal-btn" onclick="saveCssPreset('interface')">保存样式</button>
+    <button class="modal-btn modal-btn-cancel" onclick="openPresetSelector('interface')">选择样式</button>
+</div>
+    <textarea class="bubble-css-textarea" id="chatInterfaceCSSInput" style="min-height: 250px;"
+placeholder="在此输入CSS，所有选择器都会被限定在聊天界面内生效。点击下方按钮复制基础格式。" 
+oninput="applyChatInterfaceCSS(this.value)"></textarea>
+</div>
                           
                         </div>
                         <div class="modal-buttons" style="margin-top: 20px;"> <button class="modal-btn modal-btn-cancel" onclick="cancelBubbleSettings()">取消</button> <button class="modal-btn modal-btn-confirm" onclick="saveBubbleSettings()">保存</button></div>
@@ -7727,6 +7757,34 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
+<!-- ↓↓↓ 新增：通用的名称输入弹窗 ↓↓↓ -->
+<div id="nameInputModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" id="nameInputTitle">请输入名称</div>
+        <input type="text" class="modal-input" id="nameInputValue" placeholder="在此输入...">
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeNameInputModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" id="nameInputConfirmBtn">确定</button>
+        </div>
+    </div>
+</div>
+<!-- ↑↑↑ 新增代码结束 ↑↑↑ -->
+
+<!-- ↓↓↓ 新增：样式选择弹窗 ↓↓↓ -->
+<div id="presetSelectorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title" id="presetSelectorTitle">选择样式</div>
+        <div id="presetListContainer" class="friend-list" style="max-height: 50vh; overflow-y: auto;">
+            <!-- 样式列表将在这里动态生成 -->
+        </div>
+        <div class="modal-buttons" style="margin-top: 15px;">
+            <button class="modal-btn modal-btn-cancel" onclick="closePresetSelector()">关闭</button>
+        </div>
+    </div>
+</div>
+<!-- ↑↑↑ 新增代码结束 ↑↑↑ -->
+
+
     <!-- ↓↓↓ 第1步：将以下所有新增的HTML代码粘贴到 <body> 的末尾 ↓↓↓ -->
 
 <!-- [新增] 线下模式圆形悬浮窗 -->
@@ -8151,11 +8209,11 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         const dbManager = {
             db: null,
             dbName: 'JRSY_DB_V2',
-            dbVersion: 9,
+            dbVersion: 10,
             stores: [
                 'friends', 'chatHistories', 'diaries', 'worldBooks', 'worldBookFolders', 
                 'favorites', 'moments', 'playlist', 'appSettings', 'apiSettings', 'customEmojis',
-                'memories', 'openingStatements' , 'writingStyles', 'skits', 'forumPosts' , 'forumRules', 'forumLikes' 
+                'memories', 'openingStatements' , 'writingStyles', 'skits', 'forumPosts' , 'forumRules', 'forumLikes' , 'bubbleCssPresets', 'interfaceCssPresets'
             ],
 
             // 核心修改：初始化函数现在负责检查和重新连接
@@ -8280,6 +8338,8 @@ requestPersistentStorage();
         // 全局变量
                 let userPersonas = []; // 新增：用于存储所有用户人设的数组
         let currentEditingPersonaId = null; // 新增：用于记录当前正在编辑的人设ID
+        let bubbleCssPresets = [];
+let interfaceCssPresets = [];
         let proactiveMessagingSettings = {
     enabled: false,  // 总开关，默认关闭
     interval: 360,    // 默认间隔，单位：分钟 (例如 360分钟 = 6小时)
@@ -8338,18 +8398,6 @@ let beautificationSettings = {}; // 用来存放所有自定义图片
 let isLazyLoading = false; // 新增：防止在加载时重复触发
 const CHAT_PAGE_SIZE = 30; // 新增：定义每次加载的消息数量
 
-// ↓↓↓ 添加这些新的全局变量 ↓↓↓
-let chatAvatarSize = 45;
-let chatAvatarRadius = 8;
-let chatAvatarFrameUrl = '';
-let chatAvatarFrameSize = 3;
-// ↑↑↑ 添加结束 ↑↑↑
-
-// ↓↓↓ 添加这两个新的全局变量 ↓↓↓
-let chatAvatarFrameOffsetX = 0;
-let chatAvatarFrameOffsetY = 0;
-// ↑↑↑ 添加结束 ↑↑↑
-
         let currentMessageElement = null;
         // 把“是不是在回复”的开关，换成“正在回复的角色列表”
 const aiReplyingSet = new Set();
@@ -8381,9 +8429,8 @@ const aiReplyingSet = new Set();
         let multiSelectMode = false;
         let selectedMessages = new Set();
         let recalledMessages = new Map();
-        let sentBubbleColor = '#FFEEF6';
-        let receivedBubbleColor = '#E6F2FF';
-        let customBubbleCSS = '';
+        // 新增：用于存储所有角色和全局外观设置的对象
+let characterAppearanceSettings = {};
         let customIcons = {};
         let momentImage = '';
         let momentImageDescription = ''; // For AI generated image descriptions
@@ -8695,52 +8742,109 @@ function getRandomColor() {
 
         document.addEventListener('touchstart', (event) => (event.touches.length > 1) && event.preventDefault(), { passive: false});
         
-        function updateBubblePreview() {
-            const sentColor = document.getElementById('sentBubbleColorInput').value;
-            const receivedColor = document.getElementById('receivedBubbleColorInput').value;
-            const customCSS = document.getElementById('bubbleCustomCSS').value;
-            const previewStyleTag = document.getElementById('customBubblePreviewStyle');
-            if (!previewStyleTag) return;
-            const scopedCSS = customCSS.replace(new RegExp(/\.message/g), '.bubble-preview-area .message');
-            previewStyleTag.textContent = `
-                .bubble-preview-area .message.sent .message-content { background-color: ${sentColor}; }
-                .bubble-preview-area .message.received .message-content { background-color: ${receivedColor}; }
-                ${scopedCSS}
-            `;
+        // 【【【修改后 - 终极版】】】
+function updateBubblePreview() {
+    const previewStyleTag = document.getElementById('customBubblePreviewStyle');
+    if (!previewStyleTag) return;
+
+    // 1. 获取当前选中的角色ID，并拿到他/她的全套设置方案
+    const selectedId = document.getElementById('characterAppearanceSelect').value;
+    const settings = getAppearanceSettingsForCharacter(selectedId);
+    
+    // 2. 同时，也从UI控件上读取【尚未保存】的临时修改
+    const tempSentColor = document.getElementById('sentBubbleColorInput').value;
+    const tempReceivedColor = document.getElementById('receivedBubbleColorInput').value;
+    const tempBubbleCSS = document.getElementById('bubbleCustomCSS').value;
+    const tempInterfaceCSS = document.getElementById('chatInterfaceCSSInput').value;
+    
+    // 3. 准备一份用于预览的、最终的CSS代码字符串
+    let finalPreviewCss = '';
+
+    // 4. 【核心】为所有CSS规则（包括气泡和界面）添加预览区的前缀
+    try {
+        const fullCssText = tempBubbleCSS + "\n" + tempInterfaceCSS;
+        finalPreviewCss = fullCssText.replace(/([^{}]+)({)/g, (match, selector, brace) => {
+            const trimmedSelector = selector.trim();
+            if (trimmedSelector.startsWith('@')) return match;
+            const prefixedSelectors = trimmedSelector.split(',').map(s => `.bubble-preview-area ${s.trim()}`).join(', ');
+            return `${prefixedSelectors} ${brace}`;
+        });
+    } catch (e) { console.error("预览CSS时出错:", e); }
+
+    // 5. 【核心】将头像框、滑块等设置也转换成CSS，并添加到预览样式中
+    const frameOffset = -parseInt(document.getElementById('avatarFrameSizeSlider').value);
+    finalPreviewCss += `
+        .bubble-preview-area {
+            --chat-avatar-size: ${document.getElementById('avatarSizeSlider').value}px;
+            --chat-avatar-radius: ${document.getElementById('avatarRadiusSlider').value}px;
+            --chat-avatar-frame-offset: ${frameOffset}px;
+            --chat-avatar-frame-url: ${settings.avatarFrameUrl ? `url(${settings.avatarFrameUrl})` : 'none'};
+            --chat-avatar-frame-offset-x: ${document.getElementById('avatarFrameOffsetXSlider').value}px;
+            --chat-avatar-frame-offset-y: ${document.getElementById('avatarFrameOffsetYSlider').value}px;
         }
-
-                function openBubbleSettings() {
-            setActivePage('bubbleSettingsScreen');
-            document.getElementById('sentBubbleColorPicker').value = sentBubbleColor;
-            document.getElementById('sentBubbleColorInput').value = sentBubbleColor;
-            document.getElementById('receivedBubbleColorPicker').value = receivedBubbleColor;
-            document.getElementById('receivedBubbleColorInput').value = receivedBubbleColor;
-            
-            // 核心修改：在这里备份当前的CSS设置
-            document.getElementById('bubbleCustomCSS').value = customBubbleCSS;
-            
-            updateBubblePreview(); // 确保预览是正确的
-        // 在 openBubbleSettings 函数的末尾（ `}` 之前）添加以下代码
-// ↓↓↓ 从这里开始复制 ↓↓↓
-document.getElementById('avatarSizeSlider').value = chatAvatarSize;
-document.getElementById('avatarSizeValue').textContent = `${chatAvatarSize}px`;
-document.getElementById('avatarRadiusSlider').value = chatAvatarRadius;
-document.getElementById('avatarRadiusValue').textContent = `${chatAvatarRadius}px`;
-document.getElementById('avatarFrameSizeSlider').value = chatAvatarFrameSize;
-document.getElementById('avatarFrameSizeValue').textContent = `${chatAvatarFrameSize}px`;
-applyAvatarSettings(); // 确保预览区立即更新
-// ↑↑↑ 粘贴到这里结束 ↑↑↑
-
-// 在 openBubbleSettings 函数的末尾（ `}` 之前）添加以下代码
-// ↓↓↓ 从这里开始复制 ↓↓↓
-document.getElementById('avatarFrameOffsetXSlider').value = chatAvatarFrameOffsetX;
-document.getElementById('avatarFrameOffsetXValue').textContent = `${chatAvatarFrameOffsetX}px`;
-document.getElementById('avatarFrameOffsetYSlider').value = chatAvatarFrameOffsetY;
-document.getElementById('avatarFrameOffsetYValue').textContent = `${chatAvatarFrameOffsetY}px`;
-// ↑↑↑ 粘贴到这里结束 ↑↑↑
-
-        
+        .bubble-preview-area .chat-avatar {
+            border: ${settings.avatarFrameUrl ? 'none' : ''} !important;
         }
+    `;
+    
+    // 6. 组合所有样式并应用到预览区
+    previewStyleTag.textContent = `
+        .bubble-preview-area .message.sent .message-content { background-color: ${tempSentColor}; }
+        .bubble-preview-area .message.received .message-content { background-color: ${tempReceivedColor}; }
+        ${finalPreviewCss}
+    `;
+}
+                // 【【【修改后】】】
+function openBubbleSettings() {
+    setActivePage('bubbleSettingsScreen');
+
+    // 1. 填充角色选择下拉框
+    const select = document.getElementById('characterAppearanceSelect');
+    select.innerHTML = '<option value="global">全局设置</option>'; // 添加全局选项
+    friends.forEach(friend => {
+        const option = document.createElement('option');
+        option.value = friend.id;
+        option.textContent = friend.remark || friend.name;
+        select.appendChild(option);
+    });
+    
+    // 2. 加载当前选定角色的设置到UI上
+    loadAppearanceSettingsForSelectedCharacter();
+    
+    // 3. 更新预览区域 (这部分逻辑不变)
+    updateBubblePreview();
+}
+
+/**
+ * 【新增】根据下拉框的选择，加载对应的设置到UI控件中
+ */
+function loadAppearanceSettingsForSelectedCharacter() {
+    const selectedId = document.getElementById('characterAppearanceSelect').value;
+    const settings = getAppearanceSettingsForCharacter(selectedId);
+
+    // 将获取到的设置填充到页面的各个输入框和滑块中
+    document.getElementById('sentBubbleColorPicker').value = settings.sentBubbleColor;
+    document.getElementById('sentBubbleColorInput').value = settings.sentBubbleColor;
+    document.getElementById('receivedBubbleColorPicker').value = settings.receivedBubbleColor;
+    document.getElementById('receivedBubbleColorInput').value = settings.receivedBubbleColor;
+    document.getElementById('bubbleCustomCSS').value = settings.customBubbleCSS;
+    document.getElementById('chatInterfaceCSSInput').value = settings.chatInterfaceCSS;
+    
+    document.getElementById('avatarSizeSlider').value = settings.avatarSize;
+    document.getElementById('avatarSizeValue').textContent = `${settings.avatarSize}px`;
+    document.getElementById('avatarRadiusSlider').value = settings.avatarRadius;
+    document.getElementById('avatarRadiusValue').textContent = `${settings.avatarRadius}px`;
+    document.getElementById('avatarFrameSizeSlider').value = settings.avatarFrameSize;
+    document.getElementById('avatarFrameSizeValue').textContent = `${settings.avatarFrameSize}px`;
+    document.getElementById('avatarFrameOffsetXSlider').value = settings.avatarFrameOffsetX;
+    document.getElementById('avatarFrameOffsetXValue').textContent = `${settings.avatarFrameOffsetX}px`;
+    document.getElementById('avatarFrameOffsetYSlider').value = settings.avatarFrameOffsetY;
+    document.getElementById('avatarFrameOffsetYValue').textContent = `${settings.avatarFrameOffsetY}px`;
+    
+    // 实时更新预览
+    updateBubblePreview();
+}
+
         function updateSentBubbleColor(color) {
             document.getElementById('sentBubbleColorInput').value = color;
             updateBubblePreview();
@@ -8761,15 +8865,10 @@ document.getElementById('avatarFrameOffsetYValue').textContent = `${chatAvatarFr
             updateBubblePreview();
         }
 
-        function applyBubbleColors() {
-            document.documentElement.style.setProperty('--message-sent-bg', sentBubbleColor);
-            document.documentElement.style.setProperty('--message-received-bg', receivedBubbleColor);
-            // NEW: Calculate and set quote border colors
-            const sentBorder = calculateBorderColor(sentBubbleColor, darkModeEnabled);
-            const receivedBorder = calculateBorderColor(receivedBubbleColor, darkModeEnabled);
-            document.documentElement.style.setProperty('--sent-quote-border-color', sentBorder);
-            document.documentElement.style.setProperty('--received-quote-border-color', receivedBorder);
-        }
+        function applyBubbleColors(settings) {
+    document.documentElement.style.setProperty('--message-sent-bg', settings.sentBubbleColor);
+    document.documentElement.style.setProperty('--message-received-bg', settings.receivedBubbleColor);
+}
 
         function calculateBorderColor(hex, isDark) {
             // Simple darken/lighten function for the border
@@ -8836,16 +8935,42 @@ function applyCustomBubbleCSS(css) {
     updateBubblePreview();
 }
 
-        async function saveBubbleSettings() {
-            sentBubbleColor = document.getElementById('sentBubbleColorInput').value;
-            receivedBubbleColor = document.getElementById('receivedBubbleColorInput').value;
-            customBubbleCSS = document.getElementById('bubbleCustomCSS').value;
-            applyBubbleColors();
-            applyCustomBubbleCSS(customBubbleCSS);
-            await saveData();
-            showAlert('气泡设置已保存');
-            backToMySettings();
-        }
+        // 【【【修改后】】】
+async function saveBubbleSettings() {
+    const selectedId = document.getElementById('characterAppearanceSelect').value;
+
+    // 1. 确保 characterAppearanceSettings[selectedId] 是一个存在的对象
+    if (!characterAppearanceSettings[selectedId]) {
+        characterAppearanceSettings[selectedId] = {};
+    }
+
+    // 2. 从UI控件读取当前设置值
+    const currentSettings = {
+        sentBubbleColor: document.getElementById('sentBubbleColorInput').value,
+        receivedBubbleColor: document.getElementById('receivedBubbleColorInput').value,
+        customBubbleCSS: document.getElementById('bubbleCustomCSS').value,
+        chatInterfaceCSS: document.getElementById('chatInterfaceCSSInput').value,
+        avatarSize: document.getElementById('avatarSizeSlider').value,
+        avatarRadius: document.getElementById('avatarRadiusSlider').value,
+        avatarFrameSize: document.getElementById('avatarFrameSizeSlider').value,
+        avatarFrameOffsetX: document.getElementById('avatarFrameOffsetXSlider').value,
+        avatarFrameOffsetY: document.getElementById('avatarFrameOffsetYSlider').value,
+        // 注意：头像框URL是在上传或输入URL时直接修改并保存的，这里不用管
+    };
+
+    // 3. 将这些值存入对应的角色（或全局）设置中
+    Object.assign(characterAppearanceSettings[selectedId], currentSettings);
+    
+    // 4. 保存到数据库并提示
+    await saveData();
+    showAlert('外观设置已保存！');
+
+    // 5. 应用到当前聊天（如果正好是这个角色的话）并返回
+    if (currentChatFriendId) {
+        applyAppearanceForChat(currentChatFriendId);
+    }
+    backToTheme(); // 函数名应为 backToTheme() 或你实际的返回函数
+}
 
         function getFontFormatFromUrl(url) {
             if (!url) return null;
@@ -9080,11 +9205,12 @@ async function saveProfileData() {
     selectedGlobalChatBg, customGlobalChatBgImage, selectedFont, selectedFontSize,
     selectedFontColor, customFontUrl, selectedWallpaper, customWallpaperImage,
     customWidgetBackgroundImage, roundedCornersEnabled, darkModeEnabled,
-    sentBubbleColor, selectedAppLabelColor, receivedBubbleColor, customBubbleCSS,
+    sentBubbleColor, selectedAppLabelColor, receivedBubbleColor, customBubbleCSS, chatInterfaceCSS: chatInterfaceCSS,
     customIcons, recalledMessages: Array.from(recalledMessages.entries()),
     customListenBg, persistentVinylCover, profileWidgetTransparent,
     smallWidgetTransparent, simPhoneContentCache, 
     memoryGenerationTurns: memoryGenerationTurns, // <-- 新增：保存记忆轮数设置
+    characterAppearanceSettings: characterAppearanceSettings, // 【【【新增这一行】】】
     wechatAppGlobalBgImage,
     // 在 saveData 函数的 appSettings 对象里添加
 chatAvatarSize, chatAvatarRadius, chatAvatarFrameUrl, chatAvatarFrameSize,
@@ -9164,7 +9290,7 @@ forumRules: forumRules,
                 const [
                     loadedFriends, loadedChatHistories, loadedDiaries, loadedWorldBooks, 
                     loadedWorldBookFolders, loadedFavorites, loadedMoments, loadedPlaylist, 
-                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories, loadedOpeningStatements, loadedWritingStyles, loadedSkits, loadedForumPosts, loadedForumRules, loadedForumLikes
+                    loadedAppSettings, loadedApiSettings, loadedCustomEmojis, loadedMemories, loadedOpeningStatements, loadedWritingStyles, loadedSkits, loadedForumPosts, loadedForumRules, loadedForumLikes, loadedBubblePresets, loadedInterfacePresets
                 ] = await Promise.all([
                     dbManager.getAll('friends'), dbManager.getAll('chatHistories'), dbManager.getAll('diaries'),
                     dbManager.getAll('worldBooks'), dbManager.getAll('worldBookFolders'), dbManager.getAll('favorites'),
@@ -9182,7 +9308,10 @@ dbManager.getAll('forumPosts') ,
 
 dbManager.getAll('forumRules'),
 
-dbManager.getAll('forumLikes')
+dbManager.getAll('forumLikes'),
+
+dbManager.getAll('bubbleCssPresets'),
+dbManager.getAll('interfaceCssPresets')
 
                 ]);
                 
@@ -9276,6 +9405,30 @@ moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(
 // 恢复应用设置
 const settings = loadedAppSettings;
 
+// --- 【【【核心修复：数据迁移补丁】】】 ---
+        // 检查新的设置对象是否存在。如果不存在，说明是旧数据，需要迁移。
+        if (settings && !settings.characterAppearanceSettings) {
+            console.log("检测到旧版外观数据，正在执行一次性迁移...");
+            
+            // 1. 创建新的文件夹结构
+            settings.characterAppearanceSettings = {};
+            settings.characterAppearanceSettings['global'] = {
+                // 2. 从旧位置读取数据，并存入新位置。如果旧数据不存在，则使用默认值。
+                avatarSize: settings.chatAvatarSize || 45,
+                avatarRadius: settings.chatAvatarRadius || 8,
+                avatarFrameUrl: settings.chatAvatarFrameUrl || '',
+                avatarFrameSize: settings.chatAvatarFrameSize || 3,
+                avatarFrameOffsetX: settings.chatAvatarFrameOffsetX || 0,
+                avatarFrameOffsetY: settings.chatAvatarFrameOffsetY || 0,
+                sentBubbleColor: settings.sentBubbleColor || '#FFEEF6',
+                receivedBubbleColor: settings.receivedBubbleColor || '#E6F2FF',
+                customBubbleCSS: settings.customBubbleCSS || '',
+                chatInterfaceCSS: settings.chatInterfaceCSS || ''
+            };
+            console.log("数据迁移完成！新的设置结构已创建。");
+        }
+        // --- 【【【补丁结束】】】 ---
+
 // ...加载 settings 之后...
 worldviews = settings.worldviews || [];
 forumSettings = settings.forumSettings || { worldviewId: 'default_school', activeAiIds: [] };
@@ -9365,6 +9518,7 @@ autoSummaryEnabled = settings.autoSummaryEnabled || false; // <-- 【【【新�
                 selectedAppLabelColor = settings.selectedAppLabelColor || '#333333';
                 receivedBubbleColor = settings.receivedBubbleColor || '#E6F2FF';
                 customBubbleCSS = settings.customBubbleCSS || '';
+                chatInterfaceCSS = settings.chatInterfaceCSS || ''; 
                 customIcons = settings.customIcons || {};
                 recalledMessages = new Map(settings.recalledMessages || []);
                 customListenBg = settings.customListenBg || '';
@@ -9374,6 +9528,12 @@ autoSummaryEnabled = settings.autoSummaryEnabled || false; // <-- 【【【新�
                 wechatAppGlobalBgImage = settings.wechatAppGlobalBgImage || '';
                 simPhoneContentCache = settings.simPhoneContentCache || {};
 memoryGenerationTurns = settings.memoryGenerationTurns || 20; // <-- 新增：加载记忆轮数设置
+
+bubbleCssPresets = loadedBubblePresets || [];
+interfaceCssPresets = loadedInterfacePresets || [];
+
+characterAppearanceSettings = settings.characterAppearanceSettings || {};
+
                
                
                 
@@ -9613,25 +9773,35 @@ userPersonas = [userProfile];
         }
 
                 function setActivePage(pageId) {
-            // 【核心修改1】我们在这里定义一个“微信家族”的名单
-            const wechatPageIds = [
-                'wechatApp', 'chatScreen', 'chatSettingsScreen', 'friendSettingsScreen',
-                'groupSettingsScreen', 'backgroundSettingsScreen', 'chatSearchScreen',
-                'momentsScreen', 'diaryScreen', 'diaryViewScreen', 'walletScreen',
-                'favoritesScreen', 'mySettingsScreen', 'bubbleSettingsScreen',
-                'globalChatBgScreen', 'listenTogetherScreen', 'voiceCallScreen',
-                'incomingCallScreen', 'memoryScreen', 'personaListScreen',
-                'beautificationSettingsScreen' // 把所有属于微信的页面ID都加进来
-            ];
-            
-            // 【核心修改2】判断当前页面是不是“微信家族”的一员
-            const isInWechat = wechatPageIds.includes(pageId);
-            document.querySelector('.phone').classList.toggle('in-wechat-app', isInWechat);
+    const phoneDiv = document.querySelector('.phone');
+    
+    // 【新增的核心逻辑】
+    // 检查当前打开的是不是聊天界面
+    if (pageId === 'chatScreen') {
+        // 如果是，就给phone容器添加一个专属的class
+        phoneDiv.classList.add('chat-screen-active');
+    } else {
+        // 如果不是，就移除这个class
+        phoneDiv.classList.remove('chat-screen-active');
+    }
+    // 【新增逻辑结束】
 
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId)?.classList.add('active');
-            updateStatusBar(pageId);
-        }
+    const wechatPageIds = [
+        'wechatApp', 'chatScreen', 'chatSettingsScreen', 'friendSettingsScreen',
+        'groupSettingsScreen', 'backgroundSettingsScreen', 'chatSearchScreen',
+        'momentsScreen', 'diaryScreen', 'diaryViewScreen', 'walletScreen',
+        'favoritesScreen', 'mySettingsScreen', 'bubbleSettingsScreen',
+        'globalChatBgScreen', 'listenTogetherScreen', 'voiceCallScreen',
+        'incomingCallScreen', 'memoryScreen', 'personaListScreen',
+        'beautificationSettingsScreen'
+    ];
+    const isInWechat = wechatPageIds.includes(pageId);
+    phoneDiv.classList.toggle('in-wechat-app', isInWechat);
+
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.getElementById(pageId)?.classList.add('active');
+    updateStatusBar(pageId);
+}
                 function openApp(appName) {
     const appMap = { 
         'wechat': 'wechatApp', 
@@ -10391,6 +10561,7 @@ function openChat(friendId) {
 
     currentChatFriendId = friend.id;
     setActivePage('chatScreen');
+   applyAppearanceForChat(friend.id);
     // ↓↓↓ 从这里开始修改 ↓↓↓
 // 【核心修复】只有在没有“消息债务”时，才立即设置标题。
 // 如果有债务，标题的控制权就交给 generateMissedMessages 函数。
@@ -10874,28 +11045,55 @@ if (msg.isOfflineMessage) {
             }
 
 // 【【【新增核心逻辑：为HTML卡片启动Shadow DOM沙箱】】】
+    // 【【【新增核心逻辑：为HTML卡片启动Shadow DOM沙箱】】】
     if (hasHtmlCard) {
         const contentDiv = msgDiv.querySelector('.message-content');
         if (contentDiv) {
-            const shadow = contentDiv.attachShadow({ mode: 'open' });
-            const scriptRegex = /<script>([\s\S]*?)<\/script>/i;
-            const scriptMatch = msg.content.match(scriptRegex);
-            const htmlOnly = msg.content.replace(scriptRegex, '');
+            // 新增判断：检查HTML内容是否包含 <!DOCTYPE html>
+            if (msg.content.includes('<!DOCTYPE html>')) {
+                // 如果包含，则使用您原来的 Shadow DOM 隔离方案（代码不变）
+                const shadow = contentDiv.attachShadow({ mode: 'open' });
+                const scriptRegex = /<script>([\s\S]*?)<\/script>/i;
+                const scriptMatch = msg.content.match(scriptRegex);
+                const htmlOnly = msg.content.replace(scriptRegex, '');
 
-            shadow.innerHTML = htmlOnly;
+                shadow.innerHTML = htmlOnly;
 
-            if (scriptMatch && scriptMatch[1]) {
-                try {
-                    const scriptElement = document.createElement('script');
-                    scriptElement.textContent = scriptMatch[1];
-                    shadow.appendChild(scriptElement);
-                } catch (e) {
-                    console.error("在沙箱内执行卡片脚本时出错:", e);
+                if (scriptMatch && scriptMatch[1]) {
+                    try {
+                        const scriptElement = document.createElement('script');
+                        scriptElement.textContent = scriptMatch[1];
+                        shadow.appendChild(scriptElement);
+                    } catch (e) {
+                        console.error("在沙箱内执行卡片脚本时出错:", e);
+                    }
                 }
+            } else {
+                // 如果不包含，则使用您提出的新方案
+                // 1. 将JS部分提取出来
+                const scriptRegex = /<script>([\s\S]*?)<\/script>/i;
+                const scriptMatch = msg.content.match(scriptRegex);
+                const htmlOnly = msg.content.replace(scriptRegex, '');
+
+                // 2. 直接将HTML部分渲染到消息气泡里
+                contentDiv.innerHTML = htmlOnly;
+
+                // 3. 在全局作用域中执行JS
+                setTimeout(() => {
+                    if (scriptMatch && scriptMatch[1]) {
+                        try {
+                            const scriptElement = document.createElement('script');
+                            scriptElement.textContent = scriptMatch[1];
+                            document.body.appendChild(scriptElement);
+                            document.body.removeChild(scriptElement); // 执行后立即移除，避免污染DOM
+                        } catch (e) {
+                            console.error("执行卡片脚本时出错:", e);
+                        }
+                    }
+                }, 0);
             }
         }
     }
-
             return msgDiv;
         }
 
@@ -16641,30 +16839,37 @@ function getSelectorForKey(key) {
     return selectors[key] || null;
 }
 
-                function applyAllSettings() {
-            // 【核心修改1：调整执行顺序和逻辑】
-            // 下面这些是基础设置，无论在什么模式下都应该首先被应用。
-            applyDarkMode(); // 1. 首先确定是白天还是黑夜，这是所有样式的基础。
-            applyFont(); // 2. 应用您选择的字体和颜色。
-            applyAppLabelColor(); // 3. 应用您设置的App标签颜色。
-            applyRoundedCorners(); // 4. 应用圆角模式。
-            applyCustomIcons(); // 5. 应用您的自定义图标。
-            applyComponentTransparency(); // 6. 应用组件透明度设置。
+                // 【【【修改后】】】
+function applyAllSettings() {
+    // 基础设置，顺序保持不变
+    applyDarkMode();
+    applyFont();
+    applyAppLabelColor();
+    applyRoundedCorners();
+    applyCustomIcons();
+    applyComponentTransparency();
+    applyAvatarSettings(); // 这个函数我们已经修改为内部自己获取settings了，所以调用方式不变
 
-            // 【核心修改2：只对冲突的美化项进行判断】
-            // 只有在夜间模式关闭时（即白天模式），才应用下面这些会与深色背景冲突的美化。
-            if (!darkModeEnabled) {
-                applyWallpaper(); // 主屏幕壁纸
-                applyGlobalChatBackground(); // 微信聊天背景
-                applyBubbleColors(); // 自定义气泡颜色
-                applyCustomBubbleCSS(customBubbleCSS); // 自定义气泡CSS
-                applyListenTogetherCustomImages(); // 一起听背景
-                applyBeautificationSettings(); // 其他美化（按钮、导航栏等）
-                applyWechatAppGlobalBg(); // 微信App全局背景
-                // 在 applyAllSettings 函数末尾添加
-applyAvatarSettings();
-            }
-        }
+    // 【核心修复】
+    // 只有在白天模式下，才应用颜色和背景相关的设置
+    if (!darkModeEnabled) {
+        applyWallpaper();
+        applyGlobalChatBackground();
+        applyListenTogetherCustomImages();
+        applyBeautificationSettings();
+        applyWechatAppGlobalBg();
+
+        // --- 你问的修改点在这里！ ---
+        // 1. 我们先获取“全局”设置的工作单
+        const globalSettings = getAppearanceSettingsForCharacter('global');
+        
+        // 2. 然后把这份工作单递给我们的专业油漆工们
+        applyBubbleColors(globalSettings); // <--- 正确调用
+        applyCustomBubbleCSS(globalSettings.customBubbleCSS); // <--- 正确调用
+        applyChatInterfaceCSS(globalSettings.chatInterfaceCSS); // <--- 正确调用
+        // --- 修改结束 ---
+    }
+}
         
         // --- 新增：记忆功能相关函数 ---
 
@@ -17660,12 +17865,17 @@ async function regenerateAiResponse(startMessageId) {
 }
 // ↑↑↑ 替换到此结束 ↑↑↑
         
-                function cancelBubbleSettings() {
-            // 核心功能：用之前保存的 customBubbleCSS 变量，恢复样式
-            applyCustomBubbleCSS(customBubbleCSS); 
-            // 然后再返回上一页
-            backToMySettings();
+                // 【【【修改后】】】
+function cancelBubbleSettings() {
+    // 取消时，只需重新加载一遍数据即可覆盖掉未保存的修改
+    loadData().then(() => {
+        // 如果当前在聊天，则重新应用一次正确的样式
+        if (currentChatFriendId) {
+            applyAppearanceForChat(currentChatFriendId);
         }
+        backToTheme(); // 返回主题设置页
+    });
+}
         
         // ↓↓↓ 第4步：从这里开始复制所有新增的JavaScript函数 ↓↓↓
 
@@ -18431,85 +18641,76 @@ async function getOrGenerateRoleSummary(friend) {
     }
 }
 
-// ↓↓↓ 用这个新函数替换旧的 applyAvatarSettings 函数 ↓↓↓
 /**
- * 核心功能：将头像设置应用为CSS变量 (V2 - 伪元素版)
+ * 【【【修改后】】】
+ * 核心功能：将头像设置应用为CSS变量 (V3 - 角色独立版)
  */
 function applyAvatarSettings() {
+    // 1. 【新增】这是最关键的一步！
+    //    在函数内部，我们调用之前创建的辅助函数，
+    //    它会自动获取当前聊天角色（currentChatFriendId）的专属设置，
+    //    如果该角色没有专属设置，则自动返回全局设置。
+    const settings = getAppearanceSettingsForCharacter(currentChatFriendId);
+
     const root = document.documentElement;
     
-    // 控制头像本身的大小和圆角 (这部分不变)
-    root.style.setProperty('--chat-avatar-size', `${chatAvatarSize}px`);
-    root.style.setProperty('--chat-avatar-radius', `${chatAvatarRadius}px`);
+    // 2. 【修改】下面所有的旧全局变量，都换成从 settings 对象里读取
+    root.style.setProperty('--chat-avatar-size', `${settings.avatarSize}px`);
+    root.style.setProperty('--chat-avatar-radius', `${settings.avatarRadius}px`);
     
-    // --- 核心修改在这里 ---
-    // 1. 将滑块的值（例如 5px）变成负数（-5px），用于向外“撑开”头像框
-    const frameOffset = -parseInt(chatAvatarFrameSize); 
+    const frameOffset = -parseInt(settings.avatarFrameSize);
     root.style.setProperty('--chat-avatar-frame-offset', `${frameOffset}px`);
 
-    // 2. 设置头像框的图片URL (这部分不变)
-    root.style.setProperty('--chat-avatar-frame-url', chatAvatarFrameUrl ? `url(${chatAvatarFrameUrl})` : 'none');
+    root.style.setProperty('--chat-avatar-frame-url', settings.avatarFrameUrl ? `url(${settings.avatarFrameUrl})` : 'none');
     
-    // 3. 当有头像框时，把头像本身的边框去掉，避免重叠
     const allAvatars = document.querySelectorAll('.chat-avatar');
     allAvatars.forEach(avatar => {
-        if (chatAvatarFrameUrl) {
+        if (settings.avatarFrameUrl) {
             avatar.style.border = 'none';
         } else {
-            // 如果没有头像框，恢复默认边框
             avatar.style.border = ''; 
         }
     });
 
-// 在 applyAvatarSettings 函数的末尾（`}` 之前）添加以下代码
-// ↓↓↓ 从这里开始复制 ↓↓↓
-root.style.setProperty('--chat-avatar-frame-offset-x', `${chatAvatarFrameOffsetX}px`);
-root.style.setProperty('--chat-avatar-frame-offset-y', `${chatAvatarFrameOffsetY}px`);
-// ↑↑↑ 粘贴到这里结束 ↑↑↑
+    root.style.setProperty('--chat-avatar-frame-offset-x', `${settings.avatarFrameOffsetX}px`);
+    root.style.setProperty('--chat-avatar-frame-offset-y', `${settings.avatarFrameOffsetY}px`);
 }
 
-/**
- * 更新头像设置的通用函数，由滑块调用
- * @param {string} type - 'size', 'radius', 或 'frameSize'
- * @param {string} value - 滑块的当前值
- */
+// 【【【修改后】】】
 function updateAvatarSettings(type, value) {
+    // 这个函数现在只负责更新UI上的数字显示，和触发预览更新
+    // 真正的数值会在点击“保存”时，从UI控件上统一读取
     if (type === 'size') {
-        chatAvatarSize = value;
         document.getElementById('avatarSizeValue').textContent = `${value}px`;
     } else if (type === 'radius') {
-        chatAvatarRadius = value;
-        // 当圆角值超过大小的一半时，显示为“圆形”
-        const displayValue = value >= chatAvatarSize / 2 ? '圆形' : `${value}px`;
-        document.getElementById('avatarRadiusValue').textContent = displayValue;
+        const size = document.getElementById('avatarSizeSlider').value;
+        document.getElementById('avatarRadiusValue').textContent = value >= size / 2 ? '圆形' : `${value}px`;
     } else if (type === 'frameSize') {
-        chatAvatarFrameSize = value;
         document.getElementById('avatarFrameSizeValue').textContent = `${value}px`;
+    } else if (type === 'frameOffsetX') {
+        document.getElementById('avatarFrameOffsetXValue').textContent = `${value}px`;
+    } else if (type === 'frameOffsetY') {
+        document.getElementById('avatarFrameOffsetYValue').textContent = `${value}px`;
     }
     
-    // 找到 updateAvatarSettings 函数，并在最后一个 `else if` 的下方添加以下代码
-// ↓↓↓ 从这里开始复制 ↓↓↓
-else if (type === 'frameOffsetX') {
-    chatAvatarFrameOffsetX = value;
-    document.getElementById('avatarFrameOffsetXValue').textContent = `${value}px`;
-} else if (type === 'frameOffsetY') {
-    chatAvatarFrameOffsetY = value;
-    document.getElementById('avatarFrameOffsetYValue').textContent = `${value}px`;
-}
-// ↑↑↑ 粘贴到这里结束 ↑↑↑
-    applyAvatarSettings(); // 实时应用到预览和聊天界面
+    // 无论哪个滑块动了，都调用预览更新函数
+    updateBubblePreview();
 }
 
-/**
- * 处理本地头像框图片上传
- */
-function handleAvatarFrameUpload(event) {
+// 【【【修改后】】】
+async function handleAvatarFrameUpload(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            chatAvatarFrameUrl = e.target.result;
-            applyAvatarSettings(); // 立即应用预览
+        reader.onload = async (e) => {
+            const selectedId = document.getElementById('characterAppearanceSelect').value;
+            if (!characterAppearanceSettings[selectedId]) {
+                characterAppearanceSettings[selectedId] = {};
+            }
+            characterAppearanceSettings[selectedId].avatarFrameUrl = e.target.result;
+            
+            await saveData();
+            updateBubblePreview(); // 【核心修改】打电话给样板房工人！
         };
         reader.readAsDataURL(file);
     }
@@ -18532,23 +18733,29 @@ function handleAvatarFrameUpload(event) {
         document.getElementById('avatarFrameUrlModal').classList.remove('show');
     }
 
-    /**
-     * 确认从URL设置头像框
-     */
-    function confirmAvatarFrameUrl() {
-        const url = document.getElementById('avatarFrameUrlInput').value.trim();
-        // 即使URL为空（用户清空了输入），也进行更新，相当于重置
-        chatAvatarFrameUrl = url;
-        applyAvatarSettings(); // 应用新的URL（或清空）
-        closeAvatarFrameUrlModal(); // 关闭弹窗
-    }
+    // 【【【修改后】】】
+async function confirmAvatarFrameUrl() {
+    const url = document.getElementById('avatarFrameUrlInput').value.trim();
+    const selectedId = document.getElementById('characterAppearanceSelect').value;
 
-/**
- * 重置头像框
- */
-function resetAvatarFrame() {
-    chatAvatarFrameUrl = '';
-    applyAvatarSettings(); // 立即移除头像框
+    if (!characterAppearanceSettings[selectedId]) {
+        characterAppearanceSettings[selectedId] = {};
+    }
+    characterAppearanceSettings[selectedId].avatarFrameUrl = url;
+
+    await saveData(); // 立即保存更改
+    updateBubblePreview();
+    closeAvatarFrameUrlModal();
+}
+
+// 【【【修改后】】】
+async function resetAvatarFrame() {
+    const selectedId = document.getElementById('characterAppearanceSelect').value;
+    if (characterAppearanceSettings[selectedId]) {
+        characterAppearanceSettings[selectedId].avatarFrameUrl = '';
+        await saveData(); // 立即保存更改
+        updateBubblePreview();
+    }
 }
 
 // ↑↑↑ 粘贴到这里结束 ↑↑↑
@@ -21853,6 +22060,330 @@ async function toggleLikePost(event, postId) {
         await dbManager.set('forumLikes', post); // 再写入新的
     }
     await saveData(); // 顺便保存其他可能的数据
+}
+
+/**
+ * 将自定义界面CSS应用到页面上 (V3 - 精准范围版)
+ */
+function applyChatInterfaceCSS(css) {
+    let styleTag = document.getElementById('chat-interface-style');
+    if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'chat-interface-style';
+        document.head.appendChild(styleTag);
+    }
+    
+    // --- 核心修改在这里 ---
+    // 我们将CSS规则的前缀，从宽泛的 .in-wechat-app 换成了精准的 .chat-screen-active
+    const scopedCss = css.replace(/([^{}]+)({)/g, (match, selector, brace) => {
+        const prefixedSelectors = selector.trim().split(',')
+            .map(s => `.phone.chat-screen-active ${s.trim()}`) // <-- 核心修改！
+            .join(', ');
+        return `${prefixedSelectors} ${brace}`;
+    });
+    styleTag.textContent = scopedCss;
+}
+
+/**
+ * 一键复制聊天界面CSS的基础格式 (V6 - 纯界面框架版)
+ */
+function copyInterfaceFormat() {
+    const format = `/* --- 顶部状态栏 (只在聊天界面生效) --- */
+.status-bar {
+  /* background: #f8f8f8; */
+}
+.status-bar, #currentTime { /* 时间文字 */
+  /* color: #000; */
+}
+.status-bar .signal-icon, .status-bar .network-icon, .status-bar .battery-icon {
+  /* filter: hue-rotate(180deg); */ /* 使用滤镜统一改变所有图标颜色 */
+}
+
+/* --- 导航栏 (标题和按钮所在区域) --- */
+.nav-bar {
+  /* background: #f8f8f8; */
+}
+#navBarBackButton, #navBarHeartsVoiceButton, #navBarMoreButton { /* 导航栏上的所有按钮 */
+  /* color: #333; */
+}
+.nav-title { /* 导航栏中间的标题 */
+  /* color: #000; font-size: 18px; */
+}
+
+/* --- 聊天消息区域 --- */
+.chat-messages { /* 整个聊天背景 */
+  /* background: #ededed; */
+}
+
+/* --- 消息时间戳 --- */
+.chat-timestamp {
+  /* background: rgba(0, 0, 0, 0.1); color: white; */
+}
+
+/* --- “撤回了消息” 或 “拍了拍” 的灰色提示条 --- */
+.recall-content, .pat-pat-content {
+  /* background: #e0e0e0; color: #888; */
+}
+
+/* --- 系统提示消息 (例如“XXX领取了你的红包”) --- */
+.system-message-tip {
+  /* color: #aaa; font-size: 11px; */
+}
+
+/* --- 底部输入区域 --- */
+.chat-input { /* 整个输入区域的背景 */
+  /* background: #f7f7f7; */
+}
+textarea#messageInput { /* 文字输入框本身 */
+  /* background: #fff; color: #000; */
+}
+textarea#messageInput::placeholder { /* 输入框里的提示文字 */
+  /* color: #ccc; */
+}
+
+/* --- 底部输入区 - 按钮 --- */
+#chatInputReceiveButton svg,   /* “接收消息”图标 */
+#chatInputVoiceButton svg,     /* “语音”图标 */
+#chatInputEmojiButton svg,     /* “表情”图标 */
+#chatInputPlusButton svg,      /* “加号”图标 */
+#chatInputSendButton svg {      /* “发送”图标 */
+  /* fill: #333; */ /* 使用 fill 来改变SVG图标的颜色 */
+}
+.send-btn.active { /* “发送”按钮激活时的背景 */
+  /* background: #07c160; */
+}
+
+/* --- “更多”(+)菜单 --- */
+.chat-functions { /* 整个“更多”菜单的面板背景 */
+  /* background: #f7f7f7; */
+}
+.function-item { /* 单个功能项的容器 */
+  /* background: #fff; border-radius: 12px; */
+}
+.function-icon { /* 图标的背景圆圈/方块 */
+  /* background: #f0f0f0; */
+}
+.function-icon svg { /* 图标本身的颜色 */
+  /* fill: #555; */
+}
+.function-label { /* 图标下方文字的颜色 */
+  /* color: #666; */
+}
+`;
+    navigator.clipboard.writeText(format).then(() => {
+        showAlert('纯净的界面框架格式已复制！');
+    }).catch(err => {
+        showAlert('复制失败，您的浏览器可能不支持此功能。');
+    });
+}
+
+/**
+ * 核心功能：保存CSS预设 (V2 - 使用自定义弹窗版)
+ * @param {string} type - 'bubble' 或 'interface'
+ */
+async function saveCssPreset(type) {
+    const textareaId = type === 'bubble' ? 'bubbleCustomCSS' : 'chatInterfaceCSSInput';
+    const cssContent = document.getElementById(textareaId).value.trim();
+    if (!cssContent) {
+        return showAlert('样式代码不能为空！');
+    }
+
+    // --- 核心修改：使用我们自己的弹窗来获取名称 ---
+    openNameInputModal('请输入样式名称：', async (styleName) => {
+        // 下面的所有代码，都会在用户输入名称并点击“确定”后执行
+        
+        if (!styleName || !styleName.trim()) {
+            return; // 如果用户没输入或者点了取消，则不执行任何操作
+        }
+
+        const newPreset = {
+            id: generateUniqueId(),
+            name: styleName.trim(),
+            css: cssContent
+        };
+
+        if (type === 'bubble') {
+            await dbManager.set('bubbleCssPresets', newPreset);
+            bubbleCssPresets.push(newPreset);
+        } else {
+            await dbManager.set('interfaceCssPresets', newPreset);
+            interfaceCssPresets.push(newPreset);
+        }
+
+        showAlert(`样式“${styleName}”已成功保存！`);
+    });
+}
+
+/**
+ * 打开样式选择弹窗
+ * @param {string} type - 'bubble' 或 'interface'
+ */
+function openPresetSelector(type) {
+    const modal = document.getElementById('presetSelectorModal');
+    document.getElementById('presetSelectorTitle').textContent = type === 'bubble' ? '选择气泡样式' : '选择界面样式';
+    renderPresetList(type);
+    modal.classList.add('show');
+}
+
+/**
+ * 关闭样式选择弹窗
+ */
+function closePresetSelector() {
+    document.getElementById('presetSelectorModal').classList.remove('show');
+}
+
+/**
+ * 渲染预设列表到弹窗中
+ * @param {string} type - 'bubble' 或 'interface'
+ */
+function renderPresetList(type) {
+    const container = document.getElementById('presetListContainer');
+    const presets = type === 'bubble' ? bubbleCssPresets : interfaceCssPresets;
+    container.innerHTML = '';
+
+    if (presets.length === 0) {
+        container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">暂无已保存的样式</div>';
+        return;
+    }
+
+    presets.forEach(preset => {
+        const item = document.createElement('div');
+        item.className = 'friend-item'; // 复用现有样式
+        item.innerHTML = `
+    <div class="friend-info" style="flex-grow: 1; cursor: pointer;" onclick="selectPreset('${type}', '${preset.id}')">
+        <div class="friend-name">${preset.name}</div>
+    </div>
+    
+    <!-- --- 核心修改在这里 --- -->
+    <!-- 我们把 <button> 换成了 <span>，并把文字“删除”换成了“✕”符号 -->
+    <span class="delete-btn" title="删除样式" style="font-size: 20px; padding: 5px 10px; cursor: pointer;" onclick="deletePreset(event, '${type}', '${preset.id}')">
+        ✕
+    </span>
+`;
+        container.appendChild(item);
+    });
+}
+
+/**
+ * 选中一个预设并应用
+ * @param {string} type - 'bubble' 或 'interface'
+ * @param {string} presetId - 选中的预设ID
+ */
+function selectPreset(type, presetId) {
+    const presets = type === 'bubble' ? bubbleCssPresets : interfaceCssPresets;
+    const selected = presets.find(p => p.id === presetId);
+    if (!selected) return;
+
+    const textareaId = type === 'bubble' ? 'bubbleCustomCSS' : 'chatInterfaceCSSInput';
+    const applyFunction = type === 'bubble' ? applyCustomBubbleCSS : applyChatInterfaceCSS;
+
+    document.getElementById(textareaId).value = selected.css;
+    applyFunction(selected.css); // 立即应用样式
+
+    closePresetSelector();
+    showToast(`已应用样式：“${selected.name}”`);
+}
+
+/**
+ * 删除一个预设
+ */
+async function deletePreset(event, type, presetId) {
+    event.stopPropagation();
+    const presets = type === 'bubble' ? bubbleCssPresets : interfaceCssPresets;
+    const preset = presets.find(p => p.id === presetId);
+
+    showConfirm(`确定要删除样式“${preset.name}”吗？`, async (confirmed) => {
+        if (!confirmed) return;
+
+        const storeName = type === 'bubble' ? 'bubbleCssPresets' : 'interfaceCssPresets';
+        await dbManager.delete(storeName, presetId);
+
+        if (type === 'bubble') {
+            bubbleCssPresets = bubbleCssPresets.filter(p => p.id !== presetId);
+        } else {
+            interfaceCssPresets = interfaceCssPresets.filter(p => p.id !== presetId);
+        }
+
+        renderPresetList(type); // 刷新弹窗内的列表
+        showAlert('样式已删除。');
+    });
+}
+
+// --- 新增：用于控制自定义输入弹窗的全局变量和函数 ---
+
+let nameInputCallback = null; // 用于存储“确定”按钮的回调函数
+
+/**
+ * 打开通用的名称输入弹窗 (我们自己的 prompt() 替代品)
+ * @param {string} title - 弹窗的标题
+ * @param {function} onConfirm - 用户点击“确定”后要执行的函数
+ */
+function openNameInputModal(title, onConfirm) {
+    nameInputCallback = onConfirm;
+    document.getElementById('nameInputTitle').textContent = title;
+    document.getElementById('nameInputValue').value = ''; // 每次打开都清空输入框
+    document.getElementById('nameInputModal').classList.add('show');
+
+    // 为“确定”按钮绑定点击事件
+    document.getElementById('nameInputConfirmBtn').onclick = () => {
+        const value = document.getElementById('nameInputValue').value;
+        if (typeof nameInputCallback === 'function') {
+            nameInputCallback(value); // 将输入框的值传递给回调函数
+        }
+        closeNameInputModal(); // 处理完后关闭弹窗
+    };
+}
+
+/**
+ * 关闭通用的名称输入弹窗
+ */
+function closeNameInputModal() {
+    document.getElementById('nameInputModal').classList.remove('show');
+    nameInputCallback = null; // 清空回调
+}
+
+/**
+ * 【新增】智能获取指定角色的外观设置
+ * @param {string} characterId - 角色ID 或 'global'
+ * @returns {object} - 返回一个完整的设置对象
+ */
+function getAppearanceSettingsForCharacter(characterId) {
+    // 1. 先准备一套最基础的默认值，防止任何意外
+    const defaultSettings = {
+        avatarSize: 45, avatarRadius: 8, avatarFrameUrl: '',
+        avatarFrameSize: 3, avatarFrameOffsetX: 0, avatarFrameOffsetY: 0,
+        sentBubbleColor: '#FFEEF6', receivedBubbleColor: '#E6F2FF',
+        customBubbleCSS: '', chatInterfaceCSS: ''
+    };
+
+    // 2. 获取全局设置，如果全局设置不存在，就使用上面的默认值
+    const globalSettings = { ...defaultSettings, ...(characterAppearanceSettings['global'] || {}) };
+
+    // 3. 如果要获取的就是全局设置，直接返回
+    if (characterId === 'global') {
+        return globalSettings;
+    }
+
+    // 4. 如果要获取的是特定角色的设置
+    const characterSettings = characterAppearanceSettings[characterId] || {};
+
+    // 5. 【核心】将角色专属设置覆盖在全局设置之上，实现“继承”效果
+    // 比如角色只改了气泡颜色，那么头像大小等其他设置就会自动使用全局的
+    return { ...globalSettings, ...characterSettings };
+}
+
+/**
+ * 【新增】为一个聊天应用所有相关的外观设置
+ * @param {string} characterId - 要应用设置的角色ID
+ */
+function applyAppearanceForChat(characterId) {
+    const settings = getAppearanceSettingsForCharacter(characterId);
+    
+    // 调用所有独立的样式应用函数
+    applyAvatarSettings(settings); // 假设你已修改它来接收settings
+    applyBubbleColors(settings);
+    applyCustomBubbleCSS(settings.customBubbleCSS); // 假设你已修改它来接收css字符串
+    applyChatInterfaceCSS(settings.chatInterfaceCSS);
 }
 
     </script>
