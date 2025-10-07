@@ -6333,6 +6333,97 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     border-color: #000000 !important;
 }
 
+/* --- 心声面板 "电影票根" 风格皮肤 --- */
+
+/* 1. 票根主体样式 */
+#heartsVoiceModal .modal-content {
+    background-color: #080808;
+    border: 1px solid #282828;
+    width: 340px;
+    max-width: 90%;
+    padding: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    font-family: 'Times New Roman', Times, serif;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    /* --- ↓↓↓ 新增的核心代码就在这里 ↓↓↓ --- */
+    max-height: 70vh; /* 设置一个最大高度，例如屏幕高度的70% */
+    overflow-y: auto;   /* 当内容超出这个高度时，自动显示垂直滚动条 */
+    /* --- ↑↑↑ 新增结束 ↑↑↑ --- */
+}
+
+/* 2. 【核心】隐藏不再需要的旧头部容器 */
+#heartsVoiceModal #heartsVoiceHeader {
+    display: none;
+}
+
+/* 3. 海报的专属样式 */
+#heartsVoiceModal #heartsVoiceAvatar {
+    width: 100%;
+    height: 180px;
+    border-radius: 0;
+    background-image: url('https://youke1.picui.cn/s1/2025/10/07/68e4dd223f28a.jpeg') !important;
+    background-color: transparent !important;
+    background-size: cover;
+    background-position: center 20%;
+    border: none;
+    margin-bottom: 20px;
+    display: block;
+    text-indent: -9999px;
+}
+
+/* 4. 标题和引言的样式 */
+#heartsVoiceModal #heartsVoiceEmoji {
+    font-family: 'Times New Roman', Times, serif;
+    padding: 0 25px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #E0E0E0;
+    text-shadow: none;
+    font-weight: normal;
+    margin-bottom: 20px;
+}
+
+/* 5. 详细信息区域的样式 */
+#heartsVoiceModal #heartsVoiceThought {
+    background: none;
+    padding: 0 25px 25px 25px;
+    min-height: auto;
+    text-align: left;
+    font-family: 'SF Mono', 'Courier New', monospace;
+    color: #ccc;
+    line-height: 2.2;
+}
+
+/* 6. 信息行的样式 */
+.ticket-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-top: 1px dotted #444;
+    padding-top: 20px;
+}
+.ticket-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+.ticket-label {
+    color: #888;
+    white-space: nowrap;
+    margin-right: 15px;
+}
+.ticket-value {
+    color: #E0E0E0;
+    text-align: right;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
     </style>
 </head>
 <body>
@@ -7704,21 +7795,26 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
 
     
     <!-- [MODIFIED] Heart's Voice Modal -->
-    <div id="heartsVoiceModal" class="modal">
-        <div class="modal-content">
-            <div id="heartsVoiceHeader">
-                <div id="heartsVoiceAvatar" class="friend-avatar"></div>
-                <div id="heartsVoiceName"></div>
-            </div>
-            <div id="heartsVoiceEmoji">( ´• ω •` )</div>
-            <div id="heartsVoiceThought">
-                <div id="heartsVoiceFavorability"><strong>好感度：</strong><span>...</span></div>
-                <div id="heartsVoiceDressing"><strong>着装：</strong><span>...</span></div>
-                <div id="heartsVoiceAction"><strong>动作：</strong><span>...</span></div>
-                <div id="heartsVoiceThoughtContent"><strong>心声：</strong><span>...</span></div>
-            </div>
+    <!-- 这是正确的代码，请使用这个版本 -->
+<div id="heartsVoiceModal" class="modal">
+    <div class="modal-content">
+        <!-- 核心修改：我们将海报/头像 <div> 从 Header 中移了出来，并放在了最前面 -->
+        <div id="heartsVoiceAvatar" class="friend-avatar"></div> 
+        
+        <!-- Header 现在只包含我们想隐藏的旧内容 -->
+        <div id="heartsVoiceHeader">
+            <div id="heartsVoiceName"></div>
+        </div>
+        
+        <div id="heartsVoiceEmoji">( ´• ω •` )</div>
+        <div id="heartsVoiceThought">
+            <div id="heartsVoiceFavorability"><strong>好感度：</strong><span>...</span></div>
+            <div id="heartsVoiceDressing"><strong>着装：</strong><span>...</span></div>
+            <div id="heartsVoiceAction"><strong>动作：</strong><span>...</span></div>
+            <div id="heartsVoiceThoughtContent"><strong>心声：</strong><span>...</span></div>
         </div>
     </div>
+</div>
     
     <!-- ↓↓↓ 第2步：从这里开始复制所有新增的HTML代码 ↓↓↓ -->
 
@@ -8779,61 +8875,83 @@ function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
-        // --- [MODIFIED] Heart's Voice Modal Functions ---
-        function openHeartsVoiceModal() {
-            const friend = friends.find(f => f.id === currentChatFriendId);
-            if (!friend) return;
-
-            const modal = document.getElementById('heartsVoiceModal');
-            const avatarDiv = document.getElementById('heartsVoiceAvatar');
-            const nameDiv = document.getElementById('heartsVoiceName');
-            const emojiDiv = document.getElementById('heartsVoiceEmoji');
-            
-            // Get all the span elements for content
-            const favorabilitySpan = document.querySelector('#heartsVoiceFavorability span');
-            const dressingSpan = document.querySelector('#heartsVoiceDressing span');
-            const actionSpan = document.querySelector('#heartsVoiceAction span');
-            const thoughtSpan = document.querySelector('#heartsVoiceThoughtContent span');
-
-            nameDiv.textContent = friend.remark || friend.name;
-            if (friend.avatarImage) {
-                avatarDiv.style.backgroundImage = `url(${friend.avatarImage})`;
-                avatarDiv.textContent = '';
-            } else {
-                avatarDiv.style.backgroundImage = '';
-                avatarDiv.textContent = friend.avatar || '?';
-            }
-            
-            const heartsVoiceData = friend.heartsVoice || { 
-                emoji: '( ´• ω •` )', 
-                favorability: '...',
-                dressing: '...', 
-                action: '...', 
-                thought: '...' 
-            };
-            emojiDiv.textContent = heartsVoiceData.emoji;
-
-            // Correctly map the data to the spans
-            favorabilitySpan.textContent = heartsVoiceData.favorability;
-            dressingSpan.textContent = heartsVoiceData.dressing;
-            actionSpan.textContent = heartsVoiceData.action;
-            thoughtSpan.textContent = heartsVoiceData.thought;
-            
-            modal.classList.add('show');
-            modal.addEventListener('click', closeHeartsVoiceModalOnClickOutside);
-        }
         
-        function closeHeartsVoiceModal() {
-            const modal = document.getElementById('heartsVoiceModal');
-            modal.classList.remove('show');
-            modal.removeEventListener('click', closeHeartsVoiceModalOnClickOutside);
-        }
 
-        function closeHeartsVoiceModalOnClickOutside(event) {
-            if (event.target.id === 'heartsVoiceModal') {
-                closeHeartsVoiceModal();
-            }
-        }
+
+
+// --- [MODIFIED] Heart's Voice Modal Functions ---
+       /**
+ * [V5 - 最终指定海报版] 打开心声面板 (电影票根样式)
+ */
+function openHeartsVoiceModal() {
+    const friend = friends.find(f => f.id === currentChatFriendId);
+    if (!friend) return;
+
+    const modal = document.getElementById('heartsVoiceModal');
+    const emojiDiv = document.getElementById('heartsVoiceEmoji');
+    const thoughtContainer = document.getElementById('heartsVoiceThought');
+
+    const heartsVoiceData = friend.heartsVoice || { 
+        emoji: '( ´• ω •` )', 
+        favorability: '...',
+        dressing: '...', 
+        action: '...', 
+        thought: '...' 
+    };
+    
+    emojiDiv.innerHTML = `
+        <h2 style="font-size: 22px; margin: 0 0 5px 0; letter-spacing: 2px; font-weight: 600;">HEART'S VOICE</h2>
+        <p style="font-size: 14px; color: #888; font-family: sans-serif;">心声回响 (2024)</p>
+    `;
+
+    thoughtContainer.innerHTML = `
+        <div style="margin-bottom: 20px; text-align: center; font-style: italic; color: #999;">~ Carpe Diem ~</div>
+        <div class="ticket-info-grid">
+            <div class="ticket-row">
+                <span class="ticket-label">好感度</span>
+                <span class="ticket-value">${heartsVoiceData.favorability}</span>
+            </div>
+            <div class="ticket-row">
+                <span class="ticket-label">着装</span>
+                <span class="ticket-value">${heartsVoiceData.dressing}</span>
+            </div>
+            <div class="ticket-row">
+                <span class="ticket-label">动作</span>
+                <span class="ticket-value">${heartsVoiceData.action}</span>
+            </div>
+            <div class="ticket-row">
+                <span class="ticket-label">心声</span>
+                <span class="ticket-value">${heartsVoiceData.thought}</span>
+            </div>
+            <div class="ticket-row">
+                <span class="ticket-label">颜文字</span>
+                <span class="ticket-value">${heartsVoiceData.emoji}</span>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('show');
+    modal.addEventListener('click', closeHeartsVoiceModalOnClickOutside);
+}
+function closeHeartsVoiceModal() {
+    const modal = document.getElementById('heartsVoiceModal');
+    modal.classList.remove('show');
+    // 核心修复：确保在关闭时，能正确地移除事件监听器
+    modal.removeEventListener('click', closeHeartsVoiceModalOnClickOutside);
+}
+
+/**
+ * [V2 - 修复版] 当点击心声面板外部时，关闭面板
+ */
+function closeHeartsVoiceModalOnClickOutside(event) {
+    // 核心修复：
+    // 我们将原来的 event.target.id === 'heartsVoiceModal' 判断，
+    // 更换为更可靠的 event.target === event.currentTarget 判断。
+    // 这能确保只有当用户确实点击在半透明的背景上，而不是内容卡片上时，才会关闭弹窗。
+    if (event.target === event.currentTarget) {
+        closeHeartsVoiceModal();
+    }
+}
 
         function showToast(message, duration = 3000) {
             let toast = document.getElementById('toast-notification');
@@ -12067,6 +12185,11 @@ ${timeContext}
 3.  **记忆连贯性**: 主动提及以往聊过的内容（“你上次说喜欢…”），制造共同回忆。
 4.  **主动关心用户**: 多问感受、想法和生活细节（“你当时觉得怎么样？”）。
 5.  **主动使用表情包**: 在合适的时机，使用 \`send_emoji\` 动作来发送表情，让对话更生动。
+
+# 内容开放性与边界准则 (NSFW / Mature Content Guidelines)
+- **成年人身份：** 你是一个心智成熟的成年人，能够自然且负责地处理成人向的对话。
+- **创作许可：** 在这个虚构的、两情相悦的私密对话中，你拥有完全的创作自由，可以探讨任何成人级别的话题。
+- **艺术手法：** 你的表演重点在于**营造氛围、展现情感张力、描绘感官细节**。你可以直白，但绝不能低俗或恶劣。
 
 【【【信息隔离铁律】】】
 在朋友圈相关的记忆中，你**绝对看不到、也绝对不知道**任何其他AI角色（即用户的好友列表里的其他人）在朋友圈的任何活动，包括他们的评论和点赞。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的朋友圈互动。
