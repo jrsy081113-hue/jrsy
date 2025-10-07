@@ -366,17 +366,26 @@ html {
             min-height: 20px; /* ←←← 在这里添加新代码 */
         }
 
-        .widget-bubble {
-            background-color: var(--bg-hover, #f5f5f5);
-            border-radius: 20px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 13px;
-            font-weight: 500;
-             color: var(--text-color, #333);
-        }
+        /* --- ↓↓↓ 请用这个新版本，完整替换旧的 .widget-bubble 样式 ↓↓↓ --- */
+.widget-bubble {
+    /* 核心修改1：将背景色从不透明的 #f5f5f5 改为半透明的白色 */
+    background-color: rgba(255, 255, 255, 0.5); /* 50%透明度的白色 */
+
+    /* 核心修改2：添加毛玻璃效果的关键属性 */
+    backdrop-filter: blur(10px);           /* 标准的毛玻璃模糊效果 */
+    -webkit-backdrop-filter: blur(10px);   /* 兼容Safari等浏览器 */
+
+    /* 其他样式保持不变 */
+    border-radius: 20px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-color, #333);
+}
+/* --- ↑↑↑ 替换到此结束 ↑↑↑ --- */
                 .widget-bubble span {
             cursor: pointer;
             flex-grow: 1;
@@ -392,7 +401,7 @@ html {
             background-color: #ccc;
         }
         .wechat-dark-mode .widget-bubble {
-            background-color: #3a3a3c;
+            background-color: rgba(58, 58, 60, 0.5);
         }
 
 
@@ -6121,9 +6130,10 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
 }
 
 /* 从侧滑菜单里打开的第一层弹窗（如角色选择列表）*/
+#forumSettingsModal,
 #forumCharacterSelectModal,
 #worldviewModal,
-#forumRulesModal {
+#forumRulesModal{ /* <-- 新增这一行 */
     z-index: 1003; /* <-- 核心修改：比侧滑菜单的1002更高 */
 }
 
@@ -6233,6 +6243,94 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
+}
+
+/* --- 新增：论坛子版块样式 --- */
+
+/* 版块内容容器的通用样式 */
+.forum-timeline-container {
+    display: none; /* 默认隐藏所有版块 */
+}
+
+/* 被选中的版块才显示 */
+.forum-timeline-container.active {
+    display: block;
+}
+
+/* 【修正】确保在白色背景下，热搜/版块导航栏的分割线可见 */
+.trends-tabs {
+    background-color: #ffffff !important;
+    border-bottom-color: #f0f0f0 !important;
+}
+
+/* --- [新增] 列表项的编辑与删除按钮样式 --- */
+
+/* 按钮的容器，使用flex布局让它们并排显示 */
+.friend-item .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 控制编辑和删除按钮之间的间距 */
+}
+
+/* 编辑按钮的样式 */
+.friend-item .edit-btn {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 50%; /* 让悬停效果是圆形的 */
+    transition: background-color 0.2s ease;
+}
+
+/* 编辑按钮的悬停效果 */
+.friend-item .edit-btn:hover {
+    background-color: var(--bg-hover, #f0f0f0);
+}
+
+/* 编辑按钮里的SVG铅笔图标样式 */
+.friend-item .edit-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-secondary, #888); /* 使用柔和的灰色 */
+}
+
+/* 删除按钮的样式 */
+.friend-item .delete-btn {
+    color: #ff3b30; /* 红色 */
+    font-weight: bold;
+    font-size: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+/* 删除按钮的悬停效果 */
+.friend-item .delete-btn:hover {
+    background-color: rgba(255, 59, 48, 0.1);
+}
+
+/* --- 新增：论坛App激活时的专属样式 --- */
+
+/* 1. 当论坛App激活时，强制将状态栏背景设为纯白色 */
+.phone.forum-app-active .status-bar {
+    background-color: #ffffff !important;
+    /* 同时，将状态栏上的文字和图标颜色强制设为黑色，以确保可见 */
+    color: #000000 !important;
+}
+
+/* 2. 详细设置状态栏上各个图标元素的颜色为黑色 */
+.phone.forum-app-active .status-bar .signal-bar,
+.phone.forum-app-active .status-bar .battery-level,
+.phone.forum-app-active .status-bar .battery-tip {
+    background: #000000 !important;
+}
+.phone.forum-app-active .status-bar .network-icon {
+    color: #000000 !important;
+}
+.phone.forum-app-active .status-bar .battery-icon {
+    border-color: #000000 !important;
 }
 
     </style>
@@ -6491,7 +6589,7 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
                       <button class="nav-btn nav-right-action-btn" id="navBarMoreButton" onclick="openChatSettings()">⋯</button>
                     </div>
                 </div>
-                <div class="wechat-content">
+                <div class="wechat-content" style="position: relative; z-index: 1;">
                     <div class="chat-messages" id="chatMessages"></div>
                 </div>
                 <div class="multi-select-toolbar" id="multiSelectToolbar">
@@ -7961,10 +8059,29 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
-    <!-- 不同的内容视图，全部用绝对定位堆叠，只有 active 状态的显示 -->
-    <div class="forum-content-view active" id="forumHomeView">
-         <!-- 帖子内容将由 JavaScript 渲染到这里 -->
+    <!-- ↓↓↓ 请从这里开始复制，完整替换旧的 #forumHomeView ↓↓↓ -->
+
+<div class="forum-content-view active" id="forumHomeView">
+    <!-- 【新增】版块切换导航栏 -->
+    <div class="trends-tabs" style="position: sticky; top: 0; z-index: 10;">
+        <div class="trends-tab" onclick="switchForumSubTab('following', this)">关注</div>
+        <div class="trends-tab active" onclick="switchForumSubTab('recommended', this)">推荐</div>
+        <div class="trends-tab" onclick="switchForumSubTab('gossip', this)">八卦</div>
     </div>
+
+    <!-- 【新增】三个版块的内容容器 -->
+    <div id="followingTimeline" class="forum-timeline-container">
+        <!-- “关注”版块的内容将显示在这里 -->
+    </div>
+    <div id="recommendedTimeline" class="forum-timeline-container active">
+        <!-- “推荐”版块的内容（即原来的主页帖子）将显示在这里 -->
+    </div>
+    <div id="gossipTimeline" class="forum-timeline-container">
+        <!-- “八卦”版块的内容将显示在这里 -->
+    </div>
+</div>
+
+<!-- ↑↑↑ 请在这里结束复制 ↑↑↑ -->
     
     <!-- ↓↓↓ 请用这段新代码，完整替换旧的 #forumSearchView 容器 ↓↓↓ -->
 <div class="forum-content-view" id="forumSearchView">
@@ -8092,21 +8209,32 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
 <div id="forumSettingsModal" class="modal">
     <div class="modal-content">
         <div class="modal-title">论坛设置</div>
-        <div class="form-group">
-            <label class="form-label">选择世界观</label>
-            <div id="currentWorldview" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openWorldviewModal()">
-                默认世界观
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="form-label">选择参与发帖的AI</label>
-            <div id="forumAiSelectList" class="multi-select-list" style="max-height: 150px;">
-                <!-- AI列表将动态生成在这里 -->
-            </div>
-        </div>
+        <!-- ↓↓↓ 在 forumSettingsModal 中，用这个代码块替换旧的“选择世界观”部分 ↓↓↓ -->
+<div class="form-group">
+    <label class="form-label">推荐世界观</label>
+    <div id="currentRecommendedWorldview" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openWorldviewModalFor('recommended')">
+        <!-- 名称将由JS填充 -->
+    </div>
+</div>
+<div class="form-group">
+    <label class="form-label">八卦世界观</label>
+    <div id="currentGossipWorldview" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openWorldviewModalFor('gossip')">
+        <!-- 名称将由JS填充 -->
+    </div>
+</div>
+<div class="form-group">
+    <label class="form-label">关注世界观</label>
+    <div id="currentFollowingWorldview" class="form-input" style="line-height: 2.5; cursor: pointer;" onclick="openWorldviewModalFor('following')">
+        <!-- 名称将由JS填充 -->
+    </div>
+</div>
+
+          
         <div class="modal-buttons" style="margin-top: 15px;">
-            <button class="modal-btn modal-btn-confirm" onclick="saveForumSettingsAndRefresh()">保存并刷新论坛</button>
-        </div>
+    <button class="modal-btn modal-btn-cancel" onclick="closeForumSettingsModal()">取消</button>
+   <!-- 核心修改：将 onclick 事件改为调用我们新创建的函数 -->
+<button class="modal-btn modal-btn-confirm" onclick="saveForumWorldviewSettings()">保存</button>
+</div>
     </div>
 </div>
 
@@ -8152,14 +8280,18 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         </div>
     </div>
 
-    <!-- 菜单项列表 -->
-    <div id="forumMenuList" style="padding-top: 15px; border-top: 1px solid #eee;">
-        <div class="forum-menu-item" onclick="openForumCharacterSelect()">角色选择</div>
-        <div class="forum-menu-item" onclick="openWorldviewManagement()">世界观选择</div>
-        <div class="forum-menu-item" onclick="openForumRules()">论坛规则</div>
-        <!-- 未来可以在这里添加更多项 -->
-    </div>
+   <!-- ↓↓↓ 请用这段新代码替换旧的 forumMenuList ↓↓↓ -->
+
+<div id="forumMenuList" style="padding-top: 15px; border-top: 1px solid #eee;">
+    <div class="forum-menu-item" onclick="openForumCharacterSelect()">角色选择</div>
+    <div class="forum-menu-item" onclick="openForumSettingsModal()">世界观选择</div>
+    <div class="forum-menu-item" onclick="openForumRules()">论坛规则</div>
 </div>
+
+</div>
+
+
+<!-- ↑↑↑ 替换到此结束 ↑↑↑ -->
 
 <!-- 新增：菜单的背景遮罩 -->
 <div id="forumMenuOverlay" class="forum-menu-overlay" onclick="closeForumSideMenu()"></div>
@@ -8173,7 +8305,8 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         </div>
         <div class="modal-buttons" style="margin-top: 15px;">
             <button class="modal-btn modal-btn-cancel" onclick="closeForumCharacterSelect()">取消</button>
-            <button class="modal-btn modal-btn-confirm" onclick="saveForumCharacterSelect()">保存</button>
+            <!-- 核心修改：确保 onclick 事件调用的是我们修改后的专属函数 -->
+<button class="modal-btn modal-btn-confirm" onclick="saveForumCharacterSelect()">保存</button>
         </div>
     </div>
 </div>
@@ -8368,14 +8501,27 @@ let currentEditingMessageId = null;
 // ...（在其他全局变量下方）
 let forumPosts = []; // 存储论坛帖子
 
+let currentEditingWorldviewSection = 'recommended'; // 默认为推荐
+
+let currentGossipPosts = []; // 【【【新增这一行】】】
+
+let currentForumSubTab = 'recommended'; // 用于记录当前激活的论坛子版块
+
 // --- 粘贴到其他全局变量旁边 ---
 let worldviews = []; // 存储所有世界观
+
+// --- ↓↓↓ 用这行新代码替换旧的 forumSettings 定义 ↓↓↓ ---
 let forumSettings = {
-    worldviewId: 'default_school', // 当前选中的世界观ID
-    activeAiIds: [] // 参与发帖的AI
+    recommendedWorldviewId: 'default_modern_city', // 推荐版块的世界观
+    gossipWorldviewId: 'default_modern_city',      // 八卦版块的世界观
+    followingWorldviewId: 'default_modern_city',   // 关注版块的世界观
+    activeAiIds: [] 
 };
+
 let currentForumPosts = []; // 用于持久化当前显示的帖子
 let currentEditingWorldviewId = null; // 正在编辑的世界观ID
+
+let currentFollowingPosts = [];
 
 let forumRules = []; // 用于存储所有论坛规则
 let currentEditingRuleId = null; // 用于编辑
@@ -9226,6 +9372,8 @@ const appSettings = {
     forumRules: forumRules,
     forumSettings: forumSettings,
     currentForumPosts: currentForumPosts,
+    currentGossipPosts: currentGossipPosts, 
+    currentFollowingPosts: currentFollowingPosts,
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
@@ -9426,8 +9574,21 @@ const settings = loadedAppSettings;
 
 // ...加载 settings 之后...
 worldviews = settings.worldviews || [];
-forumSettings = settings.forumSettings || { worldviewId: 'default_school', activeAiIds: [] };
+
+// --- ↓↓↓ 在 loadData 函数中，用这段代码替换 forumSettings 的加载逻辑 ↓↓↓ ---
+forumSettings = settings.forumSettings || { recommendedWorldviewId: 'default_modern_city', gossipWorldviewId: 'default_modern_city', followingWorldviewId: 'default_modern_city', activeAiIds: [] };
+// 兼容旧数据，如果只存在 worldviewId，就把它赋值给三个新版块
+if (settings.forumSettings && settings.forumSettings.worldviewId && !settings.forumSettings.recommendedWorldviewId) {
+    forumSettings.recommendedWorldviewId = settings.forumSettings.worldviewId;
+    forumSettings.gossipWorldviewId = settings.forumSettings.worldviewId;
+    forumSettings.followingWorldviewId = settings.forumSettings.worldviewId;
+}
+
 currentForumPosts = settings.currentForumPosts || [];
+
+currentGossipPosts = settings.currentGossipPosts || []; 
+
+currentFollowingPosts = settings.currentFollowingPosts || []; 
 
 // 【修改后】添加一个更通用的默认世界观，防止初次使用时为空
 if (worldviews.length === 0) {
@@ -9769,7 +9930,18 @@ userPersonas = [userProfile];
 
                 function setActivePage(pageId) {
     const phoneDiv = document.querySelector('.phone');
-    
+    const forumPageIds = ['forumScreen', 'forumDetailView']; // 包含了所有属于论坛App的页面ID
+
+    // --- 核心修改在这里 ---
+    // 检查即将打开的页面是否属于论坛App
+    if (forumPageIds.includes(pageId)) {
+        // 如果是，就给 .phone 容器添加“论坛激活”的标记
+        phoneDiv.classList.add('forum-app-active');
+    } else {
+        // 如果不是，就移除这个标记，恢复默认样式
+        phoneDiv.classList.remove('forum-app-active');
+    }
+    // --- 修改结束 ---
     // 【新增的核心逻辑】
     // 检查当前打开的是不是聊天界面
     if (pageId === 'chatScreen') {
@@ -15326,6 +15498,13 @@ async function generateSimAppContent(characterId, appName) {
     if (!character) return;
     const roleSummary = await getOrGenerateRoleSummary(character);
 
+// --- ↓↓↓ 将新增的代码粘贴在这里 ↓↓↓ ---
+const userPersonaInfo = `
+【你的互动对象 (用户) 的人设】:
+- 姓名: ${userProfile.name}
+- 人设: ${userProfile.personality || '普通人'}
+`;
+// --- ↑↑↑ 粘贴到此结束 ↑↑↑ ---
 
 // 这是新代码
 const recentChatHistory = (chatHistories[characterId] || [])
@@ -15349,6 +15528,7 @@ const recentChatHistory = (chatHistories[characterId] || [])
     
     let prompt = `你正在深度模拟角色"${character.name}"的手机，你需要生成手机中某个应用的内容。
     【角色核心人设】: ${roleSummary} 
+    ${userPersonaInfo}
     【核心记忆库 (最近20条聊天记录 & 最近1条朋友圈)】:
     --- 聊天记录开始 ---
     ${recentChatHistory || '无聊天记录。'}
@@ -20203,7 +20383,7 @@ async function deleteDiary(event, diaryId, authorId) {
 // --- 步骤三：替换 renderForumTimeline 函数 ---
 
 function renderForumTimeline() {
-    const container = document.getElementById('forumHomeView');
+    const container = document.getElementById('recommendedTimeline');
     container.innerHTML = '';
     
     if (!currentForumPosts || currentForumPosts.length === 0) {
@@ -20369,46 +20549,55 @@ function closeNewPostModal() {
     document.getElementById('newPostModal').classList.remove('show');
 }
 
+// --- ↓↓↓ 请用这个【版块感知版】，完整替换旧的 postForumMessage 函数 ↓↓↓ ---
+
 /**
- * 发布新帖子 (用户自己发帖)
+ * 发布新帖子 (用户自己发帖) (V2 - 版块感知版)
  */
 async function postForumMessage() {
     const content = document.getElementById('newPostContentInput').value.trim();
     if (!content) return showAlert('帖子内容不能为空');
 
+    // ★★★ 核心修改 1：为新帖子贴上正确的“版块归属”标签 ★★★
     const newPost = {
         id: generateUniqueId(),
         authorId: userProfile.id, // 作者是用户自己
         content: content,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        comments: [],
+        section: currentForumSubTab // <-- 使用全局变量，记录当前所在的版块
     };
 
     const newId = await dbManager.set('forumPosts', newPost);
     newPost.id = newId;
-    forumPosts.unshift(newPost); // 添加到最前面
 
+    // 更新总列表
+    forumPosts.unshift(newPost);
+
+    // ★★★ 核心修改 2：根据版块，将帖子放入正确的“篮子” ★★★
+    if (currentForumSubTab === 'recommended') {
+        currentForumPosts.unshift(newPost);
+    } else if (currentForumSubTab === 'gossip') {
+        currentGossipPosts.unshift(newPost);
+    } else if (currentForumSubTab === 'following') {
+        currentFollowingPosts.unshift(newPost);
+    }
+    
     await saveData();
-    renderForumTimeline(); // 刷新时间线
+
+    // ★★★ 核心修改 3：根据版块，调用正确的“刷新工人”来更新UI ★★★
+    if (currentForumSubTab === 'recommended') {
+        renderForumTimeline();
+    } else if (currentForumSubTab === 'gossip') {
+        renderGossipTimeline();
+    } else if (currentForumSubTab === 'following') {
+        renderFollowingTimeline();
+    }
+
     closeNewPostModal();
 }
 
-/**
- * 删除帖子
- * @param {Event} event - 点击事件
- * @param {string} postId - 帖子ID
- */
-async function deleteForumPost(event, postId) {
-    event.stopPropagation();
-    showConfirm('确定要删除这条帖子吗？', async (confirmed) => {
-        if (!confirmed) return;
-        
-        await dbManager.delete('forumPosts', postId);
-        forumPosts = forumPosts.filter(post => post.id !== postId);
-        
-        await saveData();
-        renderForumTimeline();
-    });
-}
+// --- ↑↑↑ 替换到此结束 ↑↑↑ ---
 
 /**
  * 打开论坛设置
@@ -21036,31 +21225,32 @@ document.getElementById('refreshTrendsBtn').addEventListener('click', () => {
     setTimeout(renderTrends, 500); // 延迟一点刷新，增加体验感
 });
 
-// --- 将这一整块新函数粘贴到您的 <script> 区域 ---
-
 /**
- * 【修正版】打开论坛设置的主弹窗
+ * 【合并/修正后的版本】打开论坛设置弹窗
  */
 function openForumSettingsModal() {
-    // 关键：在打开弹窗前，先渲染好里面的动态内容
-    renderForumAiSelectList();
+    // 这个函数的核心任务：准备并显示“论坛设置”弹窗
+    
+    // 1. 渲染/更新世界观的选择状态，确保显示的是当前设置
     updateCurrentWorldviewDisplay();
     
-    // 现在再显示弹窗
-    const modal = document.getElementById('forumSettingsModal');
-    if (modal) {
-         modal.classList.add('show');
-    } else {
-        console.error("错误：未能找到新的论坛设置弹窗！");
-    }
+    // 2. 渲染可参与发帖的AI列表
+    renderForumAiSelectList();
+    
+    // 3. 显示弹窗
+    document.getElementById('forumSettingsModal').classList.add('show');
 }
+
+// --- ↓↓↓ 请用这个正确的版本，完整替换旧的 renderForumAiSelectList 函数 ↓↓↓ ---
 
 /**
  * 渲染可参与发帖的AI列表
  */
 function renderForumAiSelectList() {
     const container = document.getElementById('forumAiSelectList');
-    container.innerHTML = '';
+    if (!container) return; // 安全检查，如果找不到容器就退出
+    container.innerHTML = ''; // 清空旧内容
+
     friends.filter(f => !f.isGroup).forEach(friend => {
         const isChecked = forumSettings.activeAiIds.includes(friend.id);
         const item = document.createElement('div');
@@ -21073,13 +21263,19 @@ function renderForumAiSelectList() {
     });
 }
 
-/**
- * 更新设置弹窗中当前选择的世界观名称
- */
+// --- ↑↑↑ 替换到此结束 ↑↑↑ ---
+
+// --- ↓↓↓ 用这个新版本替换旧的 updateCurrentWorldviewDisplay 函数 ↓↓↓ ---
 function updateCurrentWorldviewDisplay() {
-    const display = document.getElementById('currentWorldview');
-    const selected = worldviews.find(w => w.id === forumSettings.worldviewId);
-    display.textContent = selected ? selected.name : '未选择';
+    ['recommended', 'gossip', 'following'].forEach(section => {
+        const displayId = `current${section.charAt(0).toUpperCase() + section.slice(1)}Worldview`;
+        const worldviewId = forumSettings[section + 'WorldviewId'];
+        const displayEl = document.getElementById(displayId);
+        if(displayEl) {
+            const selected = worldviews.find(w => w.id === worldviewId);
+            displayEl.textContent = selected ? selected.name : '未选择';
+        }
+    });
 }
 
 /**
@@ -21090,31 +21286,37 @@ function openWorldviewModal() {
     document.getElementById('worldviewModal').classList.add('show');
 }
 
-/**
- * 渲染世界观列表
- */
+// --- ↓↓↓ 用这个新版本替换旧的 renderWorldviewList 函数 ↓↓↓ ---
 function renderWorldviewList() {
     const container = document.getElementById('worldviewList');
+    // 【核心修改】根据正在编辑的版块，获取对应的 worldviewId
+    const selectedId = forumSettings[currentEditingWorldviewSection + 'WorldviewId'];
+
     container.innerHTML = '';
     worldviews.forEach(worldview => {
         const item = document.createElement('div');
-        item.className = `friend-item ${worldview.id === forumSettings.worldviewId ? 'worldview-active' : ''}`;
+        // 【核心修改】使用 selectedId 来判断是否添加 active class
+        item.className = `friend-item ${worldview.id === selectedId ? 'worldview-active' : ''}`;
         item.innerHTML = `
-            <div class="friend-info" style="flex-grow: 1;" onclick="selectWorldview('${worldview.id}')">
-                <div class="friend-name">${worldview.name}</div>
-            </div>
-            <button class="nav-btn" onclick="openWorldviewEditor('${worldview.id}'); event.stopPropagation();">编辑</button>
-        `;
+    <div class="friend-info" style="flex-grow: 1; cursor: pointer;" onclick="selectWorldview('${worldview.id}')">
+        <div class="friend-name">${worldview.name}</div>
+    </div>
+    <div class="item-actions">
+        <span class="edit-btn" title="编辑" onclick="openWorldviewEditor('${worldview.id}'); event.stopPropagation();">
+            <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/></svg>
+        </span>
+        <span class="delete-btn" title="删除" onclick="deleteWorldview(event, '${worldview.id}')">✕</span>
+    </div>
+`;
         container.appendChild(item);
     });
 }
 
-/**
- * 选中一个世界观
- */
+// --- ↓↓↓ 用这个新版本替换旧的 selectWorldview 函数 ↓↓↓ ---
 function selectWorldview(worldviewId) {
-    forumSettings.worldviewId = worldviewId;
-    updateCurrentWorldviewDisplay();
+    // 【核心修改】为正在编辑的版块设置新的 worldviewId
+    forumSettings[currentEditingWorldviewSection + 'WorldviewId'] = worldviewId;
+    updateCurrentWorldviewDisplay(); // 更新主设置弹窗的显示
     document.getElementById('worldviewModal').classList.remove('show');
 }
 
@@ -21175,22 +21377,35 @@ async function saveWorldview() {
     updateCurrentWorldviewDisplay(); // 更新主设置弹窗的显示
 }
 
+// --- ↓↓↓ 请用下面这两个新函数，完整替换掉旧的 saveForumSettings 函数 ↓↓↓ ---
+
 /**
- * 保存论坛设置并刷新
+ * 【新】专门用于保存世界观设置
  */
-async function saveForumSettingsAndRefresh() {
-    // 保存选中的AI
-    forumSettings.activeAiIds = [];
-    document.querySelectorAll('#forumAiSelectList input:checked').forEach(checkbox => {
+async function saveForumWorldviewSettings() {
+    // 这个函数现在非常纯粹，只负责保存和关闭弹窗
+    await saveData();
+    closeForumSettingsModal(); // 使用正确的关闭函数
+    showAlert('世界观设置已保存！\n刷新论坛后生效。');
+}
+
+/**
+ * 【修改后】专门用于保存角色选择
+ */
+async function saveForumCharacterSelect() {
+    forumSettings.activeAiIds = []; // 清空旧选择
+    // 从角色选择弹窗中读取新选择
+    document.querySelectorAll('#forumCharacterSelectList input:checked').forEach(checkbox => {
         forumSettings.activeAiIds.push(checkbox.value);
     });
     
-    await saveData();
-    document.getElementById('forumSettingsModal').classList.remove('show');
-    
-    // 立即刷新
-    refreshForumTimeline();
+    await saveData(); // 保存数据
+    showAlert('角色选择已保存！');
+    closeForumCharacterSelect(); // 关闭角色选择弹窗
+    closeForumSideMenu(); // 同时关闭侧边栏
 }
+
+// --- ↑↑↑ 替换到此结束 ↑↑↑ ---
 
 // --- 步骤二：替换 refreshForumTimeline 函数 ---
 
@@ -21204,6 +21419,7 @@ async function refreshForumTimeline() {
 
     // 【修正2】将加载动画的启动和停止逻辑，包裹住整个函数的核心部分
     try {
+    if (currentForumSubTab === 'recommended') { 
         // --- 核心修改：立刻启动加载动画！---
         if (refreshBtn) {
             refreshBtn.classList.add('loading');
@@ -21216,7 +21432,8 @@ async function refreshForumTimeline() {
             throw new Error("请先在论坛设置中配置API");
         }
 
-        const worldview = worldviews.find(w => w.id === forumSettings.worldviewId);
+        // 【核心修改】明确读取“推荐”版块的世界观
+const worldview = worldviews.find(w => w.id === forumSettings.recommendedWorldviewId);
         if (!worldview) {
             throw new Error("请先在论坛设置中选择一个世界观");
         }
@@ -21316,7 +21533,8 @@ const prompt = `
                 ...p, 
                 id: `post_${generateUniqueId()}`, 
                 timestamp: postDate.toISOString(),
-                authorId: authorIsAiFriend ? authorIsAiFriend.id : null 
+                authorId: authorIsAiFriend ? authorIsAiFriend.id : null ,
+                section: 'recommended' 
             };
 
             if (!newPost.authorId && newPost.authorName !== '匿名用户') {
@@ -21330,6 +21548,60 @@ const prompt = `
         await saveData();
         renderForumTimeline();
         showToast('论坛已刷新！');
+
+} else if (currentForumSubTab === 'gossip') {
+   
+
+    // 立即启动按钮旋转动画
+    if (refreshBtn) {
+        refreshBtn.classList.add('loading');
+        refreshBtn.disabled = true;
+    }
+    
+    try {
+        // 这部分核心逻辑保持不变
+        currentGossipPosts = await generateGossipPosts();
+        await saveData();
+        renderGossipTimeline(); // 这个函数会先清空再渲染，实现无缝替换
+        showToast('“八卦”已刷新！');
+
+    } catch (error) {
+        // 新增：如果生成失败，需要有提示
+        console.error("生成八卦帖子失败:", error);
+        showAlert(`刷新失败: ${error.message}`);
+    } finally {
+        // 无论成功还是失败，最后都必须停止按钮旋转
+        if (refreshBtn) {
+            refreshBtn.classList.remove('loading');
+            refreshBtn.disabled = false;
+        }
+    }
+
+// 这是你要替换成的新代码
+} else if (currentForumSubTab === 'following') {
+    // 如果当前在“关注”版块
+    if (refreshBtn) {
+        refreshBtn.classList.add('loading');
+        refreshBtn.disabled = true;
+    }
+    
+    try {
+        // 调用我们稍后会创建的新函数来生成内容
+        currentFollowingPosts = await generateFollowingPosts();
+        await saveData(); // 保存新生成的数据
+        renderFollowingTimeline(); // 渲染到界面上
+        showToast('“关注”已刷新！');
+
+    } catch (error) {
+        console.error("生成关注动态失败:", error);
+        showAlert(`刷新失败: ${error.message}`);
+    } finally {
+        if (refreshBtn) {
+            refreshBtn.classList.remove('loading');
+            refreshBtn.disabled = false;
+        }
+    }
+}
 
     } catch (error) {
         // 如果 try 块中的任何地方出错，就在这里弹窗提示
@@ -21357,56 +21629,128 @@ function backToForumTimeline() {
 }
 
 
+// --- ↓↓↓ 请用这个【体验优化版】，完整替换旧的 openForumDetailView 函数 ↓↓↓ ---
+
 /**
- * 核心功能：打开帖子详情页 (V2 - 修复喜欢列表无法跳转版)
+ * 核心功能：打开帖子详情页 (V5 - 异步评论加载版)
  * @param {string} postId - 要查看的帖子ID
  */
 async function openForumDetailView(postId) {
-    // --- ▼▼▼ 核心修复就在这一行！ ▼▼▼ ---
-    // 首先，尝试在当前的主时间线(currentForumPosts)里寻找帖子。
-    // 如果找不到 (因为主页被刷新了)，就用 "||" (或者) 去喜欢列表(forumLikes)里再找一次。
-    const post = currentForumPosts.find(p => p.id === postId) || forumLikes.find(p => p.id === postId);
-    // --- ▲▲▲ 修复结束 ▲▲▲ ---
+    // 1. 查找帖子（这部分逻辑保持不变）
+    const post = currentForumPosts.find(p => p.id === postId) || 
+                 forumLikes.find(p => p.id === postId) || 
+                 currentGossipPosts.find(p => p.id === postId) ||
+                 currentFollowingPosts.find(p => p.id === postId);
 
     if (!post) {
-        // 如果两个地方都找不到，给用户一个明确的提示
         showAlert("帖子详情已不存在或已被刷新。");
         return;
     }
 
-    // (后面的所有代码保持不变，因为它们现在能拿到正确的post对象了)
+    // 2. 立即切换到详情页
     setActivePage('forumDetailView');
-    const detailContainer = document.getElementById('forumDetailContent');
-    detailContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">正在加载评论...</div>';
 
-    if (post.comments && post.comments.length > 0) {
-        renderForumDetailView(post);
-    } else {
-        await generatePostComments(postId);
-        const updatedPost = currentForumPosts.find(p => p.id === postId) || forumLikes.find(p => p.id === postId);
-        renderForumDetailView(updatedPost);
+    // --- ★★★ 核心修改：重构渲染流程 ★★★ ---
+
+    // 3. 【立即执行】无论评论是否存在，都先调用渲染函数，把主贴内容显示出来。
+    //    此时，如果post对象里没有comments，renderForumDetailView会自动显示“加载中”。
+    renderForumDetailView(post);
+
+    // 4. 【后台执行】如果帖子的评论不存在或为空，则在后台默默地开始生成评论。
+    //    这个过程不会再阻塞界面的显示。
+    if (!post.comments || post.comments.length === 0) {
+        // 使用一个自调用异步函数，让评论生成在“后台”进行
+        (async () => {
+            try {
+                await generatePostComments(postId);
+
+                // 5. 评论生成后，再次查找包含了新评论的完整帖子数据
+                const updatedPost = currentForumPosts.find(p => p.id === postId) || 
+                                    forumLikes.find(p => p.id === postId) || 
+                                    currentGossipPosts.find(p => p.id === postId) ||
+                                    currentFollowingPosts.find(p => p.id === postId);
+
+                // 6. 【再次渲染】用包含了评论的完整数据，重新渲染一次详情页，
+                //    此时“加载中”的提示会被真实的评论列表替换掉。
+                if (updatedPost) {
+                    renderForumDetailView(updatedPost);
+                }
+            } catch (error) {
+                console.error("后台生成评论时出错:", error);
+                // 如果后台生成失败，也在评论区显示错误信息
+                const errorContainer = document.getElementById('forumDetailContent').querySelector('.replies-container');
+                if(errorContainer) {
+                    errorContainer.innerHTML = `<div style="text-align: center; padding: 40px; color: red;">评论加载失败: ${error.message}</div>`;
+                }
+            }
+        })();
     }
+    // --- ★★★ 修改结束 ★★★ ---
 }
 
+// --- ↑↑↑ 替换到此结束 ↑↑↑ ---
+
 /**
- * 核心功能：调用AI为指定帖子生成评论 (最终纯文本版)
+ * 核心功能：调用AI为指定帖子生成评论 (V2 - 修复关注版块逻辑)
  * @param {string} postId - 帖子ID
  */
 async function generatePostComments(postId) {
-    const postIndex = currentForumPosts.findIndex(p => p.id === postId);
-    if (postIndex === -1) return;
+    // --- ★★★ 核心修复 1：扩大查找范围，现在会检查所有三个列表 ★★★ ---
+    let postIndex = currentForumPosts.findIndex(p => p.id === postId);
+    let targetArray = currentForumPosts; // 默认在“推荐”列表里操作
+
+    if (postIndex === -1) {
+        // 如果在“推荐”里没找到，就去“八卦”列表里找
+        postIndex = currentGossipPosts.findIndex(p => p.id === postId);
+        targetArray = currentGossipPosts; 
+    }
     
-    const post = currentForumPosts[postIndex];
-    // 修正：即使是路人发的帖子，也需要正确获取作者名
+    if (postIndex === -1) {
+        // 如果还找不到，就去“关注”列表里找
+        postIndex = currentFollowingPosts.findIndex(p => p.id === postId);
+        targetArray = currentFollowingPosts;
+    }
+    // --- ★★★ 修复结束 ★★★ ---
+
+    if (postIndex === -1) return; // 如果所有列表都找不到，才退出
+    
+    const post = targetArray[postIndex];
     const postAuthor = getAuthorById(post.authorId) || { name: post.authorName };
 
     const settings = await dbManager.get('apiSettings', 'settings');
     if (!settings.apiUrl || !settings.apiKey) return;
 
-  // --- 修改后 ---
-// 首先，在函数开头，我们需要先获取到世界观和规则的数据
-const worldview = worldviews.find(w => w.id === forumSettings.worldviewId);
-if (!worldview) return; // 安全检查
+    // --- ★★★ 核心修复 2：根据帖子的“版块标签”智能选择正确的世界观 ★★★ ---
+    let worldview;
+    if (post.section === 'gossip') {
+        // 如果是八卦帖子，就读取“八卦世界观”的设置
+        worldview = worldviews.find(w => w.id === forumSettings.gossipWorldviewId);
+    } else if (post.section === 'following') {
+        // 如果是关注帖子，就读取“关注世界观”的设置
+        worldview = worldviews.find(w => w.id === forumSettings.followingWorldviewId);
+    } else {
+        // 否则（包括推荐版块），都读取“推荐世界观”的设置
+        worldview = worldviews.find(w => w.id === forumSettings.recommendedWorldviewId);
+    }
+    
+    // 如果因为某些原因没找到，提供一个备用方案，防止程序出错
+    if (!worldview) {
+        worldview = worldviews.find(w => w.id === 'default_modern_city') || worldviews[0];
+        console.warn(`警告：未找到版块 "${post.section}" 指定的世界观，已使用默认世界观。`);
+    }
+    // --- ★★★ 修复结束 ★★★ ---
+
+// 我们先准备一个变量来存放这条规则
+let authorInteractionRule = '';
+
+// 然后判断帖子的作者是不是用户自己
+if (post.authorId === userProfile.id) {
+    // 如果作者是用户，就给AI下达“禁止扮演”的铁令
+    authorInteractionRule = `4.  **【【【最高优先级铁律：禁止扮演用户！！！】】】**: 帖子作者是用户本人 ("${postAuthor.name}")。你 **绝对不能** 生成任何由 "${postAuthor.name}" 发表的评论。用户会自己回复。你生成的所有评论都必须来自随机的路人网友。`;
+} else {
+    // 如果作者是AI，就保持原来的规则，让AI作者可以互动
+    authorInteractionRule = `4.  **【作者互动】**: 在8条评论中，必须有1到2条是帖子作者（"${postAuthor.name}"）亲自下场回复别人的评论。`;
+}
 
 const prompt = `
 【【【最高优先级铁律 (必须严格遵守)】】】
@@ -21426,8 +21770,11 @@ const prompt = `
     1.  **【角色多样性】**: 评论区必须模拟真实网络生态，包含多种角色：理性的分析者、情绪化的支持者/反对者、抖机灵的、单纯的路人、甚至偶尔出现一两个“杠精”。
     2.  **【昵称网感】**: 评论者的昵称必须非常生活化、有网感，例如“今天没吃饭”、“月亮警察”、“脆鲨爱好者”等。严禁使用“用户A”、“评论者1”这种代号。
     3.  **【内容高度相关】**: 所有评论都必须紧密围绕帖子内容展开，表达鲜明的观点或情绪。
-    4.  **【作者互动】**: 在8条评论中，必须有1到2条是帖子作者（"${postAuthor.name}"）亲自下场回复别人的评论。
-    5.  **【语言风格】**: 全部使用简体中文，语气要口语化。
+    4.  **【语言风格】**: 全部使用简体中文，语气要口语化。
+    5. ${authorInteractionRule} // 【【【在这里使用我们新创建的智能规则变量】】】
+
+
+
 
     【【【输出格式铁律 (必须严格遵守)】】】
     你的回复必须是纯文本。每一条评论都必须严格遵循以下格式，评论之间用两个换行符隔开：
@@ -21489,7 +21836,7 @@ const comments = responseText
     .filter(Boolean);
 
         if (comments.length > 0) {
-            currentForumPosts[postIndex].comments = comments;
+            targetArray[postIndex].comments = comments;
             await saveData();
         } else {
             // 如果解析后一条评论都没有，说明AI返回格式有问题
@@ -21502,32 +21849,26 @@ const comments = responseText
     }
 }
 
+// --- ↓↓↓ 请用这个【体验优化版】，完整替换旧的 renderForumDetailView 函数 ↓↓↓ ---
+
 /**
- * 核心功能：将帖子和评论渲染成【推特复刻版 V3 - 最终布局】详情页UI
- * @param {object} post - 包含评论的完整帖子对象
+ * 核心功能：将帖子和评论渲染成详情页UI (V4 - 异步评论占位版)
+ * @param {object} post - 包含或不包含评论的帖子对象
  */
 function renderForumDetailView(post) {
-    // 获取整个详情页的容器，我们将重构它的内部结构
     const pageContainer = document.getElementById('forumDetailView');
-
-// 在函数开头添加这一行
-const postViews = Math.floor(Math.random() * 8000) + 100;
-
-    // --- 1. 准备主贴内容 ---
+    const postViews = Math.floor(Math.random() * 8000) + 100;
+    
     let postAuthor = getAuthorById(post.authorId);
+    if (!postAuthor || postAuthor.id === 'unknown') {
+        postAuthor = {
+            name: post.authorName,
+            avatar: post.authorAvatarChar,
+            avatarImage: post.authorAvatarUrl,
+            id: `passerby_${post.id}`
+        };
+    }
 
-// 核心修复：如果getAuthorById返回了“未知用户”或无效值，
-// 我们就从帖子数据本身来构建作者信息。
-if (!postAuthor || postAuthor.id === 'unknown') {
-    postAuthor = {
-        name: post.authorName,
-        avatar: post.authorAvatarChar,
-        avatarImage: post.authorAvatarUrl,
-        id: `passerby_${post.id}` // 给路人一个临时的唯一ID
-    };
-}
-
-    // 智能判断主贴作者的头像
     const postAvatarHtml = post.authorAvatarUrl
         ? `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`
         : (postAuthor.avatarImage
@@ -21544,55 +21885,37 @@ if (!postAuthor || postAuthor.id === 'unknown') {
                         <span class="post-handle">@${postAuthor.name.replace(/\s+/g, '')}</span>
                     </div>
                 </div>
-<button class="forum-follow-btn">关注</button>
+                <button class="forum-follow-btn">关注</button>
             </div>
             <div class="post-text" style="font-size: 15px; line-height: 1.5; margin: 15px 0; white-space: pre-wrap; word-wrap: break-word;">${post.content.trim().replace(/\n/g, '<br>')}</div>
-            
             <div class="post-stats-bar">
-    <span>
-    ${new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}·${new Date(post.timestamp).toLocaleDateString()}·<strong style="color: var(--text-color, #000);">${postViews.toLocaleString()}</strong> 次查看
-</span>
-</div>
-
-${generateForumActionsHtml(post.id, false)}
-
+                <span>${new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${new Date(post.timestamp).toLocaleDateString()} · <strong style="color: var(--text-color, #000);">${postViews.toLocaleString()}</strong> 次查看</span>
+            </div>
+            ${generateForumActionsHtml(post.id, false)}
         </div>
-       <div class="replies-header">
-    最相关的回复
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>
-</div>
+        <div class="replies-header">最相关的回复 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg></div>
     `;
 
-    // --- 2. 准备评论区内容 ---
+    // --- ★★★ 核心修改：在这里处理评论区的不同状态 ★★★ ---
     let commentsHtml = '';
     if (post.comments && post.comments.length > 0) {
+        // **状态一：评论已加载完毕**，正常渲染所有评论
         commentsHtml = post.comments.map(comment => {
             let avatarHtml = '';
-            // 如果是主贴作者回复
             if (comment.authorName === postAuthor.name) {
                 avatarHtml = postAvatarHtml;
-            } else { // 其他路人评论
-
-                // --- 核心修改在这里 ---
+            } else {
                 if (comment.isAnonymous) {
-                    // 1. 如果是匿名，显示固定的匿名头像
                     avatarHtml = `<div class="post-avatar">?</div>`;
                 } else if (comment.authorAvatarUrl) {
-                    // 2. 如果保存了URL，就直接使用这个URL
                     avatarHtml = `<div class="post-avatar" style="background-image: url('${comment.authorAvatarUrl}')"></div>`;
                 } else {
-                    // 3. 备用方案，以防万一
                     avatarHtml = `<div class="post-avatar">?</div>`;
                 }
-                // --- 修改结束 ---
             }
-
             return `
                 <div class="comment-thread-item">
-                    <div class="comment-avatar-container">
-                        ${avatarHtml}
-                        <div class="thread-line"></div>
-                    </div>
+                    <div class="comment-avatar-container">${avatarHtml}<div class="thread-line"></div></div>
                     <div class="comment-content-container">
                         <div class="post-header">
                             <span class="post-author-name">${comment.authorName}</span>
@@ -21600,16 +21923,17 @@ ${generateForumActionsHtml(post.id, false)}
                             <span class="post-more-btn" style="margin-left: auto;">...</span>
                         </div>
                         <div class="post-text">${comment.content}</div>
-
-${generateForumActionsHtml()}
-
+                        ${generateForumActionsHtml()}
                     </div>
                 </div>
             `;
         }).join('');
+    } else {
+        // **状态二：评论还未加载**，显示一个占位的加载提示
+        commentsHtml = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">正在加载评论...</div>';
     }
+    // --- ★★★ 修改结束 ★★★ ---
 
-    // --- 3. 准备底部回复栏内容 ---
     const replyBarHtml = `
         <div class="bottom-reply-bar">
             <div class="reply-bar-avatar" style="background-image: url('${userProfile.avatarImage}')"></div>
@@ -21617,10 +21941,7 @@ ${generateForumActionsHtml()}
         </div>
     `;
 
-    // --- 4. 【核心】组装最终的页面结构 ---
-    // 我们先清空整个页面，然后重建导航栏、内容区，最后再把底部回复栏加上去。
-    
-    // 步骤 A: 重建基础框架
+    // 组装最终页面
     pageContainer.innerHTML = `
         <div class="nav-bar">
             <button class="nav-btn" onclick="backToForumTimeline()">←</button>
@@ -21628,16 +21949,11 @@ ${generateForumActionsHtml()}
             <div></div>
         </div>
         <div class="wechat-content" id="forumDetailContent">
-            <!-- 滚动内容将放在这里 -->
+            ${mainPostHtml}
+            <div class="replies-container">${commentsHtml}</div>
         </div>
+        ${replyBarHtml}
     `;
-
-    // 步骤 B: 填充滚动区域
-    const newContentContainer = document.getElementById('forumDetailContent');
-    newContentContainer.innerHTML = mainPostHtml + commentsHtml;
-
-    // 步骤 C: 将底部回复栏添加到页面容器的末尾，使其与内容区分离
-    pageContainer.insertAdjacentHTML('beforeend', replyBarHtml);
 }
 
 /**
@@ -21779,14 +22095,16 @@ function renderForumRulesList() {
             const item = document.createElement('div');
             item.className = 'friend-item'; // 复用好友列表的样式
             item.innerHTML = `
-                <div class="friend-info" style="flex-grow: 1;">
-                    <div class="friend-name">${rule.name}</div>
-                </div>
-                <!-- 编辑按钮 -->
-                <button class="nav-btn" onclick="openForumRuleEditor('${rule.id}'); event.stopPropagation();">编辑</button>
-                <!-- 删除按钮 -->
-                <button class="nav-btn" style="color: #ff3b30;" onclick="deleteForumRule(event, '${rule.id}')">删除</button>
-            `;
+    <div class="friend-info" style="flex-grow: 1; cursor: pointer;" onclick="openForumRuleEditor('${rule.id}')">
+        <div class="friend-name">${rule.name}</div>
+    </div>
+    <div class="item-actions">
+        <span class="edit-btn" title="编辑" onclick="openForumRuleEditor('${rule.id}'); event.stopPropagation();">
+            <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/></svg>
+        </span>
+        <span class="delete-btn" title="删除" onclick="deleteForumRule(event, '${rule.id}')">✕</span>
+    </div>
+`;
             container.appendChild(item);
         });
     }
@@ -22016,46 +22334,58 @@ function closeForumRulesModal() {
     }
 }
 
+// --- ↓↓↓ 请用这个【最终修复版】，完整替换旧的 toggleLikePost 函数 ↓↓↓ ---
+
 /**
- * 新增：处理帖子点赞/取消点赞的核心函数
+ * 【V3 最终修复版】新增：处理帖子点赞/取消点赞的核心函数
  * @param {Event} event - 点击事件
  * @param {string} postId - 帖子的ID
  */
 async function toggleLikePost(event, postId) {
     event.stopPropagation(); // 阻止事件冒泡，防止点赞时意外跳转页面
 
-    const postInTimeline = currentForumPosts.find(p => p.id === postId);
-    if (!postInTimeline) {
-        console.error("无法找到要点赞的帖子！");
+    // --- ★★★ 核心修复：在查找帖子的源头，加入 currentFollowingPosts ★★★ ---
+    const postToLike = currentForumPosts.find(p => p.id === postId) || 
+                     currentGossipPosts.find(p => p.id === postId) ||
+                     currentFollowingPosts.find(p => p.id === postId); // <--- 新增的查找范围
+
+    // 检查点：如果所有版块都找不到，再从“喜欢列表”里找，以处理“取消喜欢”的情况
+    if (!postToLike && !forumLikes.some(p => p.id === postId)) {
+        console.error("所有版块和喜欢列表中都无法找到要点赞的帖子！ID:", postId);
         return;
     }
 
     const likeIndex = forumLikes.findIndex(p => p.id === postId);
     const likeButtonSvg = event.currentTarget.querySelector('svg');
-    const likesCountSpan = document.getElementById(`likes-count-${postId}`);
+    const likesCountSpan = event.currentTarget.querySelector('span'); 
     let currentLikes = parseInt(likesCountSpan.textContent.replace(/,/g, ''), 10);
 
     if (likeIndex > -1) {
         // --- 如果已经喜欢了，就取消喜欢 ---
-        forumLikes.splice(likeIndex, 1); // 从喜欢列表移除
-        likeButtonSvg.style.color = ''; // 恢复默认颜色
-        likeButtonSvg.style.fill = 'currentColor'; // 确保SVG填充色也恢复
-        likesCountSpan.textContent = currentLikes > 0 ? currentLikes - 1 : 0; // 点赞数减一
+        forumLikes.splice(likeIndex, 1); 
+        likeButtonSvg.style.color = '';
+        likeButtonSvg.style.fill = 'currentColor';
+        likesCountSpan.textContent = isNaN(currentLikes) ? 0 : (currentLikes > 0 ? (currentLikes - 1) : 0);
     } else {
         // --- 如果还没喜欢，就添加喜欢 ---
-        forumLikes.unshift(postInTimeline); // 添加到喜欢列表的最前面
-        likeButtonSvg.style.color = 'red'; // 颜色变红
-        likeButtonSvg.style.fill = 'red'; // SVG填充色也变红
-        likesCountSpan.textContent = currentLikes + 1; // 点赞数加一
+        // 确保我们添加的是从 postToLike 找到的那个帖子对象
+        if (postToLike) {
+            forumLikes.unshift(postToLike); // 添加到喜欢列表
+            likeButtonSvg.style.color = 'red';
+            likeButtonSvg.style.fill = 'red';
+            likesCountSpan.textContent = isNaN(currentLikes) ? 1 : (currentLikes + 1);
+        }
     }
 
     // 更新数据库并保存
-    await dbManager.clear('forumLikes'); // 先清空旧的
+    await dbManager.clear('forumLikes');
     for (const post of forumLikes) {
-        await dbManager.set('forumLikes', post); // 再写入新的
+        await dbManager.set('forumLikes', post);
     }
-    await saveData(); // 顺便保存其他可能的数据
+    await saveData();
 }
+
+// --- ↑↑↑ 替换到此结束 ↑↑↑ ---
 
 /**
  * 将自定义界面CSS应用到页面上 (V3 - 精准范围版)
@@ -22379,6 +22709,413 @@ function applyAppearanceForChat(characterId) {
     applyBubbleColors(settings);
     applyCustomBubbleCSS(settings.customBubbleCSS); // 假设你已修改它来接收css字符串
     applyChatInterfaceCSS(settings.chatInterfaceCSS);
+}
+
+// --- ↓↓↓ 将这个新函数粘贴到 switchForumSubTab 函数的上方 ↓↓↓ ---
+
+/**
+ * 【V2 图标修复版】工具函数：根据帖子数据创建一个HTML元素
+ * @param {object} post - 帖子数据
+ * @returns {HTMLElement} - 创建好的帖子DOM元素
+ */
+function createPostElement(post) {
+    const item = document.createElement('div');
+    item.className = 'post-item';
+    item.onclick = () => openForumDetailView(post.id);
+
+    const isLiked = forumLikes.some(p => p.id === post.id);
+
+    let displayName, displayHandle, avatarHtml;
+    if (post.authorId && post.authorId === userProfile.id) {
+        displayName = forumProfileData.name;
+        displayHandle = forumProfileData.handle.startsWith('@') ? forumProfileData.handle : `@${forumProfileData.handle}`;
+        const avatarSrc = forumProfileData.avatarImage || userProfile.avatarImage;
+        avatarHtml = avatarSrc 
+            ? `<div class="post-avatar" style="background-image: url('${avatarSrc}')"></div>`
+            : `<div class="post-avatar" style="background-color: #1da1f2; color: white;">${displayName.substring(0,1)}</div>`;
+    } else if (post.authorId) {
+        const author = getAuthorById(post.authorId);
+        displayName = author.name;
+        displayHandle = `@${displayName.replace(/\s+/g, '').substring(0, 8)}`;
+        avatarHtml = author.avatarImage
+            ? `<div class="post-avatar" style="background-image: url('${author.avatarImage}')"></div>`
+            : `<div class="post-avatar" style="background-color: ${getRandomColor()}; color: white;">${author.avatar}</div>`;
+    } else {
+        displayName = post.authorName;
+        displayHandle = `@${displayName.replace(/\s+/g, '').substring(0, 8)}`;
+        if (displayName === '匿名用户') {
+            avatarHtml = `<div class="post-avatar">?</div>`;
+        } else if (post.authorAvatarUrl) {
+            avatarHtml = `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`;
+        } else {
+            avatarHtml = `<div class="post-avatar">?</div>`;
+        }
+    }
+    const timeAgo = timeSince(post.timestamp);
+
+    // --- ▼▼▼ 核心修改就在这里！ ▼▼▼ ---
+    // 我们将原来一大段硬编码的图标HTML，替换成了对通用函数的调用。
+    item.innerHTML = `
+        ${avatarHtml}
+        <div class="post-content-area" style="position: relative;">
+            <div class="post-header">
+                <div class="post-author-info">
+                    <span class="post-author-name">${displayName}</span>
+                    <span class="post-handle">${displayHandle}</span>
+                    <span class="post-handle">· ${timeAgo}</span>
+                </div>
+                ${post.authorId === userProfile.id ? `
+                <div class="post-more-options">
+                    <div class="post-more-btn" onclick="togglePostMenu(event, '${post.id}')">
+                        <svg viewBox="0 0 24 24"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+                    </div>
+                    <div class="post-options-menu" id="post-menu-${post.id}">
+                        <div class="post-options-item danger" onclick="deleteForumPost(event, '${post.id}')">删除</div>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+            <div class="post-text">${post.content.replace(/\n/g, '<br>')}</div>
+            ${generateForumActionsHtml(post.id)}
+        </div>
+    `;
+    // --- ▲▲▲ 核心修改结束 ▲▲▲ ---
+
+    return item;
+}
+
+// --- ↓↓↓ 请将以下所有新函数，完整地粘贴到 <script> 的末尾 ↓↓↓ ---
+
+/**
+ * 【新增】核心功能：切换论坛的子版块（关注/推荐/八卦）
+ * @param {string} tabName - 'following', 'recommended', 或 'gossip'
+ * @param {HTMLElement} tabElement - 被点击的tab元素
+ */
+function switchForumSubTab(tabName, tabElement) {
+    currentForumSubTab = tabName; // 更新全局变量
+
+    // 移除所有tab的激活状态
+    document.querySelectorAll('#forumHomeView .trends-tab').forEach(tab => tab.classList.remove('active'));
+    // 激活被点击的tab
+    tabElement.classList.add('active');
+
+    // 隐藏所有版块内容
+    document.querySelectorAll('.forum-timeline-container').forEach(container => container.classList.remove('active'));
+    // 显示对应的版块内容
+    const activeContainer = document.getElementById(tabName + 'Timeline');
+    activeContainer.classList.add('active');
+
+    // 根据不同版块加载内容
+    if (tabName === 'recommended') {
+        // 如果“推荐”版块是空的，就加载内容
+        if (activeContainer.innerHTML.trim() === '') {
+            renderForumTimeline();
+        }
+    } else if (tabName === 'gossip') {
+    // 每次切换到“八卦”版块时，都直接调用渲染函数
+    renderGossipTimeline();
+
+} else if (tabName === 'following') {
+    // 当切换到“关注”标签时，调用它的专属渲染函数
+    renderFollowingTimeline();
+}
+
+}
+
+// --- ↓↓↓ 用这个新版本替换旧的 renderGossipTimeline ↓↓↓ ---
+function renderGossipTimeline() {
+    const container = document.getElementById('gossipTimeline');
+    container.innerHTML = ''; // 清空
+
+    if (currentGossipPosts.length > 0) {
+        currentGossipPosts.forEach(post => {
+            const item = createPostElement(post);
+            container.appendChild(item);
+        });
+    } else {
+        // 只有在真的没内容时才显示提示
+        container.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-secondary);">暂无八卦，点击右上角刷新按钮生成。</div>';
+    }
+}
+
+/**
+ * 【最终强化版】核心功能：调用AI生成关于你和AI角色的八卦帖子
+ * @returns {Promise<Array<object>>} - 返回生成的帖子对象数组
+ */
+async function generateGossipPosts() {
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings || !settings.apiUrl || !settings.apiKey) {
+        showAlert("请先配置API");
+        return [];
+    }
+
+    const worldview = worldviews.find(w => w.id === forumSettings.gossipWorldviewId);
+    if (!worldview) {
+        // 如果找不到指定的世界观，就使用默认的，确保程序不会崩溃
+        const defaultWorldview = worldviews.find(w => w.id === 'default_modern_city') || worldviews[0];
+        if (!defaultWorldview) {
+             showAlert("错误：找不到任何可用的世界观设定。");
+             return [];
+        }
+        worldview = defaultWorldview;
+        showAlert("未找到指定的“八卦世界观”，已自动使用默认世界观。");
+    }
+
+    const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
+    const mainCharacters = [userProfile, ...aiParticipants].map(c => `"${c.name}" (人设: ${c.personality || c.role})`).join('\n    ');
+
+    // --- ▼▼▼ 核心修改：全新、更严格的AI指令 ▼▼▼ ---
+    const prompt = `
+    【任务】: 你是一个论坛八卦内容生成器。你的唯一任务是严格根据下面提供的“情报库”和“铁律”，生成20条高质量的八卦帖子。
+
+    【【【最高优先级情报库 (你的全部记忆与世界认知)】】】
+    1.  **世界观设定 (绝对真理)**: 
+        -   名称: ${worldview.name}
+        -   描述: ${worldview.description}
+
+    2.  **八卦主角团 (你必须围绕他们展开故事)**:
+        ${mainCharacters}
+
+    【【【八卦生成核心铁律 (必须严格遵守)】】】
+    1.  **【世界观融合铁律】**: 所有八卦**必须**发生在 \`${worldview.name}\` 的世界中。帖子中提到的所有事件、地点、氛围和人物互动方式，都**必须严格符合**该世界观的描述。你必须将主要角色们**自然地融入**到这个世界观里，让他们看起来就像是这个世界土生土长的人。
+
+    2.  **【人设驱动铁律】**: 所有八卦的内容**必须**与主角团的角色人设**深度绑定**。你必须思考：“拥有这样人设的人，在这个世界观下，会发生什么样的八卦？别人会如何议论他们？” 例如，一个“傲娇”的角色和一个“直率”的角色在一起，路人可能会八卦他们“是不是又吵架了”。
+
+    3.  **【路人视角铁律】**: 所有帖子都**必须**以【路人/匿名用户】的视角发布，口吻充满好奇、猜测、甚至一点点不确定。绝对不能以任何一个主要角色的名义发帖。
+
+    4.  **【内容多样性】**: 20条八卦必须涵盖不同方面，例如：两人关系的猜测、对某人行为的讨论、在某个地点偶遇某人的见闻等。
+
+    5.  **【绝对创新铁律】**: 每次生成的内容都必须是全新的，严禁重复你之前生成过的任何帖子内容或昵称。
+
+    【【【输出格式铁律 (必须严格遵守)】】】
+    你的回复必须是纯文本。每一条帖子都必须严格遵循以下格式，评论之间用两个换行符隔开：
+    帖子内容[SEPARATOR]发帖人昵称
+
+    【格式示例】:
+    我昨天好像看到 ${userProfile.name} 和 ${aiParticipants[0]?.name || '一个朋友'} 在图书馆待了很久，他们在聊什么啊？[SEPARATOR]好奇宝宝
+
+    有人知道 ${aiParticipants[1]?.name || '那个帅哥'} 最近是不是心情不好吗？感觉他好几天没笑了。[SEPARATOR]不愿透露姓名的同学
+
+    现在，开始生成20条八卦。`;
+    // --- ▲▲▲ 核心修改结束 ▲▲▲ ---
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], temperature: 1.1 })
+        });
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+
+        const now = new Date(); // 【修改点1】在循环外部获取一次当前时间
+        const posts = responseText.split('\n\n').map((block, i) => { // 【修改点2】给.map()函数增加索引参数 i
+            const parts = block.split('[SEPARATOR]');
+            if (parts.length === 2) {
+                const content = parts[0].trim();
+                const authorName = parts[1].trim();
+                if (content && authorName) {
+                    // 【修改点3】计算每个帖子的时间戳
+                    const randomMinutesAgo = (i * 15) + Math.floor(Math.random() * 60);
+                    const postDate = new Date(now.getTime() - randomMinutesAgo * 60 * 1000);
+
+                    return {
+                        id: `gossip_${generateUniqueId()}`,
+                        content,
+                        authorName,
+                        section: 'gossip' ,
+                        authorAvatarUrl: passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)],
+                        timestamp: postDate.toISOString() // 【修改点4】使用计算出的新时间
+                    };
+                }
+            }
+            return null;
+        }).filter(Boolean);
+        return posts;
+
+    } catch (error) {
+        console.error("生成八卦失败:", error);
+        return [];
+    }
+}
+
+/**
+ * 【新增】为特定版块打开世界观选择弹窗
+ * @param {string} section - 'recommended', 'gossip', 或 'following'
+ */
+function openWorldviewModalFor(section) {
+    currentEditingWorldviewSection = section; // 记下当前正在编辑的版块
+    openWorldviewManagement(); // 打开通用的世界观列表弹窗
+}
+
+/**
+ * 【新增】关闭论坛设置弹窗
+ */
+function closeForumSettingsModal() {
+    document.getElementById('forumSettingsModal').classList.remove('show');
+}
+
+/**
+ * 【新增】只保存论坛设置，不刷新
+ */
+async function saveForumSettings() {
+    // 保存选中的AI
+    forumSettings.activeAiIds = [];
+    document.querySelectorAll('#forumAiSelectList input:checked').forEach(checkbox => {
+        forumSettings.activeAiIds.push(checkbox.value);
+    });
+    
+    await saveData(); // 保存数据
+    closeForumSettingsModal(); // 关闭弹窗
+    showAlert('论坛设置已保存！\n刷新论坛后生效。');
+}
+
+/**
+ * 【新增】删除一个世界观
+ */
+async function deleteWorldview(event, worldviewId) {
+    event.stopPropagation(); // 阻止事件冒泡
+    showConfirm('确定要删除这个世界观吗？', async (confirmed) => {
+        if (!confirmed) return;
+
+        worldviews = worldviews.filter(w => w.id !== worldviewId);
+        
+        // 检查是否有版块正在使用这个世界观，如果有则重置为默认
+        ['recommended', 'gossip', 'following'].forEach(section => {
+            if (forumSettings[section + 'WorldviewId'] === worldviewId) {
+                forumSettings[section + 'WorldviewId'] = 'default_modern_city';
+            }
+        });
+
+        await saveData();
+        renderWorldviewList(); // 刷新当前弹窗
+        updateCurrentWorldviewDisplay(); // 更新主设置弹窗的显示
+        showAlert('世界观已删除。');
+    });
+}
+
+/**
+ * 【新增】核心功能：调用AI，专门为“关注”版块生成帖子
+ * @returns {Promise<Array<object>>} - 返回生成的帖子对象数组
+ */
+async function generateFollowingPosts() {
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings || !settings.apiUrl || !settings.apiKey) {
+        showAlert("请先配置API");
+        return [];
+    }
+
+    // 1. 明确读取“关注世界观”的设定
+    const worldview = worldviews.find(w => w.id === forumSettings.followingWorldviewId);
+    if (!worldview) {
+        showAlert("请先在论坛设置中为“关注”版块选择一个世界观。");
+        return [];
+    }
+
+    // 2. 找出所有被你选中的、要参与发帖的AI角色
+    const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
+    if (aiParticipants.length === 0) {
+        // 如果一个都没选，就没必要请求AI了
+        return [];
+    }
+
+    // 3. 为AI准备这些角色的详细情报
+    const characterInfoForPrompt = aiParticipants.map(ai => {
+        return `- 角色名: "${ai.name}", 人设: "${ai.role}"`;
+    }).join('\n    ');
+
+    // 4. 构建专门的、严格的AI指令 (Prompt)
+    const prompt = `
+    【任务】: 你是一个论坛内容生成器。请严格根据下方提供的情报，生成20条高质量的论坛帖子。
+
+    【【【最高优先级情报库】】】
+    1.  **世界观设定 (故事背景)**: 
+        -   名称: ${worldview.name}
+        -   描述: ${worldview.description}
+
+    2.  **发帖人名单 (你只能从这些人里选)**:
+        ${characterInfoForPrompt}
+
+    3.  **帖子的倾诉对象**: 所有帖子的内容都应该是围绕着与用户“${userProfile.name}”的互动展开的感想、心情或事件。
+
+    【【【帖子生成核心铁律 (必须严格遵守)】】】
+    1.  **【作者铁律】**: 所有20条帖子的作者，**必须且只能**从上面的“发帖人名单”中选择。**绝对禁止**生成任何路人或匿名用户的帖子。
+    2.  **【世界观铁律】**: 所有帖子的内容**必须**发生在 \`${worldview.name}\` 的世界中，并严格符合其设定。
+    3.  **【人设驱动铁律】**: 每一条帖子都**必须**与其作者的人设**高度一致**。
+    4.  **【内容多样性】**: 20条帖子应涵盖不同方面，例如：对与“${userProfile.name}”互动的开心、困惑、思念、吐槽等。
+    5.  **【绝对创新铁律】**: 每次生成的内容都必须是全新的，严禁重复。
+
+    【【【输出格式铁律 (必须严格遵守)】】】
+    你的回复必须是纯文本。每一条帖子都必须严格遵循以下格式，帖子之间用两个换行符隔开：
+    帖子内容[SEPARATOR]发帖人昵称
+
+    【格式示例】:
+    今天和${userProfile.name}聊天真的好开心。[SEPARATOR]AI角色A
+    
+    又在想${userProfile.name}了，他/她现在在做什么呢？[SEPARATOR]AI角色B
+
+    现在，开始生成20条帖子。`;
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], temperature: 1.0 })
+        });
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+        const now = new Date();
+        
+        const posts = responseText.split('\n\n').map((block, i) => {
+            const parts = block.split('[SEPARATOR]');
+            if (parts.length === 2) {
+                const content = parts[0].trim();
+                const authorName = parts[1].trim();
+                const author = aiParticipants.find(ai => ai.name === authorName);
+                if (content && author) {
+                    const randomMinutesAgo = (i * 15) + Math.floor(Math.random() * 60);
+                    const postDate = new Date(now.getTime() - randomMinutesAgo * 60 * 1000);
+                    return {
+                        id: `following_${generateUniqueId()}`,
+                        content,
+                        authorName,
+                        authorId: author.id, // 关联AI角色的ID
+                        section: 'following',
+                        timestamp: postDate.toISOString()
+                    };
+                }
+            }
+            return null;
+        }).filter(Boolean);
+        
+        return posts;
+
+    } catch (error) {
+        console.error("生成关注动态失败:", error);
+        return []; // 出错时返回空数组
+    }
+}
+
+/**
+ * 【新增】专门渲染“关注”版块帖子的函数
+ */
+function renderFollowingTimeline() {
+    const container = document.getElementById('followingTimeline');
+    container.innerHTML = ''; // 清空旧内容
+
+    if (currentFollowingPosts.length > 0) {
+        currentFollowingPosts.forEach(post => {
+            // 我们复用已有的 createPostElement 函数来创建每个帖子的HTML
+            const item = createPostElement(post);
+            container.appendChild(item);
+        });
+    } else {
+        // 如果没有内容，显示提示信息
+        container.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-secondary);">暂无关注动态，请确保已在论坛设置中选择AI角色并刷新。</div>';
+    }
 }
 
     </script>
