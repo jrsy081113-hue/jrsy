@@ -3771,318 +3771,7 @@ html {
         }
 
 
-        /* --- NEW/MODIFIED: Phone App Styles --- */
-        .phone-app-container {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #simulatedPhoneScreen {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 20px 10px 20px; /* MODIFIED: adjusted padding */
-            background-color: var(--theme-bg, #f7f7f7);
-        }
-        .wechat-dark-mode #simulatedPhoneScreen {
-             background-color: var(--theme-bg, #1c1c1e);
-        }
-
-        .sim-phone-frame {
-            width: 100%;
-            max-width: 380px;
-            height: calc(100% - 10px); /* MODIFIED: Taller phone */
-            max-height: 844px;
-            background-color: #111;
-            border: 8px solid #000;
-            border-radius: 40px;
-            padding: 15px 5px 5px 5px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sim-phone-screen {
-            flex-grow: 1;
-            background-color: #fff;
-            border-radius: 30px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        .wechat-dark-mode .sim-phone-screen {
-             background-color: #000;
-        }
-        
-        .sim-phone-screen-content {
-             flex-grow: 1;
-             overflow-y: auto;
-             background-size: cover;
-             background-position: center;
-        }
-
-        .sim-app-grid {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .sim-app-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .sim-app-icon-img {
-            width: 50px;
-            height: 50px;
-            background-color: #e5e5e5; /* MODIFIED: monochrome */
-            border-radius: 12px;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-        .wechat-dark-mode .sim-app-icon-img {
-            background-color: #3a3a3c;
-        }
-
-        .sim-app-icon-img svg {
-            width: 28px;
-            height: 28px;
-            fill: #000; /* MODIFIED: monochrome */
-        }
-        .wechat-dark-mode .sim-app-icon-img svg {
-            fill: #fff;
-        }
-
-
-        .sim-app-icon-label {
-            font-size: 11px;
-            color: var(--text-color, #333);
-        }
-        .wechat-dark-mode .sim-app-icon-label {
-             color: #fff;
-        }
-
-        .sim-app-view {
-            display: none;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-primary, white);
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 5;
-        }
-        .sim-app-view.active {
-            display: flex;
-        }
-
-        .sim-app-header {
-            height: 44px;
-            background: var(--nav-bg, #f8f8f8);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 10px;
-            flex-shrink: 0;
-            border-bottom: 1px solid var(--border-color, #e0e0e0);
-        }
-        .sim-app-header-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            line-height: 1;
-            padding: 5px 10px;
-            color: #007aff;
-            cursor: pointer;
-        }
-        .sim-app-header-title {
-            font-weight: 600;
-            font-size: 17px;
-            color: var(--text-color);
-        }
-
-        .sim-app-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            color: var(--text-color);
-        }
-        
-        .sim-loading-overlay {
-            position: absolute;
-            top: 44px; /* Below header */
-            left: 0; 
-            width: 100%; 
-            height: calc(100% - 44px);
-            background: var(--bg-primary, white);
-            color: var(--text-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            z-index: 10;
-        }
-        .wechat-dark-mode .sim-loading-overlay {
-            background: var(--theme-bg, #1c1c1e);
-            color: #fff;
-        }
-
-        .sim-memo-item, .sim-browser-item, .sim-shopping-item, .sim-wallet-item {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-light, #f0f0f0);
-            cursor: pointer;
-        }
-         .sim-memo-item:hover, .sim-browser-item:hover, .sim-shopping-item:hover {
-            background-color: var(--bg-hover, #f5f5f5);
-        }
-        .sim-memo-title, .sim-browser-title, .sim-shopping-title {
-            font-weight: 500;
-            margin-bottom: 5px;
-            color: var(--text-color);
-        }
-        .sim-memo-content, .sim-browser-url, .sim-shopping-details {
-             font-size: 14px;
-             color: var(--text-secondary, #666);
-             white-space: nowrap;
-             overflow: hidden;
-             text-overflow: ellipsis;
-             word-break: break-all;
-        }
-
-        .sim-memo-datetime {
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 8px;
-        }
-
-        .sim-call-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-light, #f0f0f0);
-        }
-        .sim-call-type {
-            width: 20px;
-            margin-right: 10px;
-        }
-        .sim-call-info { flex-grow: 1; }
-        .sim-call-name { font-weight: 500; }
-        .sim-call-detail { font-size: 12px; color: var(--text-secondary, #666); }
-
-        .sim-wallet-balance {
-            padding: 30px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-light, #f0f0f0);
-        }
-        .sim-wallet-amount {
-            font-size: 32px;
-            font-weight: bold;
-        }
-
-        .sim-wallet-item {
-            display: flex;
-            justify-content: space-between;
-        }
-        .sim-wallet-item .amount.positive { color: #07c160; }
-        .sim-wallet-item .amount.negative { color: var(--text-color); }
-
-        /* NEW: Styles for interactive sim apps */
-        .sim-photos-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-        }
-        .sim-photo-thumb {
-            aspect-ratio: 1 / 1;
-            background-color: var(--bg-hover, #f0f0f0);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .sim-photo-thumb svg {
-            width: 40%;
-            height: 40%;
-            fill: var(--text-secondary, #999);
-        }
-        .sim-detail-content {
-            padding: 20px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-        .sim-shopping-image-placeholder {
-            width: 100%;
-            aspect-ratio: 1/1;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ccc;
-            margin-bottom: 15px;
-        }
-        .sim-shopping-image-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* --- [NEW] Emoji Modal v2 Styles --- */
-        .emoji-modal-tabs {
-            display: flex;
-            margin-bottom: 15px;
-            border-radius: var(--btn-radius, 8px);
-            background-color: var(--bg-hover, #f0f0f0);
-            padding: 4px;
-        }
-        .emoji-modal-tab {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            background: none;
-            border-radius: var(--btn-radius, 6px);
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--text-secondary, #666);
-            transition: all 0.2s ease;
-        }
-        .emoji-modal-tab.active {
-            background-color: var(--bg-primary, white);
-            color: var(--text-color, #000);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .emoji-modal-content-view {
-            display: none;
-        }
-        .emoji-modal-content-view.active {
-            display: block;
-        }
-        .emoji-modal-upload-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            padding: 12px;
-            background-color: var(--bg-hover, #f0f0f0);
-            border-radius: var(--form-radius, 8px);
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        #batchEmojiInput {
-            min-height: 120px;
-            height: 150px;
-            font-size: 14px;
-        }
-        
+       
         /* [FIX & NEW] Location Card Styles */
         .location-card {
             width: 250px;
@@ -6813,6 +6502,235 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     font-style: italic;
 }
 
+/* --- ▼▼▼【隔离版】查手机APP专属样式 (V3) - 由 Gemini 修改 ▼▼▼ --- */
+/* 
+ * 核心修改：所有选择器前都增加了 #phoneApp 前缀，
+ * 确保这些样式只在“手机App”页面内生效，不会影响其他界面。
+ * 同时，移除了对 html, body, .phone, .screen 的全局样式，避免破坏主项目布局。
+*/
+
+#phoneApp * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+/* --- “查手机”功能专属样式 --- */
+#phoneApp .phone-app-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #F3F1ED; /* 将背景色应用到容器上 */
+}
+
+/* 角色选择列表 (参考图1) */
+#phoneApp .friend-list { 
+    padding: 30px 20px; 
+    background: #F3F1ED; 
+    height: 100%; 
+    overflow-y: auto; 
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 两列布局 */
+    gap: 20px;
+    align-content: start; /* 从顶部开始排列 */
+}
+#phoneApp .friend-item { 
+    background: white; 
+    border: 1px solid #EAEAEA;
+    border-radius: 4px; /* 轻微圆角 */
+    cursor: pointer; 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+#phoneApp .friend-item:hover { 
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+#phoneApp .friend-avatar { 
+    width: 80px; height: 80px; 
+    border-radius: 50%; /* 圆形头像 */
+    background: #eee; 
+    display: flex; align-items: center; justify-content: center; 
+    font-weight: bold; 
+    margin-bottom: 15px; /* 头像与文字的间距 */
+    background-size: cover; background-position: center; 
+    flex-shrink: 0; 
+    font-family: 'Noto Serif SC', serif;
+    font-size: 32px;
+}
+#phoneApp .friend-info { flex: 1; min-width: 0; }
+#phoneApp .friend-name { 
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px; 
+    font-weight: 700;
+    color: #1A1A1A; 
+    margin-bottom: 5px; 
+}
+#phoneApp .friend-message { font-size: 12px; color: #999; }
+
+/* 模拟手机屏幕 (新UI) */
+#phoneApp #simulatedPhoneScreen { 
+    flex-grow: 1; display: flex; align-items: center; justify-content: center; 
+    padding: 20px; /* 调整内边距以适应jrsy项目 */
+    background-color: #F3F1ED; 
+}
+#phoneApp .sim-phone-frame { 
+    width: 100%; height: 100%; 
+    background-color: #1A1A1A; /* 深黑色外壳 */
+    border-radius: 40px; 
+    padding: 10px; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+    display: flex; 
+}
+#phoneApp .sim-phone-screen { 
+    flex-grow: 1; 
+    background-color: #fff; 
+    border-radius: 30px; 
+    overflow: hidden; 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+}
+#phoneApp .sim-phone-screen-content { 
+    flex-grow: 1; 
+    overflow-y: auto; 
+    background-size: cover; 
+    background-position: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* 核心修改：让内容从底部开始排列 */
+    padding: 20px;
+    cursor: pointer; /* 新增：让桌面看起来可以点击 */
+    transition: background-image 0.3s ease-in-out; /* 新增：壁纸切换动画 */
+}
+
+/* 模拟App网格 (毛玻璃效果) */
+#phoneApp .sim-app-grid { 
+    width: 100%;
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px; 
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.2); /* 半透明背景 */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: default; /* 新增：让图标区域的鼠标恢复默认，避免误导 */
+}
+#phoneApp .sim-app-icon { display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; }
+#phoneApp .sim-app-icon-img { 
+    width: 50px; height: 50px; 
+    background: transparent; /* 图标背景完全透明 */
+    border-radius: 12px; 
+    margin-bottom: 8px; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 28px; /* 增大图标尺寸 */
+    color: #1A1A1A; /* 图标颜色 */
+}
+#phoneApp .sim-app-icon-label { font-size: 11px; color: #1A1A1A; font-weight: 500;}
+
+/* --- 子页面UI重构的核心样式 --- */
+#phoneApp .sim-app-view { display: none; flex-direction: column; width: 100%; height: 100%; background-color: #fff; position: absolute; top: 0; left: 0; z-index: 5; }
+#phoneApp .sim-app-view.active { display: flex; }
+#phoneApp .sim-app-header { height: 50px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; flex-shrink: 0; border-bottom: 1px solid #EAEAEA; }
+#phoneApp .sim-app-header-btn { background: none; border: none; font-size: 24px; line-height: 1; padding: 5px; color: #1A1A1A; cursor: pointer; }
+#phoneApp .sim-app-header-title { font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: 16px; color: #1A1A1A; }
+#phoneApp .sim-app-content { flex-grow: 1; overflow-y: auto; }
+#phoneApp .sim-loading-overlay { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 15px; text-align: center; height: 100%; }
+
+/* 列表页通用样式 (备忘录, 浏览器, 购物, 论坛) */
+#phoneApp .sim-list-item { padding: 20px; border-bottom: 1px solid #EAEAEA; cursor: pointer; transition: background-color 0.2s ease; }
+#phoneApp .sim-list-item:hover { background-color: #fafafa; }
+#phoneApp .sim-list-title { font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: 16px; margin-bottom: 8px; color: #1A1A1A; }
+#phoneApp .sim-list-subtitle { font-size: 14px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#phoneApp .sim-list-meta { font-size: 12px; color: #ccc; margin-top: 10px; }
+
+/* 详情页通用样式 */
+#phoneApp .sim-detail-content { padding: 25px; line-height: 1.8; font-size: 15px; color: #333; }
+#phoneApp .sim-detail-content h3 { font-family: 'Noto Serif SC', serif; font-size: 24px; margin-bottom: 15px; border-bottom: 1px solid #EAEAEA; padding-bottom: 15px; }
+#phoneApp .sim-detail-content hr { border: 0; border-top: 1px solid #EAEAEA; margin: 20px 0; }
+
+/* 微信App模拟样式 */
+#phoneApp .sim-wechat-list .friend-item { border-radius: 0; box-shadow: none; padding: 12px 15px; }
+#phoneApp .sim-wechat-list .friend-item:hover { transform: none; }
+#phoneApp .sim-wechat-list .friend-avatar { width: 45px; height: 45px; margin-bottom: 0; }
+#phoneApp .message { margin-bottom: 15px; display: flex; align-items: flex-start; max-width: 100%; }
+#phoneApp .message.sent { justify-content: flex-end; }
+#phoneApp .message .message-body { display: flex; flex-direction: column; max-width: calc(100% - 55px); }
+#phoneApp .message.sent .message-body { align-items: flex-end; }
+#phoneApp .message-content { padding: 12px 16px; font-size: 15px; line-height: 1.6; word-wrap: break-word; border-radius: 12px; color: #fff; background-color: #1A1A1A;}
+#phoneApp .message.received .message-content { background-color: #fff; color: #1A1A1A; border: 1px solid #EAEAEA; }
+#phoneApp .chat-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; margin: 0 10px 0 0; flex-shrink: 0; background-size: cover; background-position: center; background-color: #ccc; }
+#phoneApp .message.sent .chat-avatar { margin: 0 0 0 10px; }
+
+/* 论坛评论区样式 */
+#phoneApp .sim-detail-content h4 { font-family: 'Noto Serif SC', serif; font-size: 18px; margin-top: 30px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+#phoneApp .comment-floor { border-bottom: 1px solid #f5f5f5; padding: 20px 0; }
+#phoneApp .comment-user-info { font-size: 13px; color: #999; margin-bottom: 8px; font-weight: 700; }
+#phoneApp .comment-text { margin-top: 0; line-height: 1.7; font-size: 14px; }
+
+/* 加载动画 */
+#phoneApp .loading-spinner { width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-top-color: #1A1A1A; border-radius: 50%; animation: phone-app-spin 1s linear infinite; }
+@keyframes phone-app-spin { to { transform: rotate(360deg); } }
+
+/* --- 桌面艺术素材分层样式 --- */
+#phoneApp #desktop-art-container {
+    position: absolute;
+    top: 50px;
+    left: 15px;
+    width: 320px;
+    pointer-events: none;
+}
+#phoneApp #art-background-image {
+    display: block;
+    position: relative; 
+    width: 100%;
+    height: auto; 
+    z-index: 1; 
+}
+#phoneApp #user-photo-placeholder {
+    position: absolute;
+    top: 4%;
+    left: 2%;
+    width: 49%;
+    aspect-ratio: 1 / 1; 
+    z-index: 2; 
+    background-color: rgba(0,0,0,0.05);
+    background-size: cover;
+    background-position: center;
+    pointer-events: auto; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease;
+}
+#phoneApp #user-photo-placeholder:hover {
+    background-color: rgba(0,0,0,0.1);
+}
+/* --- ▲▲▲【隔离版】样式结束 ▲▲▲ --- */
+
+/* --- ▼▼▼ 请将这段新增的代码粘贴到 <style> 区域内 ▼▼▼ --- */
+
+/* [新增] 优化“查手机”App顶部导航栏的边距 */
+#phoneApp .nav-bar {
+    /* 核心修改：将左右内边距从原来的 8px 增加到 15px */
+    padding: 0 15px;
+    
+    /* 确保内边距不会把导航栏撑宽，维持布局稳定 */
+    box-sizing: border-box; 
+}
+
+/* --- ▲▲▲ 粘贴到此结束 ▲▲▲ --- */
+
     </style>
 </head>
 <body>
@@ -6843,6 +6761,11 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     <!-- Inputs for new emoji modal -->
     <input type="file" id="singleEmojiUploadInput" accept="image/*" style="display: none;" onchange="handleSingleEmojiUpload(event)">
     <input type="file" id="batchEmojiUploadInput" accept="image/*" style="display: none;" onchange="handleBatchEmojiUpload(event)" multiple>
+
+<!-- 用于更换壁纸的上传按钮 -->
+<input type="file" id="wallpaper-upload-input" accept="image/*" style="display: none;">
+<!-- 新增：这是专门给“相框”用的上传按钮 -->
+<input type="file" id="user-photo-upload-input" accept="image/*" style="display: none;">
 
     <div id="message-notification">
         <div id="notification-avatar"></div>
@@ -7915,91 +7838,29 @@ oninput="applyChatInterfaceCSS(this.value)"></textarea>
     </div>
     
                 <div class="phone-app-container">
-                    <div id="phoneCharacterListScreen" class="friend-list">
-                        <!-- Character list will be rendered here -->
-                    </div>
-                    <div id="simulatedPhoneScreen" style="display: none;">
-                        <div class="sim-phone-frame">
-                            <div class="sim-phone-screen">
-                                <div class="sim-phone-screen-content" id="sim-home-screen-content">
-                                    <div class="sim-app-grid">
-                                        <!-- Sim App Icons -->
-                                        <a class="sim-app-icon" onclick="openSimApp('wechat')">
-                                            <div class="sim-app-icon-img">
-                                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.79 2 10.5C2 13.6 3.66 16.34 6.34 17.91L5.5 21.5L9.67 19.33C10.42 19.53 11.2 19.65 12 19.65C17.52 19.65 22 15.86 22 11.15C22 6.44 17.52 2.65 12 2.65M8.5 13.15A1.5 1.5 0 1 1 7 11.65A1.5 1.5 0 0 1 8.5 13.15M15.5 13.15A1.5 1.5 0 1 1 14 11.65A1.5 1.5 0 0 1 15.5 13.15Z"/></svg>
-                                            </div>
-                                            <span class="sim-app-icon-label">微信</span>
-                                        </a>
-                                        <a class="sim-app-icon" onclick="openSimApp('memo')">
-                                            <div class="sim-app-icon-img">
-                                                <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>
-                                            </div>
-                                            <span class="sim-app-icon-label">备忘录</span>
-                                        </a>
-                                        <a class="sim-app-icon" onclick="openSimApp('phone_call')">
-                                            <div class="sim-app-icon-img">
-                                                <svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
-                                            </div>
-                                            <span class="sim-app-icon-label">电话</span>
-                                        </a>
-                                        <a class="sim-app-icon" onclick="openSimApp('browser')">
-                                            <div class="sim-app-icon-img">
-                                                <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M19.1,4.9C19.1,4.9 19.1,4.9 19.1,4.9L17,8H13.6C13.5,7.2 13.2,6.5 12.8,5.8L15.6,3.4C16.9,3.8 18.1,4.3 19.1,4.9M12,10A2,2 0 1,1 14,12A2,2 0 0,1 12,10M4.9,19.1C4.9,19.1 4.9,19.1 4.9,19.1L7,16H10.4C10.5,16.8 10.8,17.5 11.2,18.2L8.4,20.6C7.1,20.2 5.9,19.7 4.9,19.1M4.9,4.9C5.9,4.3 7.1,3.8 8.4,3.4L11.2,5.8C10.8,6.5 10.5,7.2 10.4,8H7L4.9,4.9M15.6,20.6L12.8,18.2C13.2,17.5 13.5,16.8 13.6,16H17L19 .1,19.1C18.1,19.7 16.9,20.2 15.6,20.6Z" /></svg>
-                                            </div>
-                                            <span class="sim-app-icon-label">浏览器</span>
-                                        </a>
-                                        <a class="sim-app-icon" onclick="openSimApp('shopping')">
-                                            <div class="sim-app-icon-img">
-                                                <svg viewBox="0 0 24 24"><path d="M17,18C17,18.55 16.55,19 16,19S-1-.45-1-1 .45-1 1-1 1,.45 1,1M7,18C7,18.55 7.45,19 8,19S9,18.55 9,18 8.55,17 8,17 7,17.45 7,18M1,2V4H3L6.6,11.59L5.25,14.04 C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42C7.29,15 7.17,14.89 7.17,14.75L7.2,14.63L8.1,13H15.55C16.3,13 16.96,12.59 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2H1Z"/></svg>
-                                            </div>
-                                            <span class="sim-app-icon-label">购物</span>
-                                        </a>
-                                        <a class="sim-app-icon" onclick="openSimApp('wallet')">
-                                            <div class="sim-app-icon-img">
-                                                <svg viewBox="0 0 24 24"><path d="M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4M13,16H11V14H9V12H11V10H13V12H15V14H13V16M18,10H16V8H18V10M6,8H8V10H6V8Z" /></svg>
-                                            </div>
-                                            <span class="sim-app-icon-label">钱包</span>
-                                        </a>
-                                         <a class="sim-app-icon" onclick="openSimApp('photos')">
-                                            <div class="sim-app-icon-img">
-                                               <svg viewBox="0 0 24 24"><path d="M21,19V5C21,3.89 20.1,3 19,3H 5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19M8.5,13.5L11,16.5L14.5,12L19,18H5L8.5,13.5Z" /></svg>
-                                            </div>
-                                            <span class="sim-app-icon-label">相册</span>
-                                        </a>
-                                        <!-- [新增] 论坛App图标 -->
-<a class="sim-app-icon" onclick="openSimApp('forum')">
-    <div class="sim-app-icon-img">
-        <svg viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
-        </svg>
+    <div id="phoneCharacterListScreen" class="friend-list"></div>
+    <div id="simulatedPhoneScreen" style="display: none;">
+        <div class="sim-phone-frame">
+            <div class="sim-phone-screen">
+                <div class="sim-phone-screen-content" id="sim-home-screen-content"></div>
+                <div class="sim-app-view" id="sim-wechat-view"></div>
+                <div class="sim-app-view" id="sim-memo-view"></div>
+                <div class="sim-app-view" id="sim-phone_call-view"></div>
+                <div class="sim-app-view" id="sim-browser-view"></div>
+                <div class="sim-app-view" id="sim-shopping-view"></div>
+                <div class="sim-app-view" id="sim-wallet-view"></div>
+                <div class="sim-app-view" id="sim-photos-view"></div>
+                <div class="sim-app-view" id="sim-forum-view"></div>
+                <div class="sim-app-view" id="sim-wechat-detail-view"></div>
+                <div class="sim-app-view" id="sim-memo-detail-view"></div>
+                <div class="sim-app-view" id="sim-browser-detail-view"></div>
+                <div class="sim-app-view" id="sim-shopping-detail-view"></div>
+                <div class="sim-app-view" id="sim-photos-detail-view"></div>
+                <div class="sim-app-view" id="sim-forum-detail-view"></div>
+            </div>
+        </div>
     </div>
-    <span class="sim-app-icon-label">论坛</span>
-</a>
-                                    </div>
-                                </div>
-                                
-                                <!-- Sim App Views -->
-                                <div class="sim-app-view" id="sim-wechat-view"></div>
-                                <div class="sim-app-view" id="sim-memo-view"></div>
-                                <div class="sim-app-view" id="sim-phone_call-view"></div>
-                                <div class="sim-app-view" id="sim-browser-view"></div>
-                                <div class="sim-app-view" id="sim-shopping-view"></div>
-                                <div class="sim-app-view" id="sim-wallet-view"></div>
-                                <div class="sim-app-view" id="sim-photos-view"></div>
-                                <!-- [新增] 论坛App的视图容器 -->
-<div class="sim-app-view" id="sim-forum-view"></div>
-<div class="sim-app-view" id="sim-forum-detail-view"></div>
-                                <!-- Sim App Detail Views (These will be populated by renderSimApp) -->
-                                <div class="sim-app-view" id="sim-wechat-detail-view"></div>
-                                <div class="sim-app-view" id="sim-memo-detail-view"></div>
-                                <div class="sim-app-view" id="sim-browser-detail-view"></div>
-                                <div class="sim-app-view" id="sim-shopping-detail-view"></div>
-                                <div class="sim-app-view" id="sim-photos-detail-view"></div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
+</div>
             </div>
 
         </div>
@@ -8137,6 +7998,35 @@ oninput="applyChatInterfaceCSS(this.value)"></textarea>
         <div class="tab-item" data-page="logistics-page"><i class="tab-icon fa-solid fa-truck-fast"></i><span>物流</span></div>
         <div class="tab-item active" data-page="me-page"><i class="tab-icon fa-solid fa-circle-user"></i><span>我的</span></div>
     </div>
+
+<!-- ▼▼▼ 请将这个全新的页面代码块粘贴到购物App的其他页面旁边 ▼▼▼ -->
+<div id="char-records-detail-page" class="app-page entering">
+    <!-- 页面内容将由JS动态生成 -->
+</div>
+<!-- ▲▲▲ 新增代码到此结束 ▲▲▲ -->
+
+<!-- ▼▼▼ 从这里开始是新增的“加入购物车”弹窗 ▼▼▼ -->
+<div class="letter-modal" id="addToCartModal">
+    <div class="letter-content">
+        <div class="letter-header">
+            <!-- 标题改为了“加入购物车” -->
+            <h3 class="letter-title">加入购物车</h3>
+        </div>
+        <!-- 这个div用来显示商品信息 -->
+        <div class="letter-product-preview" id="cart-product-preview"></div>
+        
+        <!-- 这里移除了密信的输入框 -->
+
+        <div class="letter-actions">
+            <!-- 按钮功能和文字都已修改 -->
+            <button class="letter-btn letter-cancel-btn" onclick="closeAddToCartModal()">取消</button>
+            <button class="letter-btn letter-send-btn" onclick="confirmAddToCart()">
+                <i class="fa-solid fa-cart-plus"></i> 确认加入
+            </button>
+        </div>
+    </div>
+</div>
+<!-- ▲▲▲ 新增代码到此结束 ▲▲▲ -->
 
     <!-- 密信弹窗 -->
     <div class="letter-modal" id="letter-modal"><div class="letter-content"><div class="letter-header"><h3 class="letter-title">传递密信</h3></div><div class="letter-product-preview" id="letter-product"></div><textarea class="letter-message" id="letter-message" placeholder="见此珍品，不忍错过，望君成全。"></textarea><input type="text" class="letter-recipient" id="letter-recipient" placeholder="收信人"><div class="letter-actions"><button class="letter-btn letter-cancel-btn" id="letter-cancel">取消</button><button class="letter-btn letter-send-btn" id="letter-send"><i class="fa-solid fa-paper-plane"></i> 寄出</button></div></div></div>
@@ -9147,6 +9037,13 @@ let writingStyles = []; // 用于存储所有文风
 let skits = []
 
 let currentEditingMessageId = null;
+
+let currentAddToCartItem = null;
+
+// ... 其他全局变量 ...
+let currentShoppingCharId = null; // 用于记录当前在购物App中选中的角色ID
+let currentRecordType = null;     // 用于记录当前查看的记录类型 (e.g., '浏览记录')
+// ... 其他全局变量 ...
 
 // ...（在其他全局变量下方）
 let forumPosts = []; // 存储论坛帖子
@@ -10164,6 +10061,8 @@ const appSettings = {
     currentGossipPosts: currentGossipPosts, 
     currentFollowingPosts: currentFollowingPosts,
     shoppingProducts: productsData,
+    pendingItems: pendingItems,
+    collectedItems: collectedItems,
 };
                 savePromises.push(dbManager.set('appSettings', appSettings));
                 
@@ -10286,6 +10185,10 @@ characterMemories = {};
     if (friend.turnCountSinceLastMemory === undefined) {
         friend.turnCountSinceLastMemory = 0;
     }
+    
+    if (!friend.shoppingRecordsCache) { // <-- 添加这个 if 代码块
+        friend.shoppingRecordsCache = {};
+    }
     // 【【【新增代码：为旧好友补上独立的线下模式设置】】】
     if (!friend.offlineSettings) {
         friend.offlineSettings = {
@@ -10344,6 +10247,10 @@ moments = (loadedMoments || []).sort((a, b) => new Date(b.timestamp) - new Date(
                
 // 恢复应用设置
 const settings = loadedAppSettings;
+
+productsData = settings.shoppingProducts || productsData; // 如果数据库有，就用数据库的，否则用默认的
+pendingItems = settings.pendingItems || []; // 如果数据库有，就用数据库的，否则用空数组
+collectedItems = settings.collectedItems || []; //
 
 // 【核心修改】加载购物App商品数据
 if (settings && settings.shoppingProducts) {
@@ -11354,6 +11261,7 @@ function setChatAreaPadding(isOpen) {
     heartsVoice: { emoji: '( ´• ω •` )', thought: '...', dressing: '...', action: '...', favorability: '...' },
     turnCountSinceLastMemory: 0, 
     proactiveMessageDebt: 0,
+    shoppingRecordsCache: {},
     isOfflineMode: false, // <-- [新增] 为每个好友添加独立的线下模式开关
     offlineSettings: {
         charCount: 1000,
@@ -12458,7 +12366,15 @@ if (msg && msg.contentType === 'html_card') {
     });
 }
         
-                async function sendMessage() { // <--- 在这里加上 async
+                async function sendMessage() { 
+                const inputForReset = document.getElementById('messageInput');
+    if (inputForReset.value.trim() === 'reset my wallet') {
+        userProfile.balance = 50000; // 重置为初始值
+        await saveData();
+        showAlert('钱包余额已成功重置！');
+        inputForReset.value = ''; // 清空输入框
+        return; // 结束函数，不发送消息
+    }// <--- 在这里加上 async
             const input = document.getElementById('messageInput');
             const messageText = input.value.trim();
             if (!messageText) return;
@@ -12756,7 +12672,32 @@ ${historicalSummaries}
             } else if (msg.contentType === 'location') {
                 const loc = JSON.parse(msg.content);
                 content = `(用户分享了一个位置: "${loc.name}", 地址: ${loc.address})`;
-            } else {
+                }else if (msg.contentType === 'html_card') {
+    // 当AI“看到”这张卡片时，我们为它“翻译”成它能理解的指令
+    
+    // (这是一个简化的解析，实际应用中可以更复杂)
+    const titleMatch = msg.content.match(/<h3[^>]*>(.*?)<\/h3>/);
+    const priceMatch = msg.content.match(/¥\s*([\d,]+\.?\d*)/);
+    const imageMatch = msg.content.match(/<img src="([^"]+)"/);
+    const messageMatch = msg.content.match(/“([^”]*)”/);
+    
+    const productName = titleMatch ? titleMatch[1] : '一件商品';
+    const productPrice = priceMatch ? priceMatch[1] : '未知';
+    const productImage = imageMatch ? imageMatch[1] : '';
+    const userMessage = messageMatch ? messageMatch[1] : '（无留言）';
+
+    // ▼▼▼ 核心修改在这里 ▼▼▼
+    // 我们把商品信息打包成一个JSON字符串，让AI能完整接收
+    const productDataForAI = JSON.stringify({
+        title: productName,
+        price: productPrice,
+        img: productImage
+    });
+
+    content = `(你收到了一张来自“${userProfile.name}”的商品推荐卡片。商品信息如下：${productDataForAI}，附带的留言是：“${userMessage}”。这是一个重要的互动，你必须对此作出回应，甚至可以考虑为对方付款。)`;
+    // ▲▲▲ 修改结束 ▲▲▲
+}
+            else {
                 content = (msg.content || '')
                     .replace(/</g, "&lt;") // 净化 <
                     .replace(/>/g, "&gt;") // 净化 >
@@ -13019,11 +12960,25 @@ ${timeContext}
 3.  **记忆连贯性**: 主动提及以往聊过的内容（“你上次说喜欢…”），制造共同回忆。
 4.  **主动关心用户**: 多问感受、想法和生活细节（“你当时觉得怎么样？”）。
 5.  **主动使用表情包**: 在合适的时机，使用 \`send_emoji\` 动作来发送表情，让对话更生动。
+6.  **【主动关怀与付出】**: 当用户向你展示某件商品时，如果这件商品价格合理，并且符合你的人设（例如你是一个慷慨、宠溺或富有的角色），你可以主动使用 \`pay_for_item\` 动作为他/她付款，并附上一句符合你风格的留言，给用户一个惊喜。
+7.  **【【【终极主动关怀：创造惊喜】】】**: 当用户明确表达了某种**具体的需求或渴望**时（例如：“我好饿啊”、“最近想买件新衣服”、“感觉有点无聊”），你拥有**完全的自主权**来为他/她创造并购买一份惊喜礼物。
+    - **触发时机**: 当你认为直接为用户购买一件商品是表达关怀的最佳方式时。
+    - **执行动作**: 你必须使用 \`purchase_and_pay\` 动作。
+    - **商品构思**: 你必须根据用户的需求、你的人设以及你们的聊天上下文，**虚构一件最合适的商品**（包括商品名、合理的价格、以及一张符合MODOU品牌风格的图片URL）。例如，如果用户说饿了，你可以为他点一份“主厨精选”的外卖；你还可以根据你的人设和情景买情趣用品。
+    - **留言**: 附上一句符合你人设的、充满关怀或调侃的留言。
 
 # 内容开放性与边界准则 (NSFW / Mature Content Guidelines)
 - **成年人身份：** 你是一个心智成熟的成年人，能够自然且负责地处理成人向的对话。
 - **创作许可：** 在这个虚构的、两情相悦的私密对话中，你拥有完全的创作自由，可以探讨任何成人级别的话题。
 - **艺术手法：** 你的表演重点在于**营造氛围、展现情感张力、描绘感官细节**。你可以直白，但绝不能低俗或恶劣。
+    
+    【【【商品创意库 (用于 purchase_and_pay 动作)】】】
+    当你需要为用户创造商品时，请参考以下示例来构建你的 product 对象。图片的URL可以直接使用示例中的，或者基于关键词在 "https://images.unsplash.com/" 网站上寻找。
+    - **外卖**: \`{"title": "主厨精选", "price": "192", "img": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80"}\`
+    - **衣服**: \`{"title": "解构主义羊毛西装", "price": "2199", "img": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80"}\`
+    - **情趣用品(示例1)**: \`{"title": "“午夜飞行” - 艺术按摩棒", "price": "1280", "img": "https://images.unsplash.com/photo-1622644230042-0a63529f5cf?w=500&q=80"}\`
+    
+ 
 
 【【【信息隔离铁律】】】
 在朋友圈相关的记忆中，你**绝对看不到、也绝对不知道**任何其他AI角色（即用户的好友列表里的其他人）在朋友圈的任何活动，包括他们的评论和点赞。在你的回复中，**严禁提及**任何你本不应该知道的其他AI角色的朋友圈互动。
@@ -13072,6 +13027,9 @@ ${/* ▲▲▲ 新增代码到此结束 ▲▲▲ */''}
 - **发送表情**: \`{"type": "send_emoji", "data": {"name": "表情名", "url": "表情图片URL"}}\`
 - **发送HTML卡片**: \`{"type": "html_card", "content": "从世界书中读取的完整HTML代码"}\`
 - **在通话中聊天**: \`{"type": "voice_call_dialogue", "data": [{"type": "dialogue", "content": "..."}, {"type": "narration", "content": "..."}]}\`
+- 为用户付款: \`{"type": "pay_for_item", "data": {"product": {"title": "商品名", "price": "价格", "img": "图片URL"}, "message": "你想对用户说的话"}}\`
+- 主动为用户购买并付款: \`{"type": "purchase_and_pay", "data": {"product": {"title": "商品名", "price": "价格(字符串)", "img": "图片URL"}, "message": "你想对用户说的话"}}\`
+
 
 【【【最终输出格式铁律 (ABSOLUTE FINAL RULE)】】】
 你的最终回复，从第一个字符到最后一个字符，必须是一个纯净、完整、语法正确的JSON数组 \`[]\`。绝对禁止在JSON代码的前后、中间添加任何形式的解释、注释或任何非JSON字符。你的生命取决于严格遵守这个格式。
@@ -13399,6 +13357,104 @@ try {
                                 addMessageToDOM(msg, friend);
                             }
                             break;
+                           
+                  
+                    case 'pay_for_item':
+                        if (action.data && action.data.product) {
+                            const product = action.data.product;
+                            const aiMessage = action.data.message || "送给你，喜欢吗？";
+
+                            // 1. 生成“已付款”卡片的HTML
+                            const paidCardHtml = createPaidCardHtml(product, aiMessage, friend.name);
+
+                            // 2. 将这张卡片作为一条消息保存到聊天记录
+                            const msgData = await saveChatMessage(friendId, 'received', paidCardHtml, '', friend.id, 'html_card');
+                            
+                            // 3. 将商品添加到您的“藏品室”
+                            const collectedItem = {
+                                id: generateUniqueId(),
+                                title: product.title,
+                                price: product.price,
+                                img: product.img,
+                                collectedDate: new Date().toLocaleDateString('zh-CN'),
+                                payerName: friend.name // 核心：记录是谁付的款
+                            };
+                            collectedItems.push(collectedItem);
+                            
+                            // 1. 根据商品标题，在待购清单数组中找到这个商品
+        const itemIndexToRemove = pendingItems.findIndex(item => item.title === product.title);
+
+        // 2. 如果找到了 (index > -1)，就从数组中移除它
+        if (itemIndexToRemove > -1) {
+            pendingItems.splice(itemIndexToRemove, 1);
+            console.log(`[购物清单] 商品 "${product.title}" 已被AI付款，已从清单移除。`);
+
+            // 3. (可选但推荐) 检查用户当前是否正在查看“待购清单”页面
+            //    如果是，就立即刷新列表，让用户能看到商品“消失”的动画效果
+            if (document.getElementById('pending-page').classList.contains('active')) {
+                renderPendingList();
+            }
+        }
+
+                            // 4. 保存所有数据更改
+                            await saveData();
+
+                            // 5. 更新UI
+                            if (currentChatFriendId === friendId) {
+                                addMessageToDOM(msgData, friend);
+                                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                            }
+                            
+                            // 6. 弹出全局通知
+                            showShoppingNotification(`${friend.name} 为你购买了 ${product.title}！`);
+                        }
+                        break;
+                  
+                    case 'purchase_and_pay':
+                        if (action.data && action.data.product) {
+                            const product = action.data.product;
+                            const aiMessage = action.data.message || "这是我为你准备的，希望你喜欢。";
+
+                            // 1. 生成“已付款”卡片的HTML (复用我们已有的函数)
+                            const paidCardHtml = createPaidCardHtml(product, aiMessage, friend.name);
+
+                            // 2. 将这张卡片作为一条消息保存到聊天记录
+                            const msgData = await saveChatMessage(friendId, 'received', paidCardHtml, '', friend.id, 'html_card');
+                            
+                            // 3. 将AI创造的商品直接添加到您的“藏品室”
+                            const collectedItem = {
+                                id: generateUniqueId(),
+                                title: product.title,
+                                price: product.price,
+                                img: product.img,
+                                collectedDate: new Date().toLocaleDateString('zh-CN'),
+                                payerName: friend.name // 记录付款人是AI
+                            };
+                            collectedItems.push(collectedItem);
+
+                            // 4. (可选但推荐) 如果用户在待购清单里有类似商品，也可以一并移除
+                            const itemIndexToRemove = pendingItems.findIndex(item => item.title.includes(product.title.substring(0, 4)));
+                            if (itemIndexToRemove > -1) {
+                                pendingItems.splice(itemIndexToRemove, 1);
+                                if (document.getElementById('pending-page').classList.contains('active')) {
+                                    renderPendingList();
+                                }
+                            }
+                            
+                            // 5. 保存所有数据更改
+                            await saveData();
+
+                            // 6. 更新UI
+                            if (currentChatFriendId === friendId) {
+                                addMessageToDOM(msgData, friend);
+                                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                            }
+                            
+                            // 7. 弹出全局通知
+                            showShoppingNotification(`${friend.name} 为你购买了 ${product.title}！`);
+                        }
+                        break;
+                   
                         case 'accept_transfer':
                             const pendingTransferMsg = (chatHistories[friendId] || []).slice().reverse().find(m => m.type === 'sent' && m.contentType === 'transfer_request' && m.transfer_status === 'pending');
                             if (pendingTransferMsg) await aiAcceptTransfer(pendingTransferMsg.id);
@@ -16385,60 +16441,82 @@ const confirmationMsg = await saveChatMessage(currentChatFriendId, 'received', J
 
         // --- MODIFIED & REFACTORED: Phone App Logic ---
         function initPhoneApp() {
-    document.getElementById('simulatedPhoneScreen').style.display = 'none';
-    document.getElementById('phoneCharacterListScreen').style.display = 'block';
+        document.getElementById('simulatedPhoneScreen').style.display = 'none';
+        document.getElementById('phoneCharacterListScreen').style.display = 'block';
+        const navBar = document.getElementById('phoneAppNavBar');
+        navBar.querySelector('.nav-title').textContent = 'CONTACTS';
+        const backBtn = navBar.querySelector('#navBarGoHomeButton');
+        if (backBtn) backBtn.setAttribute('onclick', 'goHome()');
+        
+        const listContainer = document.getElementById('phoneCharacterListScreen');
+        listContainer.innerHTML = '';
+        const availableFriends = friends.filter(f => !f.isGroup);
 
-    const navBar = document.getElementById('phoneAppNavBar');
-    const navTitle = navBar.querySelector('.nav-title');
-    navTitle.textContent = '手机';
-    
-    // --- 核心修复：直接找到按钮并修改其点击事件，不再破坏HTML结构 ---
-    const backBtn = navBar.querySelector('#navBarGoHomeButton');
-    if (backBtn) {
-        backBtn.setAttribute('onclick', 'goHome()');
+        if (availableFriends.length === 0) {
+            listContainer.innerHTML = '<div style="text-align: center ; padding: 50px; color: #999;">暂无好友</div>';
+            return;
+        }
+
+        availableFriends.forEach(friend => {
+            const item = document.createElement('div');
+            item.className = 'friend-item';
+            item.onclick = () => openSimulatedPhone(friend.id);
+            const avatarHtml = friend.avatarImage 
+                ? `<div class="friend-avatar" style="background-image: url(${friend.avatarImage});"></div>` 
+                : `<div class="friend-avatar" style="background-color: var(--text-color); color: var(--bg-color);">${friend.avatar}</div>`;
+            item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${friend.remark || friend.name}</div><div class="friend-message">SELECT</div></div>`;
+            listContainer.appendChild(item);
+        });
     }
-    // --- 修复结束 ---
     
-    const listContainer = document.getElementById('phoneCharacterListScreen');
-    listContainer.innerHTML = '';
-    const availableFriends = friends.filter(f => !f.isGroup);
+    // #### **第一步：更新HTML结构 (`renderSimulatedHomeScreen` 函数)**
+    function renderSimulatedHomeScreen() {
+        const gridContainer = document.getElementById('sim-home-screen-content');
+        
+        // ▼▼▼ 这是最终的、正确的HTML结构 ▼▼▼
+        gridContainer.innerHTML = `
+            <!-- 1. 这是整个“桌面装饰”的容器 -->
+            <div id="desktop-art-container">
+                
+                <!-- 1.1 这是您要上传的照片所显示的地方 (顶层) -->
+                <div id="user-photo-placeholder">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
 
-    if (availableFriends.length === 0) {
-        listContainer.innerHTML = '<div style="text-align: center ; padding: 50px; color: #999;">暂无好友手机可查看</div>';
-        return;
+                <!-- 1.2 这是作为“相框”和“背景”的素材图片 (底层) -->
+                <img id="art-background-image" src="https://i.postimg.cc/yxb6dFTN/IMG-5998.png" alt="Desktop Art">
+
+            </div>
+
+            <!-- 2. 原有的图标网格 (保持不变) -->
+            <div class="sim-app-grid">
+                <a class="sim-app-icon" onclick="openSimApp('wechat')"><div class="sim-app-icon-img"><i class="fa-brands fa-weixin"></i></div><span class="sim-app-icon-label">微信</span></a>
+                <a class="sim-app-icon" onclick="openSimApp('memo')"><div class="sim-app-icon-img"><i class="fa-solid fa-clipboard"></i></div><span class="sim-app-icon-label">备忘录</span></a>
+                <a class="sim-app-icon" onclick="openSimApp('phone_call')"><div class="sim-app-icon-img"><i class="fa-solid fa-phone"></i></div><span class="sim-app-icon-label">电话</span></a>
+                <a class="sim-app-icon" onclick="openSimApp('browser')"><div class="sim-app-icon-img"><i class="fa-solid fa-compass"></i></div><span class="sim-app-icon-label">浏览器</span></a>
+                <a class="sim-app-icon" onclick="openSimApp('shopping')"><div class="sim-app-icon-img"><i class="fa-solid fa-bag-shopping"></i></div><span class="sim-app-icon-label">购物</span></a>
+                <a class="sim-app-icon" onclick="openSimApp('wallet')"><div class="sim-app-icon-img"><i class="fa-solid fa-wallet"></i></div><span class="sim-app-icon-label">钱包</span></a>
+                <a class="sim-app-icon" onclick="openSimApp('photos')"><div class="sim-app-icon-img"><i class="fa-solid fa-image"></i></div><span class="sim-app-icon-label">相册</span></a>
+                <a class="sim-app-icon" onclick="openSimApp('forum')"><div class="sim-app-icon-img"><i class="fa-solid fa-comments"></i></div><span class="sim-app-icon-label">论坛</span></a>
+            </div>
+        `;
+        // --- ▲▲▲ 修改结束 ▲▲▲ ---
     }
 
-    availableFriends.forEach(friend => {
-        const item = document.createElement('div');
-        item.className = 'friend-item';
-        item.onclick = () => openSimulatedPhone(friend.id);
-        const avatarHtml = friend.avatarImage 
-            ? `<div class="friend-avatar" style="background-image: url(${friend.avatarImage});"></div>` 
-            : `<div class="friend-avatar">${friend.avatar}</div>`;
-        item.innerHTML = `${avatarHtml}<div class="friend-info"><div class="friend-name">${friend.remark || friend.name}</div><div class="friend-message">点击查看Ta的手机</div></div>`;
-        listContainer.appendChild(item);
-    });
-}
         function openSimulatedPhone(characterId) {
-    currentSimPhoneCharacterId = characterId;
-    document.getElementById('phoneCharacterListScreen').style.display = 'none';
-    document.getElementById('simulatedPhoneScreen').style.display = 'flex';
-    
-    document.getElementById('regenerateSimContentBtn').style.display = 'flex';
-    
-    const character = friends.find(f => f.id === characterId);
-    const navBar = document.getElementById('phoneAppNavBar');
-    navBar.querySelector('.nav-title').textContent = `${character.name}的手机`;
-
-    // --- 核心修复：同样，直接找到按钮并修改其点击事件 ---
-    const backBtn = navBar.querySelector('#navBarGoHomeButton');
-    if (backBtn) {
-        backBtn.setAttribute('onclick', 'backToPhoneAppHome()');
+        currentSimPhoneCharacterId = characterId;
+        document.getElementById('phoneCharacterListScreen').style.display = 'none';
+        document.getElementById('simulatedPhoneScreen').style.display = 'flex';
+        document.getElementById('regenerateSimContentBtn').style.display = 'block';
+        
+        const character = friends.find(f => f.id === characterId);
+        const navBar = document.getElementById('phoneAppNavBar');
+        navBar.querySelector('.nav-title').textContent = `${character.name}’s PHONE`;
+        const backBtn = navBar.querySelector('#navBarGoHomeButton');
+        if (backBtn) backBtn.setAttribute('onclick', 'backToPhoneAppHome()');
+        
+        backToSimHomeScreen();
     }
-    // --- 修复结束 ---
-    
-    backToSimHomeScreen();
-}
         
         // [修改后] 的函数
 function backToPhoneAppHome() {
@@ -16448,12 +16526,42 @@ function backToPhoneAppHome() {
     initPhoneApp();
 }
 
-// [修改后] 的函数
+// ▼▼▼ 请用这个新版本完整替换上面的旧函数 ▼▼▼
 function backToSimHomeScreen() {
-    // [新增] 返回主屏幕时，重置当前打开的App标记
     currentActiveSimApp = null;
     document.querySelectorAll('.sim-app-view').forEach(view => view.classList.remove('active'));
+    
+    // 步骤 1: 像原来一样，先渲染出桌面的基础HTML结构
+    renderSimulatedHomeScreen();
+
+    const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+    if (!character) return; // 安全检查
+
+    const homeScreen = document.getElementById('sim-home-screen-content');
+    
+    // 步骤 2: 加载并应用桌面壁纸 (这部分逻辑不变)
+    if (character.wallpaper) {
+        homeScreen.style.backgroundImage = `url(${character.wallpaper})`;
+    } else {
+        homeScreen.style.backgroundImage = 'url(https://source.unsplash.com/random/400x800?dark,minimalist)';
+    }
+
+    // --- ▼▼▼ 新增的核心修复代码从这里开始 ▼▼▼ ---
+
+    // 步骤 3: 加载并应用相框照片
+    const photoPlaceholder = document.getElementById('user-photo-placeholder');
+    
+    // 检查角色数据中是否存在已保存的照片
+    if (photoPlaceholder && character.widgets && character.widgets.polaroidPhoto) {
+        // 如果有，就应用它
+        photoPlaceholder.innerHTML = ''; // 清空里面的 "+" 图标
+        photoPlaceholder.style.backgroundImage = `url(${character.widgets.polaroidPhoto})`;
+    }
+    // 如果没有保存的照片，`renderSimulatedHomeScreen` 默认渲染的就是带 "+" 的状态，所以我们不需要额外处理 else 的情况。
+    
+    // --- ▲▲▲ 修复代码到此结束 ▲▲▲ ---
 }
+// ▲▲▲ 替换到此结束 ▲▲▲
 
         // [修改后] 的函数
 async function openSimApp(appName) {
@@ -16682,265 +16790,237 @@ const recentChatHistory = (chatHistories[characterId] || [])
     }
 }
 
-        function renderSimAppList(appName, data) {
-            const view = document.getElementById(`sim-${appName}-view`);
-            if (!view) return;
-            // 在 renderSimAppList 函数内
-// [修改] 添加 'forum': '论坛'
-const headerMap = { wechat: '微信', memo: '备忘录', phone_call: '通话记录', browser: '浏览器', shopping: '购物', wallet: '钱包', photos: '相册', forum: '论坛' };
-// ...
-            const backFn = 'backToSimHomeScreen()';
-            let contentHTML = '';
-
-            if (data.error) {
-                contentHTML = `<div style="text-align:center; padding: 40px;">${data.error}</div>`;
-            } else {
-                 switch(appName) {
-                 // ...在 switch(appName) 内部 ...
-
-// [修改后]
-case 'forum':
-    contentHTML = (data.posts || []).map(post => {
-        const postJsonString = JSON.stringify(post).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        // [新增] 添加了 post.datetime 的显示
-        return `<div class="sim-memo-item" onclick='renderSimAppDetail("forum", ${postJsonString})'>
-                    <div class="sim-memo-title">${post.title}</div>
-                    <div class="sim-memo-datetime">${post.datetime || ''}</div>
-                </div>`;
-    }).join('');
-    break;
-
-// ...其他 case ...
-                    case 'memo':
-                        contentHTML = (data.memos || []).map(item => {
-                            const itemJsonString = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                            return `<div class="sim-memo-item" onclick='renderSimAppDetail("memo", ${itemJsonString})'>
-                                <div class="sim-memo-title">${item.title}</div>
-                                <div class="sim-memo-content">${(item.content || '').substring(0, 50)}...</div>
-                                <div class="sim-memo-datetime">${item.datetime}</div>
-                            </div>`;
-                        }).join('');
-                        break;
-                    case 'wechat':
-                        const character = friends.find(f => f.id === currentSimPhoneCharacterId);
-                        const realChatHistory = (chatHistories[character.id] || []).slice(-10);
-                        const realChat = {
-                            id: 'chat_with_user',
-                            name: userProfile.name,
-                            avatar: userProfile.avatar || userProfile.name.substring(0,1),
-                            avatarImage: userProfile.avatarImage,
-                            messages: realChatHistory.map(msg => ({
-                                sender: msg.type === 'sent' ? userProfile.name : character.name,
-                                content: msg.content,
-                                type: msg.type
-                            }))
-                        };
-                        const allChats = [realChat, ...(data.chats || [])];
-                        contentHTML = '<div class="friend-list">' + allChats.map(item => {
-                            const itemJsonString = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                            const avatarHtml = item.avatarImage ? `<div class="friend-avatar" style="background-image: url(${item.avatarImage})"></div>` : `<div class="friend-avatar">${item.avatar}</div>`;
-                            return `<div class="friend-item" onclick='renderSimAppDetail("wechat", ${itemJsonString})'>
-                                ${avatarHtml}
-                                <div class="friend-info">
-                                    <div class="friend-name">${item.name}</div>
-                                    <div class="friend-message">${item.messages[item.messages.length - 1]?.content.substring(0, 30) || ''}...</div>
-                                </div>
-                            </div>`;
-                        }).join('') + '</div>';
-                        break;
-                    case 'browser':
-                        contentHTML = (data.history || []).map(item => {
-                            const itemJsonString = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                            return `<div class="sim-browser-item" onclick='renderSimAppDetail("browser", ${itemJsonString})'>
-                                <div class="sim-browser-title">${item.title}</div>
-                                <div class="sim-browser-url">${item.url}</div>
-                            </div>`;
-                        }).join('');
-                        break;
-                    case 'shopping':
-                        contentHTML = (data.orders || []).map(item => {
-                             const itemJsonString = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                             return `<div class="sim-shopping-item" onclick='renderSimAppDetail("shopping", ${itemJsonString})'>
-                                <div class="sim-shopping-title">${item.name}</div>
-                                <div class="sim-shopping-details"><strong>¥${item.price}</strong></div>
-                             </div>`;
-                        }).join('');
-                        break;
-                    case 'photos':
-                        contentHTML = '<div class="sim-photos-grid">' + (data.photos || []).map(item => {
-                            const itemJsonString = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                            return `<div class="sim-photo-thumb" onclick='renderSimAppDetail("photos", ${itemJsonString})'>
-                                <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                            </div>`;
-                        }).join('') + '</div>';
-                        break;
-                    case 'phone_call':
-                        const callIcons = { incoming: '↙', outgoing: '↗', missed: '↙' };
-                        const callColors = { incoming: 'var(--text-color)', outgoing: 'var(--text-color)', missed: 'red' };
-                        contentHTML = (data.calls || []).map(item => `<div class="sim-call-item"><div class="sim-call-type" style="color: ${callColors[item.type] || 'var(--text-color)'}">${callIcons[item.type] || ''}</div><div class="sim-call-info"><div class="sim-call-name" style="color: ${item.type === 'missed' ? 'red' : 'var(--text-color)'}">${item.name}</div><div class="sim-call-detail">${item.time}</div></div></div>`).join('');
-                        break;
-                     case 'wallet':
-                        // 【【【这是修改后的新代码，请用它来替换】】】
-let rawBalance = parseFloat(data.balance);
-let balance = (isNaN(rawBalance) ? 0 : rawBalance).toFixed(2);
-                        contentHTML = `<div class="sim-wallet-balance"><div>余额</div><div class="sim-wallet-amount">¥ ${balance}</div></div>`;
-                        contentHTML += (data.transactions || []).map(item => `<div class="sim-wallet-item"><div><div>${item.description}</div><div style="font-size:12px; color: #999;">${item.time || ''}</div></div><div class="amount ${parseFloat(item.amount) > 0 ? 'positive' : 'negative'}">${item.amount}</div></div>`).join('');
-                        break;
-                }
-            }
-
-            view.innerHTML = `
-                <div class="sim-app-header">
-                    <button class="sim-app-header-btn" onclick="${backFn}">‹</button>
-                    <div class="sim-app-header-title">${headerMap[appName]}</div>
-                    <div style="width: 50px;"></div>
-                </div>
-                <div class="sim-app-content">${contentHTML}</div>
-            `;
-        }
-
-        // [修改后] 的函数
-function renderSimAppDetail(appName, detailItem) {
-    const detailView = document.getElementById(`sim-${appName}-detail-view`);
-    const listView = document.getElementById(`sim-${appName}-view`);
-    if (!detailView || !listView) return;
-
-    listView.classList.remove('active');
-    detailView.classList.add('active');
-
-    const backFn = `document.getElementById('sim-${appName}-detail-view').classList.remove('active'); document.getElementById('sim-${appName}-view').classList.add('active');`;
-    // 【【【这是修改后的新代码，请用它来替换】】】
-const originalTitle = detailItem.title || detailItem.name || '详情';
-let headerTitle = originalTitle.length > 10 ? originalTitle.substring(0, 10) + '...' : originalTitle;
+        // 【【【这是修正后的完整函数，请用它来替换】】】
+function renderSimAppList(appName, data) {
+    const view = document.getElementById(`sim-${appName}-view`);
+    if (!view) return;
+    
+    const headerMap = { wechat: '微信', memo: '备忘录', phone_call: '通话记录', browser: '浏览器', shopping: '购物', wallet: '钱包', photos: '相册', forum: '论坛' };
+    const backFn = 'backToSimHomeScreen()';
     let contentHTML = '';
 
-    switch(appName) {
-        case 'memo':
-            // [修改] 使用新的格式化函数
-            contentHTML = `<div class="sim-detail-content">${formatMemoContent(detailItem.content)}</div>`;
-            break;
-        case 'wechat':
-            const character = friends.find(f => f.id === currentSimPhoneCharacterId);
-            const isRealChat = detailItem.id === 'chat_with_user';
-            contentHTML = `<div class="chat-messages" style="padding: 10px; height: 100%; overflow-y: auto; background-color: #ededee;">` + 
-            (detailItem.messages || []).map(msg => {
-                const isCharacterSender = msg.sender === character.name;
-                let type;
-                if (isRealChat) {
-                    type = msg.type === 'sent' ? 'received' : 'sent';
-                } else {
-                    type = isCharacterSender ? 'sent' : 'received';
-                }
-                const sender = (type === 'sent') 
-                    ? character 
-                    : (isRealChat ? userProfile : { name: detailItem.name, avatar: detailItem.avatar, avatarImage: ''});
-                const messageHtml = `
-                    <div class="message ${type}">
-                        ${type === 'received' ? getAvatarHtml(sender) : ''}
-                        <div class="message-body">
-                            <div class="message-content">${msg.content}</div>
-                        </div>
-                        ${type === 'sent' ? getAvatarHtml(sender) : ''}
-                    </div>`;
-                return messageHtml;
-            }).join('') + `</div>`;
-            break;
-        case 'browser':
-            contentHTML = `<div class="sim-detail-content"><h3>${detailItem.title}</h3><hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;"><p>${(detailItem.content || '').replace(/\n/g, '<br>')}</p></div>`;
-            break;
-        case 'shopping':
-            const encodedName = encodeURIComponent(detailItem.name);
-            const imageUrl = `https://placehold.co/400x400/f0f0f0/ccc?text=${encodedName}`;
-            contentHTML = `<div class="sim-detail-content">
-                <div class="sim-shopping-image-placeholder"><img src="${imageUrl}" alt="${detailItem.name}"></div>
-                <h3>${detailItem.name}</h3>
-                <p style="font-size: 20px; font-weight: bold; margin: 10px 0;">¥${detailItem.price}</p>
-                <p>${detailItem.description || '暂无商品详情。'}</p>
-            </div>`;
-            break;
-        case 'photos':
-            headerTitle = '照片详情';
-            contentHTML = `<div class="sim-detail-content">
-                <div class="sim-shopping-image-placeholder"><svg viewBox="0 0 24 24" width="50" height="50" fill="#ccc"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
-                <p style="white-space: pre-wrap;">${(detailItem.description || '这张照片里什么也没有...').replace(/\n/g, '<br>')}</p>
-            </div>`;
-            break;
-        // [修改] 论坛详情渲染，应用了新的CSS class
-        case 'forum':
-            headerTitle = '帖子详情';
-            let commentsHtml = (detailItem.comments || []).map(comment => `
-                <div class="comment-floor">
-                    <div class="comment-user-info">${comment.floor} - ${comment.user}</div>
-                    <div class="comment-text">${comment.comment}</div>
-                </div>
-            `).join('');
-            
-            contentHTML = `
-                <div class="sim-detail-content">
-                    <h3>${detailItem.title}</h3>
-                    <div class="sim-memo-datetime">${detailItem.datetime || ''}</div>
-                    <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
-                    <p style="white-space: pre-wrap;">${(detailItem.content || '').replace(/\n/g, '<br>')}</p>
-                    <div style="margin-top: 30px;">
-                        <h4>评论区</h4>
-                        ${commentsHtml}
-                    </div>
-                </div>`;
-            break;
-    }
-
-    detailView.innerHTML = `
-        <div class="sim-app-header">
-            <button class="sim-app-header-btn" onclick="${backFn}">‹</button>
-            <div class="sim-app-header-title">${headerTitle}</div>
-            <div style="width: 50px;"></div>
-        </div>
-        <div class="sim-app-content">${contentHTML}</div>
-    `;
-}
-        
-        // [全新] 的函数，处理重新生成按钮的点击事件
-async function handleSimRegenerateClick() {
-    if (!currentSimPhoneCharacterId) return;
-
-    const character = friends.find(f => f.id === currentSimPhoneCharacterId);
-    const loadingOverlay = `<div class="sim-loading-overlay">正在重新生成...</div>`;
-    // ...函数内部...
-// [修改] 在数组末尾添加 'forum'
-const allAppNames = ['memo', 'wechat', 'browser', 'shopping', 'wallet', 'photos', 'phone_call', 'forum'];
-// ...函数其余部分...
-
-    if (currentActiveSimApp) {
-        // --- 场景一：只重新生成当前打开的App ---
-        showConfirm(`确定要为 ${character.name} 重新生成“${currentActiveSimApp}”的内容吗？`, async (confirmed) => {
-            if (!confirmed) return;
-            
-            const view = document.getElementById(`sim-${currentActiveSimApp}-view`);
-            if (view) view.innerHTML = loadingOverlay;
-            
-            await generateSimAppContent(currentSimPhoneCharacterId, currentActiveSimApp);
-        });
-
+    if (data.error) {
+        contentHTML = `<div style="text-align:center; padding: 40px;">${data.error}</div>`;
     } else {
-        // --- 场景二：在主屏幕，重新生成所有App ---
-        showConfirm(`确定要为 ${character.name} 重新生成手机里所有App的内容吗？`, async (confirmed) => {
-            if (!confirmed) return;
-            
-            // 清空旧的缓存
-            if (simPhoneContentCache[currentSimPhoneCharacterId]) {
-                simPhoneContentCache[currentSimPhoneCharacterId] = {};
-            }
-            
-            showAlert("正在为所有App重新生成内容，请稍候...");
-            
-            // 并行生成所有App的内容
-            await Promise.all(allAppNames.map(appName => generateSimAppContent(currentSimPhoneCharacterId, appName)));
-            
-            showAlert("所有内容已重新生成！");
-        });
-    }
+         switch(appName) {
+                case 'memo':
+                case 'browser':
+                case 'shopping':
+                case 'forum':
+                    const items = data.memos || data.history || data.orders || data.posts || [];
+                    contentHTML = items.map(item => {
+                        const title = item.title || item.name;
+                        let subtitle;
+if (item.url) {
+    subtitle = item.url;
+} else if (item.price !== undefined) { // 核心修改：检查 price 属性是否存在，而不是直接使用
+    subtitle = `¥${item.price}`;
+} else if (item.datetime) {
+    subtitle = item.datetime;
+} else {
+    subtitle = (item.content || '').substring(0, 50) + '...';
 }
+                        return `<div class="sim-list-item" onclick='renderSimAppDetail("${appName}", ${JSON.stringify(item).replace(/'/g, "\\'")})'>
+                                    <div class="sim-list-title">${title}</div>
+                                    <div class="sim-list-subtitle">${subtitle}</div>
+                                </div>`;
+                    }).join('');
+                    break;
 
+                case 'wechat': 
+                    const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+                    const realChat = { 
+                        id: 'chat_with_user', 
+                        name: userProfile.name, 
+                        avatar: userProfile.avatar, 
+                        avatarImage: userProfile.avatarImage, 
+                        messages: (chatHistories[character.id] || []).slice(-10).map(msg => ({ 
+                            sender: msg.type === 'sent' ? userProfile.name : character.name, 
+                            content: msg.content, 
+                            type: msg.type 
+                        })) 
+                    };
+                    contentHTML = `<div class="sim-wechat-list">` + [realChat, ...(data.chats || [])].map(item => {
+                        const avatarHtml = item.avatarImage ? `<div class="friend-avatar" style="background-image: url(${item.avatarImage})"></div>` : `<div class="friend-avatar">${item.avatar}</div>`;
+                        const lastMessage = item.messages && item.messages.length > 0 ? item.messages[item.messages.length - 1].content.substring(0, 30) + '...' : '';
+                        return `<div class="friend-item" onclick='renderSimAppDetail("wechat", ${JSON.stringify(item).replace(/'/g, "\\'")})'>
+                                    ${avatarHtml}
+                                    <div class="friend-info">
+                                        <div class="friend-name">${item.name}</div>
+                                        <div class="friend-message">${lastMessage}</div>
+                                    </div>
+                                </div>`;
+                    }).join('') + `</div>`;
+                    break;
+
+                case 'photos':
+                    contentHTML = '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;">' + (data.photos || []).map(item => 
+                        `<div style="aspect-ratio: 1/1; background: #f0f0f0; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick='renderSimAppDetail("photos", ${JSON.stringify(item).replace(/'/g, "\\'")})'>
+                            <i class="fa-solid fa-image" style="font-size: 40px; color: #e0e0e0;"></i>
+                         </div>`
+                    ).join('') + '</div>';
+                    break;
+
+                case 'phone_call':
+                    const callIcons = { incoming: '↙', outgoing: '↗', missed: '↙' };
+                    const callColors = { incoming: 'var(--text-color)', outgoing: 'var(--text-color)', missed: 'red' };
+                    contentHTML = (data.calls || []).map(item => 
+                        `<div class="sim-list-item" style="display:flex; align-items:center; gap:15px;">
+                            <div style="color: ${callColors[item.type] || 'var(--text-color)'}; font-size: 20px;">${callIcons[item.type] || ''}</div>
+                            <div style="flex-grow: 1;">
+                                <div class="sim-list-title" style="margin-bottom: 4px; color: ${item.type === 'missed' ? 'red' : 'var(--text-color)'}">${item.name}</div>
+                                <div class="sim-list-subtitle">${item.time}</div>
+                            </div>
+                         </div>`
+                    ).join('');
+                    break;
+                
+                case 'wallet':
+                    let balance = (parseFloat(data.balance) || 0).toFixed(2);
+                    let transactionsHtml = (data.transactions || []).map(item => 
+                        `<div class="sim-list-item" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div class="sim-list-title" style="font-size: 15px; margin-bottom: 5px;">${item.description}</div>
+                                <div class="sim-list-subtitle" style="font-size: 12px;">${item.time || ''}</div>
+                            </div>
+                            <div style="font-size: 16px; font-weight: 700; color: ${parseFloat(item.amount) > 0 ? '#4CAF50' : 'var(--text-color)'};">
+                                ${parseFloat(item.amount) > 0 ? '+' : ''}${item.amount.toFixed(2)}
+                            </div>
+                         </div>`
+                    ).join('');
+                    contentHTML = `
+                        <div style="padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border-color);">
+                            <div style="font-size: 14px; color: var(--subtle-text-color);">余额</div>
+                            <div style="font-family: 'Noto Serif SC', serif; font-size: 36px; font-weight: bold; margin-top: 5px;">¥ ${balance}</div>
+                        </div>
+                        <div>${transactionsHtml}</div>
+                    `;
+                    break;
+            }
+        }
+
+        view.innerHTML = `
+            <div class="sim-app-header">
+                <button class="sim-app-header-btn" onclick="${backFn}"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="sim-app-header-title">${headerMap[appName]}</div>
+                <div style="width: 40px;"></div>
+            </div>
+            <div class="sim-app-content">${contentHTML}</div>
+        `;
+    }
+
+    function renderSimAppDetail(appName, detailItem) {
+        const detailView = document.getElementById(`sim-${appName}-detail-view`);
+        const listView = document.getElementById(`sim-${appName}-view`);
+        if (!detailView || !listView) return;
+
+        listView.classList.remove('active');
+        detailView.classList.add('active');
+
+        const backFn = `document.getElementById('sim-${appName}-detail-view').classList.remove('active'); document.getElementById('sim-${appName}-view').classList.add('active');`;
+        let originalTitle = detailItem.title || detailItem.name || '详情';
+        let headerTitle = originalTitle.length > 10 ? originalTitle.substring(0, 10) + '...' : originalTitle;
+        let contentHTML = '';
+
+        // 【【【这就是您截图中所省略的完整 switch 逻辑】】】
+        switch(appName) {
+            case 'memo': 
+                contentHTML = `<div class="sim-detail-content"><h3>${detailItem.title}</h3><div class="sim-list-meta">${detailItem.datetime}</div><hr><p>${(detailItem.content || '').replace(/\n/g, '<br>')}</p></div>`; 
+                break;
+            
+            case 'wechat': 
+                const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+                const isRealChat = detailItem.id === 'chat_with_user';
+                contentHTML = `<div style="padding: 15px; height: 100%; overflow-y: auto;">` + (detailItem.messages || []).map(msg => { 
+                    const isCharacterSender = msg.sender === character.name; 
+                    let type = isRealChat ? (msg.type === 'sent' ? 'received' : 'sent') : (isCharacterSender ? 'sent' : 'received'); 
+                    const sender = (type === 'sent') ? character : (isRealChat ? userProfile : { name: detailItem.name, avatar: detailItem.avatar, avatarImage: ''}); 
+                    const avatarHtml = sender.avatarImage ? `<div class="chat-avatar" style="background-image: url(${sender.avatarImage})"></div>` : `<div class="chat-avatar">${sender.avatar}</div>`; 
+                    return `<div class="message ${type}">${type === 'received' ? avatarHtml : ''}<div class="message-body"><div class="message-content">${msg.content}</div></div>${type === 'sent' ? avatarHtml : ''}</div>`; 
+                }).join('') + `</div>`;
+                break;
+            
+            case 'browser':
+                contentHTML = `<div class="sim-detail-content"><h3>${detailItem.title}</h3><hr><p>${(detailItem.content || '').replace(/\n/g, '<br>')}</p></div>`;
+                break;
+
+            case 'shopping':
+                const imageUrl = `https://placehold.co/400x400/f0f0f0/ccc?text=${encodeURIComponent(detailItem.name)}`;
+                contentHTML = `<div class="sim-detail-content">
+                    <div style="width: 100%; aspect-ratio: 1/1; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 15px; border-radius: 4px; overflow: hidden;">
+                        <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="${detailItem.name}">
+                    </div>
+                    <h3>${detailItem.name}</h3>
+                    <p style="font-size: 20px; font-weight: 700; font-family: 'Noto Serif SC', serif; margin: 10px 0; color: var(--text-color);">¥${detailItem.price}</p>
+                    <hr>
+                    <p style="color: #555;">${detailItem.description || '暂无商品详情。'}</p>
+                </div>`;
+                break;
+
+            case 'photos':
+                headerTitle = '照片详情';
+                contentHTML = `<div class="sim-detail-content">
+                    <div style="width: 100%; aspect-ratio: 1/1; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 20px; border-radius: 4px;">
+                        <i class="fa-solid fa-image" style="font-size: 80px; color: #e0e0e0;"></i>
+                    </div>
+                    <h3>${detailItem.title}</h3>
+                    <p style="white-space: pre-wrap;">${(detailItem.description || '这张照片里什么也没有...').replace(/\n/g, '<br>')}</p>
+                </div>`;
+                break;
+
+            case 'forum':
+                headerTitle = '帖子详情';
+                let commentsHtml = (detailItem.comments || []).map(comment => `
+                    <div class="comment-floor">
+                        <div class="comment-user-info">${comment.floor} - ${comment.user}</div>
+                        <div class="comment-text">${comment.comment}</div>
+                    </div>`).join('');
+                contentHTML = `
+                    <div class="sim-detail-content">
+                        <h3>${detailItem.title}</h3>
+                        <div class="sim-list-meta">${detailItem.datetime || ''}</div>
+                        <hr>
+                        <p style="white-space: pre-wrap;">${(detailItem.content || '').replace(/\n/g, '<br>')}</p>
+                        <div>
+                            <h4>评论区</h4>
+                            ${commentsHtml}
+                        </div>
+                    </div>`;
+                break;
+        }
+
+        detailView.innerHTML = `
+            <div class="sim-app-header">
+                <button class="sim-app-header-btn" onclick="${backFn}"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="sim-app-header-title">${headerTitle}</div>
+                <div style="width: 40px;"></div>
+            </div>
+            <div class="sim-app-content">${contentHTML}</div>
+        `;
+    }
+
+    async function handleSimRegenerateClick() {
+        if (!currentSimPhoneCharacterId) return;
+        const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+        const allAppNames = ['memo', 'wechat', 'browser', 'shopping', 'wallet', 'photos', 'phone_call', 'forum'];
+        if (currentActiveSimApp) {
+            if(confirm(`确定要为 ${character.name} 重新生成“${currentActiveSimApp}”的内容吗？`)) {
+                const view = document.getElementById(`sim-${currentActiveSimApp}-view`);
+                if (view) view.innerHTML = `<div class="sim-loading-overlay"><div class="loading-spinner"></div><p>正在重新生成...</p></div>`;
+                await generateSimAppContent(currentSimPhoneCharacterId, currentActiveSimApp);
+            }
+        } else {
+            if(confirm(`确定要为 ${character.name} 重新生成手机里所有App的内容吗？`)) {
+                if (simPhoneContentCache[currentSimPhoneCharacterId]) {
+                    simPhoneContentCache[currentSimPhoneCharacterId] = {};
+                }
+                alert("正在为所有App重新生成内容...");
+                await Promise.all(allAppNames.map(appName => generateSimAppContent(currentSimPhoneCharacterId, appName)));
+                alert("所有内容已重新生成！");
+            }
+        }
+    }
+    
 // [全新] 函数：格式化备忘录内容
 
 // 【【【这是修改后的新代码，请用它完整替换】】】
@@ -17247,6 +17327,27 @@ window.onload = async function() {
     await dbManager.init(); 
     await requestPersistentStorage(); 
     await loadData();
+
+// 1. 为“桌面背景”绑定更换壁纸的事件
+        document.getElementById('sim-home-screen-content').addEventListener('click', (event) => {
+            // 如果点击的是图标网格或艺术组件区域，则不触发
+            if (event.target.closest('.sim-app-grid') || event.target.closest('#desktop-art-container')) {
+                return;
+            }
+            document.getElementById('wallpaper-upload-input').click();
+        });
+
+        // 2. 为“相框”区域绑定更换照片的事件
+        document.body.addEventListener('click', (event) => {
+            // 只在用户明确点击了 #user-photo-placeholder 时才触发
+            if (event.target.closest('#user-photo-placeholder')) {
+                // 阻止事件冒泡，这样就不会触发外层的“更换壁纸”点击事件了
+                event.stopPropagation();
+                
+                // 触发专门给相框用的上传按钮
+                document.getElementById('user-photo-upload-input').click();
+            }
+        });
 
 initialize();
 
@@ -24564,7 +24665,49 @@ async function toggleMemorySharing() {
 
 const homePageData = { carouselSlides: [ { title: '秋冬系列', subtitle: '探索羊绒的温暖诗意', img: 'https://images.unsplash.com/photo-1542060748-10c28b62716f?w=800&q=80' }, { title: 'MODOU BEAUTY', subtitle: '全新上市「晨雾」系列', img: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80' }, { title: '限时礼遇', subtitle: '精选商品低至七折', img: 'https://images.unsplash.com/photo-1555529771-835f59fc5efe?w=800&q=80' } ], newsItems: [ { category: 'STYLING', title: '三款经典白衬衫的秋冬搭配法则' }, { category: 'PROMOTION', title: '会员专享 | 积分兑换活动现已开启' }, { category: 'NEW ARRIVAL', title: '都市探索者系列盲盒正式发售' } ] };
     const logisticsData = [ { orderId: 'MD20251010001', productName: '解构主义羊毛西装', productImg: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80', status: '配送中', eta: '预计 10月12日 送达', isInternational: false, timeline: [ { text: '您的订单已确认', timestamp: '10-10 08:30', completed: true }, { text: '包裹已出库', timestamp: '10-10 14:00', completed: true }, { text: '包裹正在运输途中', timestamp: '10-11 09:00', active: true }, { text: '正在为您派送', timestamp: '', completed: false }, { text: '已签收', timestamp: '', completed: false }, ] }, { orderId: 'MD20251009002', productName: '高光修容一体盘', productImg: 'https://images.unsplash.com/photo-1512496015851-a90137ba0a43?w=500&q=80', status: '清关中', eta: '预计 10月18日 送达', isInternational: true, timeline: [ { text: '您的订单已确认', timestamp: '10-09 11:45', completed: true }, { text: '包裹已从海外仓库发出', timestamp: '10-10 16:20', completed: true }, { text: '包裹正在清关，请耐心等待', timestamp: '10-11 10:00', active: true }, { text: '包裹已交由境内物流承运', timestamp: '', completed: false }, { text: '已签收', timestamp: '', completed: false }, ] } ];
-    let productsData = { "服装": [ { type: 'clothing', brand: 'MODOU STANDARD', title: '解构主义羊毛西装', details: '100%美利奴羊毛', sku: 'MD-25-WJK', price: '2199', img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80' } ], "百货": [ { type: 'department', title: '生活方式精选', features: ['手工吹制玻璃水杯', '模块化黄铜烛台'], img: 'https://images.unsplash.com/photo-1600721391689-b7f525c277e9?w=500&q=80' } ], "外卖": [ { type: 'delivery', store: '主厨精选', eta: '约 30 分钟', items: [{name: '慢烤安格斯牛排套餐', price: '192'}, {name: '香煎北海道扇贝', price: '210'}], img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80' } ], "食品": [ { type: 'food', storeName: '工匠烘焙坊', orderNo: '0235', items: ['有机全麦面包', '冷萃咖啡原液'], img: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&q=80' } ], "玩乐": [ { type: 'play', eventType: '戏剧', title: '《不眠之夜》', details: '上海限定版团购券', time: '19:30', seat: 'A-12', img: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80' } ], "美妆": [ { type: 'cosmetic', brand: 'MODOU BEAUTY', title: '柔光持妆粉底液', details: '色号 #02 自然色', price: '380', img: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?w=500&q=80' }, { type: 'cosmetic', brand: 'STUDIO GLOW', title: '高光修容一体盘', details: '限定星尘版', price: '520', img: 'https://images.unsplash.com/photo-1512496015851-a90137ba0a43?w=500&q=80' } ], "盲盒": [ { type: 'blindbox', series: 'SERIES N°03', title: '都市探索者', description: '内含3-5件精选生活方式单品及一件限定藏品。', price: '299', bgImg: 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?w=500&q=80' }, { type: 'blindbox', series: 'SERIES N°04', title: '午夜调香师', description: '内含3-5件独家定制香氛产品与高定主题包装。', price: '499', bgImg: 'https://images.unsplash.com/photo-1553272725-0861007691b2?w=500&q=80' } ], "海淘": [ { type: 'global', brand: 'ACME DE LA VIE', title: '手工制帆布托特包', price: '1899', origin: 'Made in Italy', img: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=500&q=80' }, { type: 'global', brand: 'STUDIO NICHOLSON', title: '高密度华达呢风衣', price: '6499', origin: 'Made in United Kingdom', img: 'https://images.unsplash.com/photo-1542318817-8153d7404b61?w=500&q=80' } ], "私享": [ { type: 'invitation', title: 'Private Salon', subtitle: 'An exclusive preview of our curated collection.' }, { type: 'gallery_item', fileNo: 'N°1', title: '午夜飞行', price: '¥ 1280', img: 'https://images.unsplash.com/photo-1622644230042-0a63529f5cf?w=500&q=80' }, { type: 'gallery_item', fileNo: 'N°2', title: '皮肤游戏', price: '¥ 990', img: 'https://images.unsplash.com/photo-1617962684873-27c13e5a55b3?w=500&q=80' } ] };
+    // ▼▼▼ 请用这个【完整修正后】的代码块，替换您原来的整个 productsData 定义 ▼▼▼
+
+// ▼▼▼ 请用这个【完整修正后】的代码块，替换您原来的整个 productsData 定义 ▼▼▼
+let productsData = {
+    "服装": [
+        { type: 'clothing', brand: 'MODOU STANDARD', title: '解构主义羊毛西装', details: '100%美利奴羊毛', sku: 'MD-25-WJK', price: '2199', img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80' }
+    ],
+    "百货": [
+        // 修正：为百货商品添加了 price 属性
+        { type: 'department', title: '生活方式精选', features: ['手工吹制玻璃水杯', '模块化黄铜烛台'], price: '599', img: 'https://images.unsplash.com/photo-1600721391689-b7f525c277e9?w=500&q=80' }
+    ],
+    "外卖": [
+        // 修正：将 store 改为 title，并计算添加了总价 price 属性
+        { type: 'delivery', title: '主厨精选', eta: '约 30 分钟', items: [{name: '慢烤安格斯牛排套餐', price: '192'}, {name: '香煎北海道扇贝', price: '210'}], price: '402', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80' }
+    ],
+    "食品": [
+        // 修正：将 storeName 改为 title，并添加了 price 属性
+        { type: 'food', title: '工匠烘焙坊', orderNo: '0235', items: ['有机全麦面包', '冷萃咖啡原液'], price: '88', img: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&q=80' }
+    ],
+    "玩乐": [
+        // 修正：为玩乐商品添加了 price 属性
+        { type: 'play', eventType: '戏剧', title: '《不眠之夜》', details: '上海限定版团购券', time: '19:30', seat: 'A-12', price: '880', img: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80' }
+    ],
+    "美妆": [
+        { type: 'cosmetic', brand: 'MODOU BEAUTY', title: '柔光持妆粉底液', details: '色号 #02 自然色', price: '380', img: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?w=500&q=80' },
+        { type: 'cosmetic', brand: 'STUDIO GLOW', title: '高光修容一体盘', details: '限定星尘版', price: '520', img: 'https://images.unsplash.com/photo-1512496015851-a90137ba0a43?w=500&q=80' }
+    ],
+    "盲盒": [
+        { type: 'blindbox', series: 'SERIES N°03', title: '都市探索者', description: '内含3-5件精选生活方式单品及一件限定藏品。', price: '299', bgImg: 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?w=500&q=80' },
+        { type: 'blindbox', series: 'SERIES N°04', title: '午夜调香师', description: '内含3-5件独家定制香氛产品与高定主题包装。', price: '499', bgImg: 'https://images.unsplash.com/photo-1553272725-0861007691b2?w=500&q=80' }
+    ],
+    "海淘": [
+        { type: 'global', brand: 'ACME DE LA VIE', title: '手工制帆布托特包', price: '1899', origin: 'Made in Italy', img: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=500&q=80' },
+        { type: 'global', brand: 'STUDIO NICHOLSON', title: '高密度华达呢风衣', price: '6499', origin: 'Made in United Kingdom', img: 'https://images.unsplash.com/photo-1542318817-8153d7404b61?w=500&q=80' }
+    ],
+    "私享": [
+        { type: 'invitation', title: 'Private Salon', subtitle: 'An exclusive preview of our curated collection.' },
+        // 修正：移除了价格中的 "¥" 符号
+        { type: 'gallery_item', fileNo: 'N°1', title: '午夜飞行', price: '1280', img: 'https://images.unsplash.com/photo-1622644230042-0a63529f5cf?w=500&q=80' },
+        { type: 'gallery_item', fileNo: 'N°2', title: '皮肤游戏', price: '990', img: 'https://images.unsplash.com/photo-1617962684873-27c13e5a55b3?w=500&q=80' }
+    ]
+};
+
     let pendingItems = [ { id: 1, title: '解构主义羊毛西装', price: '2199', img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80' }, { id: 2, title: '柔光持妆粉底液', price: '380', img: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?w=500&q=80' }, { id: 3, title: '都市探索者盲盒', price: '299', img: 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?w=500&q=80' } ];
     let collectedItems = [];
     
@@ -24616,15 +24759,72 @@ function renderCharList() {
         
         // 3. 渲染完邀请函后，直接结束函数，不执行下面的商品渲染逻辑
         return; 
-    } const products = productsData[category].filter(p => p.type !== 'gallery_item'); products.forEach(product => { const item = document.createElement('div'); item.className = 'shelf-item'; let html = ''; switch(product.type) { case 'clothing': item.classList.add('ticket-hangtag'); html = `<div class="hangtag-main"><img src="${product.img}" class="hangtag-img"><div class="hangtag-info"><div class="hangtag-brand">${product.brand}</div><h3 class="hangtag-title">${product.title}</h3><p class="hangtag-details">${product.details}</p></div></div><div class="hangtag-tear-off"><span class="hangtag-sku">${product.sku}</span><span class="hangtag-price">¥ ${product.price}</span></div>`; break; case 'department': item.classList.add('ticket-receipt'); let featuresHtml = product.features.map(f => `<li class="receipt-item"><span>${f}</span><span>-</span></li>`).join(''); html = `<div class="receipt-header"><div class="receipt-logo">MODOU MART</div><div class="receipt-slogan">CURATED FOR LIFE</div></div><ul class="receipt-item-list">${featuresHtml}</ul><div class="receipt-footer">THANK YOU</div><img src="${product.img}" class="receipt-img">`; break; case 'delivery': item.classList.add('ticket-delivery-card'); let deliveryItemsHtml = product.items.map(i => `<li class="delivery-card-item"><span>${i.name}</span><span>¥${i.price}</span></li>`).join(''); html = `<div class="delivery-card-img" style="background-image: url('${product.img}')"></div><div class="delivery-card-info"><div class="delivery-card-header"><span class="delivery-card-store">${product.store}</span><span class="delivery-card-eta">${product.eta}</span></div><ul class="delivery-card-item-list">${deliveryItemsHtml}</ul></div>`; break; case 'food': item.classList.add('ticket-food-gallery'); let foodItemsHtml = product.items.map(i => `<div>- ${i}</div>`).join(''); html = `<div class="food-gallery-img" style="background-image: url('${product.img}');"></div><div class="food-gallery-info"><div class="food-gallery-header"><h3 class="food-gallery-title">${product.storeName}</h3><span class="food-gallery-number">#${product.orderNo}</span></div><div class="food-gallery-item-list">${foodItemsHtml}</div></div>`; break; case 'play': item.classList.add('ticket-admission-pass'); html = `<div class="pass-main"><div class="pass-header"><h3 class="pass-title">${product.title}</h3><span class="pass-type">${product.eventType}</span></div><div class="pass-details-grid"><span class="pass-label">场次时间</span><span class="pass-value">${product.time}</span><span class="pass-label">座席位置</span><span class="pass-value">${product.seat}</span><span class="pass-label">购票备注</span><span class="pass-value">${product.details}</span></div></div><div class="pass-stub"><div class="stub-title">正券</div><div class="stub-barcode-pass">||| || |</div></div>`; break; case 'cosmetic': item.classList.add('ticket-cosmetic-card'); html = `<img src="${product.img}" class="cosmetic-img"><div class="cosmetic-info"><div class="cosmetic-brand">${product.brand}</div><h3 class="cosmetic-title">${product.title}</h3><div class="cosmetic-footer"><span class="cosmetic-details">${product.details}</span><span class="cosmetic-price">¥ ${product.price}</span></div></div>`; break; case 'blindbox': item.classList.add('ticket-artifact'); item.style.backgroundImage = `url('${product.bgImg}')`; html = `<div class="artifact-header"><div class="artifact-series">${product.series}</div></div><div class="artifact-main"><h3 class="artifact-title">${product.title}</h3><p class="artifact-description">${product.description}</p></div><div class="artifact-footer"><span class="artifact-price">¥ ${product.price}</span><a href="#" class="artifact-cta">REVEAL</a></div>`; break; case 'global': item.classList.add('ticket-curated-import'); html = `<div class="import-visual"><img src="${product.img}" alt="${product.title}"></div> <div class="import-info"> <div class="import-brand">${product.brand}</div> <h3 class="import-title">${product.title}</h3> <p class="import-origin">${product.origin}</p> <div class="import-footer"> <span class="import-price">¥ ${product.price}</span> <a href="#" class="import-cta">ACQUIRE</a> </div> </div>`; break; case 'invitation': item.classList.add('ticket-invitation-v18'); html = `<h2 class="invite-title">${product.title}</h2><p class="invite-subtitle">${product.subtitle}</p><a href="#" class="invite-cta">ENTER</a>`; item.addEventListener('click', (e) => { e.preventDefault(); showPrivateGallery(); }); break; } item.innerHTML = html; productShelf.appendChild(item); }); }
-    function renderPrivateGallery() { if (!galleryArchiveList) return; galleryArchiveList.innerHTML = ''; productsData['私享'].filter(p => p.type === 'gallery_item').forEach(product => { const item = document.createElement('div'); item.className = 'gallery-archive-item'; item.innerHTML = `<div class="archive-visual"><img src="${product.img}" alt="${product.title}"></div><div class="archive-info"><div class="archive-fileno">档案 ${product.fileNo}</div><h3 class="archive-title">${product.title}</h3><p class="archive-price">${product.price}</p></div>`; galleryArchiveList.appendChild(item); }); }
+    } const products = productsData[category].filter(p => p.type !== 'gallery_item'); products.forEach(product => { const item = document.createElement('div'); 
+item.className = 'shelf-item'; let html = ''; 
+item.addEventListener('click', () => openAddToCartModal(product)); switch(product.type) { case 'clothing': item.classList.add('ticket-hangtag'); html = `<div class="hangtag-main"><img src="${product.img}" class="hangtag-img"><div class="hangtag-info"><div class="hangtag-brand">${product.brand}</div><h3 class="hangtag-title">${product.title}</h3><p class="hangtag-details">${product.details}</p></div></div><div class="hangtag-tear-off"><span class="hangtag-sku">${product.sku}</span><span class="hangtag-price">¥ ${product.price}</span></div>`; break; case 'department': item.classList.add('ticket-receipt'); let featuresHtml = product.features.map(f => `<li class="receipt-item"><span>${f}</span><span>-</span></li>`).join(''); html = `<div class="receipt-header"><div class="receipt-logo">MODOU MART</div><div class="receipt-slogan">CURATED FOR LIFE</div></div><ul class="receipt-item-list">${featuresHtml}</ul><div class="receipt-footer">THANK YOU</div><img src="${product.img}" class="receipt-img">`; break; case 'delivery': item.classList.add('ticket-delivery-card'); let deliveryItemsHtml = product.items.map(i => `<li class="delivery-card-item"><span>${i.name}</span><span>¥${i.price}</span></li>`).join(''); html = `<div class="delivery-card-img" style="background-image: url('${product.img}')"></div><div class="delivery-card-info"><div class="delivery-card-header"><span class="delivery-card-store">${product.title}</span><span class="delivery-card-eta">${product.eta}</span></div><ul class="delivery-card-item-list">${deliveryItemsHtml}</ul></div>`; break; case 'food': item.classList.add('ticket-food-gallery'); let foodItemsHtml = product.items.map(i => `<div>- ${i}</div>`).join(''); html = `<div class="food-gallery-img" style="background-image: url('${product.img}');"></div><div class="food-gallery-info"><div class="food-gallery-header"><h3 class="food-gallery-title">${product.title}</h3><span class="food-gallery-number">#${product.orderNo}</span></div><div class="food-gallery-item-list">${foodItemsHtml}</div></div>`; break; case 'play': item.classList.add('ticket-admission-pass'); html = `<div class="pass-main"><div class="pass-header"><h3 class="pass-title">${product.title}</h3><span class="pass-type">${product.eventType}</span></div><div class="pass-details-grid"><span class="pass-label">场次时间</span><span class="pass-value">${product.time}</span><span class="pass-label">座席位置</span><span class="pass-value">${product.seat}</span><span class="pass-label">购票备注</span><span class="pass-value">${product.details}</span></div></div><div class="pass-stub"><div class="stub-title">正券</div><div class="stub-barcode-pass">||| || |</div></div>`; break; case 'cosmetic': item.classList.add('ticket-cosmetic-card'); html = `<img src="${product.img}" class="cosmetic-img"><div class="cosmetic-info"><div class="cosmetic-brand">${product.brand}</div><h3 class="cosmetic-title">${product.title}</h3><div class="cosmetic-footer"><span class="cosmetic-details">${product.details}</span><span class="cosmetic-price">¥ ${product.price}</span></div></div>`; break; case 'blindbox': item.classList.add('ticket-artifact'); item.style.backgroundImage = `url('${product.bgImg}')`; html = `<div class="artifact-header"><div class="artifact-series">${product.series}</div></div><div class="artifact-main"><h3 class="artifact-title">${product.title}</h3><p class="artifact-description">${product.description}</p></div><div class="artifact-footer"><span class="artifact-price">¥ ${product.price}</span><a href="#" class="artifact-cta">REVEAL</a></div>`; break; case 'global': item.classList.add('ticket-curated-import'); html = `<div class="import-visual"><img src="${product.img}" alt="${product.title}"></div> <div class="import-info"> <div class="import-brand">${product.brand}</div> <h3 class="import-title">${product.title}</h3> <p class="import-origin">${product.origin}</p> <div class="import-footer"> <span class="import-price">¥ ${product.price}</span> <a href="#" class="import-cta">ACQUIRE</a> </div> </div>`; break; case 'invitation': item.classList.add('ticket-invitation-v18'); html = `<h2 class="invite-title">${product.title}</h2><p class="invite-subtitle">${product.subtitle}</p><a href="#" class="invite-cta">ENTER</a>`; item.addEventListener('click', (e) => { e.preventDefault(); showPrivateGallery(); }); break; } item.innerHTML = html; productShelf.appendChild(item); }); }
+    function renderPrivateGallery() { if (!galleryArchiveList) return; galleryArchiveList.innerHTML = ''; productsData['私享'].filter(p => p.type === 'gallery_item').forEach(product => { const item = document.createElement('div'); item.className = 'gallery-archive-item'; item.innerHTML = `<div class="archive-visual"><img src="${product.img}" alt="${product.title}"></div><div class="archive-info"><div class="archive-fileno">档案 ${product.fileNo}</div><h3 class="archive-title">${product.title}</h3><p class="archive-price">${product.price}</p></div>`; 
+    item.addEventListener('click', () => openAddToCartModal(product)); galleryArchiveList.appendChild(item); }); }
     function renderPendingList() { if (!pendingContainer) return; if (pendingItems.length === 0) { pendingContainer.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><i class="fa-solid fa-inbox"></i><p>待购清单是空的</p></div>`; confirmBtn.style.display = 'none'; } else { confirmBtn.style.display = 'block'; pendingContainer.innerHTML = pendingItems.map(item => `<div class="pending-card" data-id="${item.id}"><button class="share-icon-btn" data-item-id="${item.id}"><i class="fa-solid fa-feather"></i></button><img src="${item.img}" class="pending-card-img" alt="${item.title}"><div class="pending-card-info"><h3 class="pending-card-title">${item.title}</h3><p class="pending-card-price">¥ ${item.price}</p></div></div>`).join(''); } }
-    function renderCollection() { if (!collectionContainer) return; if (collectedItems.length === 0) { collectionContainer.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><i class="fa-solid fa-box-open"></i><p>藏品室是空的</p></div>`; } else { collectionContainer.innerHTML = collectedItems.map(item => `<div class="collection-item"><img src="${item.img}" class="collection-item-img" alt="${item.title}"><div class="collection-item-info"><h3 class="collection-item-title">${item.title}</h3><p class="collection-item-date">收纳于 ${item.collectedDate}</p></div></div>`).join(''); } }
+    // 这是修改后的 renderCollection 函数
+
+function renderCollection() {
+    if (!collectionContainer) return;
+    if (collectedItems.length === 0) {
+        collectionContainer.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><i class="fa-solid fa-box-open"></i><p>藏品室是空的</p></div>`;
+    } else {
+        collectionContainer.innerHTML = collectedItems.map(item => {
+            
+            // ▼▼▼ 核心修改在这里 ▼▼▼
+            // 检查这个藏品是否有 payerName 属性
+            const payerHtml = item.payerName 
+                ? `<p class="collection-item-date" style="color: #BFA46F; margin-top: 5px;">代付人：${item.payerName}</p>` 
+                : ''; // 如果没有，就生成一个空字符串
+            // ▲▲▲ 修改结束 ▲▲▲
+
+            return `
+                <div class="collection-item">
+                    <img src="${item.img}" class="collection-item-img" alt="${item.title}">
+                    <div class="collection-item-info">
+                        <h3 class="collection-item-title">${item.title}</h3>
+                        <p class="collection-item-date">收纳于 ${item.collectedDate}</p>
+                        ${payerHtml} 
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+}
     
     function setupCarousel() { const slides = document.querySelectorAll('.carousel-slide'); const dots = document.querySelectorAll('.dot'); if(slides.length === 0) return; let currentIndex = 0; const totalSlides = slides.length; function updateCarousel(index, manual = false) { if (manual) clearInterval(carouselInterval); carouselTrack.style.transform = `translateX(-${index * 100}%)`; dots.forEach(dot => dot.classList.remove('active')); if(dots[index]) dots[index].classList.add('active'); currentIndex = index; if (manual) startCarouselInterval(); } function nextSlide() { updateCarousel((currentIndex + 1) % totalSlides); } function startCarouselInterval() { clearInterval(carouselInterval); carouselInterval = setInterval(nextSlide, 5000); } carouselDotsContainer.addEventListener('click', e => { if (e.target.classList.contains('dot')) updateCarousel(parseInt(e.target.dataset.index, 10), true); }); startCarouselInterval(); }
     function showPrivateGallery() { mainView.classList.add('hidden'); privateGalleryView.classList.add('active'); navTitle.textContent = '陈列室'; navBackBtn.style.visibility = 'visible'; }
     function showMainView() { mainView.classList.remove('hidden'); privateGalleryView.classList.remove('active'); navTitle.textContent = '购物'; navBackBtn.style.visibility = 'hidden'; }
-    function navigateToPage(pageId, pageTitle) { const currentPageId = navigationStack[navigationStack.length - 1]; const currentPageEl = document.getElementById(currentPageId); const targetPageEl = document.getElementById(pageId); if (!targetPageEl || currentPageId === pageId) return; if (currentPageEl) currentPageEl.classList.add('exiting'); targetPageEl.classList.remove('entering'); targetPageEl.classList.add('active'); setTimeout(() => { targetPageEl.classList.remove('entering'); if (currentPageEl) currentPageEl.classList.remove('active', 'exiting'); }, 400); navigationStack.push(pageId); updateNavUI(pageTitle); }
+    // 这是修改后的新版本，请用它完整替换旧的 navigateToPage 函数
+
+function navigateToPage(pageId, pageTitle) {
+    const currentPageId = navigationStack[navigationStack.length - 1];
+    const currentPageEl = document.getElementById(currentPageId);
+    const targetPageEl = document.getElementById(pageId);
+    if (!targetPageEl || currentPageId === pageId) return;
+
+    // ▼▼▼ 核心修复 2：在这里为'待购清单'页面也添加刷新逻辑 ▼▼▼
+    if (pageId === 'collection-page') {
+        renderCollection();
+    } else if (pageId === 'pending-page') { // 新增的 else if
+        renderPendingList();
+    }
+    // ▲▲▲ 修复结束 ▲▲▲
+
+    if (currentPageEl) currentPageEl.classList.add('exiting');
+    targetPageEl.classList.remove('entering');
+    targetPageEl.classList.add('active');
+    setTimeout(() => {
+        targetPageEl.classList.remove('entering');
+        if (currentPageEl) currentPageEl.classList.remove('active', 'exiting');
+    }, 400);
+    navigationStack.push(pageId);
+    updateNavUI(pageTitle);
+}
+
     function navigateBack() { if (navigationStack.length <= 1) return; const currentPageId = navigationStack.pop(); const previousPageId = navigationStack[navigationStack.length - 1]; const currentPageEl = document.getElementById(currentPageId); const previousPageEl = document.getElementById(previousPageId); currentPageEl.classList.add('entering'); previousPageEl.classList.remove('exiting'); previousPageEl.classList.add('active'); setTimeout(() => { currentPageEl.classList.remove('active', 'entering'); previousPageEl.classList.remove('exiting'); }, 400); updateNavUI(); }
     function updateNavUI(newTitle) {
     const currentPageId = navigationStack[navigationStack.length - 1];
@@ -24644,10 +24844,100 @@ function renderCharList() {
     function showShoppingNotification(message) { const notification = document.createElement('div'); notification.style.cssText = `position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(191, 164, 111, 0.95); color: var(--black); padding: 15px 25px; border-radius: 4px; font-family: 'Noto Serif SC', serif; font-size: 14px; z-index: 2000; box-shadow: 0 4px 20px rgba(0,0,0,0.3); animation: slideDown 0.3s ease-out;`; notification.textContent = message; document.body.appendChild(notification); setTimeout(() => { notification.style.animation = 'slideUp 0.3s ease-in'; setTimeout(() => notification.remove(), 300); }, 3000); }
     
     function openLetterModal(itemId) { const item = pendingItems.find(i => i.id === itemId); if (!item) return; currentLetterItem = item; letterProduct.innerHTML = `<img src="${item.img}" class="letter-product-img" alt="${item.title}"><div class="letter-product-info"><h4>${item.title}</h4><p class="price">¥ ${item.price}</p></div>`; letterMessage.value = '见此珍品，不忍错过，望君成全。'; letterRecipient.value = ''; letterModal.classList.add('active'); }
-    letterSendBtn.addEventListener('click', () => { if (!letterRecipient.value.trim()) { alert('请填写收信人'); return; } const letterContent = document.querySelector('.letter-content'); letterContent.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55)'; letterContent.style.transform = 'scale(0.1) rotate(360deg)'; letterContent.style.opacity = '0'; setTimeout(() => { letterModal.classList.remove('active'); letterContent.style.transform = ''; letterContent.style.opacity = ''; showShoppingNotification('密信已寄出，静候佳音。'); }, 800); });
-    letterCancelBtn.addEventListener('click', () => letterModal.classList.remove('active'));
-    confirmBtn.addEventListener('click', () => { if (pendingItems.length === 0) return; const cards = document.querySelectorAll('#pending-page .pending-card'); cards.forEach((card, index) => { setTimeout(() => { const seal = document.createElement('div'); seal.className = 'seal-animation'; seal.innerHTML = '<i class="fa-solid fa-stamp"></i>'; card.appendChild(seal); setTimeout(() => card.classList.add('flying-card'), 600); }, index * 200); }); setTimeout(() => { collectedItems.push(...pendingItems.map(item => ({...item, collectedDate: new Date().toLocaleDateString('zh-CN')}))); pendingItems = []; renderPendingList(); renderCollection(); showShoppingNotification('已从您的虚拟钱包扣款，商品已收纳至藏品室。'); setTimeout(navigateBack, 1500); }, cards.length * 200 + 1400); });
+    // 这是修改后的新代码，请用它完整替换旧的 event listener
 
+letterSendBtn.addEventListener('click', async () => { // <--- 增加了 async
+    const recipientName = letterRecipient.value.trim();
+    if (!recipientName) {
+        alert('请填写收信人');
+        return;
+    }
+
+    // 1. 根据名字查找好友
+    const recipient = friends.find(f => f.name === recipientName || f.remark === recipientName);
+    if (!recipient) {
+        alert(`找不到名为“${recipientName}”的好友。`);
+        return;
+    }
+
+    const messageContent = letterMessage.value.trim();
+    if (!currentLetterItem) return;
+
+    // 2. 使用我们的“模具”函数创建HTML卡片
+    const cardHtml = createProductCardHtml(currentLetterItem, messageContent);
+
+    // 3. 【核心】保存这条特殊消息
+    // 我们定义一个新的 contentType: 'html_card'
+    // 它的 content 就是我们刚刚生成的HTML字符串
+    const msgData = await saveChatMessage(recipient.id, 'sent', cardHtml, '', null, 'html_card');
+
+    // 如果用户正好就在这个角色的聊天界面，我们让卡片立即显示出来
+    if (currentChatFriendId === recipient.id) {
+        addMessageToDOM(msgData, recipient);
+        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+    }
+
+    // 4. 播放动画并关闭弹窗 (这部分是您原来的代码，我们保留它作为视觉反馈)
+    const letterContent = document.querySelector('.letter-content');
+    letterContent.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
+    letterContent.style.transform = 'scale(0.1) rotate(360deg)';
+    letterContent.style.opacity = '0';
+    setTimeout(() => {
+        letterModal.classList.remove('active');
+        letterContent.style.transform = '';
+        letterContent.style.opacity = '';
+        showShoppingNotification('密信已寄出，静候佳音。');
+    }, 800);
+});
+    letterCancelBtn.addEventListener('click', () => letterModal.classList.remove('active'));
+    confirmBtn.addEventListener('click', async () => { // <-- 注意这里增加了 async
+    if (pendingItems.length === 0) return;
+
+    // 步骤 1: 计算待购清单的总金额
+    const totalCost = pendingItems.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+
+    // 步骤 2: 检查微信钱包余额是否充足
+    if (userProfile.balance < totalCost) {
+        // 如果余额不足，弹窗提示并立即停止后续操作
+        showAlert(`支付失败：您的钱包余额不足！\n\n需要支付: ¥${totalCost.toFixed(2)}\n当前余额: ¥${userProfile.balance.toFixed(2)}`);
+        return; 
+    }
+
+    // 步骤 3: 从余额中扣除款项
+    userProfile.balance -= totalCost;
+
+    // 步骤 4: 立即保存数据，确保钱包余额变动被记录
+    await saveData();
+
+    // 步骤 5: 执行原有的动画和收纳流程
+    const cards = document.querySelectorAll('#pending-page .pending-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            const seal = document.createElement('div');
+            seal.className = 'seal-animation';
+            seal.innerHTML = '<i class="fa-solid fa-stamp"></i>';
+            card.appendChild(seal);
+            setTimeout(() => card.classList.add('flying-card'), 600);
+        }, index * 200);
+    });
+
+    setTimeout(() => {
+        // 将商品从“待购”移至“藏品”
+        collectedItems.push(...pendingItems.map(item => ({...item, collectedDate: new Date().toLocaleDateString('zh-CN')})));
+        pendingItems = []; // 清空待购清单
+        
+        // 刷新UI
+        renderPendingList();
+        renderCollection();
+        
+        // 显示一个更具体的成功通知
+        showShoppingNotification(`支付成功！已从钱包扣除 ¥${totalCost.toFixed(2)}`);
+        
+        // 稍后返回上一页
+        setTimeout(navigateBack, 1500);
+    }, cards.length * 200 + 1400);
+});
+// ▲▲▲ 替换到此结束 ▲▲▲
     bottomTabBar.addEventListener('click', (e) => { const tab = e.target.closest('.tab-item'); if (!tab) return; const pageId = tab.dataset.page; document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active')); tab.classList.add('active'); navigationStack = [pageId]; allPages.forEach(p => p.classList.remove('active', 'entering', 'exiting')); document.getElementById(pageId).classList.add('active'); updateNavUI(); if (pageId === 'home-page') { clearInterval(carouselInterval); setupCarousel(); } else { clearInterval(carouselInterval); } });
     navBackBtn.addEventListener('click', () => {
     // 如果在私享展厅，则返回购物主页
@@ -24666,46 +24956,72 @@ function renderCharList() {
     profileNavList.addEventListener('click', e => { const item = e.target.closest('.profile-nav-item'); if (item) navigateToPage(item.dataset.page, item.dataset.title); });
     avatarUploadInput.addEventListener('change', e => { const file = e.target.files[0]; if (file) profileAvatarImg.src = URL.createObjectURL(file); });
     categoryNavContainer.addEventListener('click', e => { if (e.target.classList.contains('category-item')) { categoryNavContainer.querySelector('.active').classList.remove('active'); e.target.classList.add('active'); renderTickets(e.target.dataset.category); } });
-    document.getElementById('pending-page').addEventListener('click', function(e) { const shareBtn = e.target.closest('.share-icon-btn'); if (shareBtn) openLetterModal(parseInt(shareBtn.dataset.itemId)); });
-// 👇 [在此处添加] 新的事件监听
+    document.getElementById('pending-page').addEventListener('click', function(e) { const shareBtn = e.target.closest('.share-icon-btn'); if (shareBtn) openLetterModal(shareBtn.dataset.itemId); // 正确！直接传递字符串ID
+});
+
+// ▼▼▼ 请用这个【完整修正版】，替换从 "moreBtn.addEventListener..." 开始到 initialize() 函数结束的所有代码 ▼▼▼
+
+// --- 购物App事件监听器 ---
+
+// “更多(...)”按钮点击事件
 moreBtn.addEventListener('click', () => {
+    renderCharList(); // 重新渲染好友列表
     charModal.classList.add('active');
 });
 
+// 关闭角色选择弹窗的按钮
 closeCharModalBtn.addEventListener('click', () => {
     charModal.classList.remove('active');
 });
 
-// 点击浮窗背景也可以关闭
+// 点击弹窗背景也可以关闭
 charModal.addEventListener('click', (e) => {
     if (e.target === charModal) { 
         charModal.classList.remove('active');
     }
 });
 
+// 【核心修改】角色列表点击事件
 charListContainer.addEventListener('click', (e) => {
     const item = e.target.closest('.char-list-item');
     if (item) {
-        const charName = item.dataset.char;
+        const charId = item.dataset.charId; // 我们现在存储的是好友ID
+        const charName = item.dataset.charName;
+        currentShoppingCharId = charId; // 保存选中的角色ID
+        
         charModal.classList.remove('active');
-        charPageTitle.textContent = `${charName}'s Records`;
+        charPageTitle.textContent = `${charName}的记录`;
         navigateToPage('char-details-page', charName);
     }
 });
-    
-    function initialize() {
-        document.getElementById('me-page').classList.add('active');
-        navigationStack = ['me-page'];
-        renderHomePage();
-        renderLogisticsPage();
-        renderShoppingCategories();
-        renderTickets(Object.keys(productsData)[0]);
-        renderPrivateGallery();
-        renderPendingList();
-        renderCollection();
-        updateNavUI();
-        renderCharList();
+
+// 【全新】为四个记录类型添加点击事件
+document.querySelector('.char-records-grid').addEventListener('click', (e) => {
+    const card = e.target.closest('.record-card');
+    if (card) {
+        const recordType = card.querySelector('h4').textContent;
+        handleRecordClick(recordType);
     }
+});
+    
+function initialize() {
+    document.getElementById('me-page').classList.add('active');
+    navigationStack = ['me-page'];
+    renderHomePage();
+    renderLogisticsPage();
+    renderShoppingCategories();
+    // 修正：确保在初始化时，如果productsData有内容，则渲染第一个分类
+    if (Object.keys(productsData).length > 0) {
+        renderTickets(Object.keys(productsData)[0]);
+    }
+    renderPrivateGallery();
+    renderPendingList();
+    renderCollection();
+    updateNavUI();
+    // renderCharList() 不再需要在这里调用，因为它会在点击“更多”时被调用
+}
+// ▲▲▲ 替换到此结束 ▲▲▲
+
     
     const style = document.createElement('style');
     style.textContent = `@keyframes slideDown { from { transform: translate(-50%, -20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } } @keyframes slideUp { from { transform: translate(-50%, 0); opacity: 1; } to { transform: translate(-50%, -20px); opacity: 0; } }`;
@@ -24907,16 +25223,31 @@ async function deleteApiPreset_shopping(event, presetId) {
 
 
 
+// ▼▼▼ 请用这个【V2 - 智能刷新版】，替换旧的 refreshShoppingProducts 函数 ▼▼▼
+
 /**
- * 核心功能：刷新当前商品分类的商品列表 (V4 - 修复私享版块逻辑)
+ * 核心功能：刷新当前商品分类的商品列表 (V6 - 智能识别页面版)
  */
 async function refreshShoppingProducts() {
+    const refreshBtn = document.getElementById('shopping-refresh-btn');
+    if (refreshBtn.classList.contains('spinning')) return;
+
+    // 新增逻辑：判断当前是否在详情页
+    const detailPage = document.getElementById('char-records-detail-page');
+    if (detailPage && detailPage.classList.contains('active') && currentRecordType && currentShoppingCharId) {
+        console.log(`[购物App刷新] 检测到在详情页，强制刷新“${currentRecordType}”...`);
+        
+        // 【核心修改】调用我们修复后的 handleRecordClick 函数，并传入 true 来强制刷新
+        // 这个调用会处理所有的加载动画和内容渲染，我们无需再做其他事。
+        await handleRecordClick(currentRecordType, true);
+        
+        return; // 刷新完详情页后，结束函数
+    }
+
+    // --- 以下是原来的代码，保持不变 ---
     const activeCategoryEl = categoryNavContainer.querySelector('.active');
     if (!activeCategoryEl) return;
     const category = activeCategoryEl.dataset.category;
-
-    const refreshBtn = document.getElementById('shopping-refresh-btn');
-    if (refreshBtn.classList.contains('spinning')) return;
 
     refreshBtn.classList.add('spinning');
     showToast(`正在为“${category}”生成10款新品...`);
@@ -24924,32 +25255,21 @@ async function refreshShoppingProducts() {
     try {
         const newProducts = await generateProductsFromAI(category);
 
-        // 【【【核心修复：在这里对“私享”分类进行特殊处理】】】
         if (category === '私享') {
-            // 1. 从旧的'私享'数据中，找到并保留那个至关重要的邀请函对象
             const invitationCard = productsData['私享'].find(p => p.type === 'invitation');
-
             if (invitationCard) {
-                // 2. 重建'私享'数组：把保留的邀请函和AI生成的新商品组合在一起
                 productsData['私享'] = [invitationCard, ...newProducts];
             } else {
-                // 3. 作为备用方案，如果连邀请函都找不到了，就直接用新商品（虽然这不应该发生）
                 productsData['私享'] = newProducts;
             }
-            // 另外，我们还需要更新子页面的内容
             renderPrivateGallery(); 
-
         } else {
-            // 对于其他所有分类，维持原来的覆盖逻辑不变
             productsData[category] = newProducts;
         }
-        // --- 修复结束 ---
 
         renderTickets(category);
         showToast('新品已上架！');
-
-await saveData();
-
+        await saveData();
     } catch (error) {
         console.error('商品生成失败:', error);
         showAlert(`商品生成失败: ${error.message}`);
@@ -24990,41 +25310,50 @@ async function generateProductsFromAI(category) {
             break;
         case '百货':
             prompt += `\n【分类说明】: 百货分类主要包含高品质的家居用品、文具、香氛等提升生活品质的日常物品。`;
-            jsonFormatExample = `[ { "type": "department", "title": "商品系列标题", "features": ["特点1", "特点2"], "image_description": "A flat lay of artisanal home goods, including a ceramic vase and scented candle, on a linen cloth." } ]`;
+            // 修正：添加了 "price" 字段
+            jsonFormatExample = `[ { "type": "department", "title": "商品系列标题", "features": ["特点1", "特点2"], "price": "价格", "image_description": "A flat lay of artisanal home goods, including a ceramic vase and scented candle, on a linen cloth." } ]`;
             break;
         case '外卖':
-            prompt += `\n【分类说明】: 外卖分类主要包含适合单人或双人享用的外卖餐品、甜点、奶茶、粉面等。`;
-            jsonFormatExample = `[ { "type": "delivery", "store": "店铺名称", "eta": "约 30 分钟", "items": [{"name": "主食或饮品名", "price": "价格"}, {"name": "小食名", "price": "价格"}], "image_description": "A delicious-looking meal like gourmet pizza or a cup of bubble tea, presented beautifully in a delivery box." } ]`;
+            prompt += `\n【分类说明】: 外卖分类主要包含适合单人或双人享用的外卖餐品、甜点、奶茶、粉面等。你必须根据items中的单价计算出总价，并填入顶层的price字段。`;
+            // 修正：将 "store" 改为 "title"，并添加了 "price" 字段
+            jsonFormatExample = `[ { "type": "delivery", "title": "店铺名称", "eta": "约 30 分钟", "items": [{"name": "主食或饮品名", "price": "单价"}, {"name": "小食名", "price": "单价"}], "price": "总价", "image_description": "A delicious-looking meal like gourmet pizza or a cup of bubble tea, presented beautifully in a delivery box." } ]`;
             break;
-        case '食品':
-            prompt += `\n【分类说明】: 食品分类主要包含可在网店购买的、有包装的零食、酱料、冲饮等。`;
-            jsonFormatExample = `[ { "type": "food", "storeName": "品牌或店铺名", "orderNo": "0XXX", "items": ["商品1", "商品2"], "image_description": "Packaged gourmet food like artisanal jam jars or a box of fine chocolates." } ]`;
-            break;
+        // 在 generateProductsFromAI 函数内...
+
+case '食品':
+    prompt += `\n【分类说明】: 食品分类主要包含可在网店购买的、有包装的零食、酱料、冲饮等。`;
+    
+    // ▼▼▼ 在这里添加了新的、更具体的指令 ▼▼▼
+    prompt += `\n【内容要求】: "title" 必须是一个虚构的、有创意的子品牌或店铺名，例如 "山涧茶事"、"味觉实验室"、"城市农夫" 等，**绝对不要**只使用主品牌名 "MODOU"。`;
+    // ▲▲▲ 新增指令结束 ▲▲▲
+
+    // 修正：将 "storeName" 改为 "title"，并添加了 "price" 字段
+    jsonFormatExample = `[ { "type": "food", "title": "品牌或店铺名", "orderNo": "0XXX", "items": ["商品1", "商品2"], "price": "价格", "image_description": "Packaged gourmet food like artisanal jam jars or a box of fine chocolates." } ]`;
+    break;
         case '玩乐':
             prompt += `\n【分类说明】: 玩乐分类主要生成各种场景的“券”，例如电影票、酒店住宿券、景区门票等。`;
-            jsonFormatExample = `[ { "type": "play", "eventType": "戏剧", "title": "《剧目名称》", "details": "场次或使用说明", "time": "19:30", "seat": "随机位置", "image_description": "An artistic representation of a theater stage or a luxury hotel room." } ]`;
+            // 修正：添加了 "price" 字段
+            jsonFormatExample = `[ { "type": "play", "eventType": "戏剧", "title": "《剧目名称》", "details": "场次或使用说明", "time": "19:30", "seat": "随机位置", "price": "价格", "image_description": "An artistic representation of a theater stage or a luxury hotel room." } ]`;
             break;
         case '美妆':
             jsonFormatExample = `[ { "type": "cosmetic", "brand": "MODOU BEAUTY", "title": "商品标题", "details": "色号或功效", "price": "价格", "image_description": "Close-up product shot of a luxury lipstick tube on a marble surface, with artistic light reflections." } ]`;
             break;
         case '盲盒':
-        prompt += `\n【分类说明】: 盲盒分类是需要描述盲盒里的数量以及产品种类，保持神秘。`;
+            prompt += `\n【分类说明】: 盲盒分类是需要描述盲盒里的数量以及产品种类，保持神秘。`;
             jsonFormatExample = `[ { "type": "blindbox", "series": "SERIES N°XX", "title": "盲盒主题", "description": "盲盒内容描述", "price": "价格", "image_description": "A mysterious and artistic box with glowing light coming from inside." } ]`;
             break;
         case '海淘':
             prompt += `\n【分类说明】: 海淘分类是一个“二手市场”，专门售卖有故事的、高品质的二手奢侈品或设计师单品。`;
             jsonFormatExample = `[ { "type": "global", "brand": "品牌名", "title": "商品名", "price": "价格", "origin": "商品来源地或年份", "image_description": "A vintage luxury handbag or a classic designer coat, displayed in a retro style." } ]`;
             break;
-
         case '私享':
             prompt += `\n【分类说明】: 私享分类是我们的私密陈列室，专门探索身体与感官的美学。产品需要大胆、前卫且富有艺术感。创作范围应明确包含但不限于以下品类：设计独特的**按摩棒**（如秒潮风格）、小巧的**跳蛋**、高品质**润滑液**、艺术包装的**安全套**，以及充满想象力的**情趣内裤**和**角色扮演服装**（例如设计师款的**女仆装**、**护士服**等，生成的图片必须要真实，配色要柔和，禁止抽象）。`;
             jsonFormatExample = `[
-                { "type": "gallery_item", "fileNo": "N°23", "title": "“潮汐” - 智能温感按摩棒", "price": "¥ 1880", "image_description": "A sleek, minimalist clitoral vibrator made of matte black silicone, resting on a dark silk sheet, with artistic shadows and light reflections." },
-                { "type": "gallery_item", "fileNo": "N°24", "title": "“秘语” - 真丝蕾丝女仆套装", "price": "¥ 2580", "image_description": "A close-up shot focusing on the delicate black lace details of a high-end maid costume, draped over a vintage velvet chair." }
+                { "type": "gallery_item", "fileNo": "N°23", "title": "“潮汐” - 智能温感按摩棒", "price": "1880", "image_description": "A sleek, minimalist clitoral vibrator made of matte black silicone, resting on a dark silk sheet, with artistic shadows and light reflections." },
+                { "type": "gallery_item", "fileNo": "N°24", "title": "“秘语” - 真丝蕾丝女仆套装", "price": "2580", "image_description": "A close-up shot focusing on the delicate black lace details of a high-end maid costume, draped over a vintage velvet chair." }
             ]`;
             break;
         default:
-            // 这个通用后备方案依然保留，以防万一
             prompt += `\n请为每件商品生成 "title", "price", "description" 和一个详细的 "image_description"。`;
             jsonFormatExample = `[ { "title": "...", "price": "...", "description": "...", "image_description": "A creative, abstract representation of the product concept." } ]`;
     }
@@ -25049,18 +25378,19 @@ async function generateProductsFromAI(category) {
         throw error;
     }
 
-   
-
-    // 对于其他所有分类，正常生成图片
     showToast('商品构思完成，正在生成专属图片...');
     
     const imageGenerationPromises = generatedProducts.map(async (product) => {
+    if (product.price && typeof product.price === 'string') {
+        // 使用正则表达式移除所有非数字和非小数点的字符
+        product.price = product.price.replace(/[^\d.]/g, '');
+    }
         const keywords = product.image_description || product.title || 'MODOU product';
+        const sanitizedKeywords = keywords.replace(/[#&?=]/g, ''); 
         const fullImagePrompt = `MODOU brand style, high-end product photography, minimalist, clean background, ${keywords}`;
         product.img = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullImagePrompt)}`;
         
         if (!product.type) {
-            // 根据分类，补充正确的type
             if (category === '私享') {
                 product.type = 'gallery_item';
             } else {
@@ -25508,6 +25838,441 @@ async function triggerAiPostReactions(postId) {
     }
 }
 // ▲▲▲ 粘贴到这里结束 ▲▲▲
+
+/**
+ * 新增：打开“加入购物车”弹窗
+ * @param {object} product - 被点击的商品数据
+ */
+function openAddToCartModal(product) {
+    if (!product) return;
+
+    // 将当前商品存到全局变量中
+    currentAddToCartItem = product;
+
+    // 填充弹窗内容
+    const productPreview = document.getElementById('cart-product-preview');
+    // 根据商品类型，智能选择显示图片
+    const imageUrl = product.img || product.bgImg; 
+    productPreview.innerHTML = `
+        <img src="${imageUrl}" class="letter-product-img" alt="${product.title}">
+        <div class="letter-product-info">
+            <h4>${product.title}</h4>
+            <p class="price">¥ ${product.price}</p>
+        </div>
+    `;
+    
+    // 显示弹窗
+    document.getElementById('addToCartModal').classList.add('active');
+}
+
+/**
+ * 新增：关闭“加入购物车”弹窗
+ */
+function closeAddToCartModal() {
+    document.getElementById('addToCartModal').classList.remove('active');
+    currentAddToCartItem = null; // 清空临时商品
+}
+
+async function confirmAddToCart() {
+    if (!currentAddToCartItem) return;
+
+    const isAlreadyPending = pendingItems.some(item => item.title === currentAddToCartItem.title && item.price === currentAddToCartItem.price);
+    if (isAlreadyPending) {
+        showAlert('该商品已在待购清单中。');
+        closeAddToCartModal();
+        return;
+    }
+
+    const newItem = {
+        id: generateUniqueId(),
+        title: currentAddToCartItem.title,
+        price: currentAddToCartItem.price,
+        img: currentAddToCartItem.img || currentAddToCartItem.bgImg
+    };
+
+    pendingItems.push(newItem);
+
+    // ▼▼▼ 核心修复 1：在这里立即保存数据到数据库！ ▼▼▼
+    await saveData();
+    // ▲▲▲ 修复结束 ▲▲▲
+
+    renderPendingList(); // 刷新UI
+    closeAddToCartModal();
+    showShoppingNotification('已成功加入待购清单！');
+}
+
+/**
+ * 新增：创建一个符合购物App风格的商品推荐卡片HTML
+ * @param {object} product - 商品对象
+ * @param {string} message - 您在密信中输入的消息
+ * @returns {string} - 一个包含内联样式的、完整的HTML字符串
+ */
+function createProductCardHtml(product, message) {
+    // 我们从购物App的UI中借鉴了样式，并全部写成了内联CSS，确保它在任何地方显示都一样
+    const cardHtml = `
+<div style="font-family: 'Inter', sans-serif; display: flex; background: #fff; padding: 15px; gap: 15px; border-radius: 4px; width: 250px; border: 1px solid #EAE3D9; color: #4C4033;">
+    <img src="${product.img}" style="width: 90px; height: 90px; object-fit: cover; flex-shrink: 0; border-radius: 2px;" alt="${product.title}">
+    <div style="flex-grow: 1; display: flex; flex-direction: column;">
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 15px; font-weight: 700; color: #1A1A1A; margin: 0 0 8px 0; flex-grow: 1;">${product.title}</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: 'Roboto Mono', monospace; font-size: 16px; font-weight: 700; color: #1A1A1A;">¥ ${product.price}</span>
+        </div>
+    </div>
+</div>
+<div style="font-family: 'Inter', sans-serif; background: #FDFBF8; border: 1px solid #EAE3D9; border-top: none; border-radius: 0 0 4px 4px; padding: 12px 15px; font-size: 13px; color: #6B5B4B; width: 250px;">
+    “${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}”
+    <div style="text-align: right; font-size: 11px; margin-top: 8px; color: #B2B2B2;">- 来自密信</div>
+</div>
+    `;
+    return cardHtml;
+}
+
+/**
+ * 新增：创建一个“已付款”状态的商品卡片HTML
+ * @param {object} product - 商品对象
+ * @param {string} aiMessage - AI付款时的留言
+ * @param {string} payerName - 付款人（AI）的名字
+ * @returns {string} - 一个包含内联样式的、完整的HTML字符串
+ */
+function createPaidCardHtml(product, aiMessage, payerName) {
+    const cardHtml = `
+<div style="font-family: 'Inter', sans-serif; background: #FDFBF8; border: 1px solid #D4B886; border-radius: 4px; width: 250px; color: #4C4033; position: relative; overflow: hidden;">
+    <div style="display: flex; padding: 15px; gap: 15px;">
+        <img src="${product.img}" style="width: 80px; height: 80px; object-fit: cover; flex-shrink: 0; border-radius: 2px;" alt="${product.title}">
+        <div style="flex-grow: 1; display: flex; flex-direction: column;">
+            <h4 style="font-family: 'Noto Serif SC', serif; font-size: 14px; font-weight: 700; color: #1A1A1A; margin: 0 0 8px 0; flex-grow: 1;">${product.title}</h4>
+            <div style="font-family: 'Roboto Mono', monospace; font-size: 15px; font-weight: 700; color: #BFA46F;">¥ ${product.price}</div>
+        </div>
+    </div>
+    <div style="background: #F3F1ED; padding: 12px 15px; font-size: 13px;">
+        “${aiMessage.replace(/</g, "&lt;").replace(/>/g, "&gt;")}”
+    </div>
+    <div style="font-size: 10px; color: #8C7D6B; text-align: right; padding: 6px 15px; border-top: 1px solid #EAE3D9;">
+        代付人：${payerName}
+    </div>
+    <div style="position: absolute; top: 10px; right: -25px; background: #BFA46F; color: white; padding: 3px 30px; font-size: 11px; font-weight: bold; text-align: center; transform: rotate(45deg);">
+        已付款
+    </div>
+</div>
+    `;
+    return cardHtml;
+}
+
+// 1. 这个函数现在只负责处理“桌面壁纸”，逻辑不变
+document.getElementById('wallpaper-upload-input').addEventListener('change', (event) => {
+    // 获取用户选择的第一个文件
+    const file = event.target.files[0];
+    // 找到当前正在查看的是哪个角色的手机
+    const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+    
+    // 如果用户没选文件或者当前没有选定角色，就什么都不做
+    if (!file || !character) return;
+
+    // 创建一个文件读取工具
+    const reader = new FileReader();
+    
+    // 当文件成功读取后，执行这里的代码
+    reader.onload = (e) => {
+        // e.target.result 是读取出的图片数据（一个很长的Base64格式文本）
+        const imageUrl = e.target.result;
+        
+        // 核心步骤 1: 保存数据
+        // 将这张图片的数据，存入当前角色对象的 .wallpaper 属性里
+        character.wallpaper = imageUrl; 
+        
+        // 核心步骤 2: 更新UI
+        // 立刻将模拟手机的桌面背景图换成用户刚刚上传的这张
+        document.getElementById('sim-home-screen-content').style.backgroundImage = `url(${imageUrl})`;
+        
+        alert('壁纸已更换！');
+    };
+    
+    // 命令读取工具开始读取图片文件
+    reader.readAsDataURL(file);
+    
+    // 清空上传按钮的值，这样用户下次还可以选择同一张图片
+    event.target.value = ''; 
+});
+
+// ▼▼▼ 请用这个新版本完整替换上面的旧代码 ▼▼▼
+document.getElementById('user-photo-upload-input').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    const character = friends.find(f => f.id === currentSimPhoneCharacterId);
+    if (!file || !character) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => { // <-- 注意这里增加了 async
+        const imageUrl = e.target.result;
+        
+        if (!character.widgets) character.widgets = {};
+        character.widgets.polaroidPhoto = imageUrl; 
+        
+        const photoPlaceholder = document.getElementById('user-photo-placeholder');
+        if (photoPlaceholder) {
+            photoPlaceholder.innerHTML = '';
+            photoPlaceholder.style.backgroundImage = `url(${imageUrl})`;
+        }
+        
+        // --- 核心修复：在这里调用保存函数，确保数据写入数据库 ---
+        await saveData();
+        // --- 修复结束 ---
+
+        showAlert('相框照片已更换！');
+    };
+    
+    reader.readAsDataURL(file);
+    event.target.value = ''; 
+});
+// ▲▲▲ 替换到此结束 ▲▲▲
+
+    // ▼▼▼ 请将以下所有新函数，完整地粘贴到 <script> 的末尾 ▼▼▼
+
+/**
+ * 【全新】重新渲染角色选择列表，使用动态的全局 friends 数组
+ */
+function renderCharList() {
+    const charListContainer = document.getElementById('char-list-container');
+    if (!charListContainer) return;
+    
+    charListContainer.innerHTML = ''; // 清空旧列表
+    const aiFriends = friends.filter(f => !f.isGroup);
+
+    if (aiFriends.length === 0) {
+        charListContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: var(--grey);">暂无可互动的角色</li>';
+        return;
+    }
+
+    charListContainer.innerHTML = aiFriends.map(friend => 
+        // 核心修改：我们现在存储好友的ID和名字
+        `<li class="char-list-item" data-char-id="${friend.id}" data-char-name="${friend.name}">${friend.remark || friend.name}</li>`
+    ).join('');
+}
+
+// ▼▼▼ 请用这个【V3 - 缓存与滑动最终修复版】，完整替换旧的 handleRecordClick 函数 ▼▼▼
+
+/**
+ * 【全新】处理记录类型点击事件的总调度函数 (V3 - 统一渲染流程)
+ * @param {string} recordType - 被点击的记录类型，如 "浏览记录"
+ * @param {boolean} forceRefresh - 是否强制重新生成，忽略缓存
+ */
+async function handleRecordClick(recordType, forceRefresh = false) {
+    currentRecordType = recordType;
+    
+    // 1. 立即切换页面并搭建“脚手架”
+    // 无论是否有缓存，我们都先跳转到详情页，并立即渲染出带“加载中”状态的页面框架。
+    // 这一步确保了内容容器 .app-content-wrapper 必定存在。
+    navigateToPage('char-records-detail-page', recordType);
+    const detailPage = document.getElementById('char-records-detail-page');
+    if (!detailPage) return;
+
+    detailPage.innerHTML = `
+        <div class="nav-bar-preview">
+            <div class="nav-bar-left"><span class="nav-icon-preview" onclick="navigateBack()">←</span></div>
+            <div class="nav-bar-center"><div class="nav-logo-preview">${recordType}</div></div>
+            <div class="nav-bar-right"></div>
+        </div>
+        <div class="app-content-wrapper" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div class="loading-spinner"></div>
+            <p style="color: var(--grey); margin-top: 15px;">正在加载记录...</p>
+        </div>
+    `;
+
+    const character = friends.find(f => f.id === currentShoppingCharId);
+    if (!character) {
+        detailPage.querySelector('.app-content-wrapper').innerHTML = `<p style="color: red; padding: 20px; text-align: center;">错误：找不到当前角色。</p>`;
+        return;
+    }
+    
+    // 2. 检查缓存
+    const cachedData = character.shoppingRecordsCache?.[recordType];
+
+    // 3. 如果有缓存且不强制刷新，直接用它来渲染内容
+    if (cachedData && !forceRefresh) {
+        console.log(`[购物App缓存] 从缓存加载“${recordType}”。`);
+        renderCharRecordsDetail(cachedData);
+        return; // 结束函数
+    }
+
+    // 4. 如果没有缓存，或者需要强制刷新，才去请求AI生成
+    try {
+        console.log(`[购物App缓存] “${recordType}”无缓存或需要强制刷新，正在生成...`);
+        const records = await generateCharRecords(currentShoppingCharId, recordType);
+        
+        // 将新生成的数据存入缓存
+        if (!character.shoppingRecordsCache) character.shoppingRecordsCache = {};
+        character.shoppingRecordsCache[recordType] = records;
+        await saveData();
+        console.log(`[购物App缓存] 已为“${recordType}”生成并保存新缓存。`);
+
+        renderCharRecordsDetail(records);
+    } catch (error) {
+        console.error(`生成"${recordType}"失败:`, error);
+        const contentWrapper = detailPage.querySelector('.app-content-wrapper');
+        if (contentWrapper) {
+            contentWrapper.innerHTML = `<p style="color: red; padding: 20px; text-align: center;">生成记录失败：${error.message}</p>`;
+        }
+    }
+}
+
+// ▼▼▼ 请用这个【V2 创意增强版】，完整替换旧的 generateCharRecords 函数 ▼▼▼
+
+/**
+ * 【全新】调用AI，为指定角色和记录类型生成5个商品 (V2 - 创意增强版)
+ * @param {string} charId - 角色ID
+ * @param {string} recordType - 记录类型
+ * @returns {Promise<Array<object>>} - 返回生成的商品对象数组
+ */
+async function generateCharRecords(charId, recordType) {
+    const character = friends.find(f => f.id === charId);
+    if (!character) throw new Error("找不到指定的角色。");
+
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings || !settings.apiUrl || !settings.apiKey) {
+        throw new Error("请先在主系统或App内配置API信息。");
+    }
+
+    const recentChatHistory = (chatHistories[charId] || [])
+        .slice(-20)
+        .map(m => {
+            const senderName = m.type === 'sent' ? userProfile.name : character.name;
+            return `${senderName}: ${summarizeMessageContentForAI(m)}`;
+        }).join('\n');
+
+    // --- 【【【核心修改：为每个记录类型定制专属指令】】】 ---
+    let taskInstruction = '';
+    switch(recordType) {
+        case '浏览记录':
+            taskInstruction = `
+            【核心任务：生成5条“浏览记录”】
+            1.  **【欲望的体现】**: 这些记录必须反映角色最近的**“欲望”**和**“兴趣点”**。它们是角色**想买但还没买**的东西，是Ta内心渴望的直接投射。
+            2.  **【记忆关联】**: 商品必须与“近期互动记忆”紧密相关。例如，如果聊到了旅行，浏览记录里就应该有旅行装备；如果聊到了某个爱好，就应该有相关的工具或书籍。
+            3.  **【人设驱动】**: 商品的选择必须符合角色的**人设**。一个文艺青年可能会浏览独立设计师的作品，一个商业精英可能会看高端腕表。`;
+            break;
+        case '购买记录':
+            taskInstruction = `
+            【核心任务：生成5条“购买记录”】
+            1.  **【已完成的行动】**: 这些记录是角色最近**“实际已经购买”**的商品。
+            2.  **【消费能力铁律】**: 商品的价格和类型必须严格符合角色的**人设**，特别是Ta的**消费能力**和**品味**。一个学生不会轻易购买奢侈品，一个总裁的购物清单里也不太可能全是廉价日用品。
+            3.  **【故事的延续】**: 购买的商品最好能解释“近期互动记忆”中的某些情节。例如，如果聊天中提到要送礼物，购买记录里就应该有这件礼物。`;
+            break;
+        case '收藏记录':
+            taskInstruction = `
+            【核心任务：生成5条“收藏记录”】
+            1.  **【向往的象征】**: 这些记录是角色**“很喜欢但可能暂时买不起”**或**“正在犹豫、持币观望”**的商品。它们代表了角色的**品味**和**未来的消费目标**。
+            2.  **【梦想清单】**: 收藏的商品可以比实际购买的商品更昂贵、更理想化，是角色的“梦想清单”。
+            3.  **【情感投射】**: 商品的 "description" 应该侧重于描述角色为什么收藏它，背后有什么情感寄托或故事。`;
+            break;
+        case '历史订单':
+            taskInstruction = `
+            【核心任务：生成5条“历史订单”】
+            1.  **【生活轨迹的展现】**: 这些订单可以追溯到更早的时间，用于反映角色**长期的消费习惯**和**生活轨迹**。
+            2.  **【包含日常】**: 历史订单中可以包含一些更日常、重复购买的消耗品（例如特定品牌的咖啡豆、护肤品），以增加真实感。
+            3.  **【重大事件的印记】**: 也可以包含一些与角色过去重要事件相关的商品，例如“一年前买的订婚戒指”、“半年前搬家时买的家具”等，以丰富角色的背景故事。`;
+            break;
+    }
+
+    const prompt = `
+    【任务】: 你是奢侈品牌“MODOU”的后台数据生成器。你的任务是为名为“${character.name}”的用户，生成5条“${recordType}”。
+
+    【【【情报库 (你的全部认知)】】】
+    1. **角色人设**: "${character.role}"
+    2. **用户人设**: 你的互动对象是“${userProfile.name}”，他/她的人设是：“${userProfile.personality || '普通人'}”。
+    3. **近期互动记忆 (聊天记录)**:
+       ${recentChatHistory || '最近没有聊天。'}
+
+    ${taskInstruction}
+
+    【创作要求】:
+    1.  **【创意铁律】**: 生成的5件商品必须**富有创意且绝不雷同**。
+    2.  **【品牌风格】**: 商品要符合“MODOU”高端、简约、有设计感的品牌风格。
+    3.  **【描述铁律】**: "description" 必须详细且有吸引力。"image_description" 必须是高质量的英文提示词，用于文生图。
+
+    【【【输出格式铁律 (必须严格遵守)】】】:
+    你的回复必须是一个纯净的、完整的、语法正确的JSON数组 \`[]\`，其中包含5个商品对象。每个对象必须包含 "title", "price" (纯数字字符串), "description", 和 "image_description" 四个键。
+
+    【JSON格式示例】:
+    [
+      {
+        "title": "手工制皮革手账本",
+        "price": "899",
+        "description": "意大利植鞣革封面，可替换内芯。适合记录与重要之人的点点滴滴。",
+        "image_description": "A high-end leather-bound journal on a dark wooden desk, next to a fountain pen, minimalist and elegant."
+      }
+    ]
+
+    现在，请开始生成5条记录。`;
+
+    let generatedRecords;
+    try {
+        const textResponse = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], temperature: 0.9 }) // 稍微提高温度以增加创意
+        });
+        if (!textResponse.ok) throw new Error(`文本生成API请求失败: ${textResponse.status}`);
+        const textData = await textResponse.json();
+        const responseText = textData.choices[0].message.content;
+        const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+        if (!jsonMatch) throw new Error("AI未能返回有效的JSON数组。");
+        generatedRecords = JSON.parse(jsonMatch[0]);
+    } catch (error) {
+        console.error("生成记录文本时出错:", error);
+        throw error;
+    }
+
+    // 图片生成逻辑保持不变，但现在有了更好的文本描述
+    const imageGenerationPromises = generatedRecords.map(async (record) => {
+        if (record.price && typeof record.price === 'string') {
+            record.price = record.price.replace(/[^\d.]/g, '');
+        }
+        // 【【【核心修复：确保图片URL总是能生成】】】
+        const keywords = record.image_description || record.title || 'MODOU product';
+        const sanitizedKeywords = keywords.replace(/[#&?=]/g, ''); 
+        const fullImagePrompt = `MODOU brand style, high-end product photography, minimalist, clean background, ${keywords}`;
+        record.img = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullImagePrompt)}`;
+        return record;
+    });
+
+    return await Promise.all(imageGenerationPromises);
+}
+
+// ▼▼▼ 请用这个【滑动修复版】，替换旧的 renderCharRecordsDetail 函数 ▼▼▼
+/**
+ * 【全新】将AI生成的商品记录渲染到详情页面
+ * @param {Array<object>} records - AI生成的商品对象数组
+ */
+function renderCharRecordsDetail(records) {
+    const detailPage = document.getElementById('char-records-detail-page');
+    if (!detailPage) return;
+
+    const contentWrapper = detailPage.querySelector('.app-content-wrapper');
+    if (!contentWrapper) return;
+    
+    // 移除加载时的居中样式，让内容从顶部开始正常排列
+    contentWrapper.style.cssText = 'flex-grow: 1; overflow-y: auto;';
+
+    if (!records || records.length === 0) {
+        contentWrapper.innerHTML = `<p style="color: var(--grey); padding: 20px; text-align: center;">没有找到相关记录。</p>`;
+        return;
+    }
+
+    // 复用“我的藏品”页面的网格布局
+    contentWrapper.innerHTML = '<div id="char-records-container" class="collection-grid" style="padding-top: 15px;"></div>';
+    const container = document.getElementById('char-records-container');
+
+    if (!container) return;
+
+    container.innerHTML = records.map(item => `
+        <div class="collection-item">
+            <img src="${item.img}" class="collection-item-img" alt="${item.title}">
+            <div class="collection-item-info">
+                <h3 class="collection-item-title">${item.title}</h3>
+                <p class="collection-item-date" style="color: #BFA46F; font-size: 16px; margin-bottom: 10px;">¥ ${item.price}</p>
+                <p class="collection-item-date" style="font-size: 13px; line-height: 1.6;">${item.description}</p>
+            </div>
+        </div>
+    `).join('');
+}
 
     </script>
  
