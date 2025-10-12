@@ -6731,6 +6731,63 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
 
 /* --- ▲▲▲ 粘贴到此结束 ▲▲▲ --- */
 
+/* --- [新增] 表情包添加弹窗的样式 --- */
+
+/* Tab 按钮容器的样式 */
+.emoji-modal-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: var(--bg-hover, #f0f0f0);
+    padding: 4px;
+}
+
+/* Tab 按钮的样式 */
+.emoji-modal-tab {
+    flex: 1; /* 让两个按钮平分宽度 */
+    padding: 8px 12px;
+    border: none;
+    background-color: transparent;
+    color: var(--text-secondary, #666);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px; /* 为按钮本身也添加圆角 */
+    transition: all 0.2s ease-in-out;
+}
+
+/* Tab 按钮激活时的样式 */
+.emoji-modal-tab.active {
+    background-color: var(--bg-primary, white);
+    color: var(--text-color, #000);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* 内容视图的样式 (核心功能) */
+.emoji-modal-content-view {
+    display: none; /* 默认隐藏所有内容视图 */
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* 激活的内容视图的样式 (核心功能) */
+.emoji-modal-content-view.active {
+    display: flex; /* 只显示带有 .active 类的视图 */
+}
+
+/* 上传按钮的样式 */
+.emoji-modal-upload-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: var(--bg-hover, #f0f0f0);
+    color: var(--text-color, #333);
+    text-align: center;
+    cursor: pointer;
+    font-weight: 500;
+}
+
     </style>
 </head>
 <body>
@@ -9062,7 +9119,8 @@ let forumSettings = {
     recommendedWorldviewId: 'default_modern_city', // 推荐版块的世界观
     gossipWorldviewId: 'default_modern_city',      // 八卦版块的世界观
     followingWorldviewId: 'default_modern_city',   // 关注版块的世界观
-    activeAiIds: [] 
+    activeAiIds: [] ,
+    selectedRuleId: null
 };
 
 let currentForumPosts = []; // 用于持久化当前显示的帖子
@@ -10017,6 +10075,8 @@ async function saveProfileData() {
                 (forumPosts || []).forEach(post => savePromises.push(dbManager.set('forumPosts', post))); // <<<<<<< 新增这一行
 // ...
 
+(forumRules || []).forEach(rule => savePromises.push(dbManager.set('forumRules', rule)));
+
                 // 4. 处理播放列表（隔离 File 对象）
                 const serializablePlaylist = await Promise.all(playlist.map(async (song) => {
                     if (song.file instanceof File) {
@@ -10287,6 +10347,9 @@ if (settings && settings.shoppingProducts) {
 
 // ...加载 settings 之后...
 worldviews = settings.worldviews || [];
+
+forumRules = loadedForumRules || []; 
+
 
 // --- ↓↓↓ 在 loadData 函数中，用这段代码替换 forumSettings 的加载逻辑 ↓↓↓ ---
 forumSettings = settings.forumSettings || { recommendedWorldviewId: 'default_modern_city', gossipWorldviewId: 'default_modern_city', followingWorldviewId: 'default_modern_city', activeAiIds: [] };
@@ -10880,16 +10943,21 @@ function setChatAreaPadding(isOpen) {
             hideFunctionMenus();
         }
         
-        function handlePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    sendImageMessage(e.target.result, 'image');
-                };
-                reader.readAsDataURL(file);
-            }
+        // --- 这是修改后的 handlePhotoUpload 函数 ---
+async function handlePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        try {
+            // 调用我们新的压缩函数
+            const compressedDataUrl = await compressImage(file, { quality: 0.7, maxWidth: 800 });
+            // 使用压缩后的图片数据发送消息
+            sendImageMessage(compressedDataUrl, 'image');
+        } catch (error) {
+            console.error("图片压缩失败:", error);
+            showAlert("图片处理失败，请重试。");
         }
+    }
+}
         
                 async function sendImageMessage(dataUrl, type = 'image', description = '', emojiName = '') { // <--- 加上 async
             const friend = friends.find(f => f.id === currentChatFriendId);
@@ -11853,8 +11921,9 @@ if (msg.type === 'sent') {
                     </div>
                 `;
             } else if (hasImage || hasEmoji) {
-                const clickHandler = msg.imageDescription ? `onclick="showImageDescription('${msg.imageDescription.replace(/'/g, "\\'").replace(/"/g, '&#34;').replace(/\n/g, '\\n')}')"` : `onclick="viewImage('${msg.content}')"`;
-                contentHTML = `<img src="${msg.content}" ${clickHandler}>`;
+            const blobUrl = dataUrlToBlobUrl(msg.content);
+                const clickHandler = msg.imageDescription ? `onclick="showImageDescription('${msg.imageDescription.replace(/'/g, "\\'").replace(/"/g, '&#34;').replace(/\n/g, '\\n')}')"` : `onclick="viewImage('${blobUrl}')"`;
+                contentHTML = `<img src="${blobUrl}" ${clickHandler}>`;
             } else if(hasVoiceCallEnd) {
                  contentHTML = `<span>通话时长 ${msg.content}</span><svg class="call-icon" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.2c.27-.27.35-.66.24-1.01-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.75 0 .99-.65.99-.99v-3.45c0-.54-.45-.98-.99-.98z"/></svg>`;
                  
@@ -14492,19 +14561,25 @@ document.getElementById('appLabelColorInput').value = selectedAppLabelColor;
         function openMoments() { setActivePage('momentsScreen'); updateMomentsList(); }
         function openAddMoment() { document.getElementById('addMomentModal').classList.add('show'); }
 
-        function handleMomentImageUpload(event) {
-             const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    momentImage = e.target.result;
-                    momentImageDescription = ''; // User uploaded images have no description
-                    document.getElementById('momentImageUpload').style.backgroundImage = `url(${e.target.result})`;
-                    document.getElementById('momentImagePreview').textContent = '';
-                };
-                reader.readAsDataURL(file);
-            }
+        // --- 这是修改后的 handleMomentImageUpload 函数 ---
+async function handleMomentImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        try {
+            // 调用压缩函数
+            const compressedDataUrl = await compressImage(file, { quality: 0.8, maxWidth: 1080 });
+            
+            // 将压缩后的图片数据用于预览和后续发布
+            momentImage = compressedDataUrl;
+            momentImageDescription = ''; // 用户上传的图片没有AI描述
+            document.getElementById('momentImageUpload').style.backgroundImage = `url(${compressedDataUrl})`;
+            document.getElementById('momentImagePreview').textContent = '';
+        } catch (error) {
+            console.error("朋友圈图片压缩失败:", error);
+            showAlert("图片处理失败，请重试。");
         }
+    }
+}
 
         function closeAddMomentModal() {
             document.getElementById('addMomentModal').classList.remove('show');
@@ -14712,7 +14787,8 @@ commentsHtml += `
         // --- 评论和回复显示逻辑结束 ---
 
         // --- 图片显示逻辑 ---
-        const imageHtml = moment.imageUrl ? `<img src="${moment.imageUrl}" class="moments-image" onclick="viewMomentImage('${moment.id}')">` : '';
+        const blobUrl = dataUrlToBlobUrl(moment.imageUrl);
+const imageHtml = moment.imageUrl ? `<img src="${blobUrl}" class="moments-image" onclick="viewMomentImage('${moment.id}')">` : '';
         // --- 图片显示逻辑结束 ---
 
         // --- 朋友圈底部操作区（时间、操作按钮） ---
@@ -15586,22 +15662,62 @@ async function fetchModels() {
                 });
 
                 // 组合成与旧版兼容的单一对象
-                const fullExport = {
-                    wechatData: {
-                        friends: loadedFriends,
-                        chatHistories: chatHistoriesObject,
-                        diaries: loadedDiaries,
-                        worldBooks: loadedWorldBooks,
-                        worldBookFolders: loadedWorldBookFolders,
-                        favorites: loadedFavorites,
-                        moments: loadedMoments,
-                        playlist: loadedPlaylist,
-                        customEmojis: loadedCustomEmojis,
-                        memories: loadedMemories, // <-- 新增
-                        ...loadedAppSettings // 合并所有应用设置
-                    },
-                    apiSettings: loadedApiSettings
-                };
+                // ▼▼▼ 请将这段新代码粘贴到原来的位置 ▼▼▼
+
+// --- 核心优化逻辑：在导出前移除路人头像数据 ---
+const exportableAppSettings = JSON.parse(JSON.stringify(loadedAppSettings));
+
+const allPostsForExport = [
+    ...(exportableAppSettings.currentForumPosts || []),
+    ...(exportableAppSettings.currentGossipPosts || []),
+    ...(exportableAppSettings.currentFollowingPosts || [])
+];
+
+// --- ▼▼▼ 从这里开始替换 ▼▼▼ ---
+
+// 【核心操作 - 升级版】遍历所有帖子，删除路人作者和路人评论者的头像
+allPostsForExport.forEach(post => {
+    // 1. 清理帖子作者的头像
+    if (!post.authorId && post.authorName !== '匿名用户') {
+        delete post.authorAvatarUrl;
+    }
+
+    // 2. 【新增】清理该帖子下所有评论者的头像
+    if (post.comments && Array.isArray(post.comments)) {
+        post.comments.forEach(comment => {
+            // 判断评论者是否为“已知角色”（即用户本人或AI好友列表中的一员）
+            const isKnownCharacter = (comment.authorName === userProfile.name) || friends.some(f => f.name === comment.authorName);
+            
+            // 如果不是已知角色，说明是路人，删除其头像数据
+            if (!isKnownCharacter) {
+                delete comment.authorAvatarUrl;
+            }
+        });
+    }
+});
+
+// --- ▲▲▲ 替换到这里结束 ▲▲▲ ---
+
+
+// 组合成“瘦身”后的最终导出对象
+const fullExport = {
+    wechatData: {
+        ...exportableAppSettings,
+        friends: loadedFriends,
+        chatHistories: chatHistoriesObject,
+        diaries: loadedDiaries,
+        worldBooks: loadedWorldBooks,
+        worldBookFolders: loadedWorldBookFolders,
+        favorites: loadedFavorites,
+        moments: loadedMoments,
+        playlist: loadedPlaylist,
+        customEmojis: loadedCustomEmojis,
+        memories: loadedMemories
+    },
+    apiSettings: loadedApiSettings
+};
+
+// ▲▲▲ 粘贴到这里结束 ▲▲▲
 
                 const blob = new Blob([JSON.stringify(fullExport, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -15638,6 +15754,42 @@ async function fetchModels() {
                             await Promise.all(dbManager.stores.map(store => dbManager.clear(store)));
                             
                             const data = importedData.wechatData;
+
+// --- ▼▼▼ 在这里粘贴新代码 ▼▼▼ ---
+
+// 【核心操作】检查并修复所有导入的帖子
+const allImportedPosts = [
+    ...(data.currentForumPosts || []),
+    ...(data.currentGossipPosts || []),
+    ...(data.currentFollowingPosts || [])
+];
+
+// --- ▼▼▼ 从这里开始替换 ▼▼▼ ---
+
+// 【核心操作 - 升级版】遍历所有导入的帖子，为路人作者和路人评论者重新生成头像
+allImportedPosts.forEach(post => {
+    // 1. 修复帖子作者的头像
+    if (!post.authorId && post.authorName !== '匿名用户' && !post.authorAvatarUrl) {
+        post.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+    }
+
+    // 2. 【新增】修复该帖子下所有评论者的头像
+    if (post.comments && Array.isArray(post.comments)) {
+        post.comments.forEach(comment => {
+            // 判断评论者是否为“已知角色”
+            const isKnownCharacter = (comment.authorName === userProfile.name) || friends.some(f => f.name === comment.authorName);
+            
+            // 如果是路人，并且没有头像，就给他随机分配一个
+            if (!isKnownCharacter && !comment.authorAvatarUrl) {
+                comment.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+            }
+        });
+    }
+});
+
+// --- ▲▲▲ 替换到这里结束 ▲▲▲ ---
+
+// --- ▲▲▲ 粘贴结束 ▲▲▲ ---
 
                             // 逐个表写入新数据
                             const writePromises = [];
@@ -23361,29 +23513,37 @@ function openForumRules() {
 }
 
 /**
- * 2. 渲染规则列表到弹窗中
+ * 2. 渲染规则列表到弹窗中 (V2 - 支持选中高亮版)
  */
 function renderForumRulesList() {
     const container = document.getElementById('forumRulesList');
-    container.innerHTML = ''; // 清空旧内容
+    container.innerHTML = '';
     
     if (forumRules.length === 0) {
         container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">暂无规则，点击右上角“+”添加。</div>';
     } else {
         forumRules.forEach(rule => {
             const item = document.createElement('div');
-            item.className = 'friend-item'; // 复用好友列表的样式
+
+            // --- ▼▼▼ 核心修改 1：检查是否被选中，并添加高亮class ▼▼▼ ---
+            const isSelected = rule.id === forumSettings.selectedRuleId;
+            item.className = `friend-item ${isSelected ? 'worldview-active' : ''}`;
+            // --- ▲▲▲ 修改结束 ▲▲▲ ---
+
+            // --- ▼▼▼ 核心修改 2：修改主体的 onclick 事件 ▼▼▼ ---
             item.innerHTML = `
-    <div class="friend-info" style="flex-grow: 1; cursor: pointer;" onclick="openForumRuleEditor('${rule.id}')">
-        <div class="friend-name">${rule.name}</div>
-    </div>
-    <div class="item-actions">
-        <span class="edit-btn" title="编辑" onclick="openForumRuleEditor('${rule.id}'); event.stopPropagation();">
-            <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/></svg>
-        </span>
-        <span class="delete-btn" title="删除" onclick="deleteForumRule(event, '${rule.id}')">✕</span>
-    </div>
-`;
+                <div class="friend-info" style="flex-grow: 1; cursor: pointer;" onclick="selectForumRule('${rule.id}')">
+                    <div class="friend-name">${rule.name}</div>
+                </div>
+                <div class="item-actions">
+                    <span class="edit-btn" title="编辑" onclick="openForumRuleEditor('${rule.id}'); event.stopPropagation();">
+                        <svg viewBox="0 0 24 24"><path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"/></svg>
+                    </span>
+                    <span class="delete-btn" title="删除" onclick="deleteForumRule(event, '${rule.id}')">✕</span>
+                </div>
+            `;
+            // --- ▲▲▲ 修改结束 ▲▲▲ ---
+
             container.appendChild(item);
         });
     }
@@ -26272,6 +26432,117 @@ function renderCharRecordsDetail(records) {
             </div>
         </div>
     `).join('');
+}
+
+/**
+ * 【新增】核心功能：选择一个论坛规则
+ * @param {string} ruleId - 被选中的规则ID
+ */
+async function selectForumRule(ruleId) {
+    // 1. 更新“状态记录员”
+    forumSettings.selectedRuleId = ruleId;
+    await saveData();
+    // 2. 重新渲染列表，让蓝色高亮显示出来
+    renderForumRulesList(); 
+
+    // 3. （可选）给用户一个提示
+    const selectedRule = forumRules.find(r => r.id === ruleId);
+    if (selectedRule) {
+        showToast(`已选择规则：“${selectedRule.name}”`);
+    }
+
+    // 4. 等待一小会儿后关闭弹窗，让用户能看到高亮效果
+    setTimeout(() => {
+        closeForumRulesModal();
+    }, 300);
+}
+
+/**
+ * [新增] 核心图片压缩函数
+ * @param {File|string} source - 图片文件对象或原始的Base64 dataURL
+ * @param {object} options - 压缩选项
+ * @param {number} [options.quality=0.8] - 图片质量 (0.0 to 1.0)
+ * @param {number} [options.maxWidth=1024] - 图片最大宽度
+ * @param {number} [options.maxHeight=1024] - 图片最大高度
+ * @returns {Promise<string>} - 返回压缩后的Base64 dataURL
+ */
+function compressImage(source, options = {}) {
+    const { quality = 0.8, maxWidth = 1024, maxHeight = 1024 } = options;
+
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // 将压缩后的Canvas内容转换为Blob对象
+            canvas.toBlob(
+                (blob) => {
+                    // 使用FileReader将Blob对象读回为Base64, 以便存入数据库
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        resolve(reader.result);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                },
+                'image/jpeg', // 强制使用JPG格式以获得最佳压缩效果
+                quality
+            );
+        };
+        img.onerror = reject;
+
+        // 处理输入源是File对象还是已经是dataURL
+        if (source instanceof File) {
+            img.src = URL.createObjectURL(source);
+        } else {
+            img.src = source;
+        }
+    });
+}
+
+/**
+ * [新增] 工具函数：将DataURL(Base64)转换为Blob URL
+ * @param {string} dataUrl - Base64格式的图片数据
+ * @returns {string} - 临时的 blob: URL
+ */
+function dataUrlToBlobUrl(dataUrl) {
+    if (!dataUrl || !dataUrl.startsWith('data:')) {
+        return dataUrl; // 如果不是dataURL，直接返回原值 (例如 http链接)
+    }
+    try {
+        const arr = dataUrl.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mime });
+        return URL.createObjectURL(blob);
+    } catch (error) {
+        console.error("DataURL to Blob URL conversion failed:", error);
+        return dataUrl; // 转换失败则返回原始dataURL作为备用
+    }
 }
 
     </script>
