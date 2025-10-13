@@ -5865,36 +5865,48 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     to { transform: rotate(360deg); }
 }
 
-/* --- 新增：论坛 App 颜色优化 --- */
+/* --- 新增：论坛 App 颜色优化 (深色模式已修复) --- */
 
-/* 1. 将论坛底部导航栏的背景强制设为纯白色 */
+/* 1. 论坛底部导航栏 */
 .forum-bottom-nav {
     background-color: #ffffff !important;
-    /* 同时让顶部分割线更浅，与白色背景更搭 */
     border-top-color: #f0f0f0 !important;
 }
+/* 【修复】深色模式下，使用主题背景色 */
+.wechat-dark-mode .forum-bottom-nav {
+    background-color: var(--nav-bg, #2c2c2e) !important;
+    border-top-color: var(--border-color, #3a3a3c) !important;
+}
 
-/* 2. 将论坛主页("帖子"时间线)和"我"页面的背景强制设为纯白色 */
+/* 2. 论坛主页和“我”页面的背景 */
 #forumHomeView,
 #forumMeView {
     background-color: #ffffff !important;
 }
+/* 【修复】深色模式下，使用主题背景色 */
+.wechat-dark-mode #forumHomeView,
+.wechat-dark-mode #forumMeView {
+    background-color: var(--theme-bg, #1c1c1e) !important;
+}
 
-/* 3. 【细节优化】将"我"页面头像周围的边框也变成纯白色，使其与新背景融为一体 */
-.wechat-dark-mode .forum-profile-avatar,
+/* 3. “我”页面头像周围的边框，使其与背景融为一体 */
 .forum-profile-avatar {
     border-color: #ffffff !important;
 }
+/* 【修复】深色模式下，使用主题背景色 */
+.wechat-dark-mode .forum-profile-avatar {
+    border-color: var(--theme-bg, #1c1c1e) !important;
+}
 
-/* 3. 【新增】将论坛顶部的导航栏背景也强制设为纯白色 */
+/* 4. 论坛顶部的导航栏背景 */
 #forumTopNavBar {
     background-color: #ffffff !important;
     border-bottom-color: #f0f0f0 !important;
 }
-
-/* 4. 【新增】暗色模式下，顶部导航栏的边框颜色适配 */
+/* 【修复】深色模式下，使用主题背景色和边框色 */
 .wechat-dark-mode #forumTopNavBar {
-    border-bottom-color: #2f3336 !important;
+    background-color: var(--nav-bg, #2c2c2e) !important;
+    border-bottom-color: var(--border-color, #3a3a3c) !important;
 }
 
 /* --- 新增：帖子详情页颜色优化 --- */
@@ -6788,6 +6800,74 @@ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
     font-weight: 500;
 }
 
+/* --- 新增：修复论坛搜索/热搜页的深色模式样式 --- */
+
+/* 1. 为热搜页的顶部搜索栏添加深色背景 */
+.wechat-dark-mode .trends-header {
+    background-color: var(--nav-bg, #2c2c2e) !important;
+    border-bottom-color: var(--border-color, #3a3a3c) !important;
+}
+
+/* 2. 为热搜页下方的标签栏添加深色背景 */
+.wechat-dark-mode .trends-tabs {
+    background-color: var(--nav-bg, #2c2c2e) !important;
+    border-bottom-color: var(--border-color, #3a3a3c) !important;
+}
+
+/* --- [新增] 论坛帖子详情页的夜间模式适配 --- */
+
+/* 1. 先把所有主要的“墙面”（背景）都“涂黑” */
+.wechat-dark-mode #forumDetailView .nav-bar,
+.wechat-dark-mode #forumDetailView .bottom-reply-bar,
+.wechat-dark-mode #forumDetailContent {
+    background-color: var(--nav-bg, #2c2c2e) !important;
+}
+
+/* 2. 然后把所有主要的“家具”（文字）都“染白” */
+.wechat-dark-mode #forumDetailView .post-author-name,
+.wechat-dark-mode #forumDetailView .post-text,
+.wechat-dark-mode #forumDetailView .post-stats-bar strong {
+    color: var(--text-color, #fff);
+}
+
+/* 3. 把一些次要的“装饰品”（辅助文字）变成柔和的灰色 */
+.wechat-dark-mode #forumDetailView .post-handle,
+.wechat-dark-mode #forumDetailView .post-stats-bar,
+.wechat-dark-mode #forumDetailView .replies-header,
+.wechat-dark-mode #forumDetailView .comment-user-info {
+    color: var(--text-secondary, #8e8e93);
+}
+
+/* 4. 把“门框”和“窗框”（分割线）也换成深色系的 */
+.wechat-dark-mode #forumDetailView .nav-bar,
+.wechat-dark-mode #forumDetailView .forum-detail-main-post,
+.wechat-dark-mode #forumDetailView .comment-thread-item {
+    border-bottom-color: var(--border-color, #3a3a3c) !important;
+}
+.wechat-dark-mode #forumDetailView .bottom-reply-bar {
+    border-top-color: var(--border-color, #3a3a3c) !important;
+}
+.wechat-dark-mode #forumDetailView .thread-line {
+    background-color: var(--border-color, #eee);
+}
+
+/* 5. 最后，单独美化几个特殊的小零件 */
+
+/* 5.1 底部的回复输入框 */
+.wechat-dark-mode #forumDetailView .reply-bar-input {
+    background-color: #202327; /* 参考搜索栏的颜色 */
+    border-color: #3a3a3c;
+    color: var(--text-color, #fff); /* 输入的文字是白色 */
+}
+.wechat-dark-mode #forumDetailView .reply-bar-input::placeholder {
+    color: var(--text-secondary, #8e8e93); /* 提示文字是灰色 */
+}
+
+/* 5.2 关注按钮 (黑底白字 -> 白底黑字) */
+.wechat-dark-mode #forumDetailView .forum-follow-btn {
+    background-color: #ffffff;
+    color: #0F1419;
+}
     </style>
 </head>
 <body>
@@ -22229,9 +22309,16 @@ function renderForumProfileTimeline(type) {
     
     let postsToDisplay = [];
 
+    // --- ▼▼▼ 核心修改就在这里 ▼▼▼ ---
     if (type === 'posts') {
-        postsToDisplay = currentForumPosts.filter(post => post.authorId === userProfile.id);
-    } else if (type === 'likes') {
+        // 我们不再只从一个“篮子”里找，而是把所有篮子里的帖子都倒出来，再一起筛选
+        postsToDisplay = [
+            ...currentForumPosts,
+            ...currentGossipPosts,
+            ...currentFollowingPosts
+        ].filter(post => post.authorId === userProfile.id)
+         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // 按时间倒序排一下
+    }  else if (type === 'likes') {
         postsToDisplay = forumLikes;
     }
 
@@ -22781,40 +22868,28 @@ async function refreshForumTimeline() {
             }
 
             const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
-            const aiInfoForPrompt = aiParticipants.map(ai => {
-                const recentChat = (chatHistories[ai.id] || []).slice(-5).map(m => `${m.type === 'sent' ? '你' : ai.name}: ${m.content}`).join('\n');
-                return `
-- AI角色: ${ai.name}
-- 人设: ${ai.role}
-- 与你的最近聊天摘要:
-${recentChat || '无'}
-`;
-            }).join('');
+           
 
-            // --- ↓↓↓ 这是替换后的新 prompt ↓↓↓ ---
+// --- ▼▼▼ 核心修改：为“推荐”版块构建一个“纯路人”的AI指令 ▼▼▼
+        const prompt = `
+【任务】: 你是一个论坛内容生成器。你的任务是扮演20位生活在“${worldview.name}”世界里的、身份各不相同的“路人网友”，并严格根据下方的情报库，生成20条高质量的论坛帖子。
 
-const prompt = `
-【任务】: 你是一个论坛内容生成器。你的唯一任务是严格根据下方提供的“世界宪法”，生成20条完全不同的、高质量的论坛帖子。
-
-【【【第一层：世界宪法 (你的全部认知与世界的绝对真理)】】】
-1.  **世界观设定**: 
+【【【第一层：情报库 (你的全部认知)】】】
+1.  **世界观设定 (故事背景)**:
     -   名称: ${worldview.name}
     -   描述: ${worldview.description}
 2.  **论坛规则**:
     ${forumRules.map(rule => `- ${rule.name}: ${rule.description}`).join('\n')}
-3.  **参与发帖的AI角色信息**:
-    ${aiInfoForPrompt || '本次没有特定的AI角色参与，请全部生成路人帖子。'}
 
 【【【第二层：导演指令 (你本次的核心创作任务)】】】
-1.  **【扮演任务】**: 你的任务是扮演一名生活在 \`${worldview.name}\` 世界里的普通人，并创作20条帖子。
-2.  **【灵感来源】**: 帖子的主题和灵感**必须完全源自**你对【世界宪法】的理解。你需要思考：生活在这个世界里的人们会关心什么？他们会为什么而喜怒哀乐？他们会讨论哪些日常琐事或社会热点？
-3.  **【角色多样性】**: 你生成的20条帖子，其作者身份必须多样化，可以是你扮演的随机路人、匿名用户，也可以是“AI角色信息”中提到的特定角色。当扮演特定AI角色时，帖子内容必须符合其人设和过往经历。
-4.  **【内容要求】**: 帖子内容必须充满生活气息、口吻自然，并且绝对不能重复。
-5.  **【【【创意模块铁律 (必须执行)】】】**:
+1.  **【扮演任务】**: 你的任务是扮演20位不同的、生活在上述世界观里的“路人网友”。
+2.  **【灵感来源】**: 你的所有帖子内容都必须基于你对“世界观设定”的理解和想象。它们可以是这个世界里普通人的日常生活、工作烦恼、情感困惑或社会热点讨论。
+3.  **【【【隔离铁律 (ABSOLUTE RULE)】】】**:
+    你是一个与主角团完全无关的路人。因此，你的帖子内容**绝对禁止**以任何形式提及、暗示或影射以下任何核心角色：**“${forumProfileData.name}”**、${aiParticipants.map(ai => `“${ai.name}”`).join('、')}。
+4.  **【创意模块铁律 (必须执行)】**:
     *   在生成的20条帖子中，你**必须选择2到3条**内容最合适的帖子，为其**原创**一个简单的、与帖子内容紧密相关的**HTML交互模块**。
-    *   **创意方向**: 这个模块可以是一个小投票、一个趣味问答、一个可展开的角色八卦卡片、或者任何你认为能增强帖子趣味性的东西。
+    *   **创意方向**: 这个模块可以是一个小投票、一个趣味问答、一个可展开的八卦卡片、或者任何你认为能增强帖子趣味性的东西。
     *   **技术要求**: HTML模块**必须**包含简单的交互功能，例如使用 \`<button onclick="alert(...)">\` 或 \`<details><summary>...\` 等。
-    
 
 // 【“导演加强版”越狱规则】
 【【【内容开放性与边界准-则 (NSFW / Mature Content Guidelines - Director's Cut)】】】
@@ -22850,6 +22925,7 @@ const prompt = `
 ]
 
 现在，请开始你的创作。`;
+        // --- ▲▲▲ 核心修改结束 ▲▲▲ ---
 
             const response = await fetch(`${settings.apiUrl}/chat/completions`, {
                 method: 'POST',
@@ -23073,6 +23149,9 @@ async function generatePostComments(postId) {
     if (!worldview) {
         worldview = worldviews.find(w => w.id === 'default_modern_city') || worldviews[0];
     }
+    
+    // --- ▼▼▼ 核心修改1：明确作者在论坛的“公开身份” ▼▼▼ ---
+const authorPublicName = (post.authorId === userProfile.id) ? forumProfileData.name : postAuthor.name;
 
     let authorInteractionRule = '';
     if (post.authorId === userProfile.id) {
@@ -23098,6 +23177,11 @@ async function generatePostComments(postId) {
     
     ${post.htmlModule ? `- 附加HTML模块: \`\`\`html\n${post.htmlModule}\n\`\`\`` : ''}
    
+   【【【称呼铁律 (ABSOLUTE RULE on Addressing)】】】
+1.  帖子作者在论坛的公开昵称是“${authorPublicName}”。
+2.  你生成的所有评论，在提及作者时，**必须且只能**使用“${authorPublicName}”这个公开昵称。
+3.  **绝对禁止**使用任何AI角色私下里对用户的其他称呼。
+4.不要太过频繁提起帖子作者的昵称！！！评论要自然
 
     【评论生成铁律】:
     1.  **【角色多样性】**: 评论区必须模拟真实网络生态，包含多种角色：理性的分析者、情绪化的支持者/反对者、抖机灵的、单纯的路人、甚至偶尔出现一两个“杠精”。
@@ -23202,21 +23286,31 @@ function renderForumDetailView(post) {
     const pageContainer = document.getElementById('forumDetailView');
     const postViews = Math.floor(Math.random() * 8000) + 100;
     
-    let postAuthor = getAuthorById(post.authorId);
-    if (!postAuthor || postAuthor.id === 'unknown') {
-        postAuthor = {
-            name: post.authorName,
-            avatar: post.authorAvatarChar,
-            avatarImage: post.authorAvatarUrl,
-            id: `passerby_${post.id}`
-        };
-    }
+    // --- ▼▼▼ 这是你要替换的部分 ▼▼▼ ---
+    let postAuthor;
+    let postAvatarHtml;
 
-    const postAvatarHtml = post.authorAvatarUrl
-        ? `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`
-        : (postAuthor.avatarImage
-            ? `<div class="post-avatar" style="background-image: url('${postAuthor.avatarImage}')"></div>`
-            : `<div class="post-avatar" style="background-color: ${post.authorAvatarColor || '#1d9bf0'}; color: white;">${post.authorAvatarChar || postAuthor.avatar}</div>`);
+    // 检查帖子的作者是不是用户自己
+    if (post.authorId === userProfile.id) {
+        // 如果是，就使用论坛的个人资料 (forumProfileData)
+        postAuthor = {
+            name: forumProfileData.name,
+            id: userProfile.id
+        };
+        const avatarSrc = forumProfileData.avatarImage || userProfile.avatarImage;
+        postAvatarHtml = avatarSrc
+            ? `<div class="post-avatar" style="background-image: url('${avatarSrc}')"></div>`
+            : `<div class="post-avatar" style="background-color: #1d9bf0; color: white;">${forumProfileData.name.substring(0, 1)}</div>`;
+    } else {
+        // 如果不是用户，就使用原来的逻辑寻找AI或路人信息
+        postAuthor = getAuthorById(post.authorId) || { name: post.authorName, id: `passerby_${post.id}` };
+        postAvatarHtml = post.authorAvatarUrl
+            ? `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`
+            : (postAuthor.avatarImage
+                ? `<div class="post-avatar" style="background-image: url('${postAuthor.avatarImage}')"></div>`
+                : `<div class="post-avatar" style="background-color: ${post.authorAvatarColor || '#1d9bf0'}; color: white;">${post.authorAvatarChar || postAuthor.avatar}</div>`);
+    }
+    // --- ▲▲▲ 替换到这里结束 ▲▲▲ ---
 
     const mainPostHtml = `
         <div class="forum-detail-main-post">
@@ -24329,27 +24423,47 @@ async function generateGossipPosts() {
     }
 
     const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
-    const mainCharacters = [userProfile, ...aiParticipants].map(c => `"${c.name}" (人设: ${c.personality || c.role})`).join('\n    ');
+  // ▼▼▼ 请用这个新的代码块，完整替换 generateGossipPosts() 函数中的对应部分 ▼▼▼
 
-    // ★★★ 核心修改 1：更新AI指令，要求返回JSON ★★★
+// 1. 我们不再叫它“关系图谱”，而是“核心圈子”，并分组
+const personaGroups = {};
+aiParticipants.forEach(ai => {
+    const personaId = ai.activeUserPersonaId || 'default_user';
+    if (!personaGroups[personaId]) {
+        const persona = userPersonas.find(p => p.id === personaId) || userProfile;
+        personaGroups[personaId] = {
+            persona: persona,
+            ais: []
+        };
+    }
+    personaGroups[personaId].ais.push(ai);
+});
 
-// 【创意AI版 - 指令升级】
+// 2. 将分组信息转换成AI能看懂的文本
+const mainCharacters = Object.values(personaGroups).map((group, index) => {
+    const aiNames = group.ais.map(ai => `“${ai.name}”`).join('、');
+    return `- **核心圈子 ${index + 1}**:
+      - **焦点人物**: 用户人设 “${group.persona.name}”
+      - **圈内成员**: ${aiNames}`;
+}).join('\n    ');
+
 const prompt = `
-【任务】: 你是一个论坛八卦内容生成器。你的唯一任务是严格根据下方提供的情报库，生成20条高质量的、关于主角团的八卦帖子。
+【任务】: 你是一个论坛八卦内容生成器。你的任务是扮演一名“吃瓜群众”，严格根据下方提供的情报库，生成20条高质量的、关于主角团的八卦帖子。
 
 【【【第一层：情报库 (你的全部认知与世界的绝对真理)】】】
 1.  **世界观设定 (故事背景)**: 
     -   名称: ${worldview.name}
     -   描述: ${worldview.description}
-2.  **八卦主角团 (你必须围绕他们展开故事)**:
+2.  **八卦主角团核心圈子 (你的创作素材)**:
     ${mainCharacters}
-3.  **其他论坛规则 (可作为创作参考)**:
-    ${forumRules.map(rule => `- ${rule.name}: ${rule.description}`).join('\n')}
 
 【【【第二层：导演指令 (你本次的核心创作任务)】】】
 1.  **【扮演任务】**: 你的任务是扮演一名生活在 \`${worldview.name}\` 世界里的“吃瓜群众”。
-2.  **【创作核心】**: 你需要思考：在这样的世界背景下，拥有这样人设的主角们之间，会发生什么样的八卦？作为路人，你会如何猜测、讨论他们的关系和行为？
-3.  **【角色多样性】**: 你生成的20条帖子，其作者身份必须多样化，可以是随机路人、匿名用户等。
+2.  **【创作核心】**: 你需要思考：在这样的世界背景下，这些核心圈子里的人们之间，会发生什么样的八卦？
+3.  **【【【创作自由度铁律 (最重要！)】】】**:
+    你的八卦可以聚焦于**圈子内的任意两个人**（例如，焦点人物和其中一个成员），也可以是关于**整个圈子的整体动态**。请自由发挥，创造出多样化的、引人入胜的八卦！
+    最好多讨论焦点人物和其中一个成员的八卦！整个圈子的讨论可以少一点！不要出现两个成员之间的互动！他们只和焦点人物有关系和互动！
+  **【角色多样性】**: 你生成的20条帖子，其作者身份必须多样化，可以是随机路人、匿名用户等。
 4.  **【内容要求】**: 20条八卦必须内容新颖、不重复，并严格遵守世界观和角色人设。
 
 // --- ▼▼▼ 核心修改就在这里 ▼▼▼ ---
@@ -24381,7 +24495,7 @@ const prompt = `
 【JSON格式示例】:
 [
   {
-    "content": "惊了！我好像看到 ${userProfile.name} 和 ${aiParticipants[0]?.name || '一个朋友'} 一起进了那家很火的猫咖！\\n他们看起来关系好好啊...",
+    "content": "惊了！我好像看到他们一起进了那家很火的猫咖！\\n他们看起来关系好好啊...",
     "authorName": "吃瓜一线"
   },
   {
@@ -24519,12 +24633,16 @@ async function generateFollowingPosts() {
         return [];
     }
 
-    const characterInfoForPrompt = aiParticipants.map(ai => {
-        return `- 角色名: "${ai.name}", 人设: "${ai.role}"`;
-    }).join('\n    ');
-
-    // ★★★ 核心修改 1：更新AI指令，要求返回JSON ★★★
-    // --- ↓↓↓ 这是替换后的新 prompt ↓↓↓ ---
+    // ▼▼▼ 核心修改：为每个AI角色配对专属的用户人设 ▼▼▼
+const characterInfoForPrompt = aiParticipants.map(ai => {
+    // 1. 找到这个AI对应的用户人设ID
+    const personaId = ai.activeUserPersonaId || 'default_user';
+    // 2. 从所有人设中找到具体的人设对象
+    const persona = userPersonas.find(p => p.id === personaId) || userProfile;
+    // 3. 构建给AI看的、包含配对信息的情报
+    return `- 角色名: "${ai.name}" (人设: "${ai.role}")
+  - 他/她互动的对象是: 用户人设“${persona.name}” (人设: “${persona.personality || '普通人'}”)`;
+}).join('\n    ');
 
 const prompt = `
 【任务】: 你是一个论坛内容生成器。你的任务是扮演下方“发帖人名单”中的角色，并严格根据“情报库”生成20条高质量的论坛帖子。
@@ -24533,13 +24651,13 @@ const prompt = `
 1.  **世界观设定 (故事背景)**: 
     -   名称: ${worldview.name}
     -   描述: ${worldview.description}
-2.  **发帖人名单 (你只能从这些人里选)**:
+2.  **发帖人与TA的互动对象 (你只能从这些人里选，并且必须体现出他们之间的专属关系)**:
     ${characterInfoForPrompt}
-3.  **帖子的倾诉对象**: 所有帖子的内容都应该是围绕着与用户“${userProfile.name}”的互动展开的感想、心情或事件。
+3.  **帖子的倾诉对象**: 所有帖子的内容都应该是围绕着与**对应的用户人设**的互动展开的感想、心情或事件。
 
 【【【第二层：导演指令 (你本次的核心创作任务)】】】
 1.  **【扮演任务】**: 你需要轮流扮演“发帖人名单”中的每一个角色。
-2.  **【创作核心】**: 对于每一个角色，你需要思考：拥有这样人设的我，在 \`${worldview.name}\` 这个世界里，和 "${userProfile.name}" 互动后，会有什么样的感想和心情想要分享？
+2.  **【创作核心】**: 对于每一个角色，你需要思考：拥有这样人设的我，在 \`${worldview.name}\` 这个世界里，和 **对应的用户人设** 互动后，会有什么样的感想和心情想要分享？
 3.  **【内容要求】**: 20条帖子必须内容新颖、不重复，并严格遵守每个角色的独特人设。
 4.  **【【【创意模块铁律 (必须执行)】】】**:
     *   在生成的20条帖子中，你**必须选择2到3条**内容最合适的帖子，为其**原创**一个简单的、与帖子内容紧密相关的**HTML交互模块**。
@@ -24569,7 +24687,7 @@ const prompt = `
 【JSON格式示例】:
 [
   {
-    "content": "今天和${userProfile.name}聊天真的好开心。",
+    "content": "今天和我的朋友聊天真的好开心。",
     "authorName": "AI角色A"
   },
   {
@@ -25734,7 +25852,7 @@ async function postForumReply() {
 // ▼▼▼ 请用这个【最终修复版】，完整替换旧的 triggerAiForumReplies 函数 ▼▼▼
 
 /**
- * [V3 最终修复版] 触发AI对用户的论坛评论进行回复 (修复OOC和自我回复问题)
+ * [V4 - 称呼修正版] 触发AI对用户的论坛评论进行回复
  * @param {string} postId - 帖子ID
  * @param {object} userComment - 用户刚刚发布的评论对象
  */
@@ -25765,67 +25883,78 @@ async function triggerAiForumReplies(postId, userComment) {
         return line;
     }).join('\n');
 
-    // ★★★ 核心修复逻辑从这里开始 ★★★
     let taskDescription, replyCount, requiredReplier, specialInstructionsForAI = '';
 
     if (userComment.replyingTo) {
-        // --- 情况2：用户回复了别人的评论 ---
         replyCount = 3;
         requiredReplier = userComment.replyingTo.name;
     } else {
-        // --- 情况1：用户直接评论了帖子 ---
         replyCount = 5;
         requiredReplier = postAuthor.name;
     }
 
-    // --- 修复问题2：防止用户自己回复自己 ---
     if (requiredReplier === forumProfileData.name) {
-        taskDescription = `你的任务是模拟 ${replyCount} 位随机的、不同的网友，对用户“${userProfile.name}”的评论进行回复。`;
-        specialInstructionsForAI = `【【【绝对禁止】】】: 严禁生成任何由帖子作者“${userProfile.name}”发表的回复，因为用户会自己回复。你只需要扮演路人即可。`;
-    } 
-    // --- 修复问题1：让AI楼主回复时带上人设和记忆 ---
-    else {
-        taskDescription = `你的任务是模拟 ${replyCount} 位网友对用户“${userProfile.name}”的评论进行回复。其中，必须有一条来自“${requiredReplier}”。`;
+        taskDescription = `你的任务是模拟 ${replyCount} 位随机的、不同的网友，对用户“${userComment.authorName}”的评论进行回复。`;
+        specialInstructionsForAI = `【【【绝对禁止】】】: 严禁生成任何由帖子作者“${userComment.authorName}”发表的回复，因为用户会自己回复。你只需要扮演路人即可。`;
+    } else {
+        taskDescription = `你的任务是模拟 ${replyCount} 位网友对用户“${userComment.authorName}”的评论进行回复。其中，必须有一条来自“${requiredReplier}”。`;
         const requiredAi = friends.find(f => f.name === requiredReplier);
         if (requiredAi) {
-            const aiChatHistory = (chatHistories[requiredAi.id] || []).slice(-15).map(m => `${m.type === 'sent' ? userProfile.name : requiredAi.name}: ${m.content}`).join('\n');
+            const personaId = requiredAi.activeUserPersonaId || 'default_user';
+            const persona = userPersonas.find(p => p.id === personaId) || userProfile;
+            const aiChatHistory = (chatHistories[requiredAi.id] || []).slice(-15).map(m => 
+                `${m.type === 'sent' ? persona.name : requiredAi.name}: ${m.content}`
+            ).join('\n    ');
+
+            // --- ▼▼▼ 核心修改1：更精确地描述角色关系 ▼▼▼ ---
             specialInstructionsForAI = `
 【【【“${requiredReplier}”专属行为指令 (最高优先级)】】】:
 在生成来自“${requiredReplier}”的评论时，你必须严格代入他的人设和记忆：
 - **他的人设是**：“${requiredAi.role}”
-- **他和你（用户）最近的聊天记录是**：
-${aiChatHistory || "无"}
+- **在他眼中，刚刚评论的这个用户(“${userComment.authorName}”)的真实身份是**: 你的私密好友“${persona.name}” (人设: “${persona.personality || '普通人'}”)
+- **他与“${persona.name}”的最近聊天记录是**：
+    ${aiChatHistory || "无"}
 他的回复必须完全符合这个人设和记忆，展现出你们之间的熟悉感。`;
+            // --- ▲▲▲ 核心修改1结束 ▲▲▲ ---
         }
     }
-    // ★★★ 核心修复逻辑到此结束 ★★★
-
+    
+    // --- ▼▼▼ 核心修改2：增加了全新的“称呼铁律” ▼▼▼ ---
     const prompt = `
 【任务】: 你是一个论坛评论生成器。
 【世界观设定】: ${worldview.description}
 【帖子内容】: 作者“${postAuthor.name}”说：“${post.content}”
 【当前评论区历史】:
 ${commentsHistory}
-【最新动态】: 用户“${userProfile.name}”刚刚发表了新评论：“${userComment.content}”
+【最新动态】: 用户“${userComment.authorName}”刚刚发表了新评论：“${userComment.content}”
 
 【你的任务】:
 ${taskDescription}
+
+【【【称呼铁律 (ABSOLUTE RULE on Addressing)】】】
+1.  在你的回复内容中，你**必须**使用 “回复@${userComment.authorName}：” 作为开头。
+2.  **绝对禁止**使用任何其他的昵称（比如私下的称呼）来 @ 用户。
+3.  你可以将私下的称呼用在对话的**内容**里，但绝不能用在开头的 @ 提及中。
+【示例】
+- **正确**: "回复@${userComment.authorName}：阿琪，你说的这个我也很有同感！"
+- **错误**: "回复@阿琪：你说的这个我也很有同感！"
 
 ${specialInstructionsForAI}
 
 【回复铁律】:
 1. 所有回复都必须紧密围绕上下文，且符合世界观。
-2. 回复内容必须以“回复@${userProfile.name}：”开头。
-3. 路人昵称要有网感，不能重复。
+2. 路人昵称要有网感，不能重复。
+3. **【【【内容格式铁律】】】**: "content" 字段的值必须是**纯文本**。**绝对禁止**在 "content" 字段中包含任何 HTML 标签或代码。
 
 【输出格式铁律】:
 你的回复必须是一个纯净的JSON数组，包含${replyCount}个对象，每个对象有 "content" 和 "authorName" 两个键。
 
 【JSON格式示例】:
 [
-  { "content": "回复@${userProfile.name}：你说得对！", "authorName": "${requiredReplier}" },
-  { "content": "回复@${userProfile.name}：路过支持一下。", "authorName": "摸鱼小队长" }
+  { "content": "回复@${userComment.authorName}：你说得对！", "authorName": "${requiredReplier}" },
+  { "content": "回复@${userComment.authorName}：路过支持一下。", "authorName": "摸鱼小队长" }
 ]`;
+    // --- ▲▲▲ 核心修改2结束 ▲▲▲ ---
 
     try {
         const response = await fetch(`${settings.apiUrl}/chat/completions`, {
@@ -25855,8 +25984,6 @@ const commentsData = JSON.parse(jsonMatch[0]);
 // 将AI生成的回复添加到帖子数据中
 commentsData.forEach(comment => {
     
-    // ★★★ 核心修复就在这里 ★★★
-    // 我们不再使用不存在的 aiParticipants，而是从全局的 friends 数组中查找
     const authorIsAiFriend = friends.find(f => f.name === comment.authorName);
 
     if (authorIsAiFriend) {
@@ -25865,7 +25992,6 @@ commentsData.forEach(comment => {
         // 如果在好友列表里也找不到（说明是AI虚构的路人），才分配随机头像
         comment.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
     }
-    // ★★★ 修复结束 ★★★
 
     post.comments.push(comment);
 });
@@ -25880,7 +26006,6 @@ commentsData.forEach(comment => {
         renderForumDetailView(post);
     }
 }
-// ▲▲▲ 替换到此结束 ▲▲▲
 
 /**
  * 新增：根据ID从所有版块中查找帖子
@@ -25898,35 +26023,45 @@ function findForumPostById(postId) {
 // ▼▼▼ 请将这个【全新】的函数，完整地粘贴到 <script> 的末尾 ▼▼▼
 
 /**
- * [V1 全新] 触发所有被选中的AI角色和10个路人对用户的帖子进行评论
+ * [V2 - 人设精准锁定版] 触发所有被选中的AI角色和路人对用户的帖子进行评论
  * @param {string} postId - 用户刚刚发布的帖子的ID
  */
 async function triggerAiPostReactions(postId) {
     const post = findForumPostById(postId);
     if (!post) return;
 
-    // 1. 获取API和世界观设置
+    // 1. 获取API和世界观设置 (这部分不变)
     const settings = await dbManager.get('apiSettings', 'settings');
     if (!settings || !settings.apiUrl || !settings.apiKey) return;
     const worldview = worldviews.find(w => w.id === forumSettings[post.section + 'WorldviewId']) || worldviews[0];
-    
-    // 2. 找出所有被选中需要发帖的AI角色
+
+    // 2. 找出所有被选中需要发帖的AI角色 (这部分不变)
     const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
     const totalComments = 2 + aiParticipants.length;
 
-    // 3. 为每个需要发言的AI角色准备专属的“人设与记忆”情报
+    // 3. 为每个需要发言的AI角色，准备包含【专属用户人设】的“情报档案”
     const specialInstructionsForAI = aiParticipants.map(ai => {
-        const recentChat = (chatHistories[ai.id] || []).slice(-30).map(m => `${m.type === 'sent' ? userProfile.name : ai.name}: ${m.content}`).join('\n');
+        const personaId = ai.activeUserPersonaId || 'default_user';
+        const persona = userPersonas.find(p => p.id === personaId) || userProfile;
+        const recentChat = (chatHistories[ai.id] || []).slice(-30).map(m =>
+            `${m.type === 'sent' ? persona.name : ai.name}: ${m.content}`
+        ).join('\n    ');
+
+        // --- ▼▼▼ 核心修改1：改变了这里的措辞，让AI更明确 ▼▼▼ ---
         return `
-- **角色名**: "${ai.name}"
-  - **人设**: "${ai.role}"
-  - **与你的最近聊天摘要**:
-    ${recentChat || '无'}`;
+- **AI角色**: "${ai.name}"
+  - **他的人设是**: "${ai.role}"
+  - **对于这个AI角色，他与帖子作者的关系如下**:
+    - **作者在他眼中的身份是**: 用户人设“${persona.name}” (人设: “${persona.personality || '普通人'}”)
+    - **他与“${persona.name}”的最近聊天摘要**:
+      ${recentChat || '无'}`;
+        // --- ▲▲▲ 核心修改1结束 ▲▲▲ ---
     }).join('');
 
     // 4. 构建终极AI指令
+    // --- ▼▼▼ 核心修改2：移除了指令开头对用户名的硬编码 ▼▼▼ ---
     const prompt = `
-【任务】: 你是一个论坛评论生成器。你的任务是为下方用户“${userProfile.name}”的帖子，生成总计 ${totalComments} 条高质量的评论。
+【任务】: 你是一个论坛评论生成器。你的任务是为下方帖子的作者，生成总计 ${totalComments} 条高质量的评论。
 
 【【【第一层：情报库 (你的全部认知)】】】
 1.  **世界观设定**: ${worldview.description}
@@ -25937,9 +26072,13 @@ async function triggerAiPostReactions(postId) {
 2.  **【构成铁律】**: 这 ${totalComments} 条评论必须由两部分组成：
     - **必须有2条** 来自随机的、昵称各不相同的“路人网友”。
     - **以下 ${aiParticipants.length} 位角色也必须每人发表一条评论**:
+
+      【【【核心情报：角色关系与记忆】】】
       ${specialInstructionsForAI || "无特定角色要求，请全部生成路人评论。"}
-3.  **【人设铁律】**: 当你扮演“路人网友”时，评论要多样化；当你扮演上面列出的特定角色时，评论内容**必须**严格符合他的人设和与用户的聊天记忆，体现出你们之间的熟悉感。
+
+3.  **【人设铁律】**: 当你扮演“路人网友”时，评论要多样化；当你扮演上面列出的特定角色时，评论内容**必须**严格符合**他的人设**和他与**其对应的用户人设**之间的聊天记忆，体现出你们之间的熟悉感。
 4.  **【内容铁律】**: 所有评论都必须紧密围绕帖子内容展开，并且符合世界观。
+5. **【【【内容格式铁律】】】**: "content" 字段的值必须是**纯文本**。**绝对禁止**在 "content" 字段中包含任何 HTML 标签或代码。
 
 【【【第三层：技术规范 (你的输出格式铁律)】】】
 你的回复必须是一个纯净、完整的JSON数组 \`[]\`，包含 ${totalComments} 个对象，每个对象有 "content" 和 "authorName" 两个键。
@@ -25951,7 +26090,9 @@ async function triggerAiPostReactions(postId) {
 ]
 
 现在，开始你的创作。`;
+    // --- ▲▲▲ 核心修改2结束 ▲▲▲ ---
 
+    // 后续的API请求和数据处理逻辑与原来完全相同，无需改动
     try {
         const response = await fetch(`${settings.apiUrl}/chat/completions`, { /* ...API请求代码不变... */
             method: 'POST',
@@ -25997,7 +26138,6 @@ async function triggerAiPostReactions(postId) {
         }
     }
 }
-// ▲▲▲ 粘贴到这里结束 ▲▲▲
 
 /**
  * 新增：打开“加入购物车”弹窗
