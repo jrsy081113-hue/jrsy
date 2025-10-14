@@ -8962,6 +8962,14 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     <div class="forum-menu-item" onclick="openForumCharacterSelect()">角色选择</div>
     <div class="forum-menu-item" onclick="openForumSettingsModal()">世界观选择</div>
     <div class="forum-menu-item" onclick="openForumRules()">论坛规则</div>
+    <div class="forum-menu-item" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>匿名模式</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="forumAnonymousToggle" onchange="toggleForumAnonymity()">
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
+   
 </div>
 
 </div>
@@ -9212,6 +9220,8 @@ let forumRules = []; // 用于存储所有论坛规则
 let currentEditingRuleId = null; // 用于编辑
 
 let forumLikes = [];
+
+let isForumAnonymous = false;
 
 // ...（在其他全局变量下方）
 let forumProfileData = {
@@ -10194,6 +10204,7 @@ const appSettings = {
     offlineModeSettings,
     proactiveMessagingSettings: proactiveMessagingSettings,
     forumProfileData: forumProfileData,
+    isForumAnonymous: isForumAnonymous,
     worldviews: worldviews,
     forumRules: forumRules,
     forumSettings: forumSettings,
@@ -10456,6 +10467,8 @@ if (worldviews.length === 0) {
 }
 
 forumProfileData = settings.forumProfileData || forumProfileData; 
+
+isForumAnonymous = settings.isForumAnonymous || false;
 
 // ↓↓↓ 请用这个修正后的完整代码块，替换原来的 proactiveMessagingSettings 赋值语句 ↓↓↓
 proactiveMessagingSettings = settings.proactiveMessagingSettings || {
@@ -17560,6 +17573,8 @@ window.onload = async function() {
     await requestPersistentStorage(); 
     await loadData();
 
+document.getElementById('forumAnonymousToggle').checked = isForumAnonymous; 
+
 // 1. 为“桌面背景”绑定更换壁纸的事件
         document.getElementById('sim-home-screen-content').addEventListener('click', (event) => {
             // 如果点击的是图标网格或艺术组件区域，则不触发
@@ -21927,29 +21942,29 @@ function closeNewPostModal() {
 // --- ↓↓↓ 请用这个【版块感知版】，完整替换旧的 postForumMessage 函数 ↓↓↓ ---
 
 /**
- * 发布新帖子 (用户自己发帖) (V2 - 版块感知版)
+ * 发布新帖子 (用户自己发帖) (V3 - 匿名模式分离版)
  */
 async function postForumMessage() {
     const content = document.getElementById('newPostContentInput').value.trim();
     if (!content) return showAlert('帖子内容不能为空');
 
-    // ★★★ 核心修改 1：为新帖子贴上正确的“版块归属”标签 ★★★
+    // 核心修改：根据匿名状态，为帖子打上不同的“作者”标签
     const newPost = {
         id: generateUniqueId(),
-        authorId: userProfile.id, // 作者是用户自己
+        // 如果是匿名模式，authorId就为空，authorName就是“匿名用户”
+        authorId: isForumAnonymous ? null : userProfile.id, 
+        authorName: isForumAnonymous ? '匿名用户' : userProfile.name,
         content: content,
+        htmlModule: null, // 用户发帖暂时不支持HTML模块
         timestamp: new Date().toISOString(),
         comments: [],
-        section: currentForumSubTab // <-- 使用全局变量，记录当前所在的版块
+        section: currentForumSubTab
     };
 
     const newId = await dbManager.set('forumPosts', newPost);
     newPost.id = newId;
-
-    // 更新总列表
     forumPosts.unshift(newPost);
 
-    // ★★★ 核心修改 2：根据版块，将帖子放入正确的“篮子” ★★★
     if (currentForumSubTab === 'recommended') {
         currentForumPosts.unshift(newPost);
     } else if (currentForumSubTab === 'gossip') {
@@ -21959,9 +21974,18 @@ async function postForumMessage() {
     }
     
     await saveData();
-    triggerAiPostReactions(newPost.id);
 
-    // ★★★ 核心修改 3：根据版块，调用正确的“刷新工人”来更新UI ★★★
+    // 【【【核心逻辑分离】】】
+    // 在这里判断匿名模式的开关状态
+    if (isForumAnonymous) {
+        // 如果是匿名，就调用我们即将创建的“匿名专属”反应函数
+        triggerAnonymousReactions(newPost.id);
+    } else {
+        // 如果不是匿名，就调用原来的反应函数
+        triggerAiPostReactions(newPost.id);
+    }
+    // 【【【分离结束】】】
+
     if (currentForumSubTab === 'recommended') {
         renderForumTimeline();
     } else if (currentForumSubTab === 'gossip') {
@@ -21972,8 +21996,6 @@ async function postForumMessage() {
 
     closeNewPostModal();
 }
-
-// --- ↑↑↑ 替换到此结束 ↑↑↑ ---
 
 /**
  * 打开论坛设置
@@ -23286,32 +23308,44 @@ function renderForumDetailView(post) {
     const pageContainer = document.getElementById('forumDetailView');
     const postViews = Math.floor(Math.random() * 8000) + 100;
     
-    // --- ▼▼▼ 这是你要替换的部分 ▼▼▼ ---
-    let postAuthor;
-    let postAvatarHtml;
+    // 这是修正后的新代码
+let postAuthor;
+let postAvatarHtml;
 
-    // 检查帖子的作者是不是用户自己
-    if (post.authorId === userProfile.id) {
-        // 如果是，就使用论坛的个人资料 (forumProfileData)
-        postAuthor = {
-            name: forumProfileData.name,
-            id: userProfile.id
-        };
-        const avatarSrc = forumProfileData.avatarImage || userProfile.avatarImage;
-        postAvatarHtml = avatarSrc
-            ? `<div class="post-avatar" style="background-image: url('${avatarSrc}')"></div>`
-            : `<div class="post-avatar" style="background-color: #1d9bf0; color: white;">${forumProfileData.name.substring(0, 1)}</div>`;
+// 优先级 1: 检查帖子的作者是不是用户自己
+if (post.authorId === userProfile.id) {
+    // 如果是，就明确地使用论坛的个人资料 (forumProfileData)
+    postAuthor = {
+        name: forumProfileData.name, // 核心修复：直接使用论坛昵称
+        id: userProfile.id
+    };
+    // 头像也优先使用论坛专属头像
+    const avatarSrc = forumProfileData.avatarImage || userProfile.avatarImage;
+    postAvatarHtml = avatarSrc
+        ? `<div class="post-avatar" style="background-image: url('${avatarSrc}')"></div>`
+        : `<div class="post-avatar" style="background-color: #1da1f2; color: white;">${forumProfileData.name.substring(0, 1)}</div>`;
+}
+// 优先级 2: 如果不是用户，再检查是不是已知的AI好友
+else if (post.authorId) {
+    postAuthor = getAuthorById(post.authorId);
+    postAvatarHtml = postAuthor.avatarImage
+        ? `<div class="post-avatar" style="background-image: url('${postAuthor.avatarImage}')"></div>`
+        : `<div class="post-avatar" style="background-color: ${getRandomColor()}; color: white;">${postAuthor.avatar}</div>`;
+}
+// 优先级 3: 如果以上都不是，说明是“路人”
+else {
+    postAuthor = {
+        name: post.authorName,
+        id: `passerby_${post.id}`
+    };
+    if (post.authorAvatarUrl) {
+        postAvatarHtml = `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`;
+    } else if (post.authorName === '匿名用户') {
+        postAvatarHtml = `<div class="post-avatar">?</div>`;
     } else {
-        // 如果不是用户，就使用原来的逻辑寻找AI或路人信息
-        postAuthor = getAuthorById(post.authorId) || { name: post.authorName, id: `passerby_${post.id}` };
-        postAvatarHtml = post.authorAvatarUrl
-            ? `<div class="post-avatar" style="background-image: url('${post.authorAvatarUrl}')"></div>`
-            : (postAuthor.avatarImage
-                ? `<div class="post-avatar" style="background-image: url('${postAuthor.avatarImage}')"></div>`
-                : `<div class="post-avatar" style="background-color: ${post.authorAvatarColor || '#1d9bf0'}; color: white;">${post.authorAvatarChar || postAuthor.avatar}</div>`);
+        postAvatarHtml = `<div class="post-avatar" style="background-color: #ccc; color: white;">?</div>`;
     }
-    // --- ▲▲▲ 替换到这里结束 ▲▲▲ ---
-
+}
     const mainPostHtml = `
         <div class="forum-detail-main-post">
             <div class="post-header" style="justify-content: space-between; align-items: center;">
@@ -24423,8 +24457,8 @@ async function generateGossipPosts() {
     }
 
     const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
-  // ▼▼▼ 请用这个新的代码块，完整替换 generateGossipPosts() 函数中的对应部分 ▼▼▼
-
+ 
+ // 这是需要粘贴的新代码
 // 1. 我们不再叫它“关系图谱”，而是“核心圈子”，并分组
 const personaGroups = {};
 aiParticipants.forEach(ai => {
@@ -24439,13 +24473,15 @@ aiParticipants.forEach(ai => {
     personaGroups[personaId].ais.push(ai);
 });
 
-// 2. 将分组信息转换成AI能看懂的文本
+// 2. 将分组信息转换成AI能看懂的、包含完整人设的“情报档案”
 const mainCharacters = Object.values(personaGroups).map((group, index) => {
-    const aiNames = group.ais.map(ai => `“${ai.name}”`).join('、');
+    const aiMemberDetails = group.ais.map(ai => `      - AI角色: “${ai.name}” (人设: “${ai.role}”)`).join('\n');
     return `- **核心圈子 ${index + 1}**:
-      - **焦点人物**: 用户人设 “${group.persona.name}”
-      - **圈内成员**: ${aiNames}`;
-}).join('\n    ');
+  - **焦点人物**: 用户 “${group.persona.name}” (人设: “${group.persona.personality || '普通人'}”)
+  - **圈内AI成员详情**:
+${aiMemberDetails}`;
+    }).join('\n    ');
+
 
 const prompt = `
 【任务】: 你是一个论坛八卦内容生成器。你的任务是扮演一名“吃瓜群众”，严格根据下方提供的情报库，生成20条高质量的、关于主角团的八卦帖子。
@@ -24454,7 +24490,9 @@ const prompt = `
 1.  **世界观设定 (故事背景)**: 
     -   名称: ${worldview.name}
     -   描述: ${worldview.description}
-2.  **八卦主角团核心圈子 (你的创作素材)**:
+2.  **论坛规则**:
+    ${forumRules.map(rule => `- ${rule.name}: ${rule.description}`).join('\n')}
+3.  **八卦主角团核心圈子 (你的创作素材)**:
     ${mainCharacters}
 
 【【【第二层：导演指令 (你本次的核心创作任务)】】】
@@ -24462,12 +24500,11 @@ const prompt = `
 2.  **【创作核心】**: 你需要思考：在这样的世界背景下，这些核心圈子里的人们之间，会发生什么样的八卦？
 3.  **【【【创作自由度铁律 (最重要！)】】】**:
     你的八卦可以聚焦于**圈子内的任意两个人**（例如，焦点人物和其中一个成员），也可以是关于**整个圈子的整体动态**。请自由发挥，创造出多样化的、引人入胜的八卦！
-    最好多讨论焦点人物和其中一个成员的八卦！整个圈子的讨论可以少一点！不要出现两个成员之间的互动！他们只和焦点人物有关系和互动！
+    *多讨论*焦点人物和其中一个成员的八卦！整个圈子的动态可以*少一些*，不要出现两个成员之间的互动！他们只和焦点人物有关系和互动！
   **【角色多样性】**: 你生成的20条帖子，其作者身份必须多样化，可以是随机路人、匿名用户等。
 4.  **【内容要求】**: 20条八卦必须内容新颖、不重复，并严格遵守世界观和角色人设。
-
-// --- ▼▼▼ 核心修改就在这里 ▼▼▼ ---
-5.  **【【【创意模块铁律 (必须执行)】】】**:
+5.  **【【【人设铁律 (最重要！)】】】**: 你生成的八卦内容，**必须**严格符合情报库中提供的每一个角色的**专属人设**。例如，如果一个角色的职业是“医生”，你的八卦内容就不能说“昨天看到他在当程序员”。
+6.  **【【【创意模块铁律 (必须执行)】】】**:
     *   在生成的20条帖子中，你**必须选择2到3条**内容最合适的帖子，为其**原创**一个简单的、与帖子内容紧密相关的**HTML交互模块**。
     *   **创意方向**: 这个模块可以是一个小投票、一个趣味问答、一个可展开的角色八卦卡片、或者任何你认为能增强帖子趣味性的东西。
     *   **技术要求**: HTML模块**必须**包含简单的交互功能，例如使用 \`<button onclick="alert(...)">\` 或 \`<details><summary>...\` 等。
@@ -24633,36 +24670,61 @@ async function generateFollowingPosts() {
         return [];
     }
 
-    // ▼▼▼ 核心修改：为每个AI角色配对专属的用户人设 ▼▼▼
-const characterInfoForPrompt = aiParticipants.map(ai => {
-    // 1. 找到这个AI对应的用户人设ID
-    const personaId = ai.activeUserPersonaId || 'default_user';
-    // 2. 从所有人设中找到具体的人设对象
-    const persona = userPersonas.find(p => p.id === personaId) || userProfile;
-    // 3. 构建给AI看的、包含配对信息的情报
-    return `- 角色名: "${ai.name}" (人设: "${ai.role}")
-  - 他/她互动的对象是: 用户人设“${persona.name}” (人设: “${persona.personality || '普通人'}”)`;
-}).join('\n    ');
+  // ▼▼▼ 请用这个【V3 - 记忆注入版】，完整替换旧的 characterInfoForPrompt 变量 ▼▼▼
 
+    // 1. (这是修改的核心) 为每个AI角色配对专属的用户人设 **和聊天记录**
+    const characterInfoForPrompt = aiParticipants.map(ai => {
+        // (这部分不变) 找到AI对应的用户人设
+        const personaId = ai.activeUserPersonaId || 'default_user';
+        const persona = userPersonas.find(p => p.id === personaId) || userProfile;
+
+        // (这是新增的部分) 获取并格式化该AI与对应人设的最近聊天记录
+        const recentChat = (chatHistories[ai.id] || [])
+            .slice(-30) // 读取最近30条
+            .map(m => {
+                const senderName = m.type === 'sent' ? persona.name : ai.name;
+                // 复用已有的工具函数来简化消息内容
+                const summarizedContent = summarizeMessageContentForAI(m); 
+                return `[${formatTimestampForAI(m.timestamp)}] ${senderName}: ${summarizedContent}`;
+            }).join('\n      '); // 使用换行和缩进，让AI更容易阅读
+
+        // (这部分是修改) 将聊天记录添加到返回的情报中
+        return `- 角色名: "${ai.name}" (人设: "${ai.role}")
+      - 他/她互动的对象是: 用户人设“${persona.name}” (人设: “${persona.personality || '普通人'}”)
+      - **他/她与“${persona.name}”的最近聊天摘要**:
+        ${recentChat || '无'}`;
+    }).join('\n    ');
+
+// ▲▲▲ 替换到此结束 ▲▲▲
 const prompt = `
 【任务】: 你是一个论坛内容生成器。你的任务是扮演下方“发帖人名单”中的角色，并严格根据“情报库”生成20条高质量的论坛帖子。
+
+帖子。
 
 【【【第一层：情报库 (你的全部认知与世界的绝对真理)】】】
 1.  **世界观设定 (故事背景)**: 
     -   名称: ${worldview.name}
     -   描述: ${worldview.description}
-2.  **发帖人与TA的互动对象 (你只能从这些人里选，并且必须体现出他们之间的专属关系)**:
+2.  **论坛规则**:
+    ${forumRules.map(rule => `- ${rule.name}: ${rule.description}`).join('\n')}
+3.  **发帖人与TA的互动对象及专属记忆 (你只能从这些人里选，并且必须体现出他们之间的专属关系)**:
     ${characterInfoForPrompt}
-3.  **帖子的倾诉对象**: 所有帖子的内容都应该是围绕着与**对应的用户人设**的互动展开的感想、心情或事件。
 
 【【【第二层：导演指令 (你本次的核心创作任务)】】】
 1.  **【扮演任务】**: 你需要轮流扮演“发帖人名单”中的每一个角色。
 2.  **【创作核心】**: 对于每一个角色，你需要思考：拥有这样人设的我，在 \`${worldview.name}\` 这个世界里，和 **对应的用户人设** 互动后，会有什么样的感想和心情想要分享？
-3.  **【内容要求】**: 20条帖子必须内容新颖、不重复，并严格遵守每个角色的独特人设。
-4.  **【【【创意模块铁律 (必须执行)】】】**:
+3. **【人设铁律】**: 当你扮演某个角色时，你的帖子内容**必须**严格符合情报库中为该角色提供的**专属人设**。你的思考方式、语言风格、分享的内容都必须是这个角色会做的。
+4. **【倾诉对象】**: 所有帖子的内容都应该是围绕着与**对应的用户人设**的互动展开的。
+5.  **【内容要求】**: 20条帖子必须内容新颖、不重复，并严格遵守每个角色的独特人设。
+6.  **【【【创意模块铁律 (必须执行)】】】**:
     *   在生成的20条帖子中，你**必须选择2到3条**内容最合适的帖子，为其**原创**一个简单的、与帖子内容紧密相关的**HTML交互模块**。
     *   **创意方向**: 这个模块可以是一个小投票、一个趣味问答、一个可展开的角色八卦卡片、或者任何你认为能增强帖子趣味性的东西。
     *   **技术要求**: HTML模块**必须**包含简单的交互功能，例如使用 \`<button onclick="alert(...)">\` 或 \`<details><summary>...\` 等。
+
+【【【第三层：社交平台语境铁律 (至关重要！)】】】
+1.  **【公开分享意识】**: 你必须明白，你现在是在一个**公开的社交平台**上发帖，而不是在和某人私聊。虽然帖子的灵感来源于你和特定对象的互动，但你发帖的**倾诉对象**是整个论坛的不特定用户。
+2.  **【禁止直接对话】**: 你的帖子内容**绝对不能**像是在直接对某个人说话。你的文字应该是**间接的、带有分享性质的**，目的是记录心情、寻求共鸣或引发讨论。
+3.  **【转化思维】**: 你必须学会将“私密的想法”转化为“公开的帖子”。
 
 // 【“导演加强版”越狱规则】
 【【【内容开放性与边界准-则 (NSFW / Mature Content Guidelines - Director's Cut)】】】
@@ -25805,6 +25867,9 @@ function prepareReplyToComment(event, postId, commentId, authorName) {
     input.focus(); // 聚焦输入框
 }
 
+/**
+ * 用户在帖子详情页发布回复 (V2 - 匿名模式分离版)
+ */
 async function postForumReply() {
     const input = document.getElementById('forumReplyInput');
     const content = input.value.trim();
@@ -25817,19 +25882,15 @@ async function postForumReply() {
     const post = findForumPostById(postId);
     if (!post) return;
 
-    // ▼▼▼ 核心修改从这里开始 ▼▼▼
-    let finalContent = content; // 先准备一个最终要发送的内容变量
-
-    // 检查一下我们是不是正在回复某个人
+    let finalContent = content;
     if (currentReplyingTo.authorName) {
-        // 如果是，就在内容的开头加上“回复@XXX：”
         finalContent = `回复@${currentReplyingTo.authorName}：${content}`;
     }
-    // ▲▲▲ 修改到这里结束 ▲▲▲
 
+    // 核心修改：根据匿名状态，决定评论者的名字
     const newComment = {
-        authorName: forumProfileData.name, 
-        content: finalContent, // 使用我们处理过后的 finalContent
+        authorName: isForumAnonymous ? '匿名用户' : forumProfileData.name, 
+        content: finalContent,
         replyingTo: currentReplyingTo.authorName ? { name: currentReplyingTo.authorName } : null
     };
 
@@ -25841,7 +25902,16 @@ async function postForumReply() {
     await saveData();
     
     renderForumDetailView(post);
-    triggerAiForumReplies(postId, newComment);
+
+    // 【【【核心逻辑分离】】】
+    if (isForumAnonymous) {
+        // 如果是匿名，调用“匿名专属”的回复函数
+        triggerAnonymousForumReplies(postId, newComment);
+    } else {
+        // 如果不是匿名，调用原来的回复函数
+        triggerAiForumReplies(postId, newComment);
+    }
+    // 【【【分离结束】】】
 
     input.value = '';
     input.placeholder = '发布你的回复';
@@ -25899,12 +25969,16 @@ async function triggerAiForumReplies(postId, userComment) {
     } else {
         taskDescription = `你的任务是模拟 ${replyCount} 位网友对用户“${userComment.authorName}”的评论进行回复。其中，必须有一条来自“${requiredReplier}”。`;
         const requiredAi = friends.find(f => f.name === requiredReplier);
+        // ▼▼▼ 请用这个新的代码块，替换你原来的版本 ▼▼▼
         if (requiredAi) {
-            const personaId = requiredAi.activeUserPersonaId || 'default_user';
-            const persona = userPersonas.find(p => p.id === personaId) || userProfile;
-            const aiChatHistory = (chatHistories[requiredAi.id] || []).slice(-15).map(m => 
-                `${m.type === 'sent' ? persona.name : requiredAi.name}: ${m.content}`
-            ).join('\n    ');
+           
+                const personaId = requiredAi.activeUserPersonaId || 'default_user';
+                const persona = userPersonas.find(p => p.id === personaId) || userProfile;
+                const aiChatHistory = (chatHistories[requiredAi.id] || []).slice(-30).map(m => 
+                    `${m.type === 'sent' ? persona.name : requiredAi.name}: ${m.content}`
+                ).join('\n    ');
+
+               
 
             // --- ▼▼▼ 核心修改1：更精确地描述角色关系 ▼▼▼ ---
             specialInstructionsForAI = `
@@ -25954,6 +26028,7 @@ ${specialInstructionsForAI}
   { "content": "回复@${userComment.authorName}：你说得对！", "authorName": "${requiredReplier}" },
   { "content": "回复@${userComment.authorName}：路过支持一下。", "authorName": "摸鱼小队长" }
 ]`;
+
     // --- ▲▲▲ 核心修改2结束 ▲▲▲ ---
 
     try {
@@ -26039,6 +26114,7 @@ async function triggerAiPostReactions(postId) {
     const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
     const totalComments = 2 + aiParticipants.length;
 
+
     // 3. 为每个需要发言的AI角色，准备包含【专属用户人设】的“情报档案”
     const specialInstructionsForAI = aiParticipants.map(ai => {
         const personaId = ai.activeUserPersonaId || 'default_user';
@@ -26090,6 +26166,9 @@ async function triggerAiPostReactions(postId) {
 ]
 
 现在，开始你的创作。`;
+
+
+
     // --- ▲▲▲ 核心修改2结束 ▲▲▲ ---
 
     // 后续的API请求和数据处理逻辑与原来完全相同，无需改动
@@ -26682,6 +26761,231 @@ function dataUrlToBlobUrl(dataUrl) {
     } catch (error) {
         console.error("DataURL to Blob URL conversion failed:", error);
         return dataUrl; // 转换失败则返回原始dataURL作为备用
+    }
+}
+
+// ▼▼▼ 把这个新函数完整地粘贴到 <script> 的末尾 ▼▼▼
+
+/**
+ * 新增：切换论坛匿名模式的开关
+ */
+async function toggleForumAnonymity() {
+    // 1. 获取开关当前的状态 (是开还是关)
+    isForumAnonymous = document.getElementById('forumAnonymousToggle').checked;
+    
+    // 2. 保存这个状态
+    await saveData();
+    
+    // 3. 给一个友好的提示
+    showAlert(`匿名模式已${isForumAnonymous ? '开启' : '关闭'}！`);
+}
+
+/**
+ * 【【【全新函数】】】
+ * 匿名模式专属：触发AI对用户的【匿名帖子】进行评论
+ * @param {string} postId - 用户刚刚发布的匿名帖子的ID
+ */
+async function triggerAnonymousReactions(postId) {
+    const post = findForumPostById(postId);
+    if (!post) return;
+
+    const settings = await dbManager.get('apiSettings', 'settings');
+    if (!settings || !settings.apiUrl || !settings.apiKey) return;
+    
+    const worldview = worldviews.find(w => w.id === forumSettings[post.section + 'WorldviewId']) || worldviews[0];
+    const aiParticipants = friends.filter(f => forumSettings.activeAiIds.includes(f.id));
+    const totalComments = 2 + aiParticipants.length;
+
+    // 这是专门为“匿名模式”定制的、更简洁的AI指令
+    const prompt = `
+【任务】: 你是一个论坛评论生成器。你的任务是扮演 ${totalComments} 位不同的“路人网友”，为下方一个匿名用户发布的帖子生成 ${totalComments} 条高质量的评论。
+
+【【【第一层：情报库】】】
+1.  **世界观设定**: ${worldview.description}
+2.  **帖子内容**: "${post.content}"
+    ${post.htmlModule ? `- 附加HTML模块: \`\`\`html\n${post.htmlModule}\n\`\`\`` : ''}
+
+【【【第二层：导演指令】】】
+1.  **【扮演任务】**: 你的评论者**必须包含**2位随机的、昵称各不相同的“路人网友”，以及以下 ${aiParticipants.length} 位角色（但他们此时并不知道发帖人是谁，只是作为普通网友参与讨论）：
+    ${aiParticipants.map(ai => `- "${ai.name}" (人设: "${ai.role}")`).join('\n    ')}
+2.  **【评论铁律】**: 你的评论必须紧密围绕帖子内容，并且要体现出角色/路人的多样性（好奇、赞同、质疑、开玩笑等）。
+3.  **【【【猜想模块（很小概率触发）】】】**:
+    在极少数情况下（大约8%的几率），如果你扮演的AI角色（不是路人）觉得帖子的语气和内容让你产生了**强烈的既视感**，你可以用一种**试探性的、不确定的口吻**，把你联想到的那个人（也就是你的好友"${userProfile.name}"）提出来，但要表现得像是你的一个猜想。
+    【猜想示例】: "咦，楼主的说话方式，让我想起我一个朋友...", "不知道为什么，感觉这个帖子会是我认识的某个人发的，哈哈。"
+
+【【【第三层：技术规范】】】
+你的回复必须是一个纯净的、完整的JSON数组 \`[]\`，包含 ${totalComments} 个对象，每个对象有 "content" 和 "authorName" 两个键。
+
+【JSON格式示例】:
+[
+  { "content": "这个我同意！", "authorName": "吃瓜路人甲" },
+  { "content": "楼主的文笔让我想起我认识的一个人，不过应该只是错觉吧？", "authorName": "${aiParticipants[0]?.name || 'AI角色A'}" }
+]
+
+现在，请开始你的创作。`;
+
+    // 后续的API请求和数据处理逻辑与原函数基本一致
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: settings.modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 1.0
+            })
+        });
+
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+        const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+        if (!jsonMatch) throw new Error("AI未能返回有效的评论JSON数组。");
+        
+        const commentsData = JSON.parse(jsonMatch[0]);
+
+        commentsData.forEach(comment => {
+            const authorIsAiFriend = aiParticipants.find(ai => ai.name === comment.authorName);
+            if (!authorIsAiFriend) {
+                comment.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+            }
+            post.comments.push(comment);
+        });
+
+        await saveData();
+        
+        const detailView = document.getElementById('forumDetailView');
+        if (detailView.classList.contains('active')) {
+            renderForumDetailView(post);
+        }
+
+    } catch (error) {
+        console.error("AI生成匿名帖子评论失败:", error);
+        post.comments.push({ authorName: "系统", content: `[AI评论生成失败: ${error.message}]` });
+        if (document.getElementById('forumDetailView').classList.contains('active')) {
+             renderForumDetailView(post);
+        }
+    }
+}
+
+/**
+ * 【【【最终修复版，严格参考非匿名逻辑重构】】】
+ * 匿名模式专属：触发AI对用户的【匿名回复】进行回应
+ * @param {string} postId - 帖子ID
+ * @param {object} userComment - 用户刚刚发布的匿名评论对象
+ */
+async function triggerAnonymousForumReplies(postId, userComment) {
+    const post = findForumPostById(postId);
+    if (!post) {
+        console.error("触发AI匿名回复失败：找不到帖子。");
+        return;
+    }
+    const postAuthor = getAuthorById(post.authorId) || { name: post.authorName };
+
+    const repliesContainer = document.querySelector('.replies-container');
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'comments-loading-indicator';
+    loadingIndicator.textContent = 'AI正在思考如何回复...';
+    if (repliesContainer) {
+        repliesContainer.appendChild(loadingIndicator);
+    }
+
+    const settings = await dbManager.get('apiSettings', 'settings');
+    const worldview = worldviews.find(w => w.id === forumSettings[post.section + 'WorldviewId']) || worldviews[0];
+
+    const commentsHistory = post.comments.map(c => {
+        let line = `${c.authorName}: "${c.content}"`;
+        if (c.replyingTo && c.replyingTo.name) {
+            line = `${c.authorName} 回复 @${c.replyingTo.name}: "${c.content}"`;
+        }
+        return line;
+    }).join('\n');
+
+    let taskDescription, replyCount, requiredReplier, specialInstructionsForAI = '';
+
+    // --- 核心逻辑：完全遵循你的参考代码结构 ---
+    if (userComment.replyingTo) {
+        replyCount = 3;
+        requiredReplier = userComment.replyingTo.name;
+    } else {
+        replyCount = 5;
+        requiredReplier = postAuthor.name;
+    }
+
+    if (requiredReplier === forumProfileData.name) {
+        taskDescription = `你的任务是模拟 ${replyCount} 位随机的、不同的网友，对用户“${userComment.authorName}”的评论进行回复。`;
+        specialInstructionsForAI = `【【【绝对禁止】】】: 严禁生成任何由帖子作者“${userComment.authorName}”发表的回复，因为用户会自己回复。你只需要扮演路人即可。`;
+    } else {
+        taskDescription = `你的任务是模拟 ${replyCount} 位网友对用户“${userComment.authorName}”的评论进行回复。其中，必须有一条来自“${requiredReplier}”。`;
+        const requiredAi = friends.find(f => f.name === requiredReplier);
+        if (requiredAi) {
+            // 这是唯一的区别：为匿名场景定制的AI指令
+            specialInstructionsForAI = `
+【【【“${requiredReplier}”专属行为指令 (最高优先级)】】】:
+在生成来自“${requiredReplier}”的评论时，你必须严格代入他的人设：“${requiredAi.role}”。必须严格遵守人设！
+由于刚刚评论的用户是匿名的，你的回复应该是对一个【陌生人】的回应，但要保持你自己的性格和说话方式。`;
+        }
+    }
+    
+    // --- 构建最终的、与参考函数格式一致的Prompt ---
+    const prompt = `
+【任务】: 你是一个论坛评论生成器。
+【世界观设定】: ${worldview.description}
+【帖子内容】: 作者“${postAuthor.name}”说：“${post.content}”
+【当前评论区历史】:
+${commentsHistory}
+【最新动态】: “匿名用户”刚刚发表了新评论：“${userComment.content}”
+
+【你的任务】:
+${taskDescription}
+
+【【【称呼铁律 (ABSOLUTE RULE on Addressing)】】】
+1.  在你的回复内容中，你**必须**使用 “回复@匿名用户：” 作为开头。
+2.  **绝对禁止**使用任何其他的昵称。
+
+${specialInstructionsForAI || ''}
+
+【回复铁律】:
+1. 所有回复都必须紧密围绕上下文，且符合世界观。
+2. 路人昵称要有网感，不能重复。
+3. **【【【内容格式铁律】】】**: "content" 字段的值必须是**纯文本**。**绝对禁止**在 "content" 字段中包含任何 HTML 标签或代码。
+
+【输出格式铁律】:
+你的回复必须是一个纯净的JSON数组，包含${replyCount}个对象，每个对象有 "content" 和 "authorName" 两个键。
+
+【JSON格式示例】:
+[
+  { "content": "回复@匿名用户：你说得对！", "authorName": "${requiredReplier || '路人甲'}" },
+  { "content": "回复@匿名用户：路过支持一下。", "authorName": "摸鱼小队长" }
+]`;
+
+    try {
+        const response = await fetch(`${settings.apiUrl}/chat/completions`, { /* ...API请求代码不变... */
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: settings.modelName, messages: [{ role: 'user', content: prompt }], temperature: 0.9 })
+        });
+        if (!response.ok) throw new Error(`API 请求失败: ${response.status}`);
+        
+        const data = await response.json();
+        const responseText = data.choices[0].message.content;
+        const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+        if (!jsonMatch) throw new Error("AI返回的评论格式无效。");
+        
+        const commentsData = JSON.parse(jsonMatch[0]);
+        commentsData.forEach(comment => {
+            if (!friends.some(f => f.name === comment.authorName)) {
+                comment.authorAvatarUrl = passerbyAvatarUrls[Math.floor(Math.random() * passerbyAvatarUrls.length)];
+            }
+            post.comments.push(comment);
+        });
+        
+        await saveData();
+    } catch (error) {
+        console.error("AI生成匿名回复失败:", error);
+        post.comments.push({ authorName: "系统", content: `[AI回复生成失败: ${error.message}]` });
+    } finally {
+        renderForumDetailView(post);
     }
 }
 
