@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蓝牙控制器 (实验版)</title>
+    <title>Kisstoy 控制器</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 2rem; background-color: #f4f4f9; color: #333; margin: 0; }
         .container { width: 95%; max-width: 450px; text-align: center; }
-        button, #connectButton { background-color: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; margin-top: 1rem; }
-        button:hover, #connectButton:hover { background-color: #0056b3; }
+        button, #connectButton { background-color: #e60073; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; margin-top: 1rem; }
+        button:hover, #connectButton:hover { background-color: #c20062; }
         #controls { display: none; margin-top: 2rem; padding: 2rem; background-color: white; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; }
         .control-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; text-align: left; }
-        input[type="range"] { width: 100%; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; appearance: none; height: 8px; background: #ddd; border-radius: 5px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; background: #e60073; cursor: pointer; border-radius: 50%; }
+        input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; background: #e60073; cursor: pointer; border-radius: 50%; }
         #modeButtons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         #modeButtons button { width: 100%; padding: 12px; margin: 0; background-color: #6c757d; }
         #modeButtons button.stop-button { background-color: #dc3545; grid-column: 1 / -1; }
@@ -21,13 +23,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>蓝牙控制器 (实验版)</h1>
+        <h1>Kisstoy 控制器</h1>
         <p id="status">请点击下方按钮连接设备</p>
         <button id="connectButton">连接设备 (QCSW)</button>
         <div id="controls">
             <div class="control-group">
-                <label for="intensitySlider">强度: <span id="intensityValue">50</span></label>
-                <input type="range" id="intensitySlider" min="0" max="100" value="50">
+                <label for="intensitySlider">强度: <span id="intensityValue">0</span></label>
+                <input type="range" id="intensitySlider" min="0" max="100" value="0">
             </div>
             <div class="control-group">
                 <label>模式</label>
@@ -44,20 +46,9 @@
     </div>
 
     <script>
-        // ============================ 实验区 START ============================
-        // 在这里修改参数来进行实验
-
-        // 目标服务和特征 UUID (保持不变，因为连接成功了)
+        // UUIDs (已确认正确)
         const SERVICE_UUID = '00001000-0000-1000-8000-00805f9b34fb';
         const CHARACTERISTIC_UUID = '00001001-0000-1000-8000-00805f9b34fb';
-
-        // 实验一：使用带指令头的指令格式
-        // 猜测：指令 [0x01, 强度值] 用于控制强度
-        //       指令 [0x02, 模式值] 用于控制模式
-        const INTENSITY_PREFIX = 0x01; // 控制强度的指令头
-        const MODE_PREFIX = 0x02;      // 控制模式的指令头
-
-        // ============================ 实验区 END ==============================
 
         const connectButton = document.getElementById('connectButton');
         const controls = document.getElementById('controls');
@@ -83,7 +74,6 @@
                     filters: [{ name: 'QCSW' }],
                     optionalServices: [SERVICE_UUID]
                 });
-
                 logMessage('设备已选择，正在连接...');
                 statusDisplay.textContent = '正在连接...';
                 const server = await bluetoothDevice.gatt.connect();
@@ -111,7 +101,6 @@
             controls.style.display = 'none';
         }
 
-        // 新的发送指令函数，可以发送多个字节
         async function sendCommand(commandArray) {
             if (!controlCharacteristic) {
                 logMessage('特征不可用');
@@ -120,30 +109,34 @@
             try {
                 const command = Uint8Array.from(commandArray);
                 await controlCharacteristic.writeValueWithoutResponse(command);
-                logMessage(`指令已发送: [${command.join(', ')}]`);
+                // 将指令以十六进制格式显示，更清晰
+                const hexString = Array.from(command).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ');
+                logMessage(`指令已发送: [${hexString}]`);
             } catch (error) {
                 logMessage(`发送失败: ${error}`);
             }
         }
 
-        // 控制强度
+        // 控制强度 (使用Kisstoy协议)
         intensitySlider.addEventListener('input', () => {
             const value = parseInt(intensitySlider.value);
             intensityValue.textContent = value;
-            // 发送带指令头的指令，例如 [1, 50]
-            sendCommand([INTENSITY_PREFIX, value]);
+            // 指令格式: [0x55, 0x04, 0x01, 强度值, 0xAA]
+            sendCommand([0x55, 0x04, 0x01, value, 0xAA]);
         });
 
-        // 控制模式
+        // 控制模式 (使用Kisstoy协议)
         modeButtons.addEventListener('click', (event) => {
             if (event.target.tagName === 'BUTTON') {
                 const mode = parseInt(event.target.dataset.mode);
                 if (mode === 0) {
-                    // 停止指令可能比较特殊，我们先尝试发送 [指令头, 0]
-                    sendCommand([INTENSITY_PREFIX, 0]);
+                    // 停止指令就是强度为0
+                    sendCommand([0x55, 0x04, 0x01, 0, 0xAA]);
+                    intensitySlider.value = 0;
+                    intensityValue.textContent = 0;
                 } else {
-                    // 发送模式指令，例如 [2, 3]
-                    sendCommand([MODE_PREFIX, mode]);
+                    // 模式指令格式: [0x55, 0x02, 模式号, 0x01, 0xAA]
+                    sendCommand([0x55, 0x02, mode, 0x01, 0xAA]);
                 }
             }
         });
