@@ -3,62 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蓝牙终极测试工具</title>
+    <title>Kisstoy 控制器</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 1rem; background-color: #f0f2f5; color: #333; margin: 0; }
-        .container { width: 95%; max-width: 500px; text-align: center; }
-        .card { background-color: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 1.5rem; margin-top: 1rem; }
-        button, #connectButton { background-color: #e60073; color: white; border: none; padding: 15px 25px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 2rem; background-color: #f4f4f9; color: #333; margin: 0; }
+        .container { width: 95%; max-width: 450px; text-align: center; }
+        button, #connectButton { background-color: #e60073; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; margin-top: 1rem; }
         button:hover, #connectButton:hover { background-color: #c20062; }
-        #controls { display: none; }
-        label { display: block; margin: 1rem 0 0.5rem 0; font-weight: bold; text-align: left; }
-        input[type="range"] { width: 100%; margin-top: 10px; }
-        #log { margin-top: 1rem; font-size: 14px; color: #555; background-color: #e9ecef; padding: 10px; border-radius: 5px; min-height: 20px; text-align: left; word-break: break-all; }
-        .checkbox-container { display: flex; align-items: center; justify-content: flex-start; margin-top: 1rem; }
-        .checkbox-container input { margin-right: 10px; }
+        #controls { display: none; margin-top: 2rem; padding: 2rem; background-color: white; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; }
+        .control-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; text-align: left; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; appearance: none; height: 8px; background: #ddd; border-radius: 5px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; background: #e60073; cursor: pointer; border-radius: 50%; }
+        input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; background: #e60073; cursor: pointer; border-radius: 50%; }
+        #modeButtons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #modeButtons button { width: 100%; padding: 12px; margin: 0; background-color: #6c757d; }
+        #modeButtons button.stop-button { background-color: #dc3545; grid-column: 1 / -1; }
+        #log { margin-top: 1.5rem; font-size: 14px; color: #666; background-color: #eee; padding: 10px; border-radius: 5px; min-height: 20px; text-align: left; word-break: break-all; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>蓝牙终极测试工具</h1>
+        <h1>Kisstoy 控制器</h1>
         <p id="status">请点击下方按钮连接设备</p>
         <button id="connectButton">连接设备 (QCSW)</button>
-
-        <div id="controls" class="card">
-            <h3>测试说明</h3>
-            <p style="text-align: left; font-size: 14px;">1. 连接设备。<br>2. <strong>勾选下面的“持续发送”复选框。</strong><br>3. <strong>慢慢地从左到右拖动强度滑块。</strong><br>4. 观察设备是否有反应。</p>
-            
-            <hr>
-
-            <label for="intensitySlider">强度: <span id="intensityValue">0</span></label>
-            <input type="range" id="intensitySlider" min="0" max="100" value="0">
-            
-            <div class="checkbox-container">
-                <input type="checkbox" id="keepSendingCheckbox">
-                <label for="keepSendingCheckbox" style="margin: 0;">持续发送指令</label>
+        <div id="controls">
+            <div class="control-group">
+                <label for="intensitySlider">强度: <span id="intensityValue">0</span></label>
+                <input type="range" id="intensitySlider" min="0" max="100" value="0">
             </div>
-            
-            <button id="stopButton" style="background-color: #dc3545; width: 100%; margin-top: 1.5rem;">紧急停止</button>
-
+            <div class="control-group">
+                <label>模式</label>
+                <div id="modeButtons">
+                    <button data-mode="1">模式 1</button>
+                    <button data-mode="2">模式 2</button>
+                    <button data-mode="3">模式 3</button>
+                    <button data-mode="4">模式 4</button>
+                    <button data-mode="0" class="stop-button">停止</button>
+                </div>
+            </div>
             <div id="log">等待操作...</div>
         </div>
     </div>
 
     <script>
-        const SERVICE_UUID = '00001000-0000-1000-8000-008059fb34fb';
-        const CHARACTERISTIC_UUID = '00001001-0000-1000-8000-008059fb34fb';
+        // UUIDs (已确认正确)
+        const SERVICE_UUID = '00001000-0000-1000-8000-00805f9b34fb';
+        const CHARACTERISTIC_UUID = '00001001-0000-1000-8000-00805f9b34fb';
 
         const connectButton = document.getElementById('connectButton');
         const controls = document.getElementById('controls');
         const statusDisplay = document.getElementById('status');
         const intensitySlider = document.getElementById('intensitySlider');
         const intensityValue = document.getElementById('intensityValue');
-        const keepSendingCheckbox = document.getElementById('keepSendingCheckbox');
-        const stopButton = document.getElementById('stopButton');
+        const modeButtons = document.getElementById('modeButtons');
         const log = document.getElementById('log');
 
         let controlCharacteristic;
-        let repeaterInterval = null;
+        let bluetoothDevice;
 
         function logMessage(message) {
             console.log(message);
@@ -67,94 +68,78 @@
 
         connectButton.addEventListener('click', async () => {
             try {
-                logMessage('请求设备...');
-                const device = await navigator.bluetooth.requestDevice({
+                logMessage('正在请求蓝牙设备...');
+                statusDisplay.textContent = '请在弹窗中选择名为 "QCSW" 的设备...';
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
                     filters: [{ name: 'QCSW' }],
                     optionalServices: [SERVICE_UUID]
                 });
-                device.addEventListener('gattserverdisconnected', onDisconnected);
-                const server = await device.gatt.connect();
+                logMessage('设备已选择，正在连接...');
+                statusDisplay.textContent = '正在连接...';
+                const server = await bluetoothDevice.gatt.connect();
+                logMessage('正在获取服务...');
                 const service = await server.getPrimaryService(SERVICE_UUID);
+                logMessage('正在获取特征...');
                 controlCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-                logMessage('连接成功！请按说明操作。');
+                logMessage('连接成功！');
                 statusDisplay.textContent = '设备已连接';
                 connectButton.style.display = 'none';
                 controls.style.display = 'block';
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
             } catch (error) {
                 logMessage(`连接失败: ${error}`);
+                statusDisplay.textContent = `连接失败，请重试。`;
                 alert('连接失败: ' + error);
             }
         });
 
         function onDisconnected() {
-            logMessage('设备已断开');
+            logMessage('设备已断开连接');
             statusDisplay.textContent = '设备已断开，请重新连接';
+            alert('设备已断开连接');
             connectButton.style.display = 'block';
             controls.style.display = 'none';
-            stopRepeater();
         }
 
         async function sendCommand(commandArray) {
-            if (!controlCharacteristic) return;
+            if (!controlCharacteristic) {
+                logMessage('特征不可用');
+                return;
+            }
             try {
                 const command = Uint8Array.from(commandArray);
                 await controlCharacteristic.writeValueWithoutResponse(command);
-                logMessage(`持续发送: [${command.join(', ')}]`);
+                // 将指令以十六进制格式显示，更清晰
+                const hexString = Array.from(command).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ');
+                logMessage(`指令已发送: [${hexString}]`);
             } catch (error) {
                 logMessage(`发送失败: ${error}`);
-                stopRepeater(); // Stop on error
             }
         }
 
-        function startRepeater() {
-            stopRepeater(); // Clear any existing interval first
-            const value = parseInt(intensitySlider.value);
-            if (value === 0) {
-                sendCommand([0]); // Send a single stop command
-                return;
-            }
-            repeaterInterval = setInterval(() => {
-                // 我们使用最基础的单字节指令进行持续发送，这是最有可能成功的
-                sendCommand([parseInt(intensitySlider.value)]);
-            }, 200); // 每200毫秒发送一次
-        }
-
-        function stopRepeater() {
-            if (repeaterInterval) {
-                clearInterval(repeaterInterval);
-                repeaterInterval = null;
-                sendCommand([0]); // Send a final stop command
-                logMessage('持续发送已停止。');
-            }
-        }
-        
+        // 控制强度 (使用Kisstoy协议)
         intensitySlider.addEventListener('input', () => {
             const value = parseInt(intensitySlider.value);
             intensityValue.textContent = value;
-            if (keepSendingCheckbox.checked) {
-                if (value > 0) {
-                    startRepeater();
+            // 指令格式: [0x55, 0x04, 0x01, 强度值, 0xAA]
+            sendCommand([0x55, 0x04, 0x01, value, 0xAA]);
+        });
+
+        // 控制模式 (使用Kisstoy协议)
+        modeButtons.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                const mode = parseInt(event.target.dataset.mode);
+                if (mode === 0) {
+                    // 停止指令就是强度为0
+                    sendCommand([0x55, 0x04, 0x01, 0, 0xAA]);
+                    intensitySlider.value = 0;
+                    intensityValue.textContent = 0;
                 } else {
-                    stopRepeater();
+                    // 模式指令格式: [0x55, 0x02, 模式号, 0x01, 0xAA]
+                    sendCommand([0x55, 0x02, mode, 0x01, 0xAA]);
                 }
             }
         });
-
-        keepSendingCheckbox.addEventListener('change', () => {
-            if (keepSendingCheckbox.checked) {
-                startRepeater();
-            } else {
-                stopRepeater();
-            }
-        });
-        
-        stopButton.addEventListener('click', () => {
-            intensitySlider.value = 0;
-            intensityValue.textContent = 0;
-            keepSendingCheckbox.checked = false;
-            stopRepeater();
-        });
-
     </script>
 </body>
 </html>
