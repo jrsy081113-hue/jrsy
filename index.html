@@ -10822,17 +10822,17 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
     </div>
 </div>
 
-<!-- ▼▼▼ 将这个全新的弹窗HTML代码块粘贴到 <body> 的末尾 ▼▼▼ -->
+<!-- ▼▼▼ 请用这个干净的版本，完整替换您之前修改过的 #toyControlModal ▼▼▼ -->
 <div id="toyControlModal" class="modal">
     <div class="modal-content">
         <div class="modal-title">情趣用品控制</div>
 
         <!-- 状态显示区域 -->
         <div id="toy-status" style="text-align: center; margin-bottom: 15px; color: #888;">
-            尚未连接到 Intiface Central
+            尚未连接
         </div>
 
-        <!-- 连接按钮 -->
+        <!-- 【核心修改】我们恢复了最开始的单个连接按钮 -->
         <div id="toy-connect-area">
             <button class="modal-btn modal-btn-confirm" onclick="connectToButtplug()">连接并扫描设备</button>
         </div>
@@ -10862,7 +10862,7 @@ onchange="handleFriendAvatarUpload(event)"><span id="friendAvatarPreview">+</spa
         </div>
     </div>
 </div>
-<!-- ▲▲▲ 添加到此结束 ▲▲▲ -->
+<!-- ▲▲▲ 替换到此结束 ▲▲▲ -->
 
     <!-- ↓↓↓ 第1步：将以下所有新增的HTML代码粘贴到 <body> 的末尾 ↓↓↓ -->
 
@@ -32833,7 +32833,7 @@ function initializeButtplug() {
 }
 
 /**
- * [iOS Bluefy 专用版] 直接通过蓝牙连接设备
+ * [Bluefy 浏览器专属] 通过 WebBluetooth 连接并扫描设备
  */
 async function connectToButtplug() {
     if (!buttplugClient) {
@@ -32844,19 +32844,34 @@ async function connectToButtplug() {
     statusDiv.textContent = "正在请求蓝牙权限...";
 
     try {
-        // 【【【核心修改！！！】】】
-        // 我们把“打电话”的 WebsocketConnector 换成了“敲门”的 BluetoothClientConnector
-        await buttplugClient.connect(new Buttplug.ButtplugBrowserBluetoothClientConnector());
+        // 【核心修改 1】: 不再使用 WebSocket 连接器。
+        // Buttplug.io库会自动处理，我们只需调用 connect() 即可。
+        // 这会触发浏览器自身的蓝牙设备扫描窗口。
         
-        statusDiv.textContent = "连接成功！正在扫描设备...";
-        
-        // 开始扫描设备
-        await buttplugClient.startScanning();
-        statusDiv.textContent = "扫描中... 请在弹出的蓝牙窗口中选择您的设备。";
+        // 检查客户端是否已经连接，如果已连接则先断开
+        if (buttplugClient.connected) {
+            await buttplugClient.disconnect();
+        }
 
+        // 显示“等待用户操作”的提示
+        statusDiv.textContent = "请在弹出的窗口中选择您的设备...";
+        
+        // 【核心修改 2】: 对于WebBluetooth，直接调用 connect() 即可
+        // 这会弹出一个由 Bluefy 浏览器提供的蓝牙设备选择窗口
+        await buttplugClient.connect();
+        
+        // 如果用户成功选择了一个设备并连接上
+        statusDiv.textContent = "连接成功！可以开始控制了。";
+        console.log("Buttplug.io 通过 WebBluetooth 连接成功！");
+
+        // 注意：WebBluetooth模式下，通常不需要再手动 startScanning()
+        // 因为用户在连接时就已经完成了扫描和选择。
+        // 我们直接更新设备列表UI即可。
+        updateDeviceListUI();
+        
     } catch (e) {
-        statusDiv.textContent = `连接或扫描失败: ${e.message}。请确保蓝牙已开启，或重试。`;
-        console.error("Buttplug 蓝牙连接失败:", e);
+        statusDiv.textContent = `连接失败: ${e.message}。请重试。`;
+        console.error("Buttplug WebBluetooth 连接失败:", e);
     }
 }
 
