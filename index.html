@@ -32833,7 +32833,7 @@ function initializeButtplug() {
 }
 
 /**
- * 2. 连接到 Intiface Central 并开始扫描
+ * [iOS Bluefy 专用版] 直接通过蓝牙连接设备
  */
 async function connectToButtplug() {
     if (!buttplugClient) {
@@ -32841,20 +32841,22 @@ async function connectToButtplug() {
     }
 
     const statusDiv = document.getElementById('toy-status');
-    statusDiv.textContent = "正在连接到 Intiface Central...";
+    statusDiv.textContent = "正在请求蓝牙权限...";
 
     try {
-        // 尝试连接到 Intiface Central 的默认地址
-        await buttplugClient.connect(new Buttplug.ButtplugBrowserWebsocketClientConnector("ws://127.0.0.1:12345"));
+        // 【【【核心修改！！！】】】
+        // 我们把“打电话”的 WebsocketConnector 换成了“敲门”的 BluetoothClientConnector
+        await buttplugClient.connect(new Buttplug.ButtplugBrowserBluetoothClientConnector());
+        
         statusDiv.textContent = "连接成功！正在扫描设备...";
         
         // 开始扫描设备
         await buttplugClient.startScanning();
-        statusDiv.textContent = "扫描中... 请确保您的设备已开启并靠近电脑。";
+        statusDiv.textContent = "扫描中... 请在弹出的蓝牙窗口中选择您的设备。";
 
     } catch (e) {
-        statusDiv.textContent = `连接失败: ${e.message}。请确保 Intiface Central 已在您的电脑上运行。`;
-        console.error("Buttplug 连接失败:", e);
+        statusDiv.textContent = `连接或扫描失败: ${e.message}。请确保蓝牙已开启，或重试。`;
+        console.error("Buttplug 蓝牙连接失败:", e);
     }
 }
 
