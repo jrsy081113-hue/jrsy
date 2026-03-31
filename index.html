@@ -42815,14 +42815,13 @@ if (isBackgroundKeepAliveEnabled) {
         checkAndShowAnnouncement();
 
         // --- 【修改开始】 ---
-        setTimeout(() => {
-            // 1. 先让开屏动画淡出
-            const splashContainer = document.getElementById('splash');
-            if (splashContainer) splashContainer.classList.add('fade-out');
+setTimeout(() => {
+    // 1. 先让开屏动画淡出
+    const splashContainer = document.getElementById('splash');
+    if (splashContainer) splashContainer.classList.add('fade-out');
 
-            // 2. 【修改】获取用户上次填写的激活码，并检查它是否在当前的有效列表里
-            const userStoredCode = localStorage.getItem('jrsy_activation_record');
-            const isActivated = GLOBAL_VALID_CODES.includes(userStoredCode);
+    // 2. 【修改】强制跳过激活码验证，直接设置为已激活
+    const isActivated = true;
 
             setTimeout(() => {
                 // 3. 彻底隐藏加载层
